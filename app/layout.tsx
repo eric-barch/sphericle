@@ -1,8 +1,9 @@
-import './globals.css'
+import NavBar from '@/components/NavBar'
 import type { Metadata } from 'next'
-import { Varela_Round } from 'next/font/google'
+import { Nunito } from 'next/font/google'
+import './globals.css'
 
-const varelaRound = Varela_Round({ weight: ['400'], subsets: ['latin'] })
+const font = Nunito({ weight: ['400'], subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'globle',
@@ -16,7 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={varelaRound.className}>{children}</body>
+      <body className={font.className}>
+        <NavBar />
+        <main>
+          {children}
+        </main>
+      </body>
     </html>
   )
 }

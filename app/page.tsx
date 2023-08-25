@@ -1,7 +1,70 @@
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-
-    </main>
+    <>
+      <p className='text-center'>Doofus World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+      <p className='text-center'>Hello World</p>
+    </>
   )
 }
