@@ -17,9 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={font.className}>
+      <body className={font.className + ' flex flex-col min-h-screen'}>
         <NavBar />
-        <main>
+        <main className='flex flex-col flex-grow'>
           {children}
         </main>
       </body>

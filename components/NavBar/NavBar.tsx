@@ -1,11 +1,12 @@
 'use client'
 
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
+import Link from 'next/link';
 
 export default function NavBar() {
   return (
     <NavigationMenu.Root
-      className='w-screen sticky top-0 
+      className='w-screen sticky top-0 z-10
                  flex flex-row justify-between
                bg-gray-900'
       orientation='horizontal'>
@@ -18,14 +19,10 @@ export default function NavBar() {
         </NavigationMenu.Item>
         <div className='flex flex-row space-x-3'>
           <NavigationMenu.Item>
-            <NavigationMenu.Link href='/build-quiz'>
-              Build Quiz
-            </NavigationMenu.Link>
+            <Link href='/build'>Build</Link>
           </NavigationMenu.Item>
           <NavigationMenu.Item>
-            <NavigationMenu.Link href='/sign-in'>
-              Sign In
-            </NavigationMenu.Link>
+            <Link href='/learn'>Learn</Link>
           </NavigationMenu.Item>
         </div>
       </NavigationMenu.List>
