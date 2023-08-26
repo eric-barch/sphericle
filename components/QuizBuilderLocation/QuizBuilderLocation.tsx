@@ -50,11 +50,11 @@ export default function QuizBuilderLocation({
     >
       <Accordion.Item value='open'>
         <Accordion.Header>
-          {node.label}
-          <button className='mx-2' onClick={handleDelete}>-</button>
           <Accordion.Trigger>
             {renderCaret()}
           </Accordion.Trigger>
+          {node.label}
+          <button className='mx-2' onClick={handleDelete}>-</button>
         </Accordion.Header>
         <Accordion.Content className='ml-8'>
           {node.children.map((childNode, index) => (
