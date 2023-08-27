@@ -1,69 +1,77 @@
 'use client';
 
 import * as Accordion from '@radix-ui/react-accordion';
-import { FaCaretDown } from 'react-icons/fa';
+import { FaAngleRight } from 'react-icons/fa';
+import LocationActiveButton from '@/components/LocationActiveButton';
 
-export interface QuizBuilderLocationProps {
-  node: QuizBuilderLocationState;
-  onAddChild: (node: QuizBuilderLocationState) => void;
-  onToggleOpen: (node: QuizBuilderLocationState) => void;
-  onDeleteNode: (node: QuizBuilderLocationState) => void;
+export interface Props {
+  state: State;
+  onToggleActive: (state: State) => void;
+  onToggleOpen: (state: State) => void;
+  onAddChild: (state: State) => void;
+  onDelete: (state: State) => void;
 }
 
-export interface QuizBuilderLocationState {
-  label: string;
+export interface State {
+  parent: State | null;
+  children: State[];
+  value: string;
   isOpen: boolean;
-  children: QuizBuilderLocationState[];
+  isChecked: boolean;
 }
 
 export default function QuizBuilderLocation({
-  node,
-  onAddChild,
+  state,
+  onToggleActive,
   onToggleOpen,
-  onDeleteNode,
-}: QuizBuilderLocationProps) {
-  const handleToggleOpen = (newValue: string[]) => {
-    onToggleOpen(node);
+  onAddChild,
+  onDelete,
+}: Props) {
+  function handleToggleActive() {
+    onToggleActive(state);
   };
 
-  const handleAddChild = () => {
-    onAddChild(node);
+  function handleToggleOpen() {
+    onToggleOpen(state);
   };
 
-  const handleDelete = () => {
-    onDeleteNode(node);
+  function handleAddChild() {
+    onAddChild(state);
   };
 
-  const renderCaret = () => {
-    return node.isOpen ? (
-      <FaCaretDown aria-hidden className="transform rotate-180" />
-    ) : (
-      <FaCaretDown aria-hidden />
-    );
+  function handleDelete() {
+    onDelete(state);
   };
 
   return (
     <Accordion.Root
       type="multiple"
-      value={node.isOpen ? ['open'] : ['closed']}
-      onValueChange={handleToggleOpen}
-    >
-      <Accordion.Item value='open'>
-        <Accordion.Header>
-          <Accordion.Trigger>
-            {renderCaret()}
-          </Accordion.Trigger>
-          {node.label}
-          <button className='mx-2' onClick={handleDelete}>-</button>
+      value={state.isOpen ? [state.value] : ['closed']}
+      onValueChange={handleToggleOpen}>
+      <Accordion.Item value={state.value} className='space-y-1'>
+        <Accordion.Header className='quiz-builder-location'>
+          <div className='align-middle flex flex-row'>
+            <Accordion.Trigger>
+              <FaAngleRight
+                aria-hidden
+                className={`transform ${state.isOpen ? 'rotate-90' : ''} mr-1`} />
+            </Accordion.Trigger>
+            {state.value}
+          </div>
+          <LocationActiveButton
+            className='text-2xl'
+            isChecked={state.isChecked}
+            onClick={handleToggleActive} />
         </Accordion.Header>
-        <Accordion.Content className='ml-8'>
-          {node.children.map((childNode, index) => (
+        <Accordion.Content className='pl-8 space-y-1'>
+          {state.children.map((child, index) => (
             <QuizBuilderLocation
               key={index}
-              node={childNode}
-              onAddChild={onAddChild}
+              state={child}
+              onToggleActive={onToggleActive}
               onToggleOpen={onToggleOpen}
-              onDeleteNode={onDeleteNode}
+              onAddChild={onAddChild}
+              onDelete={onDelete}
             />
           ))}
           <button onClick={handleAddChild}>+</button>

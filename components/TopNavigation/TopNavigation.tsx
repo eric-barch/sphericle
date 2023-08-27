@@ -3,15 +3,10 @@
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
 
-export default function NavBar() {
+export default function TopNavigation() {
   return (
-    <NavigationMenu.Root
-      className='w-screen sticky top-0 z-10
-                 flex flex-row justify-between
-               bg-gray-900'
-      orientation='horizontal'>
-      <NavigationMenu.List className='w-screen 
-                                      p-3 flex flex-row justify-between'>
+    <NavigationMenu.Root className='top-navigation' orientation='horizontal'>
+      <NavigationMenu.List className='flex flex-row justify-between'>
         <NavigationMenu.Item>
           <NavigationMenu.Link href='/'>
             globle

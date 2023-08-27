@@ -1,52 +1,57 @@
 'use client'
 
-import QuizBuilderLocation, { QuizBuilderLocationState } from '@/components/QuizBuilderLocation';
+import QuizBuilderLocation, { State as Location } from '@/components/QuizBuilderLocation';
 import { useState } from 'react';
 
-export default function QuizBuilder() {
-  const [tree, setTree] = useState<QuizBuilderLocationState>({
-    label: 'Root',
+export default function QuizBuilder({
+  className
+}: {
+  className?: string
+}) {
+  const [rootLocation, setLocationTree] = useState<Location>({
+    parent: null,
+    children: [],
+    value: 'root',
+    isChecked: true,
     isOpen: false,
-    children: []
   });
 
-  const handleAddChild = (parentNode: QuizBuilderLocationState) => {
-    const newNode = { label: `Child ${parentNode.children.length + 1}`, isOpen: false, children: [] };
-    parentNode.children.push(newNode);
-    setTree({ ...tree });
+  function handleToggleOpen(location: Location) {
+    location.isOpen = !location.isOpen;
+    setLocationTree({ ...rootLocation });
   };
 
-  const handleToggleOpen = (targetNode: QuizBuilderLocationState) => {
-    targetNode.isOpen = !targetNode.isOpen;
-    setTree({ ...tree });
+  function handleToggleActive(location: Location) {
+    location.isChecked = !location.isChecked;
+    setLocationTree({ ...rootLocation });
+  }
+
+  function handleAddChild(parentLocation: Location) {
+    const childLocation = {
+      parent: parentLocation,
+      children: [],
+      value: `Child ${parentLocation.children.length + 1}`,
+      isChecked: true,
+      isOpen: false,
+    };
+    parentLocation.children.push(childLocation);
+    setLocationTree({ ...rootLocation });
   };
 
-  const deleteNodeFromTree = (target: QuizBuilderLocationState, current = tree) => {
-    if (!current.children) return;
-
-    const index = current.children.indexOf(target);
-
-    if (index >= 0) {
-      current.children.splice(index, 1);
-      return true;
-    }
-
-    for (const child of current.children) {
-      if (deleteNodeFromTree(target, child)) return true;
-    }
-
-    return false;
+  function handleDelete(targetLocation: Location) {
+    if (targetLocation === rootLocation) return;
+    const parentLocation = targetLocation.parent!;
+    const targetIndex = parentLocation.children.indexOf(targetLocation);
+    parentLocation.children.splice(targetIndex, 1);
+    setLocationTree({ ...rootLocation });
   };
 
-  const handleDeleteNode = (node: QuizBuilderLocationState) => {
-    if (node === tree) return; // Avoid deleting the root node
-    deleteNodeFromTree(node);
-    setTree({ ...tree });
-  };
-
-  return <QuizBuilderLocation
-    node={tree}
-    onAddChild={handleAddChild}
-    onToggleOpen={handleToggleOpen}
-    onDeleteNode={handleDeleteNode} />;
+  return (<div className={className}>
+    <QuizBuilderLocation
+      state={rootLocation}
+      onToggleActive={handleToggleActive}
+      onToggleOpen={handleToggleOpen}
+      onAddChild={handleAddChild}
+      onDelete={handleDelete} />
+  </div>);
 }
