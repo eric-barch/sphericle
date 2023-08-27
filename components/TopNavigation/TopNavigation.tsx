@@ -5,8 +5,8 @@ import Link from 'next/link';
 
 export default function TopNavigation() {
   return (
-    <NavigationMenu.Root className='top-navigation-root' orientation='horizontal'>
-      <NavigationMenu.List className='top-navigation-list'>
+    <NavigationMenu.Root className='top-navigation' orientation='horizontal'>
+      <NavigationMenu.List className='flex flex-row justify-between'>
         <NavigationMenu.Item>
           <NavigationMenu.Link href='/'>
             globle

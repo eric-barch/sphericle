@@ -25,15 +25,18 @@
     flex flex-col
   }
 
-  .top-navigation-root {
+  .top-navigation {
     @apply
     sticky top-0 z-10
     w-screen p-3
     bg-gray-300 dark:bg-gray-900 shadow-md
   }
 
-  .top-navigation-list {
+  .quiz-builder-location {
     @apply
-    flex flex-row justify-between
+    p-2
+    flex flex-row items-center justify-between
+    rounded-full
+    bg-gray-400 dark:bg-gray-500
   }
 }
