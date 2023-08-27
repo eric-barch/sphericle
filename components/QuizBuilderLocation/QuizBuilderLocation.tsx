@@ -11,9 +11,10 @@ export interface Props {
 }
 
 export interface State {
+  parent: State | null;
+  children: State[];
   value: string;
   isOpen: boolean;
-  children: State[];
 }
 
 export default function QuizBuilderLocation({
@@ -22,7 +23,7 @@ export default function QuizBuilderLocation({
   onAddChild,
   onDelete,
 }: Props) {
-  function handleToggleOpen(newValue: string[]) {
+  function handleToggleOpen() {
     onToggleOpen(state);
   };
 
