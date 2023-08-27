@@ -1,69 +1,69 @@
 'use client';
 
 import * as Accordion from '@radix-ui/react-accordion';
-import { FaCaretDown } from 'react-icons/fa';
+import { FaCaretRight } from 'react-icons/fa';
 
-export interface QuizBuilderLocationProps {
-  node: QuizBuilderLocationState;
-  onAddChild: (node: QuizBuilderLocationState) => void;
-  onToggleOpen: (node: QuizBuilderLocationState) => void;
-  onDeleteNode: (node: QuizBuilderLocationState) => void;
+export interface Props {
+  state: State;
+  onAddChild: (state: State) => void;
+  onToggleOpen: (state: State) => void;
+  onDelete: (state: State) => void;
 }
 
-export interface QuizBuilderLocationState {
-  label: string;
+export interface State {
+  value: string;
   isOpen: boolean;
-  children: QuizBuilderLocationState[];
+  children: State[];
 }
 
 export default function QuizBuilderLocation({
-  node,
-  onAddChild,
+  state,
   onToggleOpen,
-  onDeleteNode,
-}: QuizBuilderLocationProps) {
-  const handleToggleOpen = (newValue: string[]) => {
-    onToggleOpen(node);
+  onAddChild,
+  onDelete,
+}: Props) {
+  function handleToggleOpen(newValue: string[]) {
+    onToggleOpen(state);
   };
 
-  const handleAddChild = () => {
-    onAddChild(node);
+  function handleAddChild() {
+    onAddChild(state);
   };
 
-  const handleDelete = () => {
-    onDeleteNode(node);
+  function handleDelete() {
+    onDelete(state);
   };
 
-  const renderCaret = () => {
-    return node.isOpen ? (
-      <FaCaretDown aria-hidden className="transform rotate-180" />
+  function renderCaret() {
+    return state.isOpen ? (
+      <FaCaretRight aria-hidden className="transform rotate-90" />
     ) : (
-      <FaCaretDown aria-hidden />
+      <FaCaretRight aria-hidden />
     );
   };
 
   return (
     <Accordion.Root
       type="multiple"
-      value={node.isOpen ? ['open'] : ['closed']}
+      value={state.isOpen ? [state.value] : ['closed']}
       onValueChange={handleToggleOpen}
     >
-      <Accordion.Item value='open'>
+      <Accordion.Item value={state.value}>
         <Accordion.Header>
           <Accordion.Trigger>
             {renderCaret()}
           </Accordion.Trigger>
-          {node.label}
+          {state.value}
           <button className='mx-2' onClick={handleDelete}>-</button>
         </Accordion.Header>
         <Accordion.Content className='ml-8'>
-          {node.children.map((childNode, index) => (
+          {state.children.map((child, index) => (
             <QuizBuilderLocation
               key={index}
-              node={childNode}
+              state={child}
               onAddChild={onAddChild}
               onToggleOpen={onToggleOpen}
-              onDeleteNode={onDeleteNode}
+              onDelete={onDelete}
             />
           ))}
           <button onClick={handleAddChild}>+</button>

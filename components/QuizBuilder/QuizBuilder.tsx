@@ -1,52 +1,59 @@
 'use client'
 
-import QuizBuilderLocation, { QuizBuilderLocationState } from '@/components/QuizBuilderLocation';
+import QuizBuilderLocation, { State } from '@/components/QuizBuilderLocation';
 import { useState } from 'react';
 
 export default function QuizBuilder() {
-  const [tree, setTree] = useState<QuizBuilderLocationState>({
-    label: 'Root',
+  const [locationStateTree, setLocationStateTree] = useState<State>({
+    value: 'root',
     isOpen: false,
     children: []
   });
 
-  const handleAddChild = (parentNode: QuizBuilderLocationState) => {
-    const newNode = { label: `Child ${parentNode.children.length + 1}`, isOpen: false, children: [] };
-    parentNode.children.push(newNode);
-    setTree({ ...tree });
+  function handleToggleOpen(targetState: State) {
+    targetState.isOpen = !targetState.isOpen;
+    setLocationStateTree({ ...locationStateTree });
   };
 
-  const handleToggleOpen = (targetNode: QuizBuilderLocationState) => {
-    targetNode.isOpen = !targetNode.isOpen;
-    setTree({ ...tree });
+  function handleAddChild(parentState: State) {
+    const newState = {
+      value: `Child ${parentState.children.length + 1}`,
+      isOpen: false,
+      children: []
+    };
+    parentState.children.push(newState);
+    setLocationStateTree({ ...locationStateTree });
   };
 
-  const deleteNodeFromTree = (target: QuizBuilderLocationState, current = tree) => {
-    if (!current.children) return;
+  function handleDeleteHelper(targetState: State, currentState = locationStateTree) {
+    if (!currentState.children) return;
 
-    const index = current.children.indexOf(target);
+    const targetIndex = currentState.children.indexOf(targetState);
+    console.log(targetIndex);
 
-    if (index >= 0) {
-      current.children.splice(index, 1);
+    /**If the target state is a direct descendant of the current state, delete it. */
+    if (targetIndex >= 0) {
+      currentState.children.splice(targetIndex, 1);
       return true;
     }
 
-    for (const child of current.children) {
-      if (deleteNodeFromTree(target, child)) return true;
+    /**Otherwise, recursively check each child to see if the target is a descendant. */
+    for (const child of currentState.children) {
+      if (handleDeleteHelper(targetState, child)) return true;
     }
 
     return false;
   };
 
-  const handleDeleteNode = (node: QuizBuilderLocationState) => {
-    if (node === tree) return; // Avoid deleting the root node
-    deleteNodeFromTree(node);
-    setTree({ ...tree });
+  function handleDelete(state: State) {
+    if (state === locationStateTree) return;
+    handleDeleteHelper(state);
+    setLocationStateTree({ ...locationStateTree });
   };
 
   return <QuizBuilderLocation
-    node={tree}
+    state={locationStateTree}
     onAddChild={handleAddChild}
     onToggleOpen={handleToggleOpen}
-    onDeleteNode={handleDeleteNode} />;
+    onDelete={handleDelete} />;
 }
