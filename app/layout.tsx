@@ -1,7 +1,7 @@
-import NavBar from '@/components/NavBar'
+import TopNavigation from '@/components/TopNavigation'
 import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
-import './globals.css'
+import './global.css'
 
 const font = Nunito({ weight: ['400'], subsets: ['latin'] })
 
@@ -17,12 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={font.className + ' flex flex-col min-h-screen'}>
-        <NavBar />
-        <main className='flex flex-col flex-grow'>
+      <body className={font.className}>
+        <TopNavigation />
+        <main>
           {children}
         </main>
       </body>
-    </html>
+    </html >
   )
 }

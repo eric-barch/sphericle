@@ -1,7 +1,7 @@
 'use client';
 
 import * as Accordion from '@radix-ui/react-accordion';
-import { FaCaretRight } from 'react-icons/fa';
+import { FaAngleRight } from 'react-icons/fa';
 
 export interface Props {
   state: State;
@@ -35,24 +35,15 @@ export default function QuizBuilderLocation({
     onDelete(state);
   };
 
-  function renderCaret() {
-    return state.isOpen ? (
-      <FaCaretRight aria-hidden className="transform rotate-90" />
-    ) : (
-      <FaCaretRight aria-hidden />
-    );
-  };
-
   return (
     <Accordion.Root
       type="multiple"
       value={state.isOpen ? [state.value] : ['closed']}
-      onValueChange={handleToggleOpen}
-    >
+      onValueChange={handleToggleOpen}>
       <Accordion.Item value={state.value}>
-        <Accordion.Header>
+        <Accordion.Header className='bg-slate-500 mb-1'>
           <Accordion.Trigger>
-            {renderCaret()}
+            <FaAngleRight aria-hidden className={`transform ${state.isOpen ? 'rotate-90' : ''}`} />
           </Accordion.Trigger>
           {state.value}
           <button className='mx-2' onClick={handleDelete}>-</button>
