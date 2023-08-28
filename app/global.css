@@ -34,9 +34,17 @@
 
   .quiz-builder-location {
     @apply
-    p-2
+    w-full p-2
     flex flex-row items-center justify-between
     rounded-full
     bg-gray-400 dark:bg-gray-500
+  }
+
+  .quiz-builder-location-adder {
+    @apply
+    w-full p-2 pl-9
+    flex flex-row items-center justify-between
+    rounded-full border-solid border-2
+    bg-transparent
   }
 }

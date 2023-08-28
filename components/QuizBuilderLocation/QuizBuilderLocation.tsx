@@ -2,7 +2,8 @@
 
 import * as Accordion from '@radix-ui/react-accordion';
 import { FaAngleRight } from 'react-icons/fa';
-import LocationActiveButton from '@/components/LocationActiveButton';
+import LocationActiveButton from '@/components/ToggleLocationActiveButton';
+import LocationAdder from '@/components/LocationAdder';
 
 export interface Props {
   state: State;
@@ -44,19 +45,33 @@ export default function QuizBuilderLocation({
   };
 
   return (
+    <div className="collapse bg-base-200">
+      <input type="checkbox" />
+      <div className="collapse-title text-xl font-medium">
+        Click me to show/hide content
+      </div>
+      <div className="collapse-content">
+        <p>hello</p>
+      </div>
+    </div>
+  );
+
+  return (
     <Accordion.Root
       type="multiple"
       value={state.isOpen ? [state.value] : ['closed']}
       onValueChange={handleToggleOpen}>
       <Accordion.Item value={state.value} className='space-y-1'>
         <Accordion.Header className='quiz-builder-location'>
-          <div className='align-middle flex flex-row'>
+          <div className='align-middle flex flex-row stack'>
             <Accordion.Trigger>
               <FaAngleRight
                 aria-hidden
-                className={`transform ${state.isOpen ? 'rotate-90' : ''} mr-1`} />
+                className={`transform ${state.isOpen ? 'rotate-90' : ''}`} />
             </Accordion.Trigger>
-            {state.value}
+            <div>
+              {state.value}
+            </div>
           </div>
           <LocationActiveButton
             className='text-2xl'
@@ -74,7 +89,7 @@ export default function QuizBuilderLocation({
               onDelete={onDelete}
             />
           ))}
-          <button onClick={handleAddChild}>+</button>
+          <LocationAdder />
         </Accordion.Content>
       </Accordion.Item>
     </Accordion.Root>
