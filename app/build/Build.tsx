@@ -1,4 +1,4 @@
-import QuizBuilder from '@/components/QuizBuilder';
+import QuizBuilder from '@/components/QuizBuilder/Root';
 
 export default function Build() {
   return (

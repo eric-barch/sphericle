@@ -1,9 +1,8 @@
 'use client';
 
 import * as Accordion from '@radix-ui/react-accordion';
-import { FaAngleRight } from 'react-icons/fa';
-import LocationActiveButton from '@/components/ToggleLocationActiveButton';
-import LocationAdder from '@/components/LocationAdder';
+import ToggleOpenCaret from './ToggleOpenCaret';
+import ToggleActiveButton from './ToggleActiveButton';
 
 export interface Props {
   state: State;
@@ -21,7 +20,7 @@ export interface State {
   isChecked: boolean;
 }
 
-export default function QuizBuilderLocation({
+export default function Location({
   state,
   onToggleActive,
   onToggleOpen,
@@ -45,51 +44,34 @@ export default function QuizBuilderLocation({
   };
 
   return (
-    <div className="collapse bg-base-200">
-      <input type="checkbox" />
-      <div className="collapse-title text-xl font-medium">
-        Click me to show/hide content
-      </div>
-      <div className="collapse-content">
-        <p>hello</p>
-      </div>
-    </div>
-  );
-
-  return (
     <Accordion.Root
       type="multiple"
       value={state.isOpen ? [state.value] : ['closed']}
       onValueChange={handleToggleOpen}>
-      <Accordion.Item value={state.value} className='space-y-1'>
-        <Accordion.Header className='quiz-builder-location'>
-          <div className='align-middle flex flex-row stack'>
-            <Accordion.Trigger>
-              <FaAngleRight
-                aria-hidden
-                className={`transform ${state.isOpen ? 'rotate-90' : ''}`} />
-            </Accordion.Trigger>
-            <div>
+      <Accordion.Item value={state.value}>
+        <div className='relative'>
+          <Accordion.Trigger className='p-2 w-full bg-gray-600 rounded-full'>
+            <Accordion.Header className='text-left pl-6'>
+              <ToggleOpenCaret isOpen={state.isOpen} />
               {state.value}
-            </div>
-          </div>
-          <LocationActiveButton
-            className='text-2xl'
+            </Accordion.Header>
+          </Accordion.Trigger>
+          <ToggleActiveButton
             isChecked={state.isChecked}
             onClick={handleToggleActive} />
-        </Accordion.Header>
-        <Accordion.Content className='pl-8 space-y-1'>
-          {state.children.map((child, index) => (
-            <QuizBuilderLocation
+        </div>
+        <Accordion.Content className='pl-10 space-y-1'>
+          {state.children.map((childState, index) => (
+            <Location
               key={index}
-              state={child}
+              state={childState}
               onToggleActive={onToggleActive}
               onToggleOpen={onToggleOpen}
               onAddChild={onAddChild}
               onDelete={onDelete}
             />
           ))}
-          <LocationAdder />
+          +
         </Accordion.Content>
       </Accordion.Item>
     </Accordion.Root>

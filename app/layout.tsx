@@ -1,7 +1,7 @@
 import TopNavigation from '@/components/TopNavigation'
 import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
-import './global.css'
+import '@/styles/globals.css'
 
 const font = Nunito({ weight: ['400'], subsets: ['latin'] })
 

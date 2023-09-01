@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  body {
+    @apply 
+    min-h-screen
+    flex flex-col
+    text-black dark:text-white
+    bg-white dark:bg-gray-700
+  }
+
+  main {
+    @apply 
+    flex-grow
+    flex flex-col
+  }
+
+  .top-navigation {
+    @apply
+    sticky top-0 z-10
+    w-screen p-3
+    bg-gray-300 dark:bg-gray-900 shadow-md
+  }
+}
