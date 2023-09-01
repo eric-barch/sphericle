@@ -3,6 +3,7 @@
 import * as Accordion from '@radix-ui/react-accordion';
 import ToggleOpenCaret from './ToggleOpenCaret';
 import ToggleActiveButton from './ToggleActiveButton';
+import LocationAdder from '../LocationAdder';
 
 export interface Props {
   state: State;
@@ -71,7 +72,7 @@ export default function Location({
               onDelete={onDelete}
             />
           ))}
-          +
+          <LocationAdder />
         </Accordion.Content>
       </Accordion.Item>
     </Accordion.Root>
