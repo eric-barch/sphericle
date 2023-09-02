@@ -26,37 +26,26 @@ export const suggestions = [
 ]
 
 export default function Suggestions({
-  isOpen,
   value,
-  setValue,
-  setIsOpen,
-  focusedIndex
 }: {
-  isOpen: boolean,
   value: string,
-  setValue: (value: string) => void,
-  setIsOpen: (isOpen: boolean) => void,
-  focusedIndex: number
 }) {
-  return isOpen ? (
-    <>
-      <Command.Empty>No results found.</Command.Empty>
-      <Command.Group className='bg-gray-500 rounded-3xl p-2 pl-4 mt-1 mb-1'>
-        {suggestions.map((suggestion, index) => (
+  return (
+    <Command.List className='bg-gray-500 rounded-3xl p-2 mt-1 mb-1'>
+      <Command.Empty className='p-2 pl-2 rounded-full'>No location found.</Command.Empty>
+      <Command.Group>
+        {suggestions.map((suggestion) => (
           <Command.Item
+            className={`p-2 pl-2 rounded-full ${suggestion.value === value ? 'bg-gray-600' : ''}`}
             key={suggestion.value}
-            className={index === focusedIndex ? "bg-gray-600" : ""}
-            onSelect={(currentValue) => {
-              setValue(currentValue === value ? "" : currentValue)
-              setIsOpen(false)
-            }}
-          >
+            value={suggestion.value}
+            onSelect={() => {
+              console.log(suggestion.value);
+            }}>
             {suggestion.label}
           </Command.Item>
         ))}
       </Command.Group>
-    </>
-  ) : (
-    <></>
+    </Command.List>
   );
 }

@@ -1,49 +1,26 @@
 "use client";
 
 import { Command } from "cmdk";
-import * as React from "react";
+import { useState } from "react";
 import Suggestions from './Suggestions';
-import { suggestions } from './Suggestions';
 
 export default function LocationAdder() {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-  const [focusedIndex, setFocusedIndex] = React.useState(-1);  // Initialize to -1 for no selection
+  const [isOpen, setIsOpen] = useState(false);
+  const [value, setValueRaw] = useState("");
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      setFocusedIndex((prevIndex) => Math.min(prevIndex + 1, suggestions.length - 1));
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setFocusedIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-    } else if (event.key === "Enter" && focusedIndex !== -1) {
-      setValue(suggestions[focusedIndex].value);
-      setIsOpen(false);
-    }
+  const setValue = (newValue: string) => {
+    if (newValue === undefined) return;
+    setValueRaw(newValue);
   };
 
   return (
-    <Command
-      label="add-location"
-      value={value}
-      onKeyDown={handleKeyDown}
-    >
+    <Command value={value} onValueChange={setValue}>
       <Command.Input
+        placeholder='Add a location'
         className='bg-transparent border-white border-2 p-2 pl-4 rounded-full w-full'
-        value={value}
-        onFocus={() => {
-          setIsOpen(true);
-          setFocusedIndex(-1);
-        }}
+        onFocus={() => setIsOpen(true)}
         onBlur={() => setIsOpen(false)} />
-      <Suggestions
-        isOpen={isOpen}
-        value={value}
-        setValue={setValue}
-        setIsOpen={setIsOpen}
-        focusedIndex={focusedIndex}
-      />
+      {isOpen && <Suggestions value={value} />}
     </Command>
   )
 }
