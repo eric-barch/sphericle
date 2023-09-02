@@ -61,7 +61,7 @@ export default function Location({
             isChecked={state.isChecked}
             onClick={handleToggleActive} />
         </div>
-        <Accordion.Content className='pl-10 space-y-1'>
+        <Accordion.Content className='pl-10 pt-1 pb-1 space-y-1'>
           {state.children.map((childState, index) => (
             <Location
               key={index}

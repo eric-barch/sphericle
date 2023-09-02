@@ -4,8 +4,8 @@ import Map from '@/components/Map';
 import { Wrapper } from '@googlemaps/react-wrapper';
 
 export default function Learn() {
-  const center = { lat: 40.713, lng: -74.006 };
-  const zoom = 12;
+  const center = { lat: 40.69191314547462, lng: -73.98515508647182 };
+  const zoom = 14;
   const mapId = '45205d0d55355e0d';
   const disableDefaultUI = true;
 

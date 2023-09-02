@@ -1,7 +1,9 @@
-import QuizBuilder from '@/components/QuizBuilder/Root';
+import Root from '@/components/QuizBuilder/Root';
 
 export default function Build() {
   return (
-    <QuizBuilder className='p-3 space-y-10' />
+    <div className='p-3'>
+      <Root />
+    </div>
   );
 }
