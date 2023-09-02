@@ -2,7 +2,7 @@
 
 import { Command } from "cmdk";
 import { useState } from "react";
-import Suggestions from './Suggestions';
+import Suggestions from "./Suggestions";
 
 export default function LocationAdder() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,11 +16,12 @@ export default function LocationAdder() {
   return (
     <Command value={value} onValueChange={setValue}>
       <Command.Input
-        placeholder='Add a location'
-        className='bg-transparent border-white border-2 p-2 pl-4 rounded-full w-full'
+        placeholder="Add a location"
+        className="bg-transparent border-white border-2 p-2 pl-4 rounded-full w-full"
         onFocus={() => setIsOpen(true)}
-        onBlur={() => setIsOpen(false)} />
+        onBlur={() => setIsOpen(false)}
+      />
       {isOpen && <Suggestions value={value} />}
     </Command>
-  )
+  );
 }

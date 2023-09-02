@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import Location, { State as LocationState } from '../Location';
-import { useState } from 'react';
+import Location, { State as LocationState } from "../Location";
+import { useState } from "react";
 
 export default function Root() {
   const [rootLocationState, setRootLocationState] = useState<LocationState>({
     parent: null,
     children: [],
-    value: 'root',
+    value: "root",
     isChecked: true,
     isOpen: false,
   });
@@ -15,7 +15,7 @@ export default function Root() {
   function handleToggleOpen(locationState: LocationState) {
     locationState.isOpen = !locationState.isOpen;
     setRootLocationState({ ...rootLocationState });
-  };
+  }
 
   function handleToggleActive(locationState: LocationState) {
     locationState.isChecked = !locationState.isChecked;
@@ -32,7 +32,7 @@ export default function Root() {
     };
     locationState.children.push(childLocationState);
     setRootLocationState({ ...rootLocationState });
-  };
+  }
 
   function handleDelete(locationState: LocationState) {
     if (locationState === rootLocationState) return;
@@ -40,7 +40,7 @@ export default function Root() {
     const targetIndex = parentLocation.children.indexOf(locationState);
     parentLocation.children.splice(targetIndex, 1);
     setRootLocationState({ ...rootLocationState });
-  };
+  }
 
   return (
     <Location
@@ -48,6 +48,7 @@ export default function Root() {
       onToggleActive={handleToggleActive}
       onToggleOpen={handleToggleOpen}
       onAddChild={handleAddChild}
-      onDelete={handleDelete} />
+      onDelete={handleDelete}
+    />
   );
 }

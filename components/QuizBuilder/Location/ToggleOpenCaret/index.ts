@@ -1,2 +1,2 @@
-export * from './ToggleOpenCaret';
-export { default } from './ToggleOpenCaret';
+export * from "./ToggleOpenCaret";
+export { default } from "./ToggleOpenCaret";

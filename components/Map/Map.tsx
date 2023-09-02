@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 export default function Map({
   center,
@@ -8,10 +8,10 @@ export default function Map({
   mapId,
   disableDefaultUI,
 }: {
-  center: google.maps.LatLngLiteral,
-  zoom: number,
-  mapId: string,
-  disableDefaultUI: boolean,
+  center: google.maps.LatLngLiteral;
+  zoom: number;
+  mapId: string;
+  disableDefaultUI: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(undefined!);
 
@@ -24,7 +24,5 @@ export default function Map({
     });
   });
 
-  return (
-    <div className='flex flex-grow' ref={ref} id="map" />
-  );
+  return <div className="flex flex-grow" ref={ref} id="map" />;
 }

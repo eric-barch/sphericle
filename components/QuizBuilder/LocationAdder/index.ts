@@ -1,2 +1,2 @@
-export * from './LocationAdder';
-export { default } from './LocationAdder';
+export * from "./LocationAdder";
+export { default } from "./LocationAdder";

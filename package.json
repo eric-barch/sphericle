@@ -36,6 +36,8 @@
   },
   "devDependencies": {
     "@types/google.maps": "^3.53.6",
-    "@types/react": "^18.2.21"
+    "@types/react": "^18.2.21",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.3"
   }
 }
