@@ -1,2 +1,2 @@
-export * from './Root';
-export { default } from './Root';
+export * from "./Root";
+export { default } from "./Root";

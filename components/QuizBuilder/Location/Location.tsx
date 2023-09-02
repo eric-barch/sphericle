@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import * as Accordion from '@radix-ui/react-accordion';
-import ToggleOpenCaret from './ToggleOpenCaret';
-import ToggleActiveButton from './ToggleActiveButton';
-import LocationAdder from '../LocationAdder';
+import * as Accordion from "@radix-ui/react-accordion";
+import ToggleOpenCaret from "./ToggleOpenCaret";
+import ToggleActiveButton from "./ToggleActiveButton";
+import LocationAdder from "../LocationAdder";
 
 export interface Props {
   state: State;
@@ -30,38 +30,40 @@ export default function Location({
 }: Props) {
   function handleToggleActive() {
     onToggleActive(state);
-  };
+  }
 
   function handleToggleOpen() {
     onToggleOpen(state);
-  };
+  }
 
   function handleAddChild() {
     onAddChild(state);
-  };
+  }
 
   function handleDelete() {
     onDelete(state);
-  };
+  }
 
   return (
     <Accordion.Root
       type="multiple"
-      value={state.isOpen ? [state.value] : ['closed']}
-      onValueChange={handleToggleOpen}>
+      value={state.isOpen ? [state.value] : ["closed"]}
+      onValueChange={handleToggleOpen}
+    >
       <Accordion.Item value={state.value}>
-        <div className='relative'>
-          <Accordion.Trigger className='p-2 w-full bg-gray-600 rounded-full'>
-            <Accordion.Header className='text-left pl-6'>
+        <div className="relative">
+          <Accordion.Trigger className="p-2 w-full bg-gray-600 rounded-full">
+            <Accordion.Header className="text-left pl-6">
               <ToggleOpenCaret isOpen={state.isOpen} />
               {state.value}
             </Accordion.Header>
           </Accordion.Trigger>
           <ToggleActiveButton
             isChecked={state.isChecked}
-            onClick={handleToggleActive} />
+            onClick={handleToggleActive}
+          />
         </div>
-        <Accordion.Content className='pl-10 pt-1 pb-1 space-y-1'>
+        <Accordion.Content className="pl-10 pt-1 pb-1 space-y-1">
           {state.children.map((childState, index) => (
             <Location
               key={index}
