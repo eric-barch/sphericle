@@ -2,53 +2,74 @@
 
 import Location, { State as LocationState } from "../Location";
 import { useState } from "react";
+import LocationAdder from "../LocationAdder";
 
-export default function Root() {
-  const [rootLocationState, setRootLocationState] = useState<LocationState>({
-    parent: null,
+export interface RootState {
+  children: LocationState[];
+}
+
+interface Props {
+  state: RootState;
+}
+
+export default function Root(props: Props) {
+  const [root, setRoot] = useState<RootState>({
     children: [],
-    value: "root",
-    isChecked: true,
-    isOpen: false,
   });
 
-  function handleToggleOpen(locationState: LocationState) {
-    locationState.isOpen = !locationState.isOpen;
-    setRootLocationState({ ...rootLocationState });
-  }
+  const onToggleOpen = (location: LocationState) => {
+    location.isOpen = !location.isOpen;
+    setRoot({ ...root });
+  };
 
-  function handleToggleActive(locationState: LocationState) {
-    locationState.isChecked = !locationState.isChecked;
-    setRootLocationState({ ...rootLocationState });
-  }
+  const onToggleActive = (location: LocationState) => {
+    location.isChecked = !location.isChecked;
+    setRoot({ ...root });
+  };
 
-  function handleAddChild(locationState: LocationState) {
-    const childLocationState = {
-      parent: locationState,
+  const onAddChild = (parent: LocationState | RootState, value: string) => {
+    const child = {
+      parent,
       children: [],
-      value: `Child ${locationState.children.length + 1}`,
+      value,
       isChecked: true,
       isOpen: false,
     };
-    locationState.children.push(childLocationState);
-    setRootLocationState({ ...rootLocationState });
-  }
+    parent.children.push(child);
+    setRoot({ ...root });
+  };
 
-  function handleDelete(locationState: LocationState) {
-    if (locationState === rootLocationState) return;
-    const parentLocation = locationState.parent!;
-    const targetIndex = parentLocation.children.indexOf(locationState);
-    parentLocation.children.splice(targetIndex, 1);
-    setRootLocationState({ ...rootLocationState });
-  }
+  const onDelete = (target: LocationState) => {
+    const parent = target.parent;
+    const targetIndex = parent.children.indexOf(target);
+    parent.children.splice(targetIndex, 1);
+    setRoot({ ...root });
+  };
 
   return (
-    <Location
-      state={rootLocationState}
-      onToggleActive={handleToggleActive}
-      onToggleOpen={handleToggleOpen}
-      onAddChild={handleAddChild}
-      onDelete={handleDelete}
-    />
+    <>
+      {props.state.children.map((childState, index) => (
+        <Location
+          key={index}
+          state={childState}
+          onToggleActive={onToggleActive}
+          onToggleOpen={onToggleOpen}
+          onAddChild={onAddChild}
+          onDelete={onDelete}
+        />
+      ))}
+      <LocationAdder
+        onAdd={(value) => {
+          const newState: LocationState = {
+            parent: props.state,
+            children: [],
+            value,
+            isOpen: false,
+            isChecked: false,
+          };
+          onAddChild(newState, value);
+        }}
+      />
+    </>
   );
 }

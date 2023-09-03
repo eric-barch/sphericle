@@ -31,7 +31,13 @@ export const suggestions = [
   },
 ];
 
-export default function Suggestions({ value }: { value: string }) {
+export interface Props {
+  value: string;
+  setIsOpen: (isOpen: boolean) => void;
+  onSelectSuggestion: (value: string) => void;
+}
+
+export default function Suggestions(props: Props) {
   return (
     <Command.List className="bg-gray-500 rounded-3xl p-2 mt-1 mb-1">
       <Command.Empty className="p-2 pl-2 rounded-full">
@@ -40,13 +46,15 @@ export default function Suggestions({ value }: { value: string }) {
       <Command.Group>
         {suggestions.map((suggestion) => (
           <Command.Item
-            className={`p-2 pl-2 rounded-full ${
-              suggestion.value === value ? "bg-gray-600" : ""
+            className={`p-2 pl-2 rounded-full cursor-pointer ${
+              suggestion.value === props.value ? "bg-gray-600" : ""
             }`}
             key={suggestion.value}
             value={suggestion.value}
             onSelect={() => {
               console.log(suggestion.value);
+              props.setIsOpen(false);
+              props.onSelectSuggestion(suggestion.value);
             }}
           >
             {suggestion.label}
