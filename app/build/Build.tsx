@@ -1,7 +1,12 @@
-import QuizBuilder from '@/components/QuizBuilder/Root';
+import Root from "@/components/QuizBuilder/Root";
+import { State as LocationState } from "@/components/QuizBuilder/Location";
 
 export default function Build() {
+  const children = new Array<LocationState>();
+
   return (
-    <QuizBuilder className='p-3 space-y-10' />
+    <div className="p-3">
+      <Root state={{ children }} />
+    </div>
   );
 }
