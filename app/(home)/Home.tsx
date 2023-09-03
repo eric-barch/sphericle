@@ -5,5 +5,5 @@ export default function Home() {
       <p>Bar</p>
       <p>Foo</p>
     </>
-  )
+  );
 }
