@@ -1,5 +1,5 @@
 import Root from "@/components/QuizBuilder/Root";
-import { State as LocationState } from "@/components/QuizBuilder/Location";
+import { LocationStateTreeNode as LocationState } from "@/components/QuizBuilder/Location";
 
 export default function Build() {
   const children = new Array<LocationState>();

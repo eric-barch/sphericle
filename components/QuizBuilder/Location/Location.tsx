@@ -1,28 +1,33 @@
 "use client";
 
 import * as Accordion from "@radix-ui/react-accordion";
-import ToggleOpenCaret from "./ToggleOpenCaret";
-import ToggleActiveButton from "./ToggleActiveButton";
 import LocationAdder from "../LocationAdder";
-import { RootState } from "../Root";
+import { LocationStateTreeRoot } from "../Root";
+import ToggleActiveButton from "./ToggleActiveButton";
+import ToggleOpenCaret from "./ToggleOpenCaret";
 
-export interface State {
-  parent: State | RootState;
-  children: State[];
+export interface LocationStateTreeNode {
+  parent: LocationStateTreeNode | LocationStateTreeRoot;
+  children: LocationStateTreeNode[];
   value: string;
+  label: string;
   isOpen: boolean;
   isChecked: boolean;
 }
 
-export interface Props {
-  state: State;
-  onToggleActive: (state: State) => void;
-  onToggleOpen: (state: State) => void;
-  onAddChild: (state: State | RootState, value: string) => void;
-  onDelete: (state: State) => void;
+export interface LocationComponentProps {
+  state: LocationStateTreeNode;
+  onToggleActive: (location: LocationStateTreeNode) => void;
+  onToggleOpen: (location: LocationStateTreeNode) => void;
+  onAddChild: (
+    parent: LocationStateTreeNode | LocationStateTreeRoot,
+    value: string,
+    label: string,
+  ) => void;
+  onDelete: (location: LocationStateTreeNode) => void;
 }
 
-export default function Location(props: Props) {
+export default function LocationComponent(props: LocationComponentProps) {
   return (
     <Accordion.Root
       type="multiple"
@@ -34,7 +39,7 @@ export default function Location(props: Props) {
           <Accordion.Trigger className="p-2 w-full bg-gray-600 rounded-full">
             <Accordion.Header className="text-left pl-6">
               <ToggleOpenCaret isOpen={props.state.isOpen} />
-              {props.state.value}
+              {props.state.label}
             </Accordion.Header>
           </Accordion.Trigger>
           <ToggleActiveButton
@@ -44,7 +49,7 @@ export default function Location(props: Props) {
         </div>
         <Accordion.Content className="pl-10 pt-1 pb-1 space-y-1">
           {props.state.children.map((childState, index) => (
-            <Location
+            <LocationComponent
               key={index}
               state={childState}
               onToggleActive={props.onToggleActive}
@@ -54,15 +59,8 @@ export default function Location(props: Props) {
             />
           ))}
           <LocationAdder
-            onAdd={(value) => {
-              const newState: State = {
-                parent: props.state,
-                children: [],
-                value: value,
-                isOpen: false,
-                isChecked: false,
-              };
-              props.onAddChild(newState, value);
+            onAdd={(value, label) => {
+              props.onAddChild(props.state, value, label);
             }}
           />
         </Accordion.Content>

@@ -5,7 +5,7 @@ import { useState } from "react";
 import Suggestions from "./Suggestions";
 
 export interface Props {
-  onAdd: (value: string) => void;
+  onAdd: (value: string, label: string) => void;
 }
 
 export default function LocationAdder(props: Props) {
@@ -28,8 +28,8 @@ export default function LocationAdder(props: Props) {
         <Suggestions
           value={value}
           setIsOpen={setIsOpen}
-          onSelectSuggestion={(suggestionValue) => {
-            props.onAdd(suggestionValue);
+          onSelectSuggestion={(suggestionValue, suggestionLabel) => {
+            props.onAdd(suggestionValue, suggestionLabel);
           }}
         />
       )}

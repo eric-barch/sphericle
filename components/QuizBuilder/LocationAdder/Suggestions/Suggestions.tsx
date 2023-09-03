@@ -34,7 +34,7 @@ export const suggestions = [
 export interface Props {
   value: string;
   setIsOpen: (isOpen: boolean) => void;
-  onSelectSuggestion: (value: string) => void;
+  onSelectSuggestion: (value: string, label: string) => void;
 }
 
 export default function Suggestions(props: Props) {
@@ -52,9 +52,8 @@ export default function Suggestions(props: Props) {
             key={suggestion.value}
             value={suggestion.value}
             onSelect={() => {
-              console.log(suggestion.value);
               props.setIsOpen(false);
-              props.onSelectSuggestion(suggestion.value);
+              props.onSelectSuggestion(suggestion.value, suggestion.label);
             }}
           >
             {suggestion.label}
