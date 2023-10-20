@@ -65,7 +65,7 @@ function ToggleLocationTypeButton({
 
   return (
     <button
-      className="quiz-builder-item-button-left-1 bg-gray-600 text-gray-400"
+      className="quiz-builder-item-decorator-left-1 bg-gray-600 text-gray-400"
       onClick={handleClick}
     >
       {icon}
@@ -152,6 +152,7 @@ function TextBox({
 
   return (
     <Combobox.Input
+      className="quiz-builder-item bg-transparent border-white border-2"
       displayValue={() => input}
       placeholder={placeholder}
       onChange={handleChange}

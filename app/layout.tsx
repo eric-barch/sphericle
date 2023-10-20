@@ -15,14 +15,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // const [googleMapsLoaded, setGoogleMapsLoaded] = useState<boolean>(false);
-
   return (
     <html lang="en">
       <body className={`${font.className} min-h-screen`}>
         <NavBar />
         <main>
-          {/* TODO: not safe. need to provide context or something to lower components that will 
+          {/* TODO: not totally safe. need to provide context or something to lower components that will 
           allow them to determine whether the API has loaded. */}
           <GoogleMapsLoader />
           {children}

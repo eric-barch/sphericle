@@ -20,4 +20,16 @@
     w-screen p-3
     bg-gray-300 dark:bg-gray-900 shadow-md;
   }
+
+  .quiz-builder-item {
+    @apply w-full py-1 px-2 pl-9 rounded-full text-left relative;
+  }
+
+  .quiz-builder-item-decorator {
+    @apply flex h-6 w-6 items-center justify-center z-10 absolute top-1/2 transform -translate-y-1/2 rounded-full;
+  }
+
+  .quiz-builder-item-decorator-left-1 {
+    @apply quiz-builder-item-decorator left-1;
+  }
 }

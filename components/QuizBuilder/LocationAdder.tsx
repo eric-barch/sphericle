@@ -17,8 +17,8 @@ export default function LocationAdder({
 }: LocationAdderProps) {
   const [locationAdderLocationType, setLocationAdderLocationType] =
     useState<LocationType>(LocationType.Area);
-  const [areaOptions, setAreaOptions] = useState<AreaState[] | null>(null);
-  const [pointOptions, setPointOptions] = useState<PointState[] | null>(null);
+  // const [areaOptions, setAreaOptions] = useState<AreaState[] | null>(null);
+  // const [pointOptions, setPointOptions] = useState<PointState[] | null>(null);
 
   function searchOpenStreetMap(input: string) {}
 

@@ -21,11 +21,11 @@ export default function QuizBuilder() {
   if (!placesLoaded) return <div>Loading...</div>;
 
   return (
-    <>
+    <div className="m-3">
       <LocationAdder
         parentLocationType={LocationType.Area}
         parentLocationName="Root"
       />
-    </>
+    </div>
   );
 }
