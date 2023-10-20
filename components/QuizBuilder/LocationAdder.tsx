@@ -20,9 +20,21 @@ export default function LocationAdder({
   // const [areaOptions, setAreaOptions] = useState<AreaState[] | null>(null);
   // const [pointOptions, setPointOptions] = useState<PointState[] | null>(null);
 
-  function searchOpenStreetMap(input: string) {}
+  async function searchAreas(input: string) {
+    // setAreaOptions(null);
 
-  function searchGooglePlaces(input: string) {}
+    const url = `/api/search-areas?query=${input}`;
+    const response = await fetch(url);
+    const responseData = await response.json();
+
+    console.log("responseData:");
+    console.log(responseData);
+    // const areaOptions = convertResponseDataToAreaOptions(responseData);
+
+    // setAreaOptions(areaOptions);
+  }
+
+  function searchPoints(input: string) {}
 
   return (
     <Combobox>
@@ -31,8 +43,8 @@ export default function LocationAdder({
         parentLocationName={parentLocationName}
         locationAdderLocationType={locationAdderLocationType}
         setLocationAdderLocationType={setLocationAdderLocationType}
-        searchOpenStreetMap={searchOpenStreetMap}
-        searchGooglePlaces={searchGooglePlaces}
+        searchAreas={searchAreas}
+        searchPoints={searchPoints}
       />
       <LocationAdderOptions />
     </Combobox>

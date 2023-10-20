@@ -10,8 +10,8 @@ interface LocationAdderInputProps {
   setLocationAdderLocationType: React.Dispatch<
     React.SetStateAction<LocationType>
   >;
-  searchOpenStreetMap: (input: string) => void;
-  searchGooglePlaces: (input: string) => void;
+  searchAreas: (input: string) => void;
+  searchPoints: (input: string) => void;
 }
 
 export default function LocationAdderInput({
@@ -19,8 +19,8 @@ export default function LocationAdderInput({
   parentLocationName,
   locationAdderLocationType,
   setLocationAdderLocationType,
-  searchOpenStreetMap,
-  searchGooglePlaces,
+  searchAreas: searchOpenStreetMap,
+  searchPoints: searchGooglePlaces,
 }: LocationAdderInputProps) {
   return (
     <div className="relative">
@@ -97,10 +97,12 @@ function TextBox({
       : `Add ${locationAdderLocationType} in ${parentLocationName}`;
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setInput(event.target.value);
+    const input = event.target.value;
+
+    setInput(input);
 
     if (locationAdderLocationType === LocationType.Point) {
-      searchGooglePlaces(event.target.value);
+      searchGooglePlaces(input);
     }
   }
 
@@ -144,7 +146,7 @@ function TextBox({
       handleEnter(event);
     }
 
-    // seems like the only way to work around hardcoded HeadlessUI Combobox behavior 😡
+    // required to work around hardcoded HeadlessUI Combobox behavior 😡
     if (event.key === "Tab") {
       handleTab(event);
     }
