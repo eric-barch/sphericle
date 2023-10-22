@@ -1,7 +1,7 @@
 import { Combobox } from "@headlessui/react";
 import { useState } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
-import { LocationType } from "./LocationType";
+import { AreaOptionsState, LocationType } from "./types";
 
 interface LocationAdderInputProps {
   parentLocationType: LocationType;
@@ -10,6 +10,9 @@ interface LocationAdderInputProps {
   setLocationAdderLocationType: React.Dispatch<
     React.SetStateAction<LocationType>
   >;
+  input: string;
+  setInput: (input: string) => void;
+  areaOptions: AreaOptionsState;
   searchAreas: (input: string) => void;
   searchPoints: (input: string) => void;
 }
@@ -19,6 +22,9 @@ export default function LocationAdderInput({
   parentLocationName,
   locationAdderLocationType,
   setLocationAdderLocationType,
+  input,
+  setInput,
+  areaOptions,
   searchAreas: searchOpenStreetMap,
   searchPoints: searchGooglePlaces,
 }: LocationAdderInputProps) {
@@ -32,6 +38,9 @@ export default function LocationAdderInput({
         parentLocationType={parentLocationType}
         parentLocationName={parentLocationName}
         locationAdderLocationType={locationAdderLocationType}
+        input={input}
+        setInput={setInput}
+        areaOptions={areaOptions}
         searchOpenStreetMap={searchOpenStreetMap}
         searchGooglePlaces={searchGooglePlaces}
       />
@@ -77,6 +86,9 @@ interface TextBoxProps {
   parentLocationType: LocationType;
   parentLocationName: string | null;
   locationAdderLocationType: LocationType;
+  input: string;
+  setInput: (input: string) => void;
+  areaOptions: AreaOptionsState;
   searchOpenStreetMap: (input: string) => void;
   searchGooglePlaces: (searchValue: string) => void;
 }
@@ -85,12 +97,12 @@ function TextBox({
   parentLocationType,
   parentLocationName,
   locationAdderLocationType,
+  input,
+  setInput,
+  areaOptions,
   searchOpenStreetMap,
   searchGooglePlaces,
 }: TextBoxProps) {
-  const [input, setInput] = useState<string>("");
-  const [lastSearchedInput, setLastSearchedInput] = useState<string>("");
-
   const placeholder =
     parentLocationType === LocationType.Tree
       ? `Add ${locationAdderLocationType}`
@@ -108,11 +120,10 @@ function TextBox({
 
   function handleEnter(event: React.KeyboardEvent<HTMLInputElement>) {
     const isArea = locationAdderLocationType === LocationType.Area;
-    const isOutdated = input !== lastSearchedInput;
+    const isOutdated = input !== areaOptions.searchTerm;
 
     if (isArea && isOutdated) {
       event.preventDefault();
-      setLastSearchedInput(input);
       searchOpenStreetMap(input);
     }
   }
