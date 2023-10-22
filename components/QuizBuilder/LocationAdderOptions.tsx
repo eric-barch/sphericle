@@ -20,17 +20,21 @@ export default function LocationAdderOptions({
       const outdated = input !== areaOptions.searchTerm;
       const searching =
         input === areaOptions.searchTerm && areaOptions.options === null;
+      const noResultsFound =
+        input === areaOptions.searchTerm && areaOptions.options?.length === 0;
 
       if (outdated) {
         return <Placeholder text="Press Enter to search" />;
       } else if (searching) {
         return <Placeholder text="Searching..." />;
+      } else if (noResultsFound) {
+        return <Placeholder text="No results found" />;
       } else {
         return areaOptions.options?.map((areaOption) => (
           <Combobox.Option key={areaOption.placeId} value={areaOption}>
             {({ active }) => (
               <div
-                className={`p-1 pl-7 rounded-3xl cursor-pointer ${
+                className={`p-1 pl-6 rounded-3xl cursor-pointer ${
                   active ? "bg-gray-600" : ""
                 }`}
               >
@@ -46,7 +50,15 @@ export default function LocationAdderOptions({
     }
   })();
 
-  return <>{input === "" ? null : content}</>;
+  return (
+    <>
+      {input === "" ? null : (
+        <Combobox.Options className="bg-gray-500 rounded-3xl p-2 mt-1 mb-1">
+          {content}
+        </Combobox.Options>
+      )}
+    </>
+  );
 }
 
 interface PlaceholderProps {
@@ -54,5 +66,5 @@ interface PlaceholderProps {
 }
 
 function Placeholder({ text }: PlaceholderProps) {
-  return <div className="pl-7">{text}</div>;
+  return <div className="pl-6">{text}</div>;
 }
