@@ -1,7 +1,7 @@
 "use client";
 
 import { Combobox } from "@headlessui/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LocationAdderInput from "./LocationAdderInput";
 import LocationAdderOptions from "./LocationAdderOptions";
 import {
@@ -31,6 +31,18 @@ export default function LocationAdder({
     options: [],
   });
   const [pointOptions, setPointOptions] = useState<PointState[]>([]);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  let googleAutocomplete: google.maps.places.Autocomplete | null = null;
+
+  useEffect(() => {
+    if (inputRef.current) {
+      console.log("setting inputRef");
+      googleAutocomplete = new google.maps.places.Autocomplete(
+        inputRef.current,
+      );
+    }
+  }, []);
 
   function getComponentPolygons(array: any[]): Polygon[] {
     let polygons: Polygon[] = [];
@@ -107,6 +119,7 @@ export default function LocationAdder({
         parentLocationName={parentLocationName}
         locationAdderLocationType={locationAdderLocationType}
         setLocationAdderLocationType={setLocationAdderLocationType}
+        inputRef={inputRef}
         input={input}
         setInput={setInput}
         areaOptions={areaOptions}

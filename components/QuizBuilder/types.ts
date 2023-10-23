@@ -38,14 +38,6 @@ export interface Polygon {
   coordinates: Coordinate[];
 }
 
-export interface PointState {
-  locationType: LocationType.Point;
-  placeId: string;
-  displayName: string;
-  fullName: string;
-  position: Coordinate;
-}
-
 export interface AreaState {
   locationType: LocationType.Area;
   placeId: number;
@@ -55,6 +47,19 @@ export interface AreaState {
   isOpen: boolean;
   subLocationStates: (AreaState | PointState)[];
   componentPolygons: Polygon[];
+}
+
+export interface PointState {
+  locationType: LocationType.Point;
+  placeId: string;
+  displayName: string;
+  fullName: string;
+  position: Coordinate;
+}
+
+export interface PointOptionsState {
+  searchTerm: string;
+  options: PointState[] | null;
 }
 
 export interface AreaOptionsState {
