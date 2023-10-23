@@ -1,7 +1,8 @@
 "use client";
 
+import usePlacesAutocomplete from "@/hooks/use-places-autocomplete.hook";
 import { Combobox } from "@headlessui/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import LocationAdderInput from "./LocationAdderInput";
 import LocationAdderOptions from "./LocationAdderOptions";
 import {
@@ -10,9 +11,13 @@ import {
   Coordinate,
   LocationType,
   OsmResponseItem,
+  PointOptionsState,
   PointState,
   Polygon,
+  Prediction,
 } from "./types";
+
+type AutocompletePrediction = google.maps.places.AutocompletePrediction;
 
 interface LocationAdderProps {
   parentLocationType: LocationType;
@@ -23,6 +28,13 @@ export default function LocationAdder({
   parentLocationType,
   parentLocationName,
 }: LocationAdderProps) {
+  const {
+    searchTerm,
+    predictions,
+    setSearchTerm,
+    clearAutocompletePredictions,
+  } = usePlacesAutocomplete();
+
   const [locationAdderLocationType, setLocationAdderLocationType] =
     useState<LocationType>(LocationType.Area);
   const [input, setInput] = useState<string>("");
@@ -30,19 +42,10 @@ export default function LocationAdder({
     searchTerm: "",
     options: [],
   });
-  const [pointOptions, setPointOptions] = useState<PointState[]>([]);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-  let googleAutocomplete: google.maps.places.Autocomplete | null = null;
-
-  useEffect(() => {
-    if (inputRef.current) {
-      console.log("setting inputRef");
-      googleAutocomplete = new google.maps.places.Autocomplete(
-        inputRef.current,
-      );
-    }
-  }, []);
+  const [pointOptions, setPointOptions] = useState<PointOptionsState>({
+    searchTerm: "",
+    options: [],
+  });
 
   function getComponentPolygons(array: any[]): Polygon[] {
     let polygons: Polygon[] = [];
@@ -109,8 +112,47 @@ export default function LocationAdder({
   }
 
   function searchPoints(input: string) {
-    console.log("implement searchPoints");
+    setSearchTerm(input);
   }
+
+  function convertAutocompletePredictionToPointLocationState(
+    prediction: Prediction,
+  ) {
+    return {
+      locationType: LocationType.Point,
+      placeId: prediction.place_id,
+      displayName: prediction.description,
+      fullName: prediction.description,
+      position: prediction.position,
+    };
+  }
+
+  // TODO: think I can and should refactor out this useEffect.
+  useEffect(() => {
+    const options = predictions.predictions
+      ?.map((prediction) => {
+        try {
+          return convertAutocompletePredictionToPointLocationState(prediction);
+        } catch (error) {
+          return null;
+        }
+      })
+      .filter((item): item is PointState => item !== null);
+
+    if (options) {
+      setPointOptions({ searchTerm: predictions.searchTerm, options });
+    }
+  }, [predictions]);
+
+  useEffect(() => {
+    console.log("areaOptions");
+    console.log(areaOptions);
+  }, [areaOptions]);
+
+  useEffect(() => {
+    console.log("pointOptions");
+    console.log(pointOptions);
+  }, [pointOptions]);
 
   return (
     <Combobox>
@@ -119,7 +161,6 @@ export default function LocationAdder({
         parentLocationName={parentLocationName}
         locationAdderLocationType={locationAdderLocationType}
         setLocationAdderLocationType={setLocationAdderLocationType}
-        inputRef={inputRef}
         input={input}
         setInput={setInput}
         areaOptions={areaOptions}

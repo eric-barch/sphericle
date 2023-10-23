@@ -10,7 +10,6 @@ interface LocationAdderInputProps {
   setLocationAdderLocationType: React.Dispatch<
     React.SetStateAction<LocationType>
   >;
-  inputRef: RefObject<HTMLInputElement>;
   input: string;
   setInput: (input: string) => void;
   areaOptions: AreaOptionsState;
@@ -23,7 +22,6 @@ export default function LocationAdderInput({
   parentLocationName,
   locationAdderLocationType,
   setLocationAdderLocationType,
-  inputRef,
   input,
   setInput,
   areaOptions,
@@ -40,7 +38,6 @@ export default function LocationAdderInput({
         parentLocationType={parentLocationType}
         parentLocationName={parentLocationName}
         locationAdderLocationType={locationAdderLocationType}
-        inputRef={inputRef}
         input={input}
         setInput={setInput}
         areaOptions={areaOptions}
@@ -89,7 +86,6 @@ interface TextBoxProps {
   parentLocationType: LocationType;
   parentLocationName: string | null;
   locationAdderLocationType: LocationType;
-  inputRef: RefObject<HTMLInputElement>;
   input: string;
   setInput: (input: string) => void;
   areaOptions: AreaOptionsState;
@@ -101,7 +97,6 @@ function TextBox({
   parentLocationType,
   parentLocationName,
   locationAdderLocationType,
-  inputRef,
   input,
   setInput,
   areaOptions,
@@ -170,7 +165,6 @@ function TextBox({
 
   return (
     <Combobox.Input
-      ref={inputRef}
       className="quiz-builder-item bg-transparent border-white border-2"
       displayValue={() => input}
       placeholder={placeholder}

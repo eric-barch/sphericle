@@ -1,12 +1,17 @@
 import { Combobox } from "@headlessui/react";
-import { AreaOptionsState, LocationType, PointState } from "./types";
+import {
+  AreaOptionsState,
+  LocationType,
+  PointOptionsState,
+  PointState,
+} from "./types";
 import { useEffect } from "react";
 
 interface LocationAdderOptionsProps {
   locationAdderLocationType: LocationType;
   input: string;
   areaOptions: AreaOptionsState;
-  pointOptions: PointState[];
+  pointOptions: PointOptionsState;
 }
 
 export default function LocationAdderOptions({
@@ -47,6 +52,26 @@ export default function LocationAdderOptions({
     }
 
     if (locationAdderLocationType === LocationType.Point) {
+      const noResultsFound =
+        input === pointOptions.searchTerm && pointOptions.options?.length === 0;
+
+      if (noResultsFound) {
+        return <Placeholder text="No results found" />;
+      } else {
+        return pointOptions.options?.map((pointOption) => (
+          <Combobox.Option key={pointOption.placeId} value={pointOption}>
+            {({ active }) => (
+              <div
+                className={`p-1 pl-6 rounded-3xl cursor-pointer ${
+                  active ? "bg-gray-600" : ""
+                }`}
+              >
+                {pointOption.displayName}
+              </div>
+            )}
+          </Combobox.Option>
+        ));
+      }
     }
   })();
 

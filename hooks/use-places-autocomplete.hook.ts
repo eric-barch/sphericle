@@ -1,17 +1,17 @@
+import {
+  AutocompletePrediction,
+  Prediction,
+} from "@/components/QuizBuilder/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-type AutocompletePrediction = google.maps.places.AutocompletePrediction;
-
-interface AutocompletePredictions {
+interface Predictions {
   searchTerm: string;
-  autocompletePredictions: AutocompletePrediction[] | null;
+  predictions: Prediction[] | null;
 }
-
-interface UsePlacesAutocompleteArgs {}
 
 interface UsePlacesAutocompleteReturn {
   searchTerm: string;
-  autocompletePredictions: AutocompletePredictions;
+  predictions: Predictions;
   setSearchTerm: (searchTerm: string) => void;
   clearAutocompletePredictions: () => void;
 }
@@ -32,74 +32,106 @@ function debounce<Fn extends (...args: any[]) => void>(
   };
 }
 
-export default function usePlacesAutocomplete({}: UsePlacesAutocompleteArgs): UsePlacesAutocompleteReturn {
+export default function usePlacesAutocomplete(): UsePlacesAutocompleteReturn {
   const [internalSearchTerm, setInternalSearchTermRaw] = useState<string>("");
-  const [autocompletePredictions, setAutocompletePredictions] =
-    useState<AutocompletePredictions>({
-      searchTerm: "",
-      autocompletePredictions: null,
-    });
+  const [predictions, setPredictions] = useState<Predictions>({
+    searchTerm: "",
+    predictions: null,
+  });
 
   const autocompleteServiceRef =
     useRef<google.maps.places.AutocompleteService>();
+  const geocoderServiceRef = useRef<google.maps.Geocoder>();
 
   const init = useCallback(() => {
-    if (autocompleteServiceRef.current) return;
+    const mapsLibrary = window.google.maps;
 
-    const placesLibrary = window.google.maps.places;
-
-    if (!placesLibrary) {
-      console.error("Did not find Google Places library");
+    if (!mapsLibrary) {
+      console.error("Did not find Google Maps library");
       return;
     }
 
-    autocompleteServiceRef.current = new placesLibrary.AutocompleteService();
+    if (!autocompleteServiceRef.current) {
+      const placesLibrary = mapsLibrary.places;
+
+      if (!placesLibrary) {
+        console.error("Did not ind Google Places library");
+        return;
+      }
+
+      autocompleteServiceRef.current = new placesLibrary.AutocompleteService();
+    }
+
+    if (!geocoderServiceRef.current) {
+      geocoderServiceRef.current = new mapsLibrary.Geocoder();
+    }
   }, []);
 
-  const fetchAutocompletePredictions = useCallback(
+  const fetchPredictions = useCallback(
     debounce((searchTerm: string) => {
-      setAutocompletePredictions({ searchTerm, autocompletePredictions: null });
-
       autocompleteServiceRef.current?.getPlacePredictions(
         { input: searchTerm },
-        (response: AutocompletePrediction[] | null) => {
-          setAutocompletePredictions({
+        async (response: AutocompletePrediction[] | null) => {
+          let predictions: Prediction[] = [];
+
+          if (response) {
+            predictions = await Promise.all(
+              response.map(
+                (responseItem) =>
+                  new Promise<Prediction>((resolve, reject) => {
+                    geocoderServiceRef.current?.geocode(
+                      { placeId: responseItem.place_id },
+                      (results, status) => {
+                        if (status === google.maps.GeocoderStatus.OK) {
+                          if (results![0]) {
+                            const position = {
+                              lat: results![0].geometry.location.lat(),
+                              lng: results![0].geometry.location.lng(),
+                            };
+                            resolve({ ...responseItem, position });
+                          }
+                        }
+                        reject(new Error("Geocoding failed"));
+                      },
+                    );
+                  }),
+              ),
+            );
+          }
+
+          setPredictions({
             searchTerm,
-            autocompletePredictions: response || [],
+            predictions,
           });
         },
       );
-    }, 200),
+    }, 500),
     [],
   );
 
   const setSearchTerm = useCallback(
     (searchTerm: string) => {
       setInternalSearchTermRaw(searchTerm);
-      fetchAutocompletePredictions(searchTerm);
+      fetchPredictions(searchTerm);
     },
-    [fetchAutocompletePredictions],
+    [fetchPredictions],
   );
 
   const clearAutocompletePredictions = useCallback(() => {
-    setAutocompletePredictions({
+    setPredictions({
       searchTerm: "",
-      autocompletePredictions: null,
+      predictions: null,
     });
   }, []);
 
   // runs init() on hook mount
   useEffect(() => {
     init();
-
-    return () => {
-      // cleanup
-    };
   }, [init]);
 
   return {
     searchTerm: internalSearchTerm,
-    autocompletePredictions,
+    predictions,
     setSearchTerm,
     clearAutocompletePredictions,
   };

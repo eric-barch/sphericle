@@ -27,6 +27,12 @@ export interface OsmResponseItem {
   };
 }
 
+export type AutocompletePrediction = google.maps.places.AutocompletePrediction;
+
+export interface Prediction extends AutocompletePrediction {
+  position: { lat: number; lng: number };
+}
+
 export interface Coordinate {
   lat: number;
   lng: number;
