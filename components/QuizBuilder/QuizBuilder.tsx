@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import LocationAdder from "./LocationAdder";
-import { LocationType } from "./types";
+import { LocationType } from "../../types/types";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState(false);

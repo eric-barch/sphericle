@@ -1,12 +1,9 @@
-import {
-  AutocompletePrediction,
-  Prediction,
-} from "@/components/QuizBuilder/types";
+import { GooglePlacesSuggestion } from "@/types/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Predictions {
   searchTerm: string;
-  predictions: Prediction[] | null;
+  predictions: GooglePlacesSuggestion[] | null;
 }
 
 interface UsePlacesAutocompleteReturn {
@@ -71,14 +68,16 @@ export default function usePlacesAutocomplete(): UsePlacesAutocompleteReturn {
     debounce((searchTerm: string) => {
       autocompleteServiceRef.current?.getPlacePredictions(
         { input: searchTerm },
-        async (response: AutocompletePrediction[] | null) => {
-          let predictions: Prediction[] = [];
+        async (
+          response: google.maps.places.AutocompletePrediction[] | null,
+        ) => {
+          let predictions: GooglePlacesSuggestion[] = [];
 
           if (response) {
             predictions = await Promise.all(
               response.map(
                 (responseItem) =>
-                  new Promise<Prediction>((resolve, reject) => {
+                  new Promise<GooglePlacesSuggestion>((resolve, reject) => {
                     geocoderServiceRef.current?.geocode(
                       { placeId: responseItem.place_id },
                       (results, status) => {

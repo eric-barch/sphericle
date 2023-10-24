@@ -1,23 +1,21 @@
 "use client";
 
 import usePlacesAutocomplete from "@/hooks/use-places-autocomplete.hook";
+import {
+  Area,
+  AreaOptions,
+  Coordinate,
+  GooglePlacesSuggestion,
+  LocationType,
+  OpenStreetMapSuggestion,
+  Point,
+  PointOptions,
+  Polygon,
+} from "@/types";
 import { Combobox } from "@headlessui/react";
 import { useEffect, useState } from "react";
 import LocationAdderInput from "./LocationAdderInput";
 import LocationAdderOptions from "./LocationAdderOptions";
-import {
-  AreaOptionsState,
-  AreaState,
-  Coordinate,
-  LocationType,
-  OsmResponseItem,
-  PointOptionsState,
-  PointState,
-  Polygon,
-  Prediction,
-} from "./types";
-
-type AutocompletePrediction = google.maps.places.AutocompletePrediction;
 
 interface LocationAdderProps {
   parentLocationType: LocationType;
@@ -28,21 +26,16 @@ export default function LocationAdder({
   parentLocationType,
   parentLocationName,
 }: LocationAdderProps) {
-  const {
-    searchTerm,
-    predictions,
-    setSearchTerm,
-    clearAutocompletePredictions,
-  } = usePlacesAutocomplete();
+  const { predictions, setSearchTerm } = usePlacesAutocomplete();
 
   const [locationAdderLocationType, setLocationAdderLocationType] =
     useState<LocationType>(LocationType.Area);
   const [input, setInput] = useState<string>("");
-  const [areaOptions, setAreaOptions] = useState<AreaOptionsState>({
+  const [areaOptions, setAreaOptions] = useState<AreaOptions>({
     searchTerm: "",
     options: [],
   });
-  const [pointOptions, setPointOptions] = useState<PointOptionsState>({
+  const [pointOptions, setPointOptions] = useState<PointOptions>({
     searchTerm: "",
     options: [],
   });
@@ -73,8 +66,8 @@ export default function LocationAdder({
   }
 
   function convertOsmResponseItemToAreaLocationState(
-    osmResponseItem: OsmResponseItem,
-  ): AreaState {
+    osmResponseItem: OpenStreetMapSuggestion,
+  ): Area {
     const componentPolygons = getComponentPolygons(
       osmResponseItem.geojson.coordinates,
     );
@@ -96,7 +89,8 @@ export default function LocationAdder({
 
     const url = `/api/search-areas?query=${input}`;
     const response = await fetch(url);
-    const osmResponseItems = (await response.json()) as OsmResponseItem[];
+    const osmResponseItems =
+      (await response.json()) as OpenStreetMapSuggestion[];
 
     const options = osmResponseItems
       .map((osmResponseItem) => {
@@ -106,7 +100,7 @@ export default function LocationAdder({
           return null;
         }
       })
-      .filter((item): item is AreaState => item !== null);
+      .filter((item): item is Area => item !== null);
 
     setAreaOptions({ searchTerm: input, options });
   }
@@ -116,7 +110,7 @@ export default function LocationAdder({
   }
 
   function convertAutocompletePredictionToPointLocationState(
-    prediction: Prediction,
+    prediction: GooglePlacesSuggestion,
   ) {
     return {
       locationType: LocationType.Point,
@@ -127,7 +121,7 @@ export default function LocationAdder({
     };
   }
 
-  // TODO: think I can and should refactor out this useEffect.
+  // TODO: think I can and should refactor out this useEffect
   useEffect(() => {
     const options = predictions.predictions
       ?.map((prediction) => {
@@ -137,7 +131,7 @@ export default function LocationAdder({
           return null;
         }
       })
-      .filter((item): item is PointState => item !== null);
+      .filter((item): item is Point => item !== null);
 
     if (options) {
       setPointOptions({ searchTerm: predictions.searchTerm, options });

@@ -1,7 +1,7 @@
 import { Combobox } from "@headlessui/react";
 import { RefObject, useState } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
-import { AreaOptionsState, LocationType } from "./types";
+import { AreaOptions, LocationType } from "../../types/types";
 
 interface LocationAdderInputProps {
   parentLocationType: LocationType;
@@ -12,7 +12,7 @@ interface LocationAdderInputProps {
   >;
   input: string;
   setInput: (input: string) => void;
-  areaOptions: AreaOptionsState;
+  areaOptions: AreaOptions;
   searchAreas: (input: string) => void;
   searchPoints: (input: string) => void;
 }
@@ -88,7 +88,7 @@ interface TextBoxProps {
   locationAdderLocationType: LocationType;
   input: string;
   setInput: (input: string) => void;
-  areaOptions: AreaOptionsState;
+  areaOptions: AreaOptions;
   searchOpenStreetMap: (input: string) => void;
   searchGooglePlaces: (searchValue: string) => void;
 }

@@ -1,17 +1,17 @@
 import { Combobox } from "@headlessui/react";
 import {
-  AreaOptionsState,
+  AreaOptions,
   LocationType,
-  PointOptionsState,
-  PointState,
-} from "./types";
+  PointOptions,
+  Point,
+} from "../../types/types";
 import { useEffect } from "react";
 
 interface LocationAdderOptionsProps {
   locationAdderLocationType: LocationType;
   input: string;
-  areaOptions: AreaOptionsState;
-  pointOptions: PointOptionsState;
+  areaOptions: AreaOptions;
+  pointOptions: PointOptions;
 }
 
 export default function LocationAdderOptions({
