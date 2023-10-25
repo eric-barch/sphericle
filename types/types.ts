@@ -19,23 +19,13 @@ export interface Coordinate {
   lng: number;
 }
 
-export type GooglePlacesSuggestion = google.maps.places.AutocompletePrediction;
-
-export interface GooglePlacesSuggestionWithPosition
-  extends GooglePlacesSuggestion {
-  position: {
-    lat: number;
-    lng: number;
-  };
-}
-
 export enum LocationType {
   Tree = "Tree",
   Area = "Area",
   Point = "Point",
 }
 
-export interface OpenStreetMapSuggestion {
+export interface OpenStreetMapArea {
   place_id: number;
   licence: string;
   osm_type: string;
@@ -64,9 +54,9 @@ export interface Point {
   position: Coordinate;
 }
 
-export interface PointOptions {
+export interface PointSearchResults {
   searchTerm: string;
-  options: Point[] | null;
+  searchResults: Point[] | null;
 }
 
 export interface Polygon {
