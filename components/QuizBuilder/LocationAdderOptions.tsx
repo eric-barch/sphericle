@@ -1,67 +1,72 @@
+import { AreaSearchResults, LocationType, PointSearchResults } from "@/types";
 import { Combobox } from "@headlessui/react";
-import { AreaOptions, LocationType, PointSearchResults, Point } from "@/types";
 
 interface LocationAdderOptionsProps {
   locationAdderLocationType: LocationType;
   input: string;
-  // areaOptions: AreaOptions;
-  pointOptions: PointSearchResults;
+  areaSearchResults: AreaSearchResults;
+  pointSearchResults: PointSearchResults;
 }
 
 export default function LocationAdderOptions({
   locationAdderLocationType,
   input,
-  // areaOptions,
-  pointOptions,
+  areaSearchResults,
+  pointSearchResults,
 }: LocationAdderOptionsProps) {
   const content = (() => {
-    // if (locationAdderLocationType === LocationType.Area) {
-    //   const outdated = input !== areaOptions.searchTerm;
-    //   const searching =
-    //     input === areaOptions.searchTerm && areaOptions.options === null;
-    //   const noResultsFound =
-    //     input === areaOptions.searchTerm && areaOptions.options?.length === 0;
-
-    //   if (outdated) {
-    //     return <Placeholder text="Press Enter to search" />;
-    //   } else if (searching) {
-    //     return <Placeholder text="Searching..." />;
-    //   } else if (noResultsFound) {
-    //     return <Placeholder text="No results found" />;
-    //   } else {
-    //     return areaOptions.options?.map((areaOption) => (
-    //       <Combobox.Option key={areaOption.placeId} value={areaOption}>
-    //         {({ active }) => (
-    //           <div
-    //             className={`p-1 pl-6 rounded-3xl cursor-pointer ${
-    //               active ? "bg-gray-600" : ""
-    //             }`}
-    //           >
-    //             {areaOption.displayName}
-    //           </div>
-    //         )}
-    //       </Combobox.Option>
-    //     ));
-    //   }
-    // }
-
-    if (locationAdderLocationType === LocationType.Point) {
+    if (locationAdderLocationType === LocationType.Area) {
+      const outdated = input !== areaSearchResults.searchTerm;
+      const searching =
+        input === areaSearchResults.searchTerm &&
+        areaSearchResults.searchResults === null;
       const noResultsFound =
-        input === pointOptions.searchTerm &&
-        pointOptions.searchResults?.length === 0;
+        input === areaSearchResults.searchTerm &&
+        areaSearchResults.searchResults?.length === 0;
 
-      if (noResultsFound) {
+      if (outdated) {
+        return <Placeholder text="Press Enter to search" />;
+      } else if (searching) {
+        return <Placeholder text="Searching..." />;
+      } else if (noResultsFound) {
         return <Placeholder text="No results found" />;
       } else {
-        return pointOptions.searchResults?.map((pointOption) => (
-          <Combobox.Option key={pointOption.placeId} value={pointOption}>
+        return areaSearchResults.searchResults?.map((searchResult) => (
+          <Combobox.Option key={searchResult.placeId} value={searchResult}>
             {({ active }) => (
               <div
                 className={`p-1 pl-6 rounded-3xl cursor-pointer ${
                   active ? "bg-gray-600" : ""
                 }`}
               >
-                {pointOption.displayName}
+                {searchResult.displayName}
+              </div>
+            )}
+          </Combobox.Option>
+        ));
+      }
+    }
+
+    if (locationAdderLocationType === LocationType.Point) {
+      const noResultsFound =
+        input === pointSearchResults.searchTerm &&
+        pointSearchResults.searchResults?.length === 0;
+
+      if (noResultsFound) {
+        return <Placeholder text="No results found" />;
+      } else {
+        return pointSearchResults.searchResults?.map((pointSearchResult) => (
+          <Combobox.Option
+            key={pointSearchResult.placeId}
+            value={pointSearchResult}
+          >
+            {({ active }) => (
+              <div
+                className={`p-1 pl-6 rounded-3xl cursor-pointer ${
+                  active ? "bg-gray-600" : ""
+                }`}
+              >
+                {pointSearchResult.displayName}
               </div>
             )}
           </Combobox.Option>

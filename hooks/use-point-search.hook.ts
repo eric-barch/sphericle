@@ -128,7 +128,7 @@ export default function usePointSearch(): UsePointSearchReturn {
   );
 
   const clearSearchResults = useCallback(() => {
-    setSearchResults((prevState) => ({ ...prevState, searchResults: [] }));
+    setSearchResults({ searchTerm: "", searchResults: [] });
   }, []);
 
   useEffect(() => {

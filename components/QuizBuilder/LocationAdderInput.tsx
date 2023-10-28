@@ -1,7 +1,6 @@
 import { Combobox } from "@headlessui/react";
-import { RefObject, useState } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
-import { AreaOptions, LocationType } from "../../types/types";
+import { AreaSearchResults, LocationType } from "@/types";
 
 interface LocationAdderInputProps {
   parentLocationType: LocationType;
@@ -12,9 +11,9 @@ interface LocationAdderInputProps {
   >;
   input: string;
   setInput: (input: string) => void;
-  // areaOptions: AreaOptions;
-  setGooglePlacesSearchTerm: (searchTerm: string) => void;
-  // setOpenStreetMapSearchTerm: (searchTerm: string) => void;
+  setAreaSearchTerm: (searchTerm: string) => void;
+  areaSearchResults: AreaSearchResults;
+  setPointSearchTerm: (searchTerm: string) => void;
 }
 
 export default function LocationAdderInput({
@@ -24,8 +23,9 @@ export default function LocationAdderInput({
   setLocationAdderLocationType,
   input,
   setInput,
-  // areaOptions,
-  setGooglePlacesSearchTerm, // setOpenStreetMapSearchTerm,
+  setAreaSearchTerm,
+  areaSearchResults,
+  setPointSearchTerm,
 }: LocationAdderInputProps) {
   return (
     <div className="relative">
@@ -39,9 +39,9 @@ export default function LocationAdderInput({
         locationAdderLocationType={locationAdderLocationType}
         input={input}
         setInput={setInput}
-        // areaOptions={areaOptions}
-        // setOpenStreetMapSearchTerm={setOpenStreetMapSearchTerm}
-        setGooglePlacesSearchTerm={setGooglePlacesSearchTerm}
+        setAreaSearchTerm={setAreaSearchTerm}
+        areaSearchResults={areaSearchResults}
+        setPointSearchTerm={setPointSearchTerm}
       />
     </div>
   );
@@ -87,9 +87,9 @@ interface TextBoxProps {
   locationAdderLocationType: LocationType;
   input: string;
   setInput: (input: string) => void;
-  // areaOptions: AreaOptions;
-  // setOpenStreetMapSearchTerm: (input: string) => void;
-  setGooglePlacesSearchTerm: (searchValue: string) => void;
+  setAreaSearchTerm: (searchTerm: string) => void;
+  areaSearchResults: AreaSearchResults;
+  setPointSearchTerm: (searchTerm: string) => void;
 }
 
 function TextBox({
@@ -98,9 +98,9 @@ function TextBox({
   locationAdderLocationType,
   input,
   setInput,
-  // areaOptions,
-  // setOpenStreetMapSearchTerm: searchOpenStreetMap,
-  setGooglePlacesSearchTerm: searchGooglePlaces,
+  setAreaSearchTerm,
+  areaSearchResults,
+  setPointSearchTerm,
 }: TextBoxProps) {
   const placeholder =
     parentLocationType === LocationType.Tree
@@ -113,19 +113,19 @@ function TextBox({
     setInput(input);
 
     if (locationAdderLocationType === LocationType.Point) {
-      searchGooglePlaces(input);
+      setPointSearchTerm(input);
     }
   }
 
-  // function handleEnter(event: React.KeyboardEvent<HTMLInputElement>) {
-  //   const isArea = locationAdderLocationType === LocationType.Area;
-  //   const isOutdated = input !== areaOptions.searchTerm;
+  function handleEnter(event: React.KeyboardEvent<HTMLInputElement>) {
+    const isArea = locationAdderLocationType === LocationType.Area;
+    const isOutdated = input !== areaSearchResults.searchTerm;
 
-  //   if (isArea && isOutdated) {
-  //     event.preventDefault();
-  //     searchOpenStreetMap(input);
-  //   }
-  // }
+    if (isArea && isOutdated) {
+      event.preventDefault();
+      setAreaSearchTerm(input);
+    }
+  }
 
   function handleTab(event: React.KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
@@ -152,9 +152,9 @@ function TextBox({
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    // if (event.key === "Enter") {
-    //   handleEnter(event);
-    // }
+    if (event.key === "Enter") {
+      handleEnter(event);
+    }
 
     // required to work around hardcoded HeadlessUI Combobox behavior 😡
     if (event.key === "Tab") {
