@@ -20,9 +20,15 @@ export default function LocationAdder({
   const [locationAdderLocationType, setLocationAdderLocationType] =
     useState<LocationType>(LocationType.Area);
   const [input, setInput] = useState<string>("");
-  const { searchResults: areaSearchResults, setSearchTerm: setAreaSearchTerm } =
-    useAreaSearch();
   const {
+    searchTerm: areaSearchTerm,
+    searchStatus: areaSearchStatus,
+    searchResults: areaSearchResults,
+    setSearchTerm: setAreaSearchTerm,
+  } = useAreaSearch();
+  const {
+    searchTerm: pointSearchTerm,
+    searchStatus: pointSearchStatus,
     searchResults: pointSearchResults,
     setSearchTerm: setPointSearchTerm,
   } = usePointSearch();
@@ -36,14 +42,18 @@ export default function LocationAdder({
         setLocationAdderLocationType={setLocationAdderLocationType}
         input={input}
         setInput={setInput}
+        areaSearchTerm={areaSearchTerm}
         setAreaSearchTerm={setAreaSearchTerm}
-        areaSearchResults={areaSearchResults}
         setPointSearchTerm={setPointSearchTerm}
       />
       <LocationAdderOptions
         locationAdderLocationType={locationAdderLocationType}
         input={input}
+        areaSearchTerm={areaSearchTerm}
+        areaSearchStatus={areaSearchStatus}
         areaSearchResults={areaSearchResults}
+        pointSearchTerm={pointSearchTerm}
+        pointSearchStatus={pointSearchStatus}
         pointSearchResults={pointSearchResults}
       />
     </Combobox>

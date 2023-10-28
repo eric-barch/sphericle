@@ -1,4 +1,4 @@
-import { LocationType, Point, PointSearchResults } from "@/types";
+import { LocationType, Point, SearchStatus } from "@/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type Suggestion = google.maps.places.AutocompletePrediction;
@@ -12,33 +12,19 @@ interface GeocodedSuggestion extends Suggestion {
 
 interface UsePointSearchReturn {
   searchTerm: string;
-  searchResults: PointSearchResults;
+  searchStatus: SearchStatus;
+  searchResults: Point[] | null;
   setSearchTerm: (searchTerm: string) => void;
-  clearSearchResults: () => void;
-}
-
-function debounce<Fn extends (...args: any[]) => void>(
-  fn: Fn,
-  delay: number,
-): (this: ThisParameterType<Fn>, ...args: Parameters<Fn>) => void {
-  let timer: ReturnType<typeof setTimeout> | null;
-
-  return function (this: ThisParameterType<Fn>, ...args: Parameters<Fn>) {
-    if (timer !== null) {
-      clearTimeout(timer);
-      timer = null;
-    }
-
-    timer = setTimeout(() => fn.apply(this, args), delay);
-  };
+  reset: () => void;
 }
 
 export default function usePointSearch(): UsePointSearchReturn {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<PointSearchResults>({
-    searchTerm: "",
-    searchResults: [],
-  });
+  const [internalSearchStatus, setInternalSearchStatus] =
+    useState<SearchStatus>(SearchStatus.Searched);
+  const [internalSearchResults, setInternalSearchResults] = useState<
+    Point[] | null
+  >(null);
 
   const autocompleteServiceRef =
     useRef<google.maps.places.AutocompleteService>();
@@ -68,67 +54,71 @@ export default function usePointSearch(): UsePointSearchReturn {
     }
   }, []);
 
-  const fetchSearchResults = useCallback(
-    debounce((searchTerm: string) => {
-      autocompleteServiceRef.current?.getPlacePredictions(
-        { input: searchTerm },
-        async (suggestions: Suggestion[] | null) => {
-          let geocodedSuggestions: GeocodedSuggestion[] = [];
+  const fetchSearchResults = useCallback((searchTerm: string) => {
+    setInternalSearchTerm(searchTerm);
+    setInternalSearchStatus(SearchStatus.Searching);
 
-          if (suggestions) {
-            geocodedSuggestions = await Promise.all(
-              suggestions.map(
-                (suggestion) =>
-                  new Promise<GeocodedSuggestion>((resolve, reject) => {
-                    geocoderRef.current?.geocode(
-                      { placeId: suggestion.place_id },
-                      (results, status) => {
-                        if (status === google.maps.GeocoderStatus.OK) {
-                          if (results![0]) {
-                            const position = {
-                              lat: results![0].geometry.location.lat(),
-                              lng: results![0].geometry.location.lng(),
-                            };
-                            resolve({ ...suggestion, position });
-                          }
+    autocompleteServiceRef.current?.getPlacePredictions(
+      { input: searchTerm },
+      async (suggestions: Suggestion[] | null) => {
+        let geocodedSuggestions: GeocodedSuggestion[] = [];
+
+        if (suggestions) {
+          geocodedSuggestions = await Promise.all(
+            suggestions.map(
+              (suggestion) =>
+                new Promise<GeocodedSuggestion>((resolve, reject) => {
+                  geocoderRef.current?.geocode(
+                    { placeId: suggestion.place_id },
+                    (results, status) => {
+                      if (status === google.maps.GeocoderStatus.OK) {
+                        if (results![0]) {
+                          const position = {
+                            lat: results![0].geometry.location.lat(),
+                            lng: results![0].geometry.location.lng(),
+                          };
+                          resolve({ ...suggestion, position });
                         }
-                        reject(new Error("Geocoding failed"));
-                      },
-                    );
-                  }),
-              ),
-            );
+                      }
+                      reject(new Error("Geocoding failed"));
+                    },
+                  );
+                }),
+            ),
+          );
 
-            let searchResults: Point[] = [];
+          let searchResults: Point[] = [];
 
-            if (geocodedSuggestions) {
-              searchResults = geocodedSuggestions.map((geocodedSuggestion) => ({
-                locationType: LocationType.Point,
-                placeId: geocodedSuggestion.place_id,
-                fullName: geocodedSuggestion.description,
-                displayName: geocodedSuggestion.description,
-                position: geocodedSuggestion.position,
-              }));
-            }
-
-            setSearchResults({ searchTerm, searchResults });
+          if (geocodedSuggestions) {
+            searchResults = geocodedSuggestions.map((geocodedSuggestion) => ({
+              locationType: LocationType.Point,
+              placeId: geocodedSuggestion.place_id,
+              fullName: geocodedSuggestion.description,
+              displayName: geocodedSuggestion.description,
+              position: geocodedSuggestion.position,
+            }));
           }
-        },
-      );
-    }, 500),
-    [],
-  );
+
+          setInternalSearchResults(searchResults);
+          setInternalSearchStatus(SearchStatus.Searched);
+        }
+      },
+    );
+  }, []);
 
   const setSearchTerm = useCallback(
     (searchTerm: string) => {
+      if (searchTerm === internalSearchTerm) return;
       setInternalSearchTerm(searchTerm);
       fetchSearchResults(searchTerm);
     },
     [fetchSearchResults],
   );
 
-  const clearSearchResults = useCallback(() => {
-    setSearchResults({ searchTerm: "", searchResults: [] });
+  const reset = useCallback(() => {
+    setInternalSearchTerm("");
+    setInternalSearchStatus(SearchStatus.Searched);
+    setInternalSearchResults(null);
   }, []);
 
   useEffect(() => {
@@ -138,8 +128,9 @@ export default function usePointSearch(): UsePointSearchReturn {
 
   return {
     searchTerm: internalSearchTerm,
-    searchResults,
+    searchStatus: internalSearchStatus,
+    searchResults: internalSearchResults,
     setSearchTerm,
-    clearSearchResults,
+    reset,
   };
 }

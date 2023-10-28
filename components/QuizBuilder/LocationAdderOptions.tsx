@@ -1,28 +1,32 @@
-import { AreaSearchResults, LocationType, PointSearchResults } from "@/types";
+import { Area, LocationType, Point, SearchStatus } from "@/types";
 import { Combobox } from "@headlessui/react";
 
 interface LocationAdderOptionsProps {
   locationAdderLocationType: LocationType;
   input: string;
-  areaSearchResults: AreaSearchResults;
-  pointSearchResults: PointSearchResults;
+  areaSearchTerm: string;
+  areaSearchStatus: SearchStatus;
+  areaSearchResults: Area[] | null;
+  pointSearchTerm: string;
+  pointSearchStatus: SearchStatus;
+  pointSearchResults: Point[] | null;
 }
 
 export default function LocationAdderOptions({
   locationAdderLocationType,
   input,
+  areaSearchTerm,
+  areaSearchStatus,
   areaSearchResults,
+  pointSearchTerm,
+  pointSearchStatus,
   pointSearchResults,
 }: LocationAdderOptionsProps) {
   const content = (() => {
     if (locationAdderLocationType === LocationType.Area) {
-      const outdated = input !== areaSearchResults.searchTerm;
-      const searching =
-        input === areaSearchResults.searchTerm &&
-        areaSearchResults.searchResults === null;
-      const noResultsFound =
-        input === areaSearchResults.searchTerm &&
-        areaSearchResults.searchResults?.length === 0;
+      const outdated = input !== areaSearchTerm;
+      const searching = areaSearchStatus === SearchStatus.Searching;
+      const noResultsFound = !searching && areaSearchResults?.length === 0;
 
       if (outdated) {
         return <Placeholder text="Press Enter to search" />;
@@ -31,15 +35,18 @@ export default function LocationAdderOptions({
       } else if (noResultsFound) {
         return <Placeholder text="No results found" />;
       } else {
-        return areaSearchResults.searchResults?.map((searchResult) => (
-          <Combobox.Option key={searchResult.placeId} value={searchResult}>
+        return areaSearchResults?.map((areaSearchResult) => (
+          <Combobox.Option
+            key={areaSearchResult.placeId}
+            value={areaSearchResult}
+          >
             {({ active }) => (
               <div
                 className={`p-1 pl-6 rounded-3xl cursor-pointer ${
                   active ? "bg-gray-600" : ""
                 }`}
               >
-                {searchResult.displayName}
+                {areaSearchResult.displayName}
               </div>
             )}
           </Combobox.Option>
@@ -48,14 +55,16 @@ export default function LocationAdderOptions({
     }
 
     if (locationAdderLocationType === LocationType.Point) {
-      const noResultsFound =
-        input === pointSearchResults.searchTerm &&
-        pointSearchResults.searchResults?.length === 0;
+      const outdated = input !== pointSearchTerm;
+      const searching = pointSearchStatus === SearchStatus.Searching;
+      const noResultsFound = !searching && pointSearchResults?.length === 0;
 
-      if (noResultsFound) {
+      if (searching) {
+        return <Placeholder text="Searching..." />;
+      } else if (noResultsFound) {
         return <Placeholder text="No results found" />;
       } else {
-        return pointSearchResults.searchResults?.map((pointSearchResult) => (
+        return pointSearchResults?.map((pointSearchResult) => (
           <Combobox.Option
             key={pointSearchResult.placeId}
             value={pointSearchResult}
@@ -78,7 +87,10 @@ export default function LocationAdderOptions({
   return (
     <>
       {input === "" ? null : (
-        <Combobox.Options className="bg-gray-500 rounded-3xl p-2 mt-1 mb-1">
+        <Combobox.Options
+          className="bg-gray-500 rounded-3xl p-2 mt-1 mb-1"
+          static
+        >
           {content}
         </Combobox.Options>
       )}

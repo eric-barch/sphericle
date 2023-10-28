@@ -1,10 +1,4 @@
-import {
-  Area,
-  AreaSearchResults,
-  Coordinate,
-  LocationType,
-  Polygon,
-} from "@/types";
+import { Area, Coordinate, LocationType, Polygon, SearchStatus } from "@/types";
 import { useCallback, useState } from "react";
 
 interface OpenStreetMapArea {
@@ -30,9 +24,10 @@ interface OpenStreetMapArea {
 
 interface UseAreaSearchReturn {
   searchTerm: string;
-  searchResults: AreaSearchResults;
+  searchStatus: SearchStatus;
+  searchResults: Area[] | null;
   setSearchTerm: (searchTerm: string) => void;
-  clearSearchResults: () => void;
+  reset: () => void;
 }
 
 function getComponentPolygons(array: any[]): Polygon[] {
@@ -79,13 +74,15 @@ function parseOpenStreetMapArea(openStreetMapArea: OpenStreetMapArea): Area {
 
 export default function useAreaSearch(): UseAreaSearchReturn {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<AreaSearchResults>({
-    searchTerm: "",
-    searchResults: [],
-  });
+  const [internalSearchStatus, setInternalSearchStatus] =
+    useState<SearchStatus>(SearchStatus.Searched);
+  const [internalSearchResults, setInternalSearchResults] = useState<
+    Area[] | null
+  >(null);
 
   const fetchSearchResults = useCallback(async (searchTerm: string) => {
-    setSearchResults({ searchTerm, searchResults: null });
+    setInternalSearchTerm(searchTerm);
+    setInternalSearchStatus(SearchStatus.Searching);
 
     const url = `/api/search-areas?query=${searchTerm}`;
     const response = await fetch(url);
@@ -101,7 +98,8 @@ export default function useAreaSearch(): UseAreaSearchReturn {
       })
       .filter((searchResult): searchResult is Area => searchResult !== null);
 
-    setSearchResults({ searchTerm, searchResults });
+    setInternalSearchResults(searchResults);
+    setInternalSearchStatus(SearchStatus.Searched);
   }, []);
 
   const setSearchTerm = useCallback(
@@ -112,14 +110,17 @@ export default function useAreaSearch(): UseAreaSearchReturn {
     [fetchSearchResults],
   );
 
-  const clearSearchResults = useCallback(() => {
-    setSearchResults({ searchTerm: "", searchResults: [] });
+  const reset = useCallback(() => {
+    setInternalSearchTerm("");
+    setInternalSearchStatus(SearchStatus.Searched);
+    setInternalSearchResults(null);
   }, []);
 
   return {
     searchTerm: internalSearchTerm,
-    searchResults,
+    searchStatus: internalSearchStatus,
+    searchResults: internalSearchResults,
     setSearchTerm,
-    clearSearchResults,
+    reset,
   };
 }

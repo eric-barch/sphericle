@@ -1,6 +1,8 @@
 import { Combobox } from "@headlessui/react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
-import { AreaSearchResults, LocationType } from "@/types";
+import { LocationType } from "@/types";
+import debounce from "@/utils/debounce";
+import { useCallback } from "react";
 
 interface LocationAdderInputProps {
   parentLocationType: LocationType;
@@ -11,8 +13,8 @@ interface LocationAdderInputProps {
   >;
   input: string;
   setInput: (input: string) => void;
+  areaSearchTerm: string;
   setAreaSearchTerm: (searchTerm: string) => void;
-  areaSearchResults: AreaSearchResults;
   setPointSearchTerm: (searchTerm: string) => void;
 }
 
@@ -23,8 +25,8 @@ export default function LocationAdderInput({
   setLocationAdderLocationType,
   input,
   setInput,
+  areaSearchTerm,
   setAreaSearchTerm,
-  areaSearchResults,
   setPointSearchTerm,
 }: LocationAdderInputProps) {
   return (
@@ -41,8 +43,8 @@ export default function LocationAdderInput({
         locationAdderLocationType={locationAdderLocationType}
         input={input}
         setInput={setInput}
+        areaSearchTerm={areaSearchTerm}
         setAreaSearchTerm={setAreaSearchTerm}
-        areaSearchResults={areaSearchResults}
         setPointSearchTerm={setPointSearchTerm}
       />
     </div>
@@ -101,8 +103,8 @@ interface TextBoxProps {
   locationAdderLocationType: LocationType;
   input: string;
   setInput: (input: string) => void;
+  areaSearchTerm: string;
   setAreaSearchTerm: (searchTerm: string) => void;
-  areaSearchResults: AreaSearchResults;
   setPointSearchTerm: (searchTerm: string) => void;
 }
 
@@ -112,8 +114,8 @@ function TextBox({
   locationAdderLocationType,
   input,
   setInput,
+  areaSearchTerm,
   setAreaSearchTerm,
-  areaSearchResults,
   setPointSearchTerm,
 }: TextBoxProps) {
   const placeholder =
@@ -121,19 +123,22 @@ function TextBox({
       ? `Add ${locationAdderLocationType}`
       : `Add ${locationAdderLocationType} in ${parentLocationName}`;
 
+  const debouncedSetPointSearchTerm = useCallback(
+    debounce((searchTerm: string) => {
+      setPointSearchTerm(searchTerm);
+    }, 500),
+    [],
+  );
+
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const input = event.target.value;
-
     setInput(input);
-
-    if (locationAdderLocationType === LocationType.Point) {
-      setPointSearchTerm(input);
-    }
+    debouncedSetPointSearchTerm(input);
   }
 
   function handleEnter(event: React.KeyboardEvent<HTMLInputElement>) {
     const isArea = locationAdderLocationType === LocationType.Area;
-    const isOutdated = input !== areaSearchResults.searchTerm;
+    const isOutdated = input !== areaSearchTerm;
 
     if (isArea && isOutdated) {
       event.preventDefault();
@@ -176,6 +181,16 @@ function TextBox({
     }
   }
 
+  function handleFocus(event: React.FocusEvent<HTMLInputElement>) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
+  function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
   return (
     <Combobox.Input
       className="quiz-builder-item bg-transparent border-white border-2"
@@ -183,6 +198,8 @@ function TextBox({
       placeholder={placeholder}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
     />
   );
 }

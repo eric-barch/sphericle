@@ -9,11 +9,6 @@ export interface Area {
   subLocationStates: (Area | Point)[];
 }
 
-export interface AreaSearchResults {
-  searchTerm: string;
-  searchResults: Area[] | null;
-}
-
 export interface Coordinate {
   lat: number;
   lng: number;
@@ -33,12 +28,12 @@ export interface Point {
   position: Coordinate;
 }
 
-export interface PointSearchResults {
-  searchTerm: string;
-  searchResults: Point[] | null;
-}
-
 export interface Polygon {
   id: string;
   coordinates: Coordinate[];
+}
+
+export enum SearchStatus {
+  Searching = "Searching",
+  Searched = "Searched",
 }
