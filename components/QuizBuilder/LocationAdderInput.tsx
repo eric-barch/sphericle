@@ -32,6 +32,8 @@ export default function LocationAdderInput({
       <ToggleLocationTypeButton
         locationAdderLocationType={locationAdderLocationType}
         setLocationAdderLocationType={setLocationAdderLocationType}
+        input={input}
+        setPointSearchTerm={setPointSearchTerm}
       />
       <TextBox
         parentLocationType={parentLocationType}
@@ -52,11 +54,15 @@ interface ToggleLocationTypeButtonProps {
   setLocationAdderLocationType: React.Dispatch<
     React.SetStateAction<LocationType>
   >;
+  input: string;
+  setPointSearchTerm: (searchTerm: string) => void;
 }
 
 function ToggleLocationTypeButton({
   locationAdderLocationType,
   setLocationAdderLocationType,
+  input,
+  setPointSearchTerm,
 }: ToggleLocationTypeButtonProps) {
   const icon =
     locationAdderLocationType === LocationType.Area ? (
@@ -66,9 +72,17 @@ function ToggleLocationTypeButton({
     );
 
   function handleClick() {
-    setLocationAdderLocationType((prevState) =>
-      prevState === LocationType.Area ? LocationType.Point : LocationType.Area,
-    );
+    const currentLocationType = locationAdderLocationType;
+    const nextLocationType =
+      currentLocationType === LocationType.Area
+        ? LocationType.Point
+        : LocationType.Area;
+
+    setLocationAdderLocationType(nextLocationType);
+
+    if (nextLocationType === LocationType.Point) {
+      setPointSearchTerm(input);
+    }
   }
 
   return (
