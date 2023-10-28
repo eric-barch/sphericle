@@ -1,8 +1,8 @@
-import { Combobox } from "@headlessui/react";
-import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 import { LocationType } from "@/types";
 import debounce from "@/utils/debounce";
+import { Combobox } from "@headlessui/react";
 import { useCallback } from "react";
+import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 
 interface LocationAdderInputProps {
   parentLocationType: LocationType;
@@ -15,6 +15,7 @@ interface LocationAdderInputProps {
   setInput: (input: string) => void;
   areaSearchTerm: string;
   setAreaSearchTerm: (searchTerm: string) => void;
+  pointSearchTerm: string;
   setPointSearchTerm: (searchTerm: string) => void;
 }
 
@@ -27,6 +28,7 @@ export default function LocationAdderInput({
   setInput,
   areaSearchTerm,
   setAreaSearchTerm,
+  pointSearchTerm,
   setPointSearchTerm,
 }: LocationAdderInputProps) {
   return (
@@ -35,6 +37,7 @@ export default function LocationAdderInput({
         locationAdderLocationType={locationAdderLocationType}
         setLocationAdderLocationType={setLocationAdderLocationType}
         input={input}
+        pointSearchTerm={pointSearchTerm}
         setPointSearchTerm={setPointSearchTerm}
       />
       <TextBox
@@ -57,6 +60,7 @@ interface ToggleLocationTypeButtonProps {
     React.SetStateAction<LocationType>
   >;
   input: string;
+  pointSearchTerm: string;
   setPointSearchTerm: (searchTerm: string) => void;
 }
 
@@ -64,6 +68,7 @@ function ToggleLocationTypeButton({
   locationAdderLocationType,
   setLocationAdderLocationType,
   input,
+  pointSearchTerm,
   setPointSearchTerm,
 }: ToggleLocationTypeButtonProps) {
   const icon =
@@ -82,7 +87,7 @@ function ToggleLocationTypeButton({
 
     setLocationAdderLocationType(nextLocationType);
 
-    if (nextLocationType === LocationType.Point) {
+    if (nextLocationType === LocationType.Point && input !== pointSearchTerm) {
       setPointSearchTerm(input);
     }
   }
@@ -126,14 +131,16 @@ function TextBox({
   const debouncedSetPointSearchTerm = useCallback(
     debounce((searchTerm: string) => {
       setPointSearchTerm(searchTerm);
-    }, 500),
+    }, 400),
     [],
   );
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const input = event.target.value;
     setInput(input);
-    debouncedSetPointSearchTerm(input);
+    if (locationAdderLocationType === LocationType.Point) {
+      debouncedSetPointSearchTerm(input);
+    }
   }
 
   function handleEnter(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -198,8 +205,8 @@ function TextBox({
       placeholder={placeholder}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
+      // onFocus={handleFocus}
+      // onBlur={handleBlur}
     />
   );
 }

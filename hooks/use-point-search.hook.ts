@@ -108,7 +108,6 @@ export default function usePointSearch(): UsePointSearchReturn {
 
   const setSearchTerm = useCallback(
     (searchTerm: string) => {
-      if (searchTerm === internalSearchTerm) return;
       setInternalSearchTerm(searchTerm);
       fetchSearchResults(searchTerm);
     },

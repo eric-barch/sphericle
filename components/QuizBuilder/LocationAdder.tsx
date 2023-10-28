@@ -44,6 +44,7 @@ export default function LocationAdder({
         setInput={setInput}
         areaSearchTerm={areaSearchTerm}
         setAreaSearchTerm={setAreaSearchTerm}
+        pointSearchTerm={pointSearchTerm}
         setPointSearchTerm={setPointSearchTerm}
       />
       <LocationAdderOptions
