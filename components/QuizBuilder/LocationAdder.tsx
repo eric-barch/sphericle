@@ -41,6 +41,7 @@ export default function LocationAdder({
     if (currentTarget.contains(relatedTarget as Node)) {
       event.preventDefault();
     } else {
+      console.log("focus");
       setOptionsVisible(true);
     }
   }
@@ -52,6 +53,7 @@ export default function LocationAdder({
     if (currentTarget.contains(relatedTarget as Node)) {
       event.preventDefault();
     } else {
+      console.log("blur");
       setOptionsVisible(false);
     }
   }

@@ -78,7 +78,7 @@ function ToggleLocationTypeButton({
       <FaLocationDot />
     );
 
-  function handleClick() {
+  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
     const currentLocationType = locationAdderLocationType;
     const nextLocationType =
       currentLocationType === LocationType.Area
@@ -195,6 +195,8 @@ function InputBox({
       placeholder={placeholder}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
+      onFocus={(e) => e.preventDefault()}
+      onBlur={(e) => e.preventDefault()}
     />
   );
 }
