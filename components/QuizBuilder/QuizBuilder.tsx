@@ -5,7 +5,7 @@ import LocationAdder from "./LocationAdder";
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState(false);
 
-  // TODO: is this a janky way of loading the places library?
+  // TODO: is this janky?
   useEffect(() => {
     async function loadPlacesLibrary() {
       if (!window.google || !window.google.maps || !window.google.maps.places) {

@@ -40,7 +40,7 @@ export default function LocationAdderInput({
         pointSearchTerm={pointSearchTerm}
         setPointSearchTerm={setPointSearchTerm}
       />
-      <TextBox
+      <InputBox
         parentLocationType={parentLocationType}
         parentLocationName={parentLocationName}
         locationAdderLocationType={locationAdderLocationType}
@@ -102,7 +102,7 @@ function ToggleLocationTypeButton({
   );
 }
 
-interface TextBoxProps {
+interface InputBoxProps {
   parentLocationType: LocationType;
   parentLocationName: string | null;
   locationAdderLocationType: LocationType;
@@ -113,7 +113,7 @@ interface TextBoxProps {
   setPointSearchTerm: (searchTerm: string) => void;
 }
 
-function TextBox({
+function InputBox({
   parentLocationType,
   parentLocationName,
   locationAdderLocationType,
@@ -122,7 +122,7 @@ function TextBox({
   areaSearchTerm,
   setAreaSearchTerm,
   setPointSearchTerm,
-}: TextBoxProps) {
+}: InputBoxProps) {
   const placeholder =
     parentLocationType === LocationType.Tree
       ? `Add ${locationAdderLocationType}`
@@ -188,16 +188,6 @@ function TextBox({
     }
   }
 
-  function handleFocus(event: React.FocusEvent<HTMLInputElement>) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
-
-  function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
-
   return (
     <Combobox.Input
       className="quiz-builder-item bg-transparent border-white border-2"
@@ -205,8 +195,6 @@ function TextBox({
       placeholder={placeholder}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
-      // onFocus={handleFocus}
-      // onBlur={handleBlur}
     />
   );
 }
