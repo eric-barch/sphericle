@@ -1,6 +1,6 @@
 import { LocationType } from "@/types";
 import { useEffect, useState } from "react";
-import LocationAdder from "./LocationAdder";
+import { Locations } from "./Locations";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState(false);
@@ -22,9 +22,10 @@ export default function QuizBuilder() {
   return (
     <div className="m-3">
       {placesLoaded ? (
-        <LocationAdder
-          parentLocationType={LocationType.Area}
-          parentLocationName="Root"
+        <Locations
+          parentLocationType={LocationType.Root}
+          parentLocationDisplayName={LocationType.Root}
+          locations={[]}
         />
       ) : (
         "Loading..."

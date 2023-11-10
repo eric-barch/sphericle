@@ -1,4 +1,4 @@
-import { Area, LocationType, Point, SearchStatus } from "@/types";
+import { AreaState, LocationType, PointState, SearchStatus } from "@/types";
 import { Combobox } from "@headlessui/react";
 
 interface LocationAdderOptionsProps {
@@ -7,10 +7,10 @@ interface LocationAdderOptionsProps {
   visible: boolean;
   areaSearchTerm: string;
   areaSearchStatus: SearchStatus;
-  areaSearchResults: Area[] | null;
+  areaSearchResults: AreaState[] | null;
   pointSearchTerm: string;
   pointSearchStatus: SearchStatus;
-  pointSearchResults: Point[] | null;
+  pointSearchResults: PointState[] | null;
 }
 
 export default function LocationAdderOptions({
@@ -28,7 +28,7 @@ export default function LocationAdderOptions({
     locationType: LocationType,
     searchTerm: string,
     searchStatus: SearchStatus,
-    searchResults: Area[] | Point[] | null,
+    searchResults: AreaState[] | PointState[] | null,
   ) {
     const outdated = input !== searchTerm;
     const searching = searchStatus === SearchStatus.Searching;
@@ -41,7 +41,7 @@ export default function LocationAdderOptions({
     } else if (noResultsFound) {
       return <Placeholder text="No results found" />;
     } else {
-      return searchResults?.map((searchResult: Area | Point) => (
+      return searchResults?.map((searchResult: AreaState | PointState) => (
         <Combobox.Option key={searchResult.placeId} value={searchResult}>
           {({ active }) => (
             <div

@@ -1,4 +1,10 @@
-import { Area, Coordinate, LocationType, Polygon, SearchStatus } from "@/types";
+import {
+  AreaState,
+  Coordinate,
+  LocationType,
+  Polygon,
+  SearchStatus,
+} from "@/types";
 import { useCallback, useState } from "react";
 
 interface OpenStreetMapArea {
@@ -25,7 +31,7 @@ interface OpenStreetMapArea {
 interface UseAreaSearchReturn {
   searchTerm: string;
   searchStatus: SearchStatus;
-  searchResults: Area[] | null;
+  searchResults: AreaState[] | null;
   setSearchTerm: (searchTerm: string) => void;
   reset: () => void;
 }
@@ -55,7 +61,9 @@ function getComponentPolygons(array: any[]): Polygon[] {
   return polygons;
 }
 
-function parseOpenStreetMapArea(openStreetMapArea: OpenStreetMapArea): Area {
+function parseOpenStreetMapArea(
+  openStreetMapArea: OpenStreetMapArea,
+): AreaState {
   const componentPolygons = getComponentPolygons(
     openStreetMapArea.geojson.coordinates,
   );
@@ -67,7 +75,7 @@ function parseOpenStreetMapArea(openStreetMapArea: OpenStreetMapArea): Area {
     displayName: openStreetMapArea.display_name,
     isQuizQuestion: true,
     isOpen: false,
-    subLocationStates: [],
+    sublocations: [],
     componentPolygons,
   };
 }
@@ -77,7 +85,7 @@ export default function useAreaSearch(): UseAreaSearchReturn {
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
   const [internalSearchResults, setInternalSearchResults] = useState<
-    Area[] | null
+    AreaState[] | null
   >(null);
 
   const fetchSearchResults = useCallback(async (searchTerm: string) => {
@@ -96,7 +104,9 @@ export default function useAreaSearch(): UseAreaSearchReturn {
           return null;
         }
       })
-      .filter((searchResult): searchResult is Area => searchResult !== null);
+      .filter(
+        (searchResult): searchResult is AreaState => searchResult !== null,
+      );
 
     setInternalSearchResults(searchResults);
     setInternalSearchStatus(SearchStatus.Searched);

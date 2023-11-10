@@ -1,5 +1,5 @@
 export enum LocationType {
-  Tree = "Tree",
+  Root = "Root",
   Area = "Area",
   Point = "Point",
 }

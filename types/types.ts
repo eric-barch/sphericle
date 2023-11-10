@@ -1,14 +1,13 @@
 import { LocationType } from "./enums";
 
-export interface Area {
+export interface AreaState {
   locationType: LocationType.Area;
   placeId: number;
-  fullName: string;
   displayName: string;
-  isQuizQuestion: boolean;
-  isOpen: boolean;
-  componentPolygons: Polygon[];
-  subLocationStates: (Area | Point)[];
+  fullName: string;
+  open: boolean;
+  polygons: Polygon[];
+  sublocations: (AreaState | PointState)[];
 }
 
 export interface Coordinate {
@@ -16,11 +15,11 @@ export interface Coordinate {
   lng: number;
 }
 
-export interface Point {
+export interface PointState {
   locationType: LocationType.Point;
   placeId: string;
-  fullName: string;
   displayName: string;
+  fullName: string;
   position: Coordinate;
 }
 

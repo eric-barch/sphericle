@@ -1,4 +1,4 @@
-import { LocationType, Point, SearchStatus } from "@/types";
+import { LocationType, PointState, SearchStatus } from "@/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type Suggestion = google.maps.places.AutocompletePrediction;
@@ -13,7 +13,7 @@ interface GeocodedSuggestion extends Suggestion {
 interface UsePointSearchReturn {
   searchTerm: string;
   searchStatus: SearchStatus;
-  searchResults: Point[] | null;
+  searchResults: PointState[] | null;
   setSearchTerm: (searchTerm: string) => void;
   reset: () => void;
 }
@@ -23,7 +23,7 @@ export default function usePointSearch(): UsePointSearchReturn {
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
   const [internalSearchResults, setInternalSearchResults] = useState<
-    Point[] | null
+    PointState[] | null
   >(null);
 
   const autocompleteServiceRef =
@@ -87,7 +87,7 @@ export default function usePointSearch(): UsePointSearchReturn {
             ),
           );
 
-          let searchResults: Point[] = [];
+          let searchResults: PointState[] = [];
 
           if (geocodedSuggestions) {
             searchResults = geocodedSuggestions.map((geocodedSuggestion) => ({
