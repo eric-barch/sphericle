@@ -1,3 +1,5 @@
+import { LocationType } from "./enums";
+
 export interface Area {
   locationType: LocationType.Area;
   placeId: number;
@@ -14,12 +16,6 @@ export interface Coordinate {
   lng: number;
 }
 
-export enum LocationType {
-  Tree = "Tree",
-  Area = "Area",
-  Point = "Point",
-}
-
 export interface Point {
   locationType: LocationType.Point;
   placeId: string;
@@ -31,9 +27,4 @@ export interface Point {
 export interface Polygon {
   id: string;
   coordinates: Coordinate[];
-}
-
-export enum SearchStatus {
-  Searching = "Searching",
-  Searched = "Searched",
 }
