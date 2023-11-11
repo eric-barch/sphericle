@@ -27,3 +27,9 @@ export interface Polygon {
   id: string;
   coordinates: Coordinate[];
 }
+
+export interface RootState {
+  locationType: LocationType.Root;
+  displayName: string;
+  sublocations: (AreaState | PointState)[];
+}
