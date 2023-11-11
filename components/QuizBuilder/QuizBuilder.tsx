@@ -18,7 +18,7 @@ export default function QuizBuilder() {
   }, []);
 
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
-  const [rootState, setRootState] = useState<RootState>({
+  const [root, setRoot] = useState<RootState>({
     locationType: LocationType.Root,
     displayName: "Root",
     sublocations: [],
@@ -71,30 +71,46 @@ export default function QuizBuilder() {
     );
   }
 
-  function replaceLocationState(
-    targetLocationState: AreaState | PointState,
-    newLocationState: AreaState | PointState,
+  function replaceLocation(
+    targetLocation: RootState | AreaState | PointState,
+    newLocation: RootState | AreaState | PointState | null,
   ): void {
-    const newRootState = findAndReplaceLocation(
-      rootState,
-      targetLocationState,
-      newLocationState,
-    );
+    const newRoot = findAndReplaceLocation(root, targetLocation, newLocation);
 
-    if (newRootState?.locationType !== LocationType.Root) {
-      throw new Error("newRootState is not a RootState.");
+    if (newRoot?.locationType !== LocationType.Root) {
+      throw new Error("newRoot is not a RootState.");
     }
 
-    setRootState(newRootState);
+    setRoot(newRoot);
   }
+
+  function addLocation(
+    parentLocation: RootState | AreaState,
+    childLocation: AreaState | PointState,
+  ): void {
+    const newParentLocation = {
+      ...parentLocation,
+      sublocations: [...parentLocation.sublocations, childLocation],
+    };
+
+    replaceLocation(parentLocation, newParentLocation);
+  }
+
+  function deleteLocation(targetLocation: AreaState | PointState): void {
+    replaceLocation(targetLocation, null);
+  }
+
+  useEffect(() => {
+    console.log(root);
+  }, [root]);
 
   return (
     <div className="m-3">
       {placesLoaded ? (
         <Locations
-          parentLocationType={LocationType.Root}
-          parentLocationDisplayName={LocationType.Root}
-          locations={rootState.sublocations}
+          parentLocation={root}
+          addLocation={addLocation}
+          deleteLocation={deleteLocation}
         />
       ) : (
         "Loading..."

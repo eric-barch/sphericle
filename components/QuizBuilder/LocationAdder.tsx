@@ -2,20 +2,23 @@
 
 import useAreaSearch from "@/hooks/use-area-search.hook";
 import usePointSearch from "@/hooks/use-point-search.hook";
-import { LocationType } from "@/types";
+import { AreaState, LocationType, PointState, RootState } from "@/types";
 import { Combobox } from "@headlessui/react";
 import React, { useState } from "react";
 import LocationAdderInput from "./LocationAdderInput";
 import LocationAdderOptions from "./LocationAdderOptions";
 
 interface LocationAdderProps {
-  parentLocationType: LocationType;
-  parentLocationName: string | null;
+  parentLocation: RootState | AreaState;
+  addLocation: (
+    parentLocation: RootState | AreaState,
+    childLocation: AreaState | PointState,
+  ) => void;
 }
 
 export default function LocationAdder({
-  parentLocationType,
-  parentLocationName,
+  parentLocation,
+  addLocation,
 }: LocationAdderProps) {
   const [locationAdderLocationType, setLocationAdderLocationType] =
     useState<LocationType>(LocationType.Area);
@@ -26,44 +29,51 @@ export default function LocationAdder({
     searchStatus: areaSearchStatus,
     searchResults: areaSearchResults,
     setSearchTerm: setAreaSearchTerm,
+    reset: resetAreaSearch,
   } = useAreaSearch();
   const {
     searchTerm: pointSearchTerm,
     searchStatus: pointSearchStatus,
     searchResults: pointSearchResults,
     setSearchTerm: setPointSearchTerm,
+    reset: resetPointSearch,
   } = usePointSearch();
 
-  function onFocus(event: React.FocusEvent) {
+  function handleFocus(event: React.FocusEvent) {
     const currentTarget = event.currentTarget;
     const relatedTarget = event.relatedTarget;
 
     if (currentTarget.contains(relatedTarget as Node)) {
       event.preventDefault();
     } else {
-      console.log("focus");
       setOptionsVisible(true);
     }
   }
 
-  function onBlur(event: React.FocusEvent) {
+  function handleBlur(event: React.FocusEvent) {
     const currentTarget = event.currentTarget;
     const relatedTarget = event.relatedTarget;
 
     if (currentTarget.contains(relatedTarget as Node)) {
       event.preventDefault();
     } else {
-      console.log("blur");
       setOptionsVisible(false);
     }
   }
 
+  function handleChange(childLocation: AreaState | PointState) {
+    addLocation(parentLocation, childLocation);
+    setInput("");
+    resetAreaSearch();
+    resetPointSearch();
+  }
+
   return (
-    <div onFocus={onFocus} onBlur={onBlur}>
-      <Combobox>
+    <div onFocus={handleFocus} onBlur={handleBlur}>
+      <Combobox onChange={handleChange}>
         <LocationAdderInput
-          parentLocationType={parentLocationType}
-          parentLocationName={parentLocationName}
+          parentLocationType={parentLocation.locationType}
+          parentLocationName={parentLocation.displayName}
           locationAdderLocationType={locationAdderLocationType}
           setLocationAdderLocationType={setLocationAdderLocationType}
           input={input}

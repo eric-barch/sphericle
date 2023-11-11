@@ -71,12 +71,11 @@ function parseOpenStreetMapArea(
   return {
     locationType: LocationType.Area,
     placeId: openStreetMapArea.place_id,
-    fullName: openStreetMapArea.name,
     displayName: openStreetMapArea.display_name,
-    isQuizQuestion: true,
-    isOpen: false,
+    fullName: openStreetMapArea.name,
+    open: false,
+    polygons: [],
     sublocations: [],
-    componentPolygons,
   };
 }
 

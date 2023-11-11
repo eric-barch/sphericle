@@ -1,43 +1,45 @@
-import { AreaState, LocationType, PointState } from "@/types";
+import { AreaState, LocationType, PointState, RootState } from "@/types";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 
 interface LocationsProps {
   className?: string;
-  parentLocationType: LocationType;
-  parentLocationDisplayName: string;
-  locations: (AreaState | PointState)[];
+  parentLocation: RootState | AreaState;
+  addLocation: (
+    parentLocation: RootState | AreaState,
+    childLocation: AreaState | PointState,
+  ) => void;
+  deleteLocation: (targetLocation: AreaState | PointState) => void;
 }
 
 export function Locations({
   className,
-  parentLocationType,
-  parentLocationDisplayName,
-  locations,
+  parentLocation,
+  addLocation,
+  deleteLocation,
 }: LocationsProps) {
   return (
     <div className={`${className} space-y-1`}>
-      {locations.map((location) => {
-        if (location.locationType === LocationType.Area) {
+      {parentLocation.sublocations.map((sublocation) => {
+        if (sublocation.locationType === LocationType.Area) {
           return (
             <Area
-              key={location.placeId}
-              displayName={location.displayName}
-              fullName={location.fullName}
-              open={location.open}
-              sublocations={location.sublocations}
+              key={sublocation.placeId}
+              location={sublocation}
+              addLocation={addLocation}
+              deleteLocation={deleteLocation}
             />
           );
         }
 
-        if (location.locationType === LocationType.Point) {
+        if (sublocation.locationType === LocationType.Point) {
           // return Point component
           // Make sure to return a component here
         }
       })}
       <LocationAdder
-        parentLocationType={parentLocationType}
-        parentLocationName={parentLocationDisplayName}
+        parentLocation={parentLocation}
+        addLocation={addLocation}
       />
     </div>
   );
