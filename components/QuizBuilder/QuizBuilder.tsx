@@ -96,7 +96,7 @@ export default function QuizBuilder() {
     replaceLocation(parentLocation, newParentLocation);
   }
 
-  function toggleOpen(targetLocation: AreaState): void {
+  function toggleLocationOpen(targetLocation: AreaState): void {
     const newLocation = {
       ...targetLocation,
       open: !targetLocation.open,
@@ -119,7 +119,7 @@ export default function QuizBuilder() {
         <Locations
           parentLocation={root}
           addLocation={addLocation}
-          toggleOpen={toggleOpen}
+          toggleLocationOpen={toggleLocationOpen}
           deleteLocation={deleteLocation}
         />
       ) : (

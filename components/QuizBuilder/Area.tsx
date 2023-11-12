@@ -9,18 +9,18 @@ interface AreaProps {
     parentLocation: RootState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
-  toggleOpen: (targetLocation: AreaState) => void;
+  toggleLocationOpen: (targetLocation: AreaState) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
 }
 
 export default function Area({
   location,
   addLocation,
-  toggleOpen,
+  toggleLocationOpen,
   deleteLocation,
 }: AreaProps) {
-  function handleToggleOpen() {
-    toggleOpen(location);
+  function handleClick() {
+    toggleLocationOpen(location);
   }
 
   return (
@@ -36,14 +36,14 @@ export default function Area({
                 <FaDrawPolygon className="text-gray-400" />
               </div>
               <span>{location.fullName}</span>
-              <ToggleOpenButton open={open} toggleOpen={handleToggleOpen} />
+              <ToggleOpenButton open={open} onClick={handleClick} />
             </div>
             <Disclosure.Panel>
               <Locations
                 className="ml-10"
                 parentLocation={location}
                 addLocation={addLocation}
-                toggleOpen={toggleOpen}
+                toggleLocationOpen={toggleLocationOpen}
                 deleteLocation={deleteLocation}
               />
             </Disclosure.Panel>
@@ -56,16 +56,16 @@ export default function Area({
 
 interface ToggleOpenButtonProps {
   open: boolean;
-  toggleOpen: () => void;
+  onClick: () => void;
 }
 
-function ToggleOpenButton({ open, toggleOpen }: ToggleOpenButtonProps) {
+function ToggleOpenButton({ open, onClick }: ToggleOpenButtonProps) {
   const styles = open ? "rotate-90" : "rotate-0";
 
   return (
     <Disclosure.Button
       className="quiz-builder-item-decorator-right-1"
-      onClick={toggleOpen}
+      onClick={onClick}
     >
       <FaChevronRight className={`${styles} w-4 h-auto`} />
     </Disclosure.Button>

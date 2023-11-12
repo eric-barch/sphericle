@@ -9,7 +9,7 @@ interface LocationsProps {
     parentLocation: RootState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
-  toggleOpen: (targetLocation: AreaState) => void;
+  toggleLocationOpen: (targetLocation: AreaState) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
 }
 
@@ -17,7 +17,7 @@ export function Locations({
   className,
   parentLocation,
   addLocation,
-  toggleOpen,
+  toggleLocationOpen,
   deleteLocation,
 }: LocationsProps) {
   return (
@@ -29,7 +29,7 @@ export function Locations({
               key={sublocation.placeId}
               location={sublocation}
               addLocation={addLocation}
-              toggleOpen={toggleOpen}
+              toggleLocationOpen={toggleLocationOpen}
               deleteLocation={deleteLocation}
             />
           );
