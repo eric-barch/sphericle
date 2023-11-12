@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 import { Locations } from "./Locations";
 
 export default function QuizBuilder() {
+  const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
+  const [root, setRoot] = useState<RootState>({
+    locationType: LocationType.Root,
+    displayName: "Root",
+    sublocations: [],
+  });
+
   // TODO: is this a janky way to load Places?
   useEffect(() => {
     async function loadPlacesLibrary() {
@@ -17,14 +24,7 @@ export default function QuizBuilder() {
     loadPlacesLibrary();
   }, []);
 
-  const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
-  const [root, setRoot] = useState<RootState>({
-    locationType: LocationType.Root,
-    displayName: "Root",
-    sublocations: [],
-  });
-
-  function findAndReplaceLocation(
+  function findLocation(
     searchLocation: RootState | AreaState | PointState,
     targetLocation: RootState | AreaState | PointState,
     newLocation: RootState | AreaState | PointState | null,
@@ -44,7 +44,7 @@ export default function QuizBuilder() {
       let newSublocations: (AreaState | PointState)[] = [];
 
       for (const currentSublocation of searchLocation.sublocations) {
-        const newSublocation = findAndReplaceLocation(
+        const newSublocation = findLocation(
           currentSublocation,
           targetLocation,
           newLocation,
@@ -75,7 +75,7 @@ export default function QuizBuilder() {
     targetLocation: RootState | AreaState | PointState,
     newLocation: RootState | AreaState | PointState | null,
   ): void {
-    const newRoot = findAndReplaceLocation(root, targetLocation, newLocation);
+    const newRoot = findLocation(root, targetLocation, newLocation);
 
     if (newRoot?.locationType !== LocationType.Root) {
       throw new Error("newRoot is not a RootState.");
@@ -96,6 +96,15 @@ export default function QuizBuilder() {
     replaceLocation(parentLocation, newParentLocation);
   }
 
+  function toggleOpen(targetLocation: AreaState): void {
+    const newLocation = {
+      ...targetLocation,
+      open: !targetLocation.open,
+    };
+
+    replaceLocation(targetLocation, newLocation);
+  }
+
   function deleteLocation(targetLocation: AreaState | PointState): void {
     replaceLocation(targetLocation, null);
   }
@@ -110,6 +119,7 @@ export default function QuizBuilder() {
         <Locations
           parentLocation={root}
           addLocation={addLocation}
+          toggleOpen={toggleOpen}
           deleteLocation={deleteLocation}
         />
       ) : (
