@@ -62,10 +62,17 @@ interface ToggleOpenButtonProps {
 function ToggleOpenButton({ open, onClick }: ToggleOpenButtonProps) {
   const styles = open ? "rotate-90" : "rotate-0";
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      onClick();
+    }
+  };
+
   return (
     <Disclosure.Button
       className="quiz-builder-item-decorator-right-1"
       onClick={onClick}
+      onKeyDown={handleKeyDown}
     >
       <FaChevronRight className={`${styles} w-4 h-auto`} />
     </Disclosure.Button>

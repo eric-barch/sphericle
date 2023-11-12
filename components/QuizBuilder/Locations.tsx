@@ -1,6 +1,7 @@
 import { AreaState, LocationType, PointState, RootState } from "@/types";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
+import Point from "./Point";
 
 interface LocationsProps {
   className?: string;
@@ -36,8 +37,13 @@ export function Locations({
         }
 
         if (sublocation.locationType === LocationType.Point) {
-          // return Point component
-          // Make sure to return a component here
+          return (
+            <Point
+              key={sublocation.placeId}
+              location={sublocation}
+              deleteLocation={deleteLocation}
+            />
+          );
         }
       })}
       <LocationAdder

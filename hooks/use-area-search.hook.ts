@@ -71,8 +71,8 @@ function parseOpenStreetMapArea(
   return {
     locationType: LocationType.Area,
     placeId: openStreetMapArea.place_id,
-    displayName: openStreetMapArea.display_name,
-    fullName: openStreetMapArea.name,
+    displayName: openStreetMapArea.name,
+    fullName: openStreetMapArea.display_name,
     open: false,
     polygons: [],
     sublocations: [],
