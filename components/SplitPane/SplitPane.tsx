@@ -52,32 +52,29 @@ export default function SplitPane({ children }: SplitPaneProps) {
 
   const handleMouseMove = useCallback(
     (event: React.MouseEvent) => {
-      if (isResizing) {
-        const leftStaticPanesWidth = paneWidths
-          .slice(0, currentPaneIndex)
-          .reduce((accumulator, currentWidth) => accumulator + currentWidth, 0);
-        let leftResizingPaneWidth = paneWidths[currentPaneIndex];
-        let rightResizingPaneWidth = paneWidths[currentPaneIndex + 1];
-        const resizingPanesWidth =
-          leftResizingPaneWidth + rightResizingPaneWidth;
-        const rightStaticPanesWidth = paneWidths
-          .slice(currentPaneIndex + 2)
-          .reduce((accumulator, currentWidth) => accumulator + currentWidth, 0);
+      if (!isResizing) return;
 
-        if (
-          event.clientX >= leftStaticPanesWidth &&
-          event.clientX <= leftStaticPanesWidth + resizingPanesWidth
-        ) {
-          leftResizingPaneWidth = event.clientX - leftStaticPanesWidth;
-          rightResizingPaneWidth = resizingPanesWidth - leftResizingPaneWidth;
-        }
+      const leftPanesWidth = paneWidths
+        .slice(0, currentPaneIndex)
+        .reduce((a, b) => a + b, 0);
+      const middlePanesWidth =
+        paneWidths[currentPaneIndex] + paneWidths[currentPaneIndex + 1];
 
-        const newPaneWidths = [...paneWidths];
-        newPaneWidths[currentPaneIndex] = leftResizingPaneWidth;
-        newPaneWidths[currentPaneIndex + 1] = rightResizingPaneWidth;
+      const newPaneWidths = [...paneWidths];
 
-        setPaneWidths(newPaneWidths);
+      if (event.clientX < leftPanesWidth) {
+        newPaneWidths[currentPaneIndex] = 0;
+        newPaneWidths[currentPaneIndex + 1] = middlePanesWidth;
+      } else if (event.clientX > leftPanesWidth + middlePanesWidth) {
+        newPaneWidths[currentPaneIndex] = middlePanesWidth;
+        newPaneWidths[currentPaneIndex + 1] = 0;
+      } else {
+        newPaneWidths[currentPaneIndex] = event.clientX - leftPanesWidth;
+        newPaneWidths[currentPaneIndex + 1] =
+          middlePanesWidth - newPaneWidths[currentPaneIndex];
       }
+
+      setPaneWidths(newPaneWidths);
     },
     [isResizing, paneWidths, currentPaneIndex],
   );

@@ -129,8 +129,6 @@ export default function QuizBuilder() {
         )}
       </>
       <div className="bg-red-900 h-full w-full" />
-      <div className="bg-blue-900 h-full w-full" />
-      <div className="bg-green-900 h-full w-full" />
     </SplitPane>
   );
 }
