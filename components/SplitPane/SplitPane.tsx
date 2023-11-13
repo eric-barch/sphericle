@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 
 interface SplitPaneProps {
   children: React.ReactNode | React.ReactNode[];
@@ -7,13 +7,43 @@ interface SplitPaneProps {
 export default function SplitPane({ children }: SplitPaneProps) {
   const childrenArray = Array.isArray(children) ? children : [children];
 
-  const initialPaneWidths = Array.from(
-    { length: childrenArray.length },
-    () => window.innerWidth / childrenArray.length,
-  );
-  const [paneWidths, setPaneWidths] = useState(initialPaneWidths);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [prevContainerWidth, setPrevContainerWidth] = useState<number>(0);
+  const [paneWidths, setPaneWidths] = useState<number[]>([]);
   const [isResizing, setIsResizing] = useState(false);
   const [currentPaneIndex, setCurrentPaneIndex] = useState(0);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const newContainerWidth = containerRef.current.offsetWidth;
+      setPaneWidths(
+        Array.from(
+          { length: childrenArray.length },
+          () => newContainerWidth / childrenArray.length,
+        ),
+      );
+      setPrevContainerWidth(newContainerWidth);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const newContainerWidth = containerRef.current.offsetWidth;
+        const paneRatios = paneWidths.map(
+          (width) => width / prevContainerWidth,
+        );
+        setPaneWidths(paneRatios.map((ratio) => ratio * newContainerWidth));
+        setPrevContainerWidth(newContainerWidth);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [childrenArray.length, prevContainerWidth, paneWidths]);
 
   const handleMouseDown = useCallback((index: number) => {
     setIsResizing(true);
@@ -59,6 +89,7 @@ export default function SplitPane({ children }: SplitPaneProps) {
   return (
     <div
       className="flex flex-grow relative"
+      ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
