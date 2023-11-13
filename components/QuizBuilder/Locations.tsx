@@ -1,13 +1,13 @@
-import { AreaState, LocationType, PointState, RootState } from "@/types";
+import { AreaState, LocationType, PointState, LocationTree } from "@/types";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 import Point from "./Point";
 
 interface LocationsProps {
   className?: string;
-  parentLocation: RootState | AreaState;
+  parentLocation: LocationTree | AreaState;
   addLocation: (
-    parentLocation: RootState | AreaState,
+    parentLocation: LocationTree | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;

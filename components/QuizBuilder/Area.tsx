@@ -1,4 +1,4 @@
-import { AreaState, PointState, RootState } from "@/types";
+import { AreaState, PointState, LocationTree } from "@/types";
 import { Disclosure } from "@headlessui/react";
 import { FaChevronRight, FaDrawPolygon } from "react-icons/fa6";
 import { Locations } from "./Locations";
@@ -6,7 +6,7 @@ import { Locations } from "./Locations";
 interface AreaProps {
   location: AreaState;
   addLocation: (
-    parentLocation: RootState | AreaState,
+    parentLocation: LocationTree | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;

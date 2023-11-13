@@ -1,15 +1,25 @@
-import { LocationType, AreaState, PointState, RootState } from "@/types";
+import Map from "@/components/Map";
+import SplitPane from "@/components/SplitPane";
+import {
+  AreaState,
+  Coordinate,
+  LocationType,
+  PointState,
+  LocationTree,
+  Polygon,
+} from "@/types";
 import { useEffect, useState } from "react";
 import { Locations } from "./Locations";
-import SplitPane from "../SplitPane";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
-  const [root, setRoot] = useState<RootState>({
+  const [locationTree, setLocationTree] = useState<LocationTree>({
     locationType: LocationType.Root,
     displayName: "Root",
     sublocations: [],
   });
+  const [markers, setMarkers] = useState<Coordinate[]>([]);
+  const [polygons, setPolygons] = useState<Polygon[]>([]);
 
   // TODO: is this a janky way to load Places?
   useEffect(() => {
@@ -26,10 +36,10 @@ export default function QuizBuilder() {
   }, []);
 
   function findLocation(
-    searchLocation: RootState | AreaState | PointState,
-    targetLocation: RootState | AreaState | PointState,
-    newLocation: RootState | AreaState | PointState | null,
-  ): RootState | AreaState | PointState | null {
+    searchLocation: LocationTree | AreaState | PointState,
+    targetLocation: LocationTree | AreaState | PointState,
+    newLocation: LocationTree | AreaState | PointState | null,
+  ): LocationTree | AreaState | PointState | null {
     if (searchLocation === targetLocation) {
       return newLocation;
     }
@@ -73,20 +83,20 @@ export default function QuizBuilder() {
   }
 
   function replaceLocation(
-    targetLocation: RootState | AreaState | PointState,
-    newLocation: RootState | AreaState | PointState | null,
+    targetLocation: LocationTree | AreaState | PointState,
+    newLocation: LocationTree | AreaState | PointState | null,
   ): void {
-    const newRoot = findLocation(root, targetLocation, newLocation);
+    const newRoot = findLocation(locationTree, targetLocation, newLocation);
 
     if (newRoot?.locationType !== LocationType.Root) {
       throw new Error("newRoot is not a RootState.");
     }
 
-    setRoot(newRoot);
+    setLocationTree(newRoot);
   }
 
   function addLocation(
-    parentLocation: RootState | AreaState,
+    parentLocation: LocationTree | AreaState,
     childLocation: AreaState | PointState,
   ): void {
     const newParentLocation = {
@@ -110,22 +120,27 @@ export default function QuizBuilder() {
     replaceLocation(targetLocation, null);
   }
 
-  useEffect(() => {
-    console.log(root);
-  }, [root]);
-
   return (
     <>
       {placesLoaded ? (
         <SplitPane>
           <Locations
             className="m-2"
-            parentLocation={root}
+            parentLocation={locationTree}
             addLocation={addLocation}
             toggleLocationOpen={toggleLocationOpen}
             deleteLocation={deleteLocation}
           />
-          <div className="bg-red-900 h-full w-full" />
+          <Map
+            mapId="696d0ea42431a75c"
+            center={{
+              lat: 40.69153221695429,
+              lng: -73.98506899223159,
+            }}
+            zoom={8}
+            markers={markers}
+            polygons={polygons}
+          />
         </SplitPane>
       ) : (
         "Loading..."
