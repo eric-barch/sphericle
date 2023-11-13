@@ -1,6 +1,7 @@
 import { LocationType, AreaState, PointState, RootState } from "@/types";
 import { useEffect, useState } from "react";
 import { Locations } from "./Locations";
+import SplitPane from "../SplitPane";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
@@ -114,17 +115,22 @@ export default function QuizBuilder() {
   }, [root]);
 
   return (
-    <div className="m-3">
-      {placesLoaded ? (
-        <Locations
-          parentLocation={root}
-          addLocation={addLocation}
-          toggleLocationOpen={toggleLocationOpen}
-          deleteLocation={deleteLocation}
-        />
-      ) : (
-        "Loading..."
-      )}
-    </div>
+    <SplitPane>
+      <>
+        {placesLoaded ? (
+          <Locations
+            parentLocation={root}
+            addLocation={addLocation}
+            toggleLocationOpen={toggleLocationOpen}
+            deleteLocation={deleteLocation}
+          />
+        ) : (
+          "Loading..."
+        )}
+      </>
+      <div className="bg-red-900 h-full w-full" />
+      <div className="bg-blue-900 h-full w-full" />
+      <div className="bg-green-900 h-full w-full" />
+    </SplitPane>
   );
 }
