@@ -79,6 +79,16 @@ export default function SplitPane({ children }: SplitPaneProps) {
     [isResizing, paneWidths, currentPaneIndex],
   );
 
+  const handleDoubleClick = useCallback(
+    (index: number) => {
+      const newPaneWidths = [...paneWidths];
+      newPaneWidths[index] = newPaneWidths[index + 1] =
+        (paneWidths[index] + paneWidths[index + 1]) / 2;
+      setPaneWidths(newPaneWidths);
+    },
+    [paneWidths],
+  );
+
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);
   }, []);
@@ -106,6 +116,7 @@ export default function SplitPane({ children }: SplitPaneProps) {
                 }px`,
               }}
               onMouseDown={() => handleMouseDown(index)}
+              onDoubleClick={() => handleDoubleClick(index)}
             />
           )}
         </React.Fragment>

@@ -115,20 +115,21 @@ export default function QuizBuilder() {
   }, [root]);
 
   return (
-    <SplitPane>
-      <>
-        {placesLoaded ? (
+    <>
+      {placesLoaded ? (
+        <SplitPane>
           <Locations
+            className="m-2"
             parentLocation={root}
             addLocation={addLocation}
             toggleLocationOpen={toggleLocationOpen}
             deleteLocation={deleteLocation}
           />
-        ) : (
-          "Loading..."
-        )}
-      </>
-      <div className="bg-red-900 h-full w-full" />
-    </SplitPane>
+          <div className="bg-red-900 h-full w-full" />
+        </SplitPane>
+      ) : (
+        "Loading..."
+      )}
+    </>
   );
 }
