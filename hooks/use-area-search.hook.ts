@@ -36,7 +36,7 @@ interface UseAreaSearchReturn {
   reset: () => void;
 }
 
-function getComponentPolygons(array: any[]): Polygon[] {
+function getPolygons(array: any[]): Polygon[] {
   let polygons: Polygon[] = [];
 
   for (const item of array) {
@@ -53,7 +53,7 @@ function getComponentPolygons(array: any[]): Polygon[] {
         coordinates,
       });
     } else {
-      const subPolygons = getComponentPolygons(item);
+      const subPolygons = getPolygons(item);
       polygons.push(...subPolygons);
     }
   }
@@ -64,9 +64,7 @@ function getComponentPolygons(array: any[]): Polygon[] {
 function parseOpenStreetMapArea(
   openStreetMapArea: OpenStreetMapArea,
 ): AreaState {
-  const componentPolygons = getComponentPolygons(
-    openStreetMapArea.geojson.coordinates,
-  );
+  const polygons = getPolygons(openStreetMapArea.geojson.coordinates);
 
   return {
     locationType: LocationType.Area,
@@ -74,7 +72,7 @@ function parseOpenStreetMapArea(
     displayName: openStreetMapArea.name,
     fullName: openStreetMapArea.display_name,
     open: false,
-    polygons: [],
+    polygons,
     sublocations: [],
   };
 }
@@ -107,6 +105,7 @@ export default function useAreaSearch(): UseAreaSearchReturn {
         (searchResult): searchResult is AreaState => searchResult !== null,
       );
 
+    console.log(searchResults);
     setInternalSearchResults(searchResults);
     setInternalSearchStatus(SearchStatus.Searched);
   }, []);

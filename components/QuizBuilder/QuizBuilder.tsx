@@ -105,6 +105,17 @@ export default function QuizBuilder() {
     };
 
     replaceLocation(parentLocation, newParentLocation);
+
+    if (childLocation.locationType === LocationType.Point) {
+      const coordinate = childLocation.position;
+      setMarkers([coordinate]);
+    }
+
+    if (childLocation.locationType === LocationType.Area) {
+      const polygons = childLocation.polygons;
+      console.log(polygons);
+      setPolygons(polygons);
+    }
   }
 
   function toggleLocationOpen(targetLocation: AreaState): void {
