@@ -105,17 +105,6 @@ export default function QuizBuilder() {
     };
 
     replaceLocation(parentLocation, newParentLocation);
-
-    if (childLocation.locationType === LocationType.Point) {
-      const coordinate = childLocation.position;
-      setMarkers([coordinate]);
-    }
-
-    if (childLocation.locationType === LocationType.Area) {
-      const polygons = childLocation.polygons;
-      console.log(polygons);
-      setPolygons(polygons);
-    }
   }
 
   function toggleLocationOpen(targetLocation: AreaState): void {
@@ -141,6 +130,8 @@ export default function QuizBuilder() {
             addLocation={addLocation}
             toggleLocationOpen={toggleLocationOpen}
             deleteLocation={deleteLocation}
+            setMarkers={setMarkers}
+            setPolygons={setPolygons}
           />
           <Map
             mapId="696d0ea42431a75c"

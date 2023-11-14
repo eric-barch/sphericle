@@ -1,4 +1,10 @@
-import { AreaState, PointState, LocationTree } from "@/types";
+import {
+  AreaState,
+  PointState,
+  LocationTree,
+  Coordinate,
+  Polygon,
+} from "@/types";
 import { Disclosure } from "@headlessui/react";
 import { FaChevronRight, FaDrawPolygon } from "react-icons/fa6";
 import { Locations } from "./Locations";
@@ -11,6 +17,8 @@ interface AreaProps {
   ) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
+  setMarkers: (markers: Coordinate[]) => void;
+  setPolygons: (polygons: Polygon[]) => void;
 }
 
 export default function Area({
@@ -18,6 +26,8 @@ export default function Area({
   addLocation,
   toggleLocationOpen,
   deleteLocation,
+  setMarkers,
+  setPolygons,
 }: AreaProps) {
   function handleClick() {
     toggleLocationOpen(location);
@@ -45,6 +55,8 @@ export default function Area({
                 addLocation={addLocation}
                 toggleLocationOpen={toggleLocationOpen}
                 deleteLocation={deleteLocation}
+                setMarkers={setMarkers}
+                setPolygons={setPolygons}
               />
             </Disclosure.Panel>
           </>

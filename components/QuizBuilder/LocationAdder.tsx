@@ -2,7 +2,14 @@
 
 import useAreaSearch from "@/hooks/use-area-search.hook";
 import usePointSearch from "@/hooks/use-point-search.hook";
-import { AreaState, LocationType, PointState, LocationTree } from "@/types";
+import {
+  AreaState,
+  LocationType,
+  PointState,
+  LocationTree,
+  Coordinate,
+  Polygon,
+} from "@/types";
 import { Combobox } from "@headlessui/react";
 import React, { useState } from "react";
 import LocationAdderInput from "./LocationAdderInput";
@@ -14,11 +21,15 @@ interface LocationAdderProps {
     parentLocation: LocationTree | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
+  setMarkers: (markers: Coordinate[]) => void;
+  setPolygons: (polygons: Polygon[]) => void;
 }
 
 export default function LocationAdder({
   parentLocation,
   addLocation,
+  setMarkers,
+  setPolygons,
 }: LocationAdderProps) {
   const [locationAdderLocationType, setLocationAdderLocationType] =
     useState<LocationType>(LocationType.Area);
@@ -63,6 +74,15 @@ export default function LocationAdder({
 
   function handleChange(childLocation: AreaState | PointState) {
     addLocation(parentLocation, childLocation);
+
+    if (childLocation.locationType === LocationType.Area) {
+      setPolygons(childLocation.polygons);
+    }
+
+    if (childLocation.locationType === LocationType.Point) {
+      setMarkers([childLocation.position]);
+    }
+
     setInput("");
     resetAreaSearch();
     resetPointSearch();

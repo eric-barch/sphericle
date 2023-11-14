@@ -1,4 +1,11 @@
-import { AreaState, LocationType, PointState, LocationTree } from "@/types";
+import {
+  AreaState,
+  LocationType,
+  PointState,
+  LocationTree,
+  Coordinate,
+  Polygon,
+} from "@/types";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 import Point from "./Point";
@@ -12,6 +19,8 @@ interface LocationsProps {
   ) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
+  setMarkers: (markers: Coordinate[]) => void;
+  setPolygons: (polygons: Polygon[]) => void;
 }
 
 export function Locations({
@@ -20,6 +29,8 @@ export function Locations({
   addLocation,
   toggleLocationOpen,
   deleteLocation,
+  setMarkers,
+  setPolygons,
 }: LocationsProps) {
   return (
     <div className={`${className} space-y-1`}>
@@ -32,6 +43,8 @@ export function Locations({
               addLocation={addLocation}
               toggleLocationOpen={toggleLocationOpen}
               deleteLocation={deleteLocation}
+              setMarkers={setMarkers}
+              setPolygons={setPolygons}
             />
           );
         }
@@ -42,6 +55,7 @@ export function Locations({
               key={sublocation.placeId}
               location={sublocation}
               deleteLocation={deleteLocation}
+              // setMarkers={setMarkers}
             />
           );
         }
@@ -49,6 +63,8 @@ export function Locations({
       <LocationAdder
         parentLocation={parentLocation}
         addLocation={addLocation}
+        setMarkers={setMarkers}
+        setPolygons={setPolygons}
       />
     </div>
   );
