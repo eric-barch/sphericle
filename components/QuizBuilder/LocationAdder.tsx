@@ -9,6 +9,7 @@ import {
   TreeState,
   Coordinate,
   Polygon,
+  Bounds,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import React, { useState } from "react";
@@ -21,11 +22,19 @@ interface LocationAdderProps {
     parentLocation: TreeState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
+  setMarkers: (markers: Coordinate[]) => void;
+  setParentPolygons: (polygons: Polygon[]) => void;
+  setChildPolygons: (polygons: Polygon[]) => void;
+  setBounds: (bounds: Bounds) => void;
 }
 
 export default function LocationAdder({
   parentLocation,
   addLocation,
+  setMarkers,
+  setParentPolygons,
+  setChildPolygons,
+  setBounds,
 }: LocationAdderProps) {
   const [locationAdderLocationType, setLocationAdderLocationType] =
     useState<LocationType>(LocationType.Area);
@@ -79,8 +88,7 @@ export default function LocationAdder({
     <div onFocus={handleFocus} onBlur={handleBlur}>
       <Combobox onChange={handleChange}>
         <LocationAdderInput
-          parentLocationType={parentLocation.locationType}
-          parentLocationName={parentLocation.displayName}
+          parentLocation={parentLocation}
           locationAdderLocationType={locationAdderLocationType}
           setLocationAdderLocationType={setLocationAdderLocationType}
           input={input}
@@ -89,6 +97,10 @@ export default function LocationAdder({
           setAreaSearchTerm={setAreaSearchTerm}
           pointSearchTerm={pointSearchTerm}
           setPointSearchTerm={setPointSearchTerm}
+          setMarkers={setMarkers}
+          setParentPolygons={setParentPolygons}
+          setChildPolygons={setChildPolygons}
+          setBounds={setBounds}
         />
         <LocationAdderOptions
           locationAdderLocationType={locationAdderLocationType}

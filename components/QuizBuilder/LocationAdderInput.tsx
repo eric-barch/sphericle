@@ -1,12 +1,18 @@
-import { LocationType } from "@/types";
+import {
+  AreaState,
+  Bounds,
+  Coordinate,
+  LocationType,
+  Polygon,
+  TreeState,
+} from "@/types";
 import debounce from "@/utils/debounce";
 import { Combobox } from "@headlessui/react";
 import { useCallback } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 
 interface LocationAdderInputProps {
-  parentLocationType: LocationType;
-  parentLocationName: string | null;
+  parentLocation: TreeState | AreaState;
   locationAdderLocationType: LocationType;
   setLocationAdderLocationType: React.Dispatch<
     React.SetStateAction<LocationType>
@@ -17,11 +23,14 @@ interface LocationAdderInputProps {
   setAreaSearchTerm: (searchTerm: string) => void;
   pointSearchTerm: string;
   setPointSearchTerm: (searchTerm: string) => void;
+  setMarkers: (markers: Coordinate[]) => void;
+  setParentPolygons: (polygons: Polygon[]) => void;
+  setChildPolygons: (polygons: Polygon[]) => void;
+  setBounds: (bounds: Bounds) => void;
 }
 
 export default function LocationAdderInput({
-  parentLocationType,
-  parentLocationName,
+  parentLocation,
   locationAdderLocationType,
   setLocationAdderLocationType,
   input,
@@ -30,9 +39,24 @@ export default function LocationAdderInput({
   setAreaSearchTerm,
   pointSearchTerm,
   setPointSearchTerm,
+  setMarkers,
+  setParentPolygons,
+  setChildPolygons,
+  setBounds,
 }: LocationAdderInputProps) {
+  function handleFocus() {
+    setMarkers([]);
+    setChildPolygons([]);
+    if (parentLocation.locationType === LocationType.Area) {
+      setBounds(parentLocation.bounds);
+      setParentPolygons(parentLocation.polygons);
+    } else {
+      setParentPolygons([]);
+    }
+  }
+
   return (
-    <div className="relative">
+    <div className="relative" onFocus={handleFocus}>
       <ToggleLocationTypeButton
         locationAdderLocationType={locationAdderLocationType}
         setLocationAdderLocationType={setLocationAdderLocationType}
@@ -41,8 +65,8 @@ export default function LocationAdderInput({
         setPointSearchTerm={setPointSearchTerm}
       />
       <InputBox
-        parentLocationType={parentLocationType}
-        parentLocationName={parentLocationName}
+        parentLocationType={parentLocation.locationType}
+        parentLocationName={parentLocation.displayName}
         locationAdderLocationType={locationAdderLocationType}
         input={input}
         setInput={setInput}

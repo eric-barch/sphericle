@@ -75,6 +75,10 @@ export function Locations({
       <LocationAdder
         parentLocation={parentLocation}
         addLocation={addLocation}
+        setMarkers={setMarkers}
+        setParentPolygons={setParentPolygons}
+        setChildPolygons={setChildPolygons}
+        setBounds={setBounds}
       />
     </div>
   );
