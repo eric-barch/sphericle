@@ -5,7 +5,7 @@ import {
   Coordinate,
   LocationType,
   PointState,
-  LocationTree,
+  TreeState,
   Polygon,
   Bounds,
 } from "@/types";
@@ -14,8 +14,8 @@ import { Locations } from "./Locations";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
-  const [locationTree, setLocationTree] = useState<LocationTree>({
-    locationType: LocationType.Root,
+  const [locationTree, setLocationTree] = useState<TreeState>({
+    locationType: LocationType.Tree,
     displayName: "Root",
     sublocations: [],
   });
@@ -43,10 +43,10 @@ export default function QuizBuilder() {
   }, []);
 
   function findLocation(
-    searchLocation: LocationTree | AreaState | PointState,
-    targetLocation: LocationTree | AreaState | PointState,
-    newLocation: LocationTree | AreaState | PointState | null,
-  ): LocationTree | AreaState | PointState | null {
+    searchLocation: TreeState | AreaState | PointState,
+    targetLocation: TreeState | AreaState | PointState,
+    newLocation: TreeState | AreaState | PointState | null,
+  ): TreeState | AreaState | PointState | null {
     if (searchLocation === targetLocation) {
       return newLocation;
     }
@@ -56,7 +56,7 @@ export default function QuizBuilder() {
     }
 
     if (
-      searchLocation.locationType === LocationType.Root ||
+      searchLocation.locationType === LocationType.Tree ||
       searchLocation.locationType === LocationType.Area
     ) {
       let newSublocations: (AreaState | PointState)[] = [];
@@ -90,12 +90,12 @@ export default function QuizBuilder() {
   }
 
   function replaceLocation(
-    targetLocation: LocationTree | AreaState | PointState,
-    newLocation: LocationTree | AreaState | PointState | null,
+    targetLocation: TreeState | AreaState | PointState,
+    newLocation: TreeState | AreaState | PointState | null,
   ): void {
     const newRoot = findLocation(locationTree, targetLocation, newLocation);
 
-    if (newRoot?.locationType !== LocationType.Root) {
+    if (newRoot?.locationType !== LocationType.Tree) {
       throw new Error("newRoot is not a RootState.");
     }
 
@@ -103,7 +103,7 @@ export default function QuizBuilder() {
   }
 
   function addLocation(
-    parentLocation: LocationTree | AreaState,
+    parentLocation: TreeState | AreaState,
     childLocation: AreaState | PointState,
   ): void {
     const newParentLocation = {

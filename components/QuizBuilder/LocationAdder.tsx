@@ -6,7 +6,7 @@ import {
   AreaState,
   LocationType,
   PointState,
-  LocationTree,
+  TreeState,
   Coordinate,
   Polygon,
 } from "@/types";
@@ -16,9 +16,9 @@ import LocationAdderInput from "./LocationAdderInput";
 import LocationAdderOptions from "./LocationAdderOptions";
 
 interface LocationAdderProps {
-  parentLocation: LocationTree | AreaState;
+  parentLocation: TreeState | AreaState;
   addLocation: (
-    parentLocation: LocationTree | AreaState,
+    parentLocation: TreeState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
   setMarkers: (markers: Coordinate[]) => void;

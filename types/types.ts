@@ -31,8 +31,8 @@ export interface Polygon {
   coordinates: Coordinate[];
 }
 
-export interface LocationTree {
-  locationType: LocationType.Root;
+export interface TreeState {
+  locationType: LocationType.Tree;
   displayName: string;
   sublocations: (AreaState | PointState)[];
 }

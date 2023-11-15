@@ -124,7 +124,7 @@ function InputBox({
   setPointSearchTerm,
 }: InputBoxProps) {
   const placeholder =
-    parentLocationType === LocationType.Root
+    parentLocationType === LocationType.Tree
       ? `Add ${locationAdderLocationType}`
       : `Add ${locationAdderLocationType} in ${parentLocationName}`;
 

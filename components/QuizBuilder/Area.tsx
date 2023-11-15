@@ -1,19 +1,21 @@
 import {
   AreaState,
   PointState,
-  LocationTree,
+  TreeState,
   Coordinate,
   Polygon,
   Bounds,
+  LocationType,
 } from "@/types";
 import { Disclosure } from "@headlessui/react";
 import { FaChevronRight, FaDrawPolygon } from "react-icons/fa6";
 import { Locations } from "./Locations";
 
 interface AreaProps {
+  parentLocation: TreeState | AreaState;
   location: AreaState;
   addLocation: (
-    parentLocation: LocationTree | AreaState,
+    parentLocation: TreeState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;
@@ -24,6 +26,7 @@ interface AreaProps {
 }
 
 export default function Area({
+  parentLocation,
   location,
   addLocation,
   toggleLocationOpen,
@@ -33,8 +36,14 @@ export default function Area({
   setBounds,
 }: AreaProps) {
   function handleFocus() {
+    if (parentLocation.locationType === LocationType.Tree) {
+      setBounds(location.bounds);
+    } else {
+      setBounds(parentLocation.bounds);
+    }
+
+    setMarkers([]);
     setPolygons(location.polygons);
-    setBounds(location.bounds);
   }
 
   function handleClick() {

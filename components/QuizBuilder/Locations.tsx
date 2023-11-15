@@ -2,7 +2,7 @@ import {
   AreaState,
   LocationType,
   PointState,
-  LocationTree,
+  TreeState,
   Coordinate,
   Polygon,
   Bounds,
@@ -13,9 +13,9 @@ import Point from "./Point";
 
 interface LocationsProps {
   className?: string;
-  parentLocation: LocationTree | AreaState;
+  parentLocation: TreeState | AreaState;
   addLocation: (
-    parentLocation: LocationTree | AreaState,
+    parentLocation: TreeState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;
@@ -42,6 +42,7 @@ export function Locations({
           return (
             <Area
               key={sublocation.placeId}
+              parentLocation={parentLocation}
               location={sublocation}
               addLocation={addLocation}
               toggleLocationOpen={toggleLocationOpen}
@@ -57,9 +58,12 @@ export function Locations({
           return (
             <Point
               key={sublocation.placeId}
+              parentLocation={parentLocation}
               location={sublocation}
               deleteLocation={deleteLocation}
               setMarkers={setMarkers}
+              setPolygons={setPolygons}
+              setBounds={setBounds}
             />
           );
         }

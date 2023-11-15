@@ -59,8 +59,10 @@ export default function Map({ mapId, bounds, markers, polygons }: MapProps) {
         const newPolygon = new window.google.maps.Polygon({
           paths: polygon.coordinates,
           map: googleMapRef.current,
-          strokeColor: "#FF0000",
-          fillOpacity: 0.0,
+          strokeColor: "#d61613",
+          strokeWeight: 1.5,
+          fillColor: "#d61613",
+          fillOpacity: 0.2,
         });
         polygonsRef.current.push(newPolygon);
       });
