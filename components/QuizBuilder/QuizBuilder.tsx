@@ -113,6 +113,21 @@ export default function QuizBuilder() {
     };
 
     replaceLocation(parentLocation, newParentLocation);
+
+    if (parentLocation.locationType === LocationType.Tree) {
+      setParentPolygons([]);
+    } else {
+      setBounds(parentLocation.bounds);
+      setParentPolygons(parentLocation.polygons);
+    }
+
+    if (childLocation.locationType === LocationType.Area) {
+      setChildPolygons(childLocation.polygons);
+      setMarkers([]);
+    } else {
+      setChildPolygons([]);
+      setMarkers([childLocation.position]);
+    }
   }
 
   function setLocationOpen(targetLocation: AreaState, open: boolean): void {
