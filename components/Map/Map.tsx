@@ -11,14 +11,22 @@ interface MapProps {
   mapId: string;
   bounds: Bounds;
   markers: Coordinate[];
-  polygons: Polygon[];
+  parentPolygons: Polygon[];
+  childPolygons: Polygon[];
 }
 
-export default function Map({ mapId, bounds, markers, polygons }: MapProps) {
+export default function Map({
+  mapId,
+  bounds,
+  markers,
+  parentPolygons,
+  childPolygons,
+}: MapProps) {
   const mapRef = useRef(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<(google.maps.Marker | null)[]>([]);
-  const polygonsRef = useRef<(google.maps.Polygon | null)[]>([]);
+  const parentPolygonsRef = useRef<(google.maps.Polygon | null)[]>([]);
+  const childPolygonsRef = useRef<(google.maps.Polygon | null)[]>([]);
 
   useEffect(() => {
     if (window.google && mapRef.current && !googleMapRef.current) {
@@ -52,10 +60,29 @@ export default function Map({ mapId, bounds, markers, polygons }: MapProps) {
 
   useEffect(() => {
     if (googleMapRef.current) {
-      polygonsRef.current.forEach((polygon) => polygon?.setMap(null));
-      polygonsRef.current = [];
+      parentPolygonsRef.current.forEach((polygon) => polygon?.setMap(null));
+      parentPolygonsRef.current = [];
 
-      polygons.forEach((polygon) => {
+      parentPolygons.forEach((polygon) => {
+        const newPolygon = new window.google.maps.Polygon({
+          paths: polygon.coordinates,
+          map: googleMapRef.current,
+          strokeColor: "#d61613",
+          strokeWeight: 1.5,
+          fillColor: "#d61613",
+          fillOpacity: 0.0,
+        });
+        parentPolygonsRef.current.push(newPolygon);
+      });
+    }
+  }, [parentPolygons]);
+
+  useEffect(() => {
+    if (googleMapRef.current) {
+      childPolygonsRef.current.forEach((polygon) => polygon?.setMap(null));
+      childPolygonsRef.current = [];
+
+      childPolygons.forEach((polygon) => {
         const newPolygon = new window.google.maps.Polygon({
           paths: polygon.coordinates,
           map: googleMapRef.current,
@@ -64,10 +91,10 @@ export default function Map({ mapId, bounds, markers, polygons }: MapProps) {
           fillColor: "#d61613",
           fillOpacity: 0.2,
         });
-        polygonsRef.current.push(newPolygon);
+        childPolygonsRef.current.push(newPolygon);
       });
     }
-  }, [polygons]);
+  }, [childPolygons]);
 
   return <div className="h-full w-full" ref={mapRef} />;
 }

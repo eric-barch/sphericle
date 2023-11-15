@@ -21,7 +21,7 @@ interface LocationsProps {
   toggleLocationOpen: (targetLocation: AreaState) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
   setMarkers: (markers: Coordinate[]) => void;
-  setPolygons: (polygons: Polygon[]) => void;
+  setChildPolygons: (polygons: Polygon[]) => void;
   setBounds: (bounds: Bounds) => void;
 }
 
@@ -32,7 +32,7 @@ export function Locations({
   toggleLocationOpen,
   deleteLocation,
   setMarkers,
-  setPolygons,
+  setChildPolygons,
   setBounds,
 }: LocationsProps) {
   return (
@@ -48,7 +48,7 @@ export function Locations({
               toggleLocationOpen={toggleLocationOpen}
               deleteLocation={deleteLocation}
               setMarkers={setMarkers}
-              setPolygons={setPolygons}
+              setChildPolygons={setChildPolygons}
               setBounds={setBounds}
             />
           );
@@ -62,7 +62,7 @@ export function Locations({
               location={sublocation}
               deleteLocation={deleteLocation}
               setMarkers={setMarkers}
-              setPolygons={setPolygons}
+              setChildPolygons={setChildPolygons}
               setBounds={setBounds}
             />
           );
@@ -72,7 +72,7 @@ export function Locations({
         parentLocation={parentLocation}
         addLocation={addLocation}
         setMarkers={setMarkers}
-        setPolygons={setPolygons}
+        setPolygons={setChildPolygons}
       />
     </div>
   );

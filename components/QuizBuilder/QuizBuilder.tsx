@@ -26,7 +26,8 @@ export default function QuizBuilder() {
     west: 0,
   });
   const [markers, setMarkers] = useState<Coordinate[]>([]);
-  const [polygons, setPolygons] = useState<Polygon[]>([]);
+  const [parentPolygons, setParentPolygons] = useState<Polygon[]>([]);
+  const [childPolygons, setChildPolygons] = useState<Polygon[]>([]);
 
   // TODO: is this a janky way to load Places?
   useEffect(() => {
@@ -138,14 +139,14 @@ export default function QuizBuilder() {
             toggleLocationOpen={toggleLocationOpen}
             deleteLocation={deleteLocation}
             setMarkers={setMarkers}
-            setPolygons={setPolygons}
+            setChildPolygons={setChildPolygons}
             setBounds={setBounds}
           />
           <Map
             mapId="696d0ea42431a75c"
             bounds={bounds}
             markers={markers}
-            polygons={polygons}
+            childPolygons={childPolygons}
           />
         </SplitPane>
       ) : (

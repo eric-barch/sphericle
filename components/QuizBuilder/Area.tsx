@@ -21,7 +21,7 @@ interface AreaProps {
   toggleLocationOpen: (targetLocation: AreaState) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
   setMarkers: (markers: Coordinate[]) => void;
-  setPolygons: (polygons: Polygon[]) => void;
+  setChildPolygons: (polygons: Polygon[]) => void;
   setBounds: (bounds: Bounds) => void;
 }
 
@@ -32,7 +32,7 @@ export default function Area({
   toggleLocationOpen,
   deleteLocation,
   setMarkers,
-  setPolygons,
+  setChildPolygons,
   setBounds,
 }: AreaProps) {
   function handleFocus() {
@@ -43,7 +43,7 @@ export default function Area({
     }
 
     setMarkers([]);
-    setPolygons(location.polygons);
+    setChildPolygons(location.polygons);
   }
 
   function handleClick() {
@@ -74,7 +74,7 @@ export default function Area({
                 toggleLocationOpen={toggleLocationOpen}
                 deleteLocation={deleteLocation}
                 setMarkers={setMarkers}
-                setPolygons={setPolygons}
+                setChildPolygons={setChildPolygons}
                 setBounds={setBounds}
               />
             </Disclosure.Panel>
