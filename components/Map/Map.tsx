@@ -1,4 +1,4 @@
-import { Coordinate, Polygon } from "@/types";
+import { Bounds, Coordinate, Polygon } from "@/types";
 import React, { useEffect, useMemo, useRef } from "react";
 
 declare global {
@@ -9,32 +9,21 @@ declare global {
 
 interface MapProps {
   mapId: string;
-  center: Coordinate;
-  zoom: number;
+  bounds: Bounds;
   markers: Coordinate[];
   polygons: Polygon[];
 }
 
-export default function Map({
-  mapId,
-  center: centerProp,
-  zoom,
-  markers,
-  polygons,
-}: MapProps) {
+export default function Map({ mapId, bounds, markers, polygons }: MapProps) {
   const mapRef = useRef(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<(google.maps.Marker | null)[]>([]);
   const polygonsRef = useRef<(google.maps.Polygon | null)[]>([]);
 
-  const center = useMemo(() => centerProp, [centerProp.lat, centerProp.lng]);
-
   useEffect(() => {
     if (window.google && mapRef.current && !googleMapRef.current) {
       googleMapRef.current = new window.google.maps.Map(mapRef.current, {
         mapId,
-        center,
-        zoom,
         disableDefaultUI: true,
       });
     }
@@ -42,17 +31,9 @@ export default function Map({
 
   useEffect(() => {
     if (googleMapRef.current) {
-      googleMapRef.current.panTo(center);
-      googleMapRef.current.setZoom(zoom);
+      googleMapRef.current.fitBounds(bounds);
     }
-  }, [center]);
-
-  useEffect(() => {
-    if (googleMapRef.current) {
-      googleMapRef.current.panTo(center);
-      googleMapRef.current.setZoom(zoom);
-    }
-  }, [zoom]);
+  }, [bounds]);
 
   useEffect(() => {
     if (googleMapRef.current) {

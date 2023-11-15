@@ -65,6 +65,12 @@ function parseOpenStreetMapArea(
   openStreetMapArea: OpenStreetMapArea,
 ): AreaState {
   const polygons = getPolygons(openStreetMapArea.geojson.coordinates);
+  const boundingBox = {
+    south: Number(openStreetMapArea.boundingbox[0]),
+    north: Number(openStreetMapArea.boundingbox[1]),
+    west: Number(openStreetMapArea.boundingbox[2]),
+    east: Number(openStreetMapArea.boundingbox[3]),
+  };
 
   return {
     locationType: LocationType.Area,
@@ -73,6 +79,7 @@ function parseOpenStreetMapArea(
     fullName: openStreetMapArea.display_name,
     open: false,
     polygons,
+    bounds: boundingBox,
     sublocations: [],
   };
 }

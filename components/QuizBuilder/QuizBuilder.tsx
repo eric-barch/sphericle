@@ -7,6 +7,7 @@ import {
   PointState,
   LocationTree,
   Polygon,
+  Bounds,
 } from "@/types";
 import { useEffect, useState } from "react";
 import { Locations } from "./Locations";
@@ -17,6 +18,12 @@ export default function QuizBuilder() {
     locationType: LocationType.Root,
     displayName: "Root",
     sublocations: [],
+  });
+  const [bounds, setBounds] = useState<Bounds>({
+    south: 0,
+    north: 0,
+    east: 0,
+    west: 0,
   });
   const [markers, setMarkers] = useState<Coordinate[]>([]);
   const [polygons, setPolygons] = useState<Polygon[]>([]);
@@ -132,14 +139,11 @@ export default function QuizBuilder() {
             deleteLocation={deleteLocation}
             setMarkers={setMarkers}
             setPolygons={setPolygons}
+            setBounds={setBounds}
           />
           <Map
             mapId="696d0ea42431a75c"
-            center={{
-              lat: 40.69153221695429,
-              lng: -73.98506899223159,
-            }}
-            zoom={8}
+            bounds={bounds}
             markers={markers}
             polygons={polygons}
           />

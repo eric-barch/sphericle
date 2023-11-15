@@ -5,6 +5,7 @@ import {
   LocationTree,
   Coordinate,
   Polygon,
+  Bounds,
 } from "@/types";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
@@ -21,6 +22,7 @@ interface LocationsProps {
   deleteLocation: (targetLocation: AreaState | PointState) => void;
   setMarkers: (markers: Coordinate[]) => void;
   setPolygons: (polygons: Polygon[]) => void;
+  setBounds: (bounds: Bounds) => void;
 }
 
 export function Locations({
@@ -31,6 +33,7 @@ export function Locations({
   deleteLocation,
   setMarkers,
   setPolygons,
+  setBounds,
 }: LocationsProps) {
   return (
     <div className={`${className} space-y-1`}>
@@ -45,6 +48,7 @@ export function Locations({
               deleteLocation={deleteLocation}
               setMarkers={setMarkers}
               setPolygons={setPolygons}
+              setBounds={setBounds}
             />
           );
         }

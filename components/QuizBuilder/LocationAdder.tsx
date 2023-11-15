@@ -75,6 +75,8 @@ export default function LocationAdder({
   function handleChange(childLocation: AreaState | PointState) {
     addLocation(parentLocation, childLocation);
 
+    console.log(childLocation);
+
     if (childLocation.locationType === LocationType.Area) {
       setPolygons(childLocation.polygons);
     }

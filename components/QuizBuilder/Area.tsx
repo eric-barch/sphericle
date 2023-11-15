@@ -4,6 +4,7 @@ import {
   LocationTree,
   Coordinate,
   Polygon,
+  Bounds,
 } from "@/types";
 import { Disclosure } from "@headlessui/react";
 import { FaChevronRight, FaDrawPolygon } from "react-icons/fa6";
@@ -19,6 +20,7 @@ interface AreaProps {
   deleteLocation: (targetLocation: AreaState | PointState) => void;
   setMarkers: (markers: Coordinate[]) => void;
   setPolygons: (polygons: Polygon[]) => void;
+  setBounds: (bounds: Bounds) => void;
 }
 
 export default function Area({
@@ -28,9 +30,11 @@ export default function Area({
   deleteLocation,
   setMarkers,
   setPolygons,
+  setBounds,
 }: AreaProps) {
   function handleFocus() {
     setPolygons(location.polygons);
+    setBounds(location.bounds);
   }
 
   function handleClick() {
@@ -62,6 +66,7 @@ export default function Area({
                 deleteLocation={deleteLocation}
                 setMarkers={setMarkers}
                 setPolygons={setPolygons}
+                setBounds={setBounds}
               />
             </Disclosure.Panel>
           </>

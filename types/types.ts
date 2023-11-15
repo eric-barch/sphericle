@@ -7,8 +7,11 @@ export interface AreaState {
   fullName: string;
   open: boolean;
   polygons: Polygon[];
+  bounds: Bounds;
   sublocations: (AreaState | PointState)[];
 }
+
+export type Bounds = google.maps.LatLngBoundsLiteral;
 
 export interface Coordinate {
   lat: number;
