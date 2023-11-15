@@ -115,10 +115,10 @@ export default function QuizBuilder() {
     replaceLocation(parentLocation, newParentLocation);
   }
 
-  function toggleLocationOpen(targetLocation: AreaState): void {
+  function setLocationOpen(targetLocation: AreaState, open: boolean): void {
     const newLocation = {
       ...targetLocation,
-      open: !targetLocation.open,
+      open,
     };
 
     replaceLocation(targetLocation, newLocation);
@@ -136,9 +136,10 @@ export default function QuizBuilder() {
             className="m-2"
             parentLocation={locationTree}
             addLocation={addLocation}
-            toggleLocationOpen={toggleLocationOpen}
+            setLocationOpen={setLocationOpen}
             deleteLocation={deleteLocation}
             setMarkers={setMarkers}
+            setParentPolygons={setParentPolygons}
             setChildPolygons={setChildPolygons}
             setBounds={setBounds}
           />
@@ -146,6 +147,7 @@ export default function QuizBuilder() {
             mapId="696d0ea42431a75c"
             bounds={bounds}
             markers={markers}
+            parentPolygons={parentPolygons}
             childPolygons={childPolygons}
           />
         </SplitPane>

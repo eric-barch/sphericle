@@ -21,15 +21,11 @@ interface LocationAdderProps {
     parentLocation: TreeState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
-  setMarkers: (markers: Coordinate[]) => void;
-  setPolygons: (polygons: Polygon[]) => void;
 }
 
 export default function LocationAdder({
   parentLocation,
   addLocation,
-  setMarkers,
-  setPolygons,
 }: LocationAdderProps) {
   const [locationAdderLocationType, setLocationAdderLocationType] =
     useState<LocationType>(LocationType.Area);
@@ -74,17 +70,6 @@ export default function LocationAdder({
 
   function handleChange(childLocation: AreaState | PointState) {
     addLocation(parentLocation, childLocation);
-
-    console.log(childLocation);
-
-    if (childLocation.locationType === LocationType.Area) {
-      setPolygons(childLocation.polygons);
-    }
-
-    if (childLocation.locationType === LocationType.Point) {
-      setMarkers([childLocation.position]);
-    }
-
     setInput("");
     resetAreaSearch();
     resetPointSearch();

@@ -18,9 +18,10 @@ interface AreaProps {
     parentLocation: TreeState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
-  toggleLocationOpen: (targetLocation: AreaState) => void;
+  setLocationOpen: (targetLocation: AreaState, open: boolean) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
   setMarkers: (markers: Coordinate[]) => void;
+  setParentPolygons: (polygons: Polygon[]) => void;
   setChildPolygons: (polygons: Polygon[]) => void;
   setBounds: (bounds: Bounds) => void;
 }
@@ -29,25 +30,30 @@ export default function Area({
   parentLocation,
   location,
   addLocation,
-  toggleLocationOpen,
+  setLocationOpen,
   deleteLocation,
   setMarkers,
+  setParentPolygons,
   setChildPolygons,
   setBounds,
 }: AreaProps) {
   function handleFocus() {
-    if (parentLocation.locationType === LocationType.Tree) {
-      setBounds(location.bounds);
-    } else {
-      setBounds(parentLocation.bounds);
-    }
-
     setMarkers([]);
-    setChildPolygons(location.polygons);
-  }
 
-  function handleClick() {
-    toggleLocationOpen(location);
+    if (location.open) {
+      setBounds(location.bounds);
+      setParentPolygons(location.polygons);
+      setChildPolygons([]);
+    } else {
+      if (parentLocation.locationType === LocationType.Tree) {
+        setBounds(location.bounds);
+        setParentPolygons([]);
+      } else {
+        setBounds(parentLocation.bounds);
+        setParentPolygons(parentLocation.polygons);
+      }
+      setChildPolygons(location.polygons);
+    }
   }
 
   return (
@@ -64,16 +70,26 @@ export default function Area({
                 <FaDrawPolygon className="text-gray-400" />
               </div>
               <span>{location.fullName}</span>
-              <ToggleOpenButton open={open} onClick={handleClick} />
+              <ToggleOpenButton
+                open={open}
+                parentLocation={parentLocation}
+                location={location}
+                setLocationOpen={setLocationOpen}
+                setMarkers={setMarkers}
+                setParentPolygons={setParentPolygons}
+                setChildPolygons={setChildPolygons}
+                setBounds={setBounds}
+              />
             </div>
             <Disclosure.Panel>
               <Locations
                 className="ml-10"
                 parentLocation={location}
                 addLocation={addLocation}
-                toggleLocationOpen={toggleLocationOpen}
+                setLocationOpen={setLocationOpen}
                 deleteLocation={deleteLocation}
                 setMarkers={setMarkers}
+                setParentPolygons={setParentPolygons}
                 setChildPolygons={setChildPolygons}
                 setBounds={setBounds}
               />
@@ -87,22 +103,60 @@ export default function Area({
 
 interface ToggleOpenButtonProps {
   open: boolean;
-  onClick: () => void;
+  parentLocation: TreeState | AreaState;
+  location: AreaState;
+  setLocationOpen: (targetLocation: AreaState, open: boolean) => void;
+  setMarkers: (markers: Coordinate[]) => void;
+  setParentPolygons: (polygons: Polygon[]) => void;
+  setChildPolygons: (polygons: Polygon[]) => void;
+  setBounds: (bounds: Bounds) => void;
 }
 
-function ToggleOpenButton({ open, onClick }: ToggleOpenButtonProps) {
+function ToggleOpenButton({
+  open,
+  parentLocation,
+  location,
+  setLocationOpen,
+  setMarkers,
+  setParentPolygons,
+  setChildPolygons,
+  setBounds,
+}: ToggleOpenButtonProps) {
   const styles = open ? "rotate-90" : "rotate-0";
+
+  function handleClick() {
+    const nextOpen = !open;
+
+    setMarkers([]);
+
+    if (nextOpen) {
+      setBounds(location.bounds);
+      setParentPolygons(location.polygons);
+      setChildPolygons([]);
+    } else {
+      if (parentLocation.locationType === LocationType.Tree) {
+        setBounds(location.bounds);
+        setParentPolygons([]);
+      } else {
+        setBounds(parentLocation.bounds);
+        setParentPolygons(parentLocation.polygons);
+      }
+      setChildPolygons(location.polygons);
+    }
+
+    setLocationOpen(location, nextOpen);
+  }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
-      onClick();
+      handleClick();
     }
   };
 
   return (
     <Disclosure.Button
       className="quiz-builder-item-decorator-right-1"
-      onClick={onClick}
+      onClick={handleClick}
       onKeyDown={handleKeyDown}
     >
       <FaChevronRight className={`${styles} w-4 h-auto`} />

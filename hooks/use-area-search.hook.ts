@@ -112,7 +112,6 @@ export default function useAreaSearch(): UseAreaSearchReturn {
         (searchResult): searchResult is AreaState => searchResult !== null,
       );
 
-    console.log(searchResults);
     setInternalSearchResults(searchResults);
     setInternalSearchStatus(SearchStatus.Searched);
   }, []);

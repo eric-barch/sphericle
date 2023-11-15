@@ -14,6 +14,7 @@ interface PointProps {
   location: PointState;
   deleteLocation: (targetLocation: PointState) => void;
   setMarkers: (markers: Coordinate[]) => void;
+  setParentPolygons: (polygons: Polygon[]) => void;
   setChildPolygons: (polygons: Polygon[]) => void;
   setBounds: (bounds: Bounds) => void;
 }
@@ -23,6 +24,7 @@ export default function Point({
   location,
   deleteLocation,
   setMarkers,
+  setParentPolygons,
   setChildPolygons,
   setBounds,
 }: PointProps) {
@@ -40,10 +42,12 @@ export default function Point({
       };
 
       setBounds(bounds);
+      setParentPolygons([]);
       setChildPolygons([]);
     } else {
       setBounds(parentLocation.bounds);
-      setChildPolygons(parentLocation.polygons);
+      setParentPolygons(parentLocation.polygons);
+      setChildPolygons([]);
     }
 
     setMarkers([location.position]);
