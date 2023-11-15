@@ -55,7 +55,7 @@ export function Locations({
               key={sublocation.placeId}
               location={sublocation}
               deleteLocation={deleteLocation}
-              // setMarkers={setMarkers}
+              setMarkers={setMarkers}
             />
           );
         }

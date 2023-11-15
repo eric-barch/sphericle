@@ -29,6 +29,10 @@ export default function Area({
   setMarkers,
   setPolygons,
 }: AreaProps) {
+  function handleFocus() {
+    setPolygons(location.polygons);
+  }
+
   function handleClick() {
     toggleLocationOpen(location);
   }
@@ -41,6 +45,7 @@ export default function Area({
             <div
               className="relative quiz-builder-item quiz-builder-location cursor-pointer"
               tabIndex={0}
+              onFocus={handleFocus}
             >
               <div className="quiz-builder-item-decorator-left-1">
                 <FaDrawPolygon className="text-gray-400" />
