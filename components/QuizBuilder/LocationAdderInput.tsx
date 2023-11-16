@@ -24,6 +24,7 @@ interface LocationAdderInputProps {
   setAreaSearchTerm: (searchTerm: string) => void;
   pointSearchTerm: string;
   setPointSearchTerm: (searchTerm: string) => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function LocationAdderInput({
@@ -36,8 +37,19 @@ export default function LocationAdderInput({
   setAreaSearchTerm,
   pointSearchTerm,
   setPointSearchTerm,
+  setDisplayedLocation,
 }: LocationAdderInputProps) {
-  function handleFocus() {}
+  function handleFocus(event: React.FocusEvent<HTMLDivElement>) {
+    if (event.currentTarget.contains(event.relatedTarget as Node)) {
+      return;
+    }
+
+    if (parentLocation.locationType === LocationType.Tree) {
+      setDisplayedLocation(null);
+    } else {
+      setDisplayedLocation(parentLocation);
+    }
+  }
 
   return (
     <div className="relative" onFocus={handleFocus}>

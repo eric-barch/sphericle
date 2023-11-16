@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   console.log(`bounded: ${bounded}`);
 
   const url =
-    `http://nominatim.openstreetmap.org/search?q=${query}&polygon_geojson=1&format=json` +
+    `http://nominatim.openstreetmap.org/search?q=${query}&polygon_geojson=1&format=json&email=ericmb365@gmail.com` +
     (viewbox ? `&viewbox=${viewbox}` : "") +
     (bounded ? `&bounded=${bounded}` : "");
   console.log(`url: ${url}`);
