@@ -115,6 +115,9 @@ export default function QuizBuilder() {
     replaceLocation(parentLocation, newParentLocation);
 
     if (parentLocation.locationType === LocationType.Tree) {
+      if (childLocation.locationType === LocationType.Area) {
+        setBounds(childLocation.bounds);
+      }
       setParentPolygons([]);
     } else {
       setBounds(parentLocation.bounds);

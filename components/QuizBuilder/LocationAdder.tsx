@@ -87,32 +87,41 @@ export default function LocationAdder({
   return (
     <div onFocus={handleFocus} onBlur={handleBlur}>
       <Combobox onChange={handleChange}>
-        <LocationAdderInput
-          parentLocation={parentLocation}
-          locationAdderLocationType={locationAdderLocationType}
-          setLocationAdderLocationType={setLocationAdderLocationType}
-          input={input}
-          setInput={setInput}
-          areaSearchTerm={areaSearchTerm}
-          setAreaSearchTerm={setAreaSearchTerm}
-          pointSearchTerm={pointSearchTerm}
-          setPointSearchTerm={setPointSearchTerm}
-          setMarkers={setMarkers}
-          setParentPolygons={setParentPolygons}
-          setChildPolygons={setChildPolygons}
-          setBounds={setBounds}
-        />
-        <LocationAdderOptions
-          locationAdderLocationType={locationAdderLocationType}
-          input={input}
-          visible={optionsVisible}
-          areaSearchTerm={areaSearchTerm}
-          areaSearchStatus={areaSearchStatus}
-          areaSearchResults={areaSearchResults}
-          pointSearchTerm={pointSearchTerm}
-          pointSearchStatus={pointSearchStatus}
-          pointSearchResults={pointSearchResults}
-        />
+        {({ activeOption }) => (
+          <>
+            <LocationAdderInput
+              parentLocation={parentLocation}
+              locationAdderLocationType={locationAdderLocationType}
+              setLocationAdderLocationType={setLocationAdderLocationType}
+              input={input}
+              setInput={setInput}
+              areaSearchTerm={areaSearchTerm}
+              setAreaSearchTerm={setAreaSearchTerm}
+              pointSearchTerm={pointSearchTerm}
+              setPointSearchTerm={setPointSearchTerm}
+              setMarkers={setMarkers}
+              setParentPolygons={setParentPolygons}
+              setChildPolygons={setChildPolygons}
+              setBounds={setBounds}
+            />
+            <LocationAdderOptions
+              locationAdderLocationType={locationAdderLocationType}
+              input={input}
+              visible={optionsVisible}
+              areaSearchTerm={areaSearchTerm}
+              areaSearchStatus={areaSearchStatus}
+              areaSearchResults={areaSearchResults}
+              pointSearchTerm={pointSearchTerm}
+              pointSearchStatus={pointSearchStatus}
+              pointSearchResults={pointSearchResults}
+              activeOption={activeOption}
+              setMarkers={setMarkers}
+              setParentPolygons={setParentPolygons}
+              setChildPolygons={setChildPolygons}
+              setBounds={setBounds}
+            />
+          </>
+        )}
       </Combobox>
     </div>
   );

@@ -1,5 +1,5 @@
 import { Bounds, Coordinate, Polygon } from "@/types";
-import React, { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 declare global {
   interface Window {

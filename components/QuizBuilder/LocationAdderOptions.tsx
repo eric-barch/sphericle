@@ -1,5 +1,14 @@
-import { AreaState, LocationType, PointState, SearchStatus } from "@/types";
+import {
+  AreaState,
+  Bounds,
+  Coordinate,
+  LocationType,
+  PointState,
+  Polygon,
+  SearchStatus,
+} from "@/types";
 import { Combobox } from "@headlessui/react";
+import { useEffect } from "react";
 
 interface LocationAdderOptionsProps {
   locationAdderLocationType: LocationType;
@@ -11,6 +20,11 @@ interface LocationAdderOptionsProps {
   pointSearchTerm: string;
   pointSearchStatus: SearchStatus;
   pointSearchResults: PointState[] | null;
+  activeOption: AreaState | PointState | null;
+  setMarkers: (markers: Coordinate[]) => void;
+  setParentPolygons: (polygons: Polygon[]) => void;
+  setChildPolygons: (polygons: Polygon[]) => void;
+  setBounds: (bounds: Bounds) => void;
 }
 
 export default function LocationAdderOptions({
@@ -23,6 +37,11 @@ export default function LocationAdderOptions({
   pointSearchTerm,
   pointSearchStatus,
   pointSearchResults,
+  activeOption,
+  setMarkers,
+  setParentPolygons,
+  setChildPolygons,
+  setBounds,
 }: LocationAdderOptionsProps) {
   function renderOptions(
     locationType: LocationType,
@@ -76,6 +95,12 @@ export default function LocationAdderOptions({
       );
     }
   })();
+
+  useEffect(() => {
+    if (activeOption?.locationType === LocationType.Area) {
+      setChildPolygons(activeOption.polygons);
+    }
+  }, [activeOption]);
 
   return (
     visible &&
