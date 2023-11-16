@@ -3,6 +3,7 @@ import {
   Bounds,
   Coordinate,
   LocationType,
+  PointState,
   Polygon,
   TreeState,
 } from "@/types";
@@ -23,10 +24,6 @@ interface LocationAdderInputProps {
   setAreaSearchTerm: (searchTerm: string) => void;
   pointSearchTerm: string;
   setPointSearchTerm: (searchTerm: string) => void;
-  setMarkers: (markers: Coordinate[]) => void;
-  setParentPolygons: (polygons: Polygon[]) => void;
-  setChildPolygons: (polygons: Polygon[]) => void;
-  setBounds: (bounds: Bounds) => void;
 }
 
 export default function LocationAdderInput({
@@ -39,21 +36,8 @@ export default function LocationAdderInput({
   setAreaSearchTerm,
   pointSearchTerm,
   setPointSearchTerm,
-  setMarkers,
-  setParentPolygons,
-  setChildPolygons,
-  setBounds,
 }: LocationAdderInputProps) {
-  function handleFocus() {
-    setMarkers([]);
-    setChildPolygons([]);
-    if (parentLocation.locationType === LocationType.Area) {
-      setBounds(parentLocation.bounds);
-      setParentPolygons(parentLocation.polygons);
-    } else {
-      setParentPolygons([]);
-    }
-  }
+  function handleFocus() {}
 
   return (
     <div className="relative" onFocus={handleFocus}>

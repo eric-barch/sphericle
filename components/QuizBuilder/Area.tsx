@@ -1,59 +1,28 @@
-import {
-  AreaState,
-  PointState,
-  TreeState,
-  Coordinate,
-  Polygon,
-  Bounds,
-  LocationType,
-} from "@/types";
+import { AreaState, PointState, TreeState } from "@/types";
 import { Disclosure } from "@headlessui/react";
 import { FaChevronRight, FaDrawPolygon } from "react-icons/fa6";
 import { Locations } from "./Locations";
 
 interface AreaProps {
-  parentLocation: TreeState | AreaState;
   location: AreaState;
   addLocation: (
     parentLocation: TreeState | AreaState,
-    childLocation: AreaState | PointState,
+    location: AreaState | PointState,
   ) => void;
   setLocationOpen: (targetLocation: AreaState, open: boolean) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
-  setMarkers: (markers: Coordinate[]) => void;
-  setParentPolygons: (polygons: Polygon[]) => void;
-  setChildPolygons: (polygons: Polygon[]) => void;
-  setBounds: (bounds: Bounds) => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function Area({
-  parentLocation,
   location,
   addLocation,
   setLocationOpen,
   deleteLocation,
-  setMarkers,
-  setParentPolygons,
-  setChildPolygons,
-  setBounds,
+  setDisplayedLocation,
 }: AreaProps) {
   function handleFocus() {
-    setMarkers([]);
-
-    if (location.open) {
-      setBounds(location.bounds);
-      setParentPolygons(location.polygons);
-      setChildPolygons([]);
-    } else {
-      if (parentLocation.locationType === LocationType.Tree) {
-        setBounds(location.bounds);
-        setParentPolygons([]);
-      } else {
-        setBounds(parentLocation.bounds);
-        setParentPolygons(parentLocation.polygons);
-      }
-      setChildPolygons(location.polygons);
-    }
+    setDisplayedLocation(location);
   }
 
   return (
@@ -72,13 +41,8 @@ export default function Area({
               <span>{location.fullName}</span>
               <ToggleOpenButton
                 open={open}
-                parentLocation={parentLocation}
                 location={location}
                 setLocationOpen={setLocationOpen}
-                setMarkers={setMarkers}
-                setParentPolygons={setParentPolygons}
-                setChildPolygons={setChildPolygons}
-                setBounds={setBounds}
               />
             </div>
             <Disclosure.Panel>
@@ -88,10 +52,7 @@ export default function Area({
                 addLocation={addLocation}
                 setLocationOpen={setLocationOpen}
                 deleteLocation={deleteLocation}
-                setMarkers={setMarkers}
-                setParentPolygons={setParentPolygons}
-                setChildPolygons={setChildPolygons}
-                setBounds={setBounds}
+                setDisplayedLocation={setDisplayedLocation}
               />
             </Disclosure.Panel>
           </>
@@ -103,47 +64,19 @@ export default function Area({
 
 interface ToggleOpenButtonProps {
   open: boolean;
-  parentLocation: TreeState | AreaState;
   location: AreaState;
   setLocationOpen: (targetLocation: AreaState, open: boolean) => void;
-  setMarkers: (markers: Coordinate[]) => void;
-  setParentPolygons: (polygons: Polygon[]) => void;
-  setChildPolygons: (polygons: Polygon[]) => void;
-  setBounds: (bounds: Bounds) => void;
 }
 
 function ToggleOpenButton({
   open,
-  parentLocation,
   location,
   setLocationOpen,
-  setMarkers,
-  setParentPolygons,
-  setChildPolygons,
-  setBounds,
 }: ToggleOpenButtonProps) {
   const styles = open ? "rotate-90" : "rotate-0";
 
   function handleClick() {
     const nextOpen = !open;
-
-    setMarkers([]);
-
-    if (nextOpen) {
-      setBounds(location.bounds);
-      setParentPolygons(location.polygons);
-      setChildPolygons([]);
-    } else {
-      if (parentLocation.locationType === LocationType.Tree) {
-        setBounds(location.bounds);
-        setParentPolygons([]);
-      } else {
-        setBounds(parentLocation.bounds);
-        setParentPolygons(parentLocation.polygons);
-      }
-      setChildPolygons(location.polygons);
-    }
-
     setLocationOpen(location, nextOpen);
   }
 

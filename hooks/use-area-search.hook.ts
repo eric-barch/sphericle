@@ -1,9 +1,12 @@
 import {
   AreaState,
+  Bounds,
   Coordinate,
   LocationType,
+  PointState,
   Polygon,
   SearchStatus,
+  TreeState,
 } from "@/types";
 import { useCallback, useState } from "react";
 
@@ -61,30 +64,9 @@ function getPolygons(array: any[]): Polygon[] {
   return polygons;
 }
 
-function parseOpenStreetMapArea(
-  openStreetMapArea: OpenStreetMapArea,
-): AreaState {
-  const polygons = getPolygons(openStreetMapArea.geojson.coordinates);
-  const boundingBox = {
-    south: Number(openStreetMapArea.boundingbox[0]),
-    north: Number(openStreetMapArea.boundingbox[1]),
-    west: Number(openStreetMapArea.boundingbox[2]),
-    east: Number(openStreetMapArea.boundingbox[3]),
-  };
-
-  return {
-    locationType: LocationType.Area,
-    placeId: openStreetMapArea.place_id,
-    displayName: openStreetMapArea.name,
-    fullName: openStreetMapArea.display_name,
-    open: false,
-    polygons,
-    bounds: boundingBox,
-    sublocations: [],
-  };
-}
-
-export default function useAreaSearch(): UseAreaSearchReturn {
+export default function useAreaSearch(
+  parentLocation: TreeState | AreaState,
+): UseAreaSearchReturn {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
@@ -103,7 +85,25 @@ export default function useAreaSearch(): UseAreaSearchReturn {
     const searchResults = openStreetMapAreas
       .map((openStreetMapArea) => {
         try {
-          return parseOpenStreetMapArea(openStreetMapArea);
+          const polygons = getPolygons(openStreetMapArea.geojson.coordinates);
+          const bounds: Bounds = {
+            south: Number(openStreetMapArea.boundingbox[0]),
+            north: Number(openStreetMapArea.boundingbox[1]),
+            west: Number(openStreetMapArea.boundingbox[2]),
+            east: Number(openStreetMapArea.boundingbox[3]),
+          };
+
+          return {
+            parent: parentLocation,
+            locationType: LocationType.Area,
+            placeId: openStreetMapArea.place_id,
+            displayName: openStreetMapArea.name,
+            fullName: openStreetMapArea.display_name,
+            open: false,
+            polygons,
+            bounds,
+            sublocations: [] as (AreaState | PointState)[],
+          };
         } catch {
           return null;
         }

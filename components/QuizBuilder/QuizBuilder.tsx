@@ -19,15 +19,9 @@ export default function QuizBuilder() {
     displayName: "Root",
     sublocations: [],
   });
-  const [bounds, setBounds] = useState<Bounds>({
-    south: 0,
-    north: 0,
-    east: 0,
-    west: 0,
-  });
-  const [markers, setMarkers] = useState<Coordinate[]>([]);
-  const [parentPolygons, setParentPolygons] = useState<Polygon[]>([]);
-  const [childPolygons, setChildPolygons] = useState<Polygon[]>([]);
+  const [displayedLocation, setDisplayedLocation] = useState<
+    AreaState | PointState | null
+  >(null);
 
   // TODO: is this a janky way to load Places?
   useEffect(() => {
@@ -105,32 +99,15 @@ export default function QuizBuilder() {
 
   function addLocation(
     parentLocation: TreeState | AreaState,
-    childLocation: AreaState | PointState,
+    location: AreaState | PointState,
   ): void {
     const newParentLocation = {
       ...parentLocation,
-      sublocations: [...parentLocation.sublocations, childLocation],
+      sublocations: [...parentLocation.sublocations, location],
     };
 
+    setDisplayedLocation(location);
     replaceLocation(parentLocation, newParentLocation);
-
-    if (parentLocation.locationType === LocationType.Tree) {
-      if (childLocation.locationType === LocationType.Area) {
-        setBounds(childLocation.bounds);
-      }
-      setParentPolygons([]);
-    } else {
-      setBounds(parentLocation.bounds);
-      setParentPolygons(parentLocation.polygons);
-    }
-
-    if (childLocation.locationType === LocationType.Area) {
-      setChildPolygons(childLocation.polygons);
-      setMarkers([]);
-    } else {
-      setChildPolygons([]);
-      setMarkers([childLocation.position]);
-    }
   }
 
   function setLocationOpen(targetLocation: AreaState, open: boolean): void {
@@ -139,6 +116,7 @@ export default function QuizBuilder() {
       open,
     };
 
+    setDisplayedLocation(newLocation);
     replaceLocation(targetLocation, newLocation);
   }
 
@@ -156,18 +134,9 @@ export default function QuizBuilder() {
             addLocation={addLocation}
             setLocationOpen={setLocationOpen}
             deleteLocation={deleteLocation}
-            setMarkers={setMarkers}
-            setParentPolygons={setParentPolygons}
-            setChildPolygons={setChildPolygons}
-            setBounds={setBounds}
+            setDisplayedLocation={setDisplayedLocation}
           />
-          <Map
-            mapId="696d0ea42431a75c"
-            bounds={bounds}
-            markers={markers}
-            parentPolygons={parentPolygons}
-            childPolygons={childPolygons}
-          />
+          <Map mapId="696d0ea42431a75c" displayedLocation={displayedLocation} />
         </SplitPane>
       ) : (
         "Loading..."

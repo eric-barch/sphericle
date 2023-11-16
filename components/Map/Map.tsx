@@ -1,4 +1,11 @@
-import { Bounds, Coordinate, Polygon } from "@/types";
+import {
+  AreaState,
+  Bounds,
+  Coordinate,
+  LocationType,
+  PointState,
+  Polygon,
+} from "@/types";
 import { useEffect, useRef } from "react";
 
 declare global {
@@ -9,19 +16,10 @@ declare global {
 
 interface MapProps {
   mapId: string;
-  bounds: Bounds;
-  markers: Coordinate[];
-  parentPolygons: Polygon[];
-  childPolygons: Polygon[];
+  displayedLocation: AreaState | PointState | null;
 }
 
-export default function Map({
-  mapId,
-  bounds,
-  markers,
-  parentPolygons,
-  childPolygons,
-}: MapProps) {
+export default function Map({ mapId, displayedLocation }: MapProps) {
   const mapRef = useRef(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<(google.maps.Marker | null)[]>([]);
@@ -32,18 +30,73 @@ export default function Map({
     if (window.google && mapRef.current && !googleMapRef.current) {
       googleMapRef.current = new window.google.maps.Map(mapRef.current, {
         mapId,
+        center: { lat: 40.69149154234791, lng: -73.98507972271125 },
+        zoom: 12,
         disableDefaultUI: true,
       });
     }
   }, []);
 
   useEffect(() => {
+    if (displayedLocation) {
+      if (displayedLocation.locationType === LocationType.Area) {
+        if (displayedLocation.open) {
+          setBounds(displayedLocation.bounds);
+          setParentPolygons(displayedLocation.polygons);
+          setChildPolygons([]);
+        }
+
+        if (!displayedLocation.open) {
+          if (displayedLocation.parent.locationType === LocationType.Tree) {
+            setBounds(displayedLocation.bounds);
+            setParentPolygons([]);
+          }
+
+          if (displayedLocation.parent.locationType === LocationType.Area) {
+            setBounds(displayedLocation.parent.bounds);
+            setParentPolygons(displayedLocation.parent.polygons);
+          }
+
+          setChildPolygons(displayedLocation.polygons);
+        }
+
+        setMarkers([]);
+      }
+
+      if (displayedLocation.locationType === LocationType.Point) {
+        if (displayedLocation.parent.locationType === LocationType.Tree) {
+          const coordinate = displayedLocation.coordinate;
+          const diff = 0.005;
+
+          const north = coordinate.lat + diff;
+          const east = coordinate.lng + diff;
+          const south = coordinate.lat - diff;
+          const west = coordinate.lng - diff;
+
+          setBounds({ north, east, south, west });
+          setParentPolygons([]);
+        } else {
+          setBounds(displayedLocation.parent.bounds);
+          setParentPolygons(displayedLocation.parent.polygons);
+        }
+
+        setChildPolygons([]);
+        setMarkers([displayedLocation.coordinate]);
+      }
+    } else {
+      setMarkers([]);
+      setParentPolygons([]);
+      setChildPolygons([]);
+    }
+  }, [displayedLocation]);
+
+  function setBounds(bounds: Bounds) {
     if (googleMapRef.current) {
       googleMapRef.current.fitBounds(bounds);
     }
-  }, [bounds]);
+  }
 
-  useEffect(() => {
+  function setMarkers(markers: Coordinate[]) {
     if (googleMapRef.current) {
       markersRef.current.forEach((marker) => marker?.setMap(null));
       markersRef.current = [];
@@ -56,14 +109,14 @@ export default function Map({
         markersRef.current.push(newMarker);
       });
     }
-  }, [markers]);
+  }
 
-  useEffect(() => {
+  function setParentPolygons(polygons: Polygon[]) {
     if (googleMapRef.current) {
       parentPolygonsRef.current.forEach((polygon) => polygon?.setMap(null));
       parentPolygonsRef.current = [];
 
-      parentPolygons.forEach((polygon) => {
+      polygons.forEach((polygon) => {
         const newPolygon = new window.google.maps.Polygon({
           paths: polygon.coordinates,
           map: googleMapRef.current,
@@ -75,14 +128,14 @@ export default function Map({
         parentPolygonsRef.current.push(newPolygon);
       });
     }
-  }, [parentPolygons]);
+  }
 
-  useEffect(() => {
+  function setChildPolygons(polygons: Polygon[]) {
     if (googleMapRef.current) {
       childPolygonsRef.current.forEach((polygon) => polygon?.setMap(null));
       childPolygonsRef.current = [];
 
-      childPolygons.forEach((polygon) => {
+      polygons.forEach((polygon) => {
         const newPolygon = new window.google.maps.Polygon({
           paths: polygon.coordinates,
           map: googleMapRef.current,
@@ -94,7 +147,7 @@ export default function Map({
         childPolygonsRef.current.push(newPolygon);
       });
     }
-  }, [childPolygons]);
+  }
 
   return <div className="h-full w-full" ref={mapRef} />;
 }

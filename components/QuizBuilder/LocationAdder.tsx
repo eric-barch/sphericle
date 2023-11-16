@@ -2,15 +2,7 @@
 
 import useAreaSearch from "@/hooks/use-area-search.hook";
 import usePointSearch from "@/hooks/use-point-search.hook";
-import {
-  AreaState,
-  LocationType,
-  PointState,
-  TreeState,
-  Coordinate,
-  Polygon,
-  Bounds,
-} from "@/types";
+import { AreaState, LocationType, PointState, TreeState } from "@/types";
 import { Combobox } from "@headlessui/react";
 import React, { useState } from "react";
 import LocationAdderInput from "./LocationAdderInput";
@@ -22,19 +14,13 @@ interface LocationAdderProps {
     parentLocation: TreeState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
-  setMarkers: (markers: Coordinate[]) => void;
-  setParentPolygons: (polygons: Polygon[]) => void;
-  setChildPolygons: (polygons: Polygon[]) => void;
-  setBounds: (bounds: Bounds) => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function LocationAdder({
   parentLocation,
   addLocation,
-  setMarkers,
-  setParentPolygons,
-  setChildPolygons,
-  setBounds,
+  setDisplayedLocation,
 }: LocationAdderProps) {
   const [locationAdderLocationType, setLocationAdderLocationType] =
     useState<LocationType>(LocationType.Area);
@@ -46,14 +32,14 @@ export default function LocationAdder({
     searchResults: areaSearchResults,
     setSearchTerm: setAreaSearchTerm,
     reset: resetAreaSearch,
-  } = useAreaSearch();
+  } = useAreaSearch(parentLocation);
   const {
     searchTerm: pointSearchTerm,
     searchStatus: pointSearchStatus,
     searchResults: pointSearchResults,
     setSearchTerm: setPointSearchTerm,
     reset: resetPointSearch,
-  } = usePointSearch();
+  } = usePointSearch(parentLocation);
 
   function handleFocus(event: React.FocusEvent) {
     const currentTarget = event.currentTarget;
@@ -77,8 +63,14 @@ export default function LocationAdder({
     }
   }
 
-  function handleChange(childLocation: AreaState | PointState) {
-    addLocation(parentLocation, childLocation);
+  function handleChange(location: AreaState | PointState) {
+    const newLocation = {
+      ...location,
+      parent: parentLocation,
+    };
+
+    addLocation(parentLocation, newLocation);
+
     setInput("");
     resetAreaSearch();
     resetPointSearch();
@@ -99,10 +91,6 @@ export default function LocationAdder({
               setAreaSearchTerm={setAreaSearchTerm}
               pointSearchTerm={pointSearchTerm}
               setPointSearchTerm={setPointSearchTerm}
-              setMarkers={setMarkers}
-              setParentPolygons={setParentPolygons}
-              setChildPolygons={setChildPolygons}
-              setBounds={setBounds}
             />
             <LocationAdderOptions
               locationAdderLocationType={locationAdderLocationType}
@@ -115,10 +103,7 @@ export default function LocationAdder({
               pointSearchStatus={pointSearchStatus}
               pointSearchResults={pointSearchResults}
               activeOption={activeOption}
-              setMarkers={setMarkers}
-              setParentPolygons={setParentPolygons}
-              setChildPolygons={setChildPolygons}
-              setBounds={setBounds}
+              setDisplayedLocation={setDisplayedLocation}
             />
           </>
         )}

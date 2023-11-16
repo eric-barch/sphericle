@@ -16,14 +16,11 @@ interface LocationsProps {
   parentLocation: TreeState | AreaState;
   addLocation: (
     parentLocation: TreeState | AreaState,
-    childLocation: AreaState | PointState,
+    location: AreaState | PointState,
   ) => void;
   setLocationOpen: (targetLocation: AreaState, open: boolean) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
-  setMarkers: (markers: Coordinate[]) => void;
-  setParentPolygons: (polygons: Polygon[]) => void;
-  setChildPolygons: (polygons: Polygon[]) => void;
-  setBounds: (bounds: Bounds) => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export function Locations({
@@ -32,10 +29,7 @@ export function Locations({
   addLocation,
   setLocationOpen,
   deleteLocation,
-  setMarkers,
-  setParentPolygons,
-  setChildPolygons,
-  setBounds,
+  setDisplayedLocation,
 }: LocationsProps) {
   return (
     <div className={`${className} space-y-1`}>
@@ -44,15 +38,11 @@ export function Locations({
           return (
             <Area
               key={sublocation.placeId}
-              parentLocation={parentLocation}
               location={sublocation}
               addLocation={addLocation}
               setLocationOpen={setLocationOpen}
               deleteLocation={deleteLocation}
-              setMarkers={setMarkers}
-              setParentPolygons={setParentPolygons}
-              setChildPolygons={setChildPolygons}
-              setBounds={setBounds}
+              setDisplayedLocation={setDisplayedLocation}
             />
           );
         }
@@ -61,13 +51,9 @@ export function Locations({
           return (
             <Point
               key={sublocation.placeId}
-              parentLocation={parentLocation}
               location={sublocation}
               deleteLocation={deleteLocation}
-              setMarkers={setMarkers}
-              setParentPolygons={setParentPolygons}
-              setChildPolygons={setChildPolygons}
-              setBounds={setBounds}
+              setDisplayedLocation={setDisplayedLocation}
             />
           );
         }
@@ -75,10 +61,7 @@ export function Locations({
       <LocationAdder
         parentLocation={parentLocation}
         addLocation={addLocation}
-        setMarkers={setMarkers}
-        setParentPolygons={setParentPolygons}
-        setChildPolygons={setChildPolygons}
-        setBounds={setBounds}
+        setDisplayedLocation={setDisplayedLocation}
       />
     </div>
   );

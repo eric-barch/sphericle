@@ -1,6 +1,7 @@
 import { LocationType } from "./enums";
 
 export interface AreaState {
+  parent: TreeState | AreaState;
   locationType: LocationType.Area;
   placeId: number;
   displayName: string;
@@ -19,11 +20,12 @@ export interface Coordinate {
 }
 
 export interface PointState {
+  parent: TreeState | AreaState;
   locationType: LocationType.Point;
   placeId: string;
   displayName: string;
   fullName: string;
-  position: Coordinate;
+  coordinate: Coordinate;
 }
 
 export interface Polygon {
