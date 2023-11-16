@@ -66,7 +66,7 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
       if (displayedLocation.locationType === LocationType.Point) {
         if (displayedLocation.parent.locationType === LocationType.Tree) {
           const coordinate = displayedLocation.coordinate;
-          const diff = 0.005;
+          const diff = 0.1;
 
           const north = coordinate.lat + diff;
           const east = coordinate.lng + diff;

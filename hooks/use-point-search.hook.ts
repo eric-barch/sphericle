@@ -1,5 +1,6 @@
 import {
   AreaState,
+  Bounds,
   LocationType,
   PointState,
   SearchStatus,
@@ -66,8 +67,18 @@ export default function usePointSearch(
     setInternalSearchTerm(searchTerm);
     setInternalSearchStatus(SearchStatus.Searching);
 
+    let request: { input: string; locationRestriction?: Bounds } = {
+      input: searchTerm,
+    };
+
+    if (parentLocation.locationType === LocationType.Area) {
+      request.locationRestriction = parentLocation.bounds;
+    }
+
+    console.log(request);
+
     autocompleteServiceRef.current?.getPlacePredictions(
-      { input: searchTerm },
+      request,
       async (suggestions: Suggestion[] | null) => {
         let geocodedSuggestions: GeocodedSuggestion[] = [];
 
@@ -98,14 +109,42 @@ export default function usePointSearch(
           let searchResults: PointState[] = [];
 
           if (geocodedSuggestions) {
-            searchResults = geocodedSuggestions.map((geocodedSuggestion) => ({
-              parent: parentLocation,
-              locationType: LocationType.Point,
-              placeId: geocodedSuggestion.place_id,
-              fullName: geocodedSuggestion.description,
-              displayName: geocodedSuggestion.description,
-              coordinate: geocodedSuggestion.position,
-            }));
+            if (parentLocation.locationType === LocationType.Tree) {
+              searchResults = geocodedSuggestions.map((geocodedSuggestion) => ({
+                parent: parentLocation,
+                locationType: LocationType.Point,
+                placeId: geocodedSuggestion.place_id,
+                fullName: geocodedSuggestion.description,
+                displayName: geocodedSuggestion.description,
+                coordinate: geocodedSuggestion.position,
+              }));
+            } else {
+              searchResults = geocodedSuggestions
+                .filter((geocodedSuggestion) => {
+                  // Check if the geocoded suggestion is within any of the polygons
+                  const point = new google.maps.LatLng(
+                    geocodedSuggestion.position.lat,
+                    geocodedSuggestion.position.lng,
+                  );
+                  return parentLocation.polygons.some((polygon) => {
+                    const googlePolygon = new google.maps.Polygon({
+                      paths: polygon.coordinates,
+                    });
+                    return google.maps.geometry.poly.containsLocation(
+                      point,
+                      googlePolygon,
+                    );
+                  });
+                })
+                .map((geocodedSuggestion) => ({
+                  parent: parentLocation,
+                  locationType: LocationType.Point,
+                  placeId: geocodedSuggestion.place_id,
+                  fullName: geocodedSuggestion.description,
+                  displayName: geocodedSuggestion.description,
+                  coordinate: geocodedSuggestion.position,
+                }));
+            }
           }
 
           setInternalSearchResults(searchResults);
