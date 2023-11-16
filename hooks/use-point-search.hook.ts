@@ -75,8 +75,6 @@ export default function usePointSearch(
       request.locationRestriction = parentLocation.bounds;
     }
 
-    console.log(request);
-
     autocompleteServiceRef.current?.getPlacePredictions(
       request,
       async (suggestions: Suggestion[] | null) => {

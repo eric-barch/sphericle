@@ -64,6 +64,26 @@ function getPolygons(array: any[]): Polygon[] {
   return polygons;
 }
 
+function isPolygonInParentPolygons(
+  polygon: Polygon,
+  parentPolygons: Polygon[],
+): boolean {
+  for (const coordinate of polygon.coordinates) {
+    const point = new google.maps.LatLng(coordinate.lat, coordinate.lng);
+    if (
+      !parentPolygons.some((parentPolygon) => {
+        const googlePolygon = new google.maps.Polygon({
+          paths: parentPolygon.coordinates,
+        });
+        return google.maps.geometry.poly.containsLocation(point, googlePolygon);
+      })
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export default function useAreaSearch(
   parentLocation: TreeState | AreaState,
 ): UseAreaSearchReturn {
@@ -78,7 +98,15 @@ export default function useAreaSearch(
     setInternalSearchTerm(searchTerm);
     setInternalSearchStatus(SearchStatus.Searching);
 
-    const url = `/api/search-areas?query=${searchTerm}`;
+    let query = searchTerm;
+
+    if (parentLocation.locationType === LocationType.Area) {
+      const { south, north, west, east } = parentLocation.bounds;
+      query =
+        searchTerm + `&viewbox=${west},${south},${east},${north}&bounded=1`;
+    }
+
+    const url = `/api/search-areas?query=${query}`;
     const response = await fetch(url);
     const openStreetMapAreas = (await response.json()) as OpenStreetMapArea[];
 
@@ -86,6 +114,17 @@ export default function useAreaSearch(
       .map((openStreetMapArea) => {
         try {
           const polygons = getPolygons(openStreetMapArea.geojson.coordinates);
+
+          if (parentLocation.locationType === LocationType.Area) {
+            const allPolygonsInParentPolygons = polygons.every((polygon) =>
+              isPolygonInParentPolygons(polygon, parentLocation.polygons),
+            );
+
+            if (!allPolygonsInParentPolygons) {
+              return null;
+            }
+          }
+
           const bounds: Bounds = {
             south: Number(openStreetMapArea.boundingbox[0]),
             north: Number(openStreetMapArea.boundingbox[1]),
