@@ -10,7 +10,7 @@ import {
 } from "@/types";
 import { useCallback, useState } from "react";
 
-interface OpenStreetMapArea {
+interface OpenStreetMapResponseItem {
   place_id: number;
   licence: string;
   osm_type: string;
@@ -44,17 +44,12 @@ function getPolygons(array: any[]): Polygon[] {
 
   for (const item of array) {
     if (typeof item[0][0] === "number") {
-      const coordinates = item.map(
-        (point: number[]): Coordinate => ({
-          lat: point[1],
-          lng: point[0],
-        }),
-      );
+      const coordinates = item.map((point: number[]) => ({
+        lat: point[1],
+        lng: point[0],
+      }));
 
-      polygons.push({
-        id: crypto.randomUUID(),
-        coordinates,
-      });
+      polygons.push(new Polygon(crypto.randomUUID(), coordinates));
     } else {
       const subPolygons = getPolygons(item);
       polygons.push(...subPolygons);
@@ -108,7 +103,8 @@ export default function useAreaSearch(
 
     const url = `/api/search-areas?query=${query}`;
     const response = await fetch(url);
-    const openStreetMapAreas = (await response.json()) as OpenStreetMapArea[];
+    const openStreetMapAreas =
+      (await response.json()) as OpenStreetMapResponseItem[];
 
     const searchResults = openStreetMapAreas
       .map((openStreetMapArea) => {

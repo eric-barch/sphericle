@@ -1,3 +1,4 @@
+import { Coordinate, Polygon } from "./classes";
 import { LocationType } from "./enums";
 
 export interface AreaState {
@@ -14,10 +15,10 @@ export interface AreaState {
 
 export type Bounds = google.maps.LatLngBoundsLiteral;
 
-export interface Coordinate {
-  lat: number;
-  lng: number;
-}
+// export interface Coordinate {
+//   lat: number;
+//   lng: number;
+// }
 
 export interface PointState {
   parent: TreeState | AreaState;
@@ -28,10 +29,10 @@ export interface PointState {
   coordinate: Coordinate;
 }
 
-export interface Polygon {
-  id: string;
-  coordinates: Coordinate[];
-}
+// export interface Polygon {
+//   id: string;
+//   coordinates: Coordinate[];
+// }
 
 export interface TreeState {
   locationType: LocationType.Tree;

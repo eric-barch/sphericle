@@ -1,6 +1,7 @@
 import {
   AreaState,
   Bounds,
+  Coordinate,
   LocationType,
   PointState,
   SearchStatus,
@@ -108,14 +109,19 @@ export default function usePointSearch(
 
           if (geocodedSuggestions) {
             if (parentLocation.locationType === LocationType.Tree) {
-              searchResults = geocodedSuggestions.map((geocodedSuggestion) => ({
-                parent: parentLocation,
-                locationType: LocationType.Point,
-                placeId: geocodedSuggestion.place_id,
-                fullName: geocodedSuggestion.description,
-                displayName: geocodedSuggestion.description,
-                coordinate: geocodedSuggestion.position,
-              }));
+              searchResults = geocodedSuggestions.map((geocodedSuggestion) => {
+                return {
+                  parent: parentLocation,
+                  locationType: LocationType.Point,
+                  placeId: geocodedSuggestion.place_id,
+                  fullName: geocodedSuggestion.description,
+                  displayName: geocodedSuggestion.description,
+                  coordinate: new Coordinate(
+                    geocodedSuggestion.position.lat,
+                    geocodedSuggestion.position.lng,
+                  ),
+                };
+              });
             } else {
               searchResults = geocodedSuggestions
                 .filter((geocodedSuggestion) => {
@@ -134,14 +140,19 @@ export default function usePointSearch(
                     );
                   });
                 })
-                .map((geocodedSuggestion) => ({
-                  parent: parentLocation,
-                  locationType: LocationType.Point,
-                  placeId: geocodedSuggestion.place_id,
-                  fullName: geocodedSuggestion.description,
-                  displayName: geocodedSuggestion.description,
-                  coordinate: geocodedSuggestion.position,
-                }));
+                .map((geocodedSuggestion) => {
+                  return {
+                    parent: parentLocation,
+                    locationType: LocationType.Point,
+                    placeId: geocodedSuggestion.place_id,
+                    fullName: geocodedSuggestion.description,
+                    displayName: geocodedSuggestion.description,
+                    coordinate: new Coordinate(
+                      geocodedSuggestion.position.lat,
+                      geocodedSuggestion.position.lng,
+                    ),
+                  };
+                });
             }
           }
 
