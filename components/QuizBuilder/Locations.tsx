@@ -10,9 +10,11 @@ import {
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 import Point from "./Point";
+import { CSSProperties } from "react";
 
 interface LocationsProps {
   className?: string;
+  style?: CSSProperties;
   parentLocation: TreeState | AreaState;
   addLocation: (
     parentLocation: TreeState | AreaState,
@@ -25,6 +27,7 @@ interface LocationsProps {
 
 export function Locations({
   className,
+  style,
   parentLocation,
   addLocation,
   setLocationOpen,
@@ -32,7 +35,7 @@ export function Locations({
   setDisplayedLocation,
 }: LocationsProps) {
   return (
-    <div className={`${className} space-y-1`}>
+    <div className={`${className} space-y-1`} style={style}>
       {parentLocation.sublocations.map((sublocation) => {
         if (sublocation.locationType === LocationType.Area) {
           return (

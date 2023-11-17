@@ -9,8 +9,9 @@ import {
   Polygon,
   Bounds,
 } from "@/types";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Locations } from "./Locations";
+import { NavBarHeightContext } from "@/components/NavBar";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
@@ -22,6 +23,12 @@ export default function QuizBuilder() {
   const [displayedLocation, setDisplayedLocation] = useState<
     AreaState | PointState | null
   >(null);
+
+  const navBarHeight = useContext(NavBarHeightContext);
+  const locationsMaxHeight = `calc(100vh - ${navBarHeight}px)`;
+
+  console.log(navBarHeight);
+  console.log(locationsMaxHeight);
 
   // TODO: is this a janky way to load Places?
   useEffect(() => {
@@ -129,7 +136,8 @@ export default function QuizBuilder() {
       {placesLoaded ? (
         <SplitPane>
           <Locations
-            className="m-2"
+            className="p-3 overflow-auto"
+            style={{ maxHeight: locationsMaxHeight }}
             parentLocation={locationTree}
             addLocation={addLocation}
             setLocationOpen={setLocationOpen}
