@@ -1,16 +1,8 @@
-import {
-  AreaState,
-  LocationType,
-  PointState,
-  TreeState,
-  Coordinate,
-  Polygon,
-  Bounds,
-} from "@/types";
+import { AreaState, LocationType, PointState, TreeState } from "@/types";
+import { CSSProperties } from "react";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 import Point from "./Point";
-import { CSSProperties } from "react";
 
 interface LocationsProps {
   className?: string;

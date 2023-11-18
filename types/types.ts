@@ -1,41 +1,48 @@
-import { Coordinate, Polygon } from "./classes";
+import { MultiPolygon, Point, Polygon } from "geojson";
 import { LocationType } from "./enums";
+import { AllGeoJSON } from "@turf/helpers";
 
-export interface AreaState {
+export type AreaState = {
   parent: TreeState | AreaState;
   locationType: LocationType.Area;
   placeId: number;
   displayName: string;
   fullName: string;
   open: boolean;
-  polygons: Polygon[];
-  bounds: Bounds;
+  polygon: Polygon | MultiPolygon;
+  bounds: google.maps.LatLngBoundsLiteral;
   sublocations: (AreaState | PointState)[];
-}
+};
 
-export type Bounds = google.maps.LatLngBoundsLiteral;
+export type OpenStreetMapResponseItem = {
+  place_id: number;
+  licence: string;
+  osm_type: string;
+  osm_id: number;
+  lat: string;
+  lon: string;
+  class: string;
+  type: string;
+  place_rank: number;
+  importance: number;
+  addresstype: string;
+  name: string;
+  display_name: string;
+  boundingbox: number[];
+  geojson: AllGeoJSON;
+};
 
-// export interface Coordinate {
-//   lat: number;
-//   lng: number;
-// }
-
-export interface PointState {
+export type PointState = {
   parent: TreeState | AreaState;
   locationType: LocationType.Point;
   placeId: string;
   displayName: string;
   fullName: string;
-  coordinate: Coordinate;
-}
+  point: Point;
+};
 
-// export interface Polygon {
-//   id: string;
-//   coordinates: Coordinate[];
-// }
-
-export interface TreeState {
+export type TreeState = {
   locationType: LocationType.Tree;
   displayName: string;
   sublocations: (AreaState | PointState)[];
-}
+};

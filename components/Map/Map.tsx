@@ -1,11 +1,5 @@
-import {
-  AreaState,
-  Bounds,
-  Coordinate,
-  LocationType,
-  PointState,
-  Polygon,
-} from "@/types";
+import { AreaState, LocationType, PointState } from "@/types";
+import { MultiPolygon, Point, Polygon, Position } from "geojson";
 import { useEffect, useRef } from "react";
 
 declare global {
@@ -22,13 +16,13 @@ interface MapProps {
 export default function Map({ mapId, displayedLocation }: MapProps) {
   const mapRef = useRef(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<(google.maps.Marker | null)[]>([]);
-  const parentPolygonsRef = useRef<(google.maps.Polygon | null)[]>([]);
-  const childPolygonsRef = useRef<(google.maps.Polygon | null)[]>([]);
+  const markerRef = useRef<google.maps.Marker | null>(null);
+  const parentPolygonRef = useRef<google.maps.Polygon | null>(null);
+  const childPolygonRef = useRef<google.maps.Polygon | null>(null);
 
   useEffect(() => {
-    if (window.google && mapRef.current && !googleMapRef.current) {
-      googleMapRef.current = new window.google.maps.Map(mapRef.current, {
+    if (google && mapRef.current && !googleMapRef.current) {
+      googleMapRef.current = new google.maps.Map(mapRef.current, {
         mapId,
         center: { lat: 40.69149154234791, lng: -73.98507972271125 },
         zoom: 12,
@@ -37,117 +31,160 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
     }
   }, []);
 
-  useEffect(() => {
-    if (displayedLocation) {
-      if (displayedLocation.locationType === LocationType.Area) {
-        if (displayedLocation.open) {
-          setBounds(displayedLocation.bounds);
-          setParentPolygons(displayedLocation.polygons);
-          setChildPolygons([]);
-        }
-
-        if (!displayedLocation.open) {
-          if (displayedLocation.parent.locationType === LocationType.Tree) {
-            setBounds(displayedLocation.bounds);
-            setParentPolygons([]);
-          }
-
-          if (displayedLocation.parent.locationType === LocationType.Area) {
-            setBounds(displayedLocation.parent.bounds);
-            setParentPolygons(displayedLocation.parent.polygons);
-          }
-
-          setChildPolygons(displayedLocation.polygons);
-        }
-
-        setMarkers([]);
-      }
-
-      if (displayedLocation.locationType === LocationType.Point) {
-        if (displayedLocation.parent.locationType === LocationType.Tree) {
-          const coordinate = displayedLocation.coordinate;
-          const diff = 0.1;
-
-          const north = coordinate.lat + diff;
-          const east = coordinate.lng + diff;
-          const south = coordinate.lat - diff;
-          const west = coordinate.lng - diff;
-
-          setBounds({ north, east, south, west });
-          setParentPolygons([]);
-        } else {
-          setBounds(displayedLocation.parent.bounds);
-          setParentPolygons(displayedLocation.parent.polygons);
-        }
-
-        setChildPolygons([]);
-        setMarkers([displayedLocation.coordinate]);
-      }
-    } else {
-      setMarkers([]);
-      setParentPolygons([]);
-      setChildPolygons([]);
-    }
-  }, [displayedLocation]);
-
-  function setBounds(bounds: Bounds) {
+  function setBounds(bounds: google.maps.LatLngBoundsLiteral) {
     if (googleMapRef.current) {
       googleMapRef.current.fitBounds(bounds);
     }
   }
 
-  function setMarkers(markers: Coordinate[]) {
+  function setMarker(point: Point | null) {
     if (googleMapRef.current) {
-      markersRef.current.forEach((marker) => marker?.setMap(null));
-      markersRef.current = [];
+      if (markerRef.current) {
+        markerRef.current.setMap(null);
+        markerRef.current = null;
+      }
 
-      markers.forEach((marker) => {
-        const newMarker = new window.google.maps.Marker({
-          position: marker,
+      if (point) {
+        markerRef.current = new google.maps.Marker({
+          position: { lng: point.coordinates[0], lat: point.coordinates[1] },
           map: googleMapRef.current,
         });
-        markersRef.current.push(newMarker);
-      });
+      }
     }
   }
 
-  function setParentPolygons(polygons: Polygon[]) {
-    if (googleMapRef.current) {
-      parentPolygonsRef.current.forEach((polygon) => polygon?.setMap(null));
-      parentPolygonsRef.current = [];
-
-      polygons.forEach((polygon) => {
-        const newPolygon = new window.google.maps.Polygon({
-          paths: polygon.coordinates,
-          map: googleMapRef.current,
-          strokeColor: "#d61613",
-          strokeWeight: 1.5,
-          fillColor: "#d61613",
-          fillOpacity: 0.0,
-        });
-        parentPolygonsRef.current.push(newPolygon);
-      });
+  function setParentPolygon(polygon: Polygon | MultiPolygon | null) {
+    if (!googleMapRef.current) {
+      return;
     }
+
+    if (parentPolygonRef.current) {
+      parentPolygonRef.current.setMap(null);
+      parentPolygonRef.current = null;
+    }
+
+    if (!polygon) {
+      return;
+    }
+
+    let paths: google.maps.LatLngLiteral[] | google.maps.LatLngLiteral[][];
+
+    if (polygon.type === "MultiPolygon") {
+      paths = polygon.coordinates.map((polygon) =>
+        polygon[0].map((coordinate) => ({
+          lng: Number(coordinate[0]),
+          lat: Number(coordinate[1]),
+        })),
+      );
+    } else if (polygon.type === "Polygon") {
+      paths = polygon.coordinates[0].map((coordinate) => ({
+        lng: Number(coordinate[0]),
+        lat: Number(coordinate[1]),
+      }));
+    }
+
+    console.log(paths);
+
+    parentPolygonRef.current = new google.maps.Polygon({
+      paths,
+      map: googleMapRef.current,
+      strokeColor: "#d61613",
+      strokeWeight: 1.5,
+      fillColor: "#d61613",
+      fillOpacity: 0.0,
+    });
   }
 
-  function setChildPolygons(polygons: Polygon[]) {
-    if (googleMapRef.current) {
-      childPolygonsRef.current.forEach((polygon) => polygon?.setMap(null));
-      childPolygonsRef.current = [];
-
-      polygons.forEach((polygon) => {
-        const newPolygon = new window.google.maps.Polygon({
-          paths: polygon.coordinates,
-          map: googleMapRef.current,
-          strokeColor: "#d61613",
-          strokeWeight: 1.5,
-          fillColor: "#d61613",
-          fillOpacity: 0.2,
-        });
-        childPolygonsRef.current.push(newPolygon);
-      });
+  function setChildPolygon(polygon: Polygon | MultiPolygon | null) {
+    if (!googleMapRef.current) {
+      return;
     }
+
+    if (childPolygonRef.current) {
+      childPolygonRef.current.setMap(null);
+      childPolygonRef.current = null;
+    }
+
+    if (!polygon) {
+      return;
+    }
+
+    let paths: google.maps.LatLngLiteral[] | google.maps.LatLngLiteral[][];
+
+    if (polygon.type === "MultiPolygon") {
+      paths = polygon.coordinates.map((polygon) =>
+        polygon[0].map((coordinate) => ({
+          lng: Number(coordinate[0]),
+          lat: Number(coordinate[1]),
+        })),
+      );
+    } else if (polygon.type === "Polygon") {
+      paths = polygon.coordinates[0].map((coordinate) => ({
+        lng: Number(coordinate[0]),
+        lat: Number(coordinate[1]),
+      }));
+    }
+
+    console.log(paths);
+
+    childPolygonRef.current = new google.maps.Polygon({
+      paths,
+      map: googleMapRef.current,
+      strokeColor: "#d61613",
+      strokeWeight: 1.5,
+      fillColor: "#d61613",
+      fillOpacity: 0.2,
+    });
   }
+
+  useEffect(() => {
+    if (displayedLocation) {
+      if (displayedLocation.locationType === LocationType.Area) {
+        if (displayedLocation.open) {
+          setBounds(displayedLocation.bounds);
+          setParentPolygon(displayedLocation.polygon);
+          setChildPolygon(null);
+        } else {
+          if (displayedLocation.parent.locationType === LocationType.Tree) {
+            setBounds(displayedLocation.bounds);
+            setParentPolygon(null);
+          } else if (
+            displayedLocation.parent.locationType === LocationType.Area
+          ) {
+            setBounds(displayedLocation.parent.bounds);
+            setParentPolygon(displayedLocation.parent.polygon);
+          }
+
+          setChildPolygon(displayedLocation.polygon);
+        }
+        setMarker(null);
+      } else if (displayedLocation.locationType === LocationType.Point) {
+        if (displayedLocation.parent.locationType === LocationType.Tree) {
+          const lng = displayedLocation.point.coordinates[0];
+          const lat = displayedLocation.point.coordinates[1];
+          const diff = 0.1;
+
+          const north = lat + diff;
+          const east = lng + diff;
+          const south = lat - diff;
+          const west = lng - diff;
+
+          setBounds({ north, east, south, west });
+          setParentPolygon(null);
+        } else {
+          setBounds(displayedLocation.parent.bounds);
+          setParentPolygon(displayedLocation.parent.polygon);
+        }
+
+        setChildPolygon(null);
+        setMarker(displayedLocation.point);
+      }
+    } else {
+      setMarker(null);
+      setParentPolygon(null);
+      setChildPolygon(null);
+    }
+  }, [displayedLocation]);
 
   return <div className="h-full w-full" ref={mapRef} />;
 }

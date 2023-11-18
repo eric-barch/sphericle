@@ -1,17 +1,9 @@
 import Map from "@/components/Map";
+import { NavBarHeightContext } from "@/components/NavBar";
 import SplitPane from "@/components/SplitPane";
-import {
-  AreaState,
-  Coordinate,
-  LocationType,
-  PointState,
-  TreeState,
-  Polygon,
-  Bounds,
-} from "@/types";
+import { AreaState, LocationType, PointState, TreeState } from "@/types";
 import { useContext, useEffect, useState } from "react";
 import { Locations } from "./Locations";
-import { NavBarHeightContext } from "@/components/NavBar";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);

@@ -1,22 +1,13 @@
 import {
   AreaState,
-  Bounds,
-  Coordinate,
   LocationType,
   PointState,
   SearchStatus,
   TreeState,
 } from "@/types";
+import booleanContains from "@turf/boolean-contains";
+import { Point } from "geojson";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-type Suggestion = google.maps.places.AutocompletePrediction;
-
-interface GeocodedSuggestion extends Suggestion {
-  position: {
-    lat: number;
-    lng: number;
-  };
-}
 
 interface UsePointSearchReturn {
   searchTerm: string;
@@ -27,7 +18,7 @@ interface UsePointSearchReturn {
 }
 
 export default function usePointSearch(
-  parentLocation: TreeState | AreaState,
+  parent: TreeState | AreaState,
 ): UsePointSearchReturn {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
@@ -40,7 +31,97 @@ export default function usePointSearch(
     useRef<google.maps.places.AutocompleteService>();
   const geocoderRef = useRef<google.maps.Geocoder>();
 
-  const init = useCallback(() => {
+  const fetchSearchResults = useCallback(async (searchTerm: string) => {
+    setInternalSearchTerm(searchTerm);
+    setInternalSearchStatus(SearchStatus.Searching);
+
+    if (!autocompleteServiceRef.current) {
+      throw new Error("Did not find autocompleteServiceRef.");
+    }
+
+    let request: {
+      input: string;
+      locationRestriction?: google.maps.LatLngBoundsLiteral;
+    } = {
+      input: searchTerm,
+    };
+
+    if (parent.locationType === LocationType.Area) {
+      request.locationRestriction = parent.bounds;
+    }
+
+    const autocompletePredictions = (
+      await autocompleteServiceRef.current.getPlacePredictions(request)
+    ).predictions;
+
+    const searchResults = (
+      await Promise.all(
+        autocompletePredictions.map(
+          async (autocompletePrediction): Promise<PointState | null> => {
+            if (!geocoderRef.current) {
+              throw new Error("Did not find geocoderServiceRef.");
+            }
+
+            const geocoderResult = (
+              await geocoderRef.current.geocode({
+                placeId: autocompletePrediction.place_id,
+              })
+            ).results[0];
+
+            const location = geocoderResult.geometry.location;
+
+            const lat = location.lat();
+            const lng = location.lng();
+
+            const point: Point = { type: "Point", coordinates: [lng, lat] };
+
+            const geocodedAutocompletePrediction = {
+              ...autocompletePrediction,
+              point,
+            };
+
+            const pointState = {
+              parent: parent,
+              locationType: LocationType.Point as LocationType.Point,
+              placeId: geocodedAutocompletePrediction.place_id,
+              fullName: geocodedAutocompletePrediction.description,
+              displayName: geocodedAutocompletePrediction.description,
+              point: geocodedAutocompletePrediction.point,
+            };
+
+            if (
+              parent.locationType === LocationType.Tree ||
+              booleanContains(parent.polygon, pointState.point)
+            ) {
+              return pointState;
+            }
+
+            return null;
+          },
+        ),
+      )
+    ).filter((result): result is PointState => result !== null);
+
+    setInternalSearchResults(searchResults);
+    setInternalSearchStatus(SearchStatus.Searched);
+  }, []);
+
+  const setSearchTerm = useCallback(
+    (searchTerm: string) => {
+      setInternalSearchTerm(searchTerm);
+      fetchSearchResults(searchTerm);
+    },
+    [fetchSearchResults],
+  );
+
+  const reset = useCallback(() => {
+    setInternalSearchTerm("");
+    setInternalSearchStatus(SearchStatus.Searched);
+    setInternalSearchResults(null);
+  }, []);
+
+  // initialize Google libraries
+  useEffect(() => {
     const mapsLibrary = window.google.maps;
 
     if (!mapsLibrary) {
@@ -63,124 +144,6 @@ export default function usePointSearch(
       geocoderRef.current = new mapsLibrary.Geocoder();
     }
   }, []);
-
-  const fetchSearchResults = useCallback((searchTerm: string) => {
-    setInternalSearchTerm(searchTerm);
-    setInternalSearchStatus(SearchStatus.Searching);
-
-    let request: { input: string; locationRestriction?: Bounds } = {
-      input: searchTerm,
-    };
-
-    if (parentLocation.locationType === LocationType.Area) {
-      request.locationRestriction = parentLocation.bounds;
-    }
-
-    autocompleteServiceRef.current?.getPlacePredictions(
-      request,
-      async (suggestions: Suggestion[] | null) => {
-        let geocodedSuggestions: GeocodedSuggestion[] = [];
-
-        if (suggestions) {
-          geocodedSuggestions = await Promise.all(
-            suggestions.map(
-              (suggestion) =>
-                new Promise<GeocodedSuggestion>((resolve, reject) => {
-                  geocoderRef.current?.geocode(
-                    { placeId: suggestion.place_id },
-                    (results, status) => {
-                      if (status === google.maps.GeocoderStatus.OK) {
-                        if (results![0]) {
-                          const position = {
-                            lat: results![0].geometry.location.lat(),
-                            lng: results![0].geometry.location.lng(),
-                          };
-                          resolve({ ...suggestion, position });
-                        }
-                      }
-                      reject(new Error("Geocoding failed"));
-                    },
-                  );
-                }),
-            ),
-          );
-
-          let searchResults: PointState[] = [];
-
-          if (geocodedSuggestions) {
-            if (parentLocation.locationType === LocationType.Tree) {
-              searchResults = geocodedSuggestions.map((geocodedSuggestion) => {
-                return {
-                  parent: parentLocation,
-                  locationType: LocationType.Point,
-                  placeId: geocodedSuggestion.place_id,
-                  fullName: geocodedSuggestion.description,
-                  displayName: geocodedSuggestion.description,
-                  coordinate: new Coordinate(
-                    geocodedSuggestion.position.lat,
-                    geocodedSuggestion.position.lng,
-                  ),
-                };
-              });
-            } else {
-              searchResults = geocodedSuggestions
-                .filter((geocodedSuggestion) => {
-                  // Check if the geocoded suggestion is within any of the polygons
-                  const point = new google.maps.LatLng(
-                    geocodedSuggestion.position.lat,
-                    geocodedSuggestion.position.lng,
-                  );
-                  return parentLocation.polygons.some((polygon) => {
-                    const googlePolygon = new google.maps.Polygon({
-                      paths: polygon.coordinates,
-                    });
-                    return google.maps.geometry.poly.containsLocation(
-                      point,
-                      googlePolygon,
-                    );
-                  });
-                })
-                .map((geocodedSuggestion) => {
-                  return {
-                    parent: parentLocation,
-                    locationType: LocationType.Point,
-                    placeId: geocodedSuggestion.place_id,
-                    fullName: geocodedSuggestion.description,
-                    displayName: geocodedSuggestion.description,
-                    coordinate: new Coordinate(
-                      geocodedSuggestion.position.lat,
-                      geocodedSuggestion.position.lng,
-                    ),
-                  };
-                });
-            }
-          }
-
-          setInternalSearchResults(searchResults);
-          setInternalSearchStatus(SearchStatus.Searched);
-        }
-      },
-    );
-  }, []);
-
-  const setSearchTerm = useCallback(
-    (searchTerm: string) => {
-      setInternalSearchTerm(searchTerm);
-      fetchSearchResults(searchTerm);
-    },
-    [fetchSearchResults],
-  );
-
-  const reset = useCallback(() => {
-    setInternalSearchTerm("");
-    setInternalSearchStatus(SearchStatus.Searched);
-    setInternalSearchResults(null);
-  }, []);
-
-  useEffect(() => {
-    init();
-    // TODO: ask if i need to return any cleanup stuff here
-  }, [init]);
 
   return {
     searchTerm: internalSearchTerm,

@@ -12,13 +12,14 @@
     "@headlessui/react": "^1.7.17",
     "@radix-ui/react-navigation-menu": "^1.1.4",
     "@turf/boolean-contains": "^6.5.0",
+    "@types/geojson": "^7946.0.13",
     "next": "13.5.5",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^4.11.0"
   },
   "devDependencies": {
-    "@types/google.maps": "^3.54.7",
+    "@types/google.maps": "^3.54.8",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

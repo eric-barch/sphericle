@@ -1,12 +1,4 @@
-import {
-  AreaState,
-  Bounds,
-  Coordinate,
-  LocationType,
-  PointState,
-  Polygon,
-  TreeState,
-} from "@/types";
+import { AreaState, LocationType, PointState, TreeState } from "@/types";
 import debounce from "@/utils/debounce";
 import { Combobox } from "@headlessui/react";
 import { useCallback } from "react";
