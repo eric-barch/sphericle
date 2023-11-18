@@ -1,6 +1,6 @@
+import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Point, Polygon } from "geojson";
 import { LocationType } from "./enums";
-import { AllGeoJSON } from "@turf/helpers";
 
 export type AreaState = {
   parent: TreeState | AreaState;

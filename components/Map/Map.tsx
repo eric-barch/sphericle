@@ -1,12 +1,6 @@
 import { AreaState, LocationType, PointState } from "@/types";
-import { MultiPolygon, Point, Polygon, Position } from "geojson";
+import { MultiPolygon, Point, Polygon } from "geojson";
 import { useEffect, useRef } from "react";
-
-declare global {
-  interface Window {
-    google: any;
-  }
-}
 
 interface MapProps {
   mapId: string;

@@ -5,7 +5,7 @@ import {
   SearchStatus,
   TreeState,
 } from "@/types";
-import booleanContains from "@turf/boolean-contains";
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { Point } from "geojson";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -59,7 +59,7 @@ export default function usePointSearch(
         autocompletePredictions.map(
           async (autocompletePrediction): Promise<PointState | null> => {
             if (!geocoderRef.current) {
-              throw new Error("Did not find geocoderServiceRef.");
+              return null;
             }
 
             const geocoderResult = (
@@ -68,35 +68,27 @@ export default function usePointSearch(
               })
             ).results[0];
 
-            const location = geocoderResult.geometry.location;
-
-            const lat = location.lat();
-            const lng = location.lng();
-
+            const lat = geocoderResult.geometry.location.lat();
+            const lng = geocoderResult.geometry.location.lng();
             const point: Point = { type: "Point", coordinates: [lng, lat] };
 
-            const geocodedAutocompletePrediction = {
-              ...autocompletePrediction,
+            const pointState = {
+              parent,
+              locationType: LocationType.Point as LocationType.Point,
+              placeId: autocompletePrediction.place_id,
+              fullName: autocompletePrediction.description,
+              displayName: autocompletePrediction.description,
               point,
             };
 
-            const pointState = {
-              parent: parent,
-              locationType: LocationType.Point as LocationType.Point,
-              placeId: geocodedAutocompletePrediction.place_id,
-              fullName: geocodedAutocompletePrediction.description,
-              displayName: geocodedAutocompletePrediction.description,
-              point: geocodedAutocompletePrediction.point,
-            };
-
             if (
-              parent.locationType === LocationType.Tree ||
-              booleanContains(parent.polygon, pointState.point)
+              parent.locationType === LocationType.Area &&
+              !booleanPointInPolygon(pointState.point, parent.polygon)
             ) {
-              return pointState;
+              return null;
             }
 
-            return null;
+            return pointState;
           },
         ),
       )
