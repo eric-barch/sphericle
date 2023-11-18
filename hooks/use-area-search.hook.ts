@@ -51,9 +51,6 @@ export default function useAreaSearch(
           openStreetMapResponseItem.geojson.type !== "Polygon" &&
           openStreetMapResponseItem.geojson.type !== "MultiPolygon"
         ) {
-          console.log(
-            "openStreetMapResponseItem.geoJson is not Polygon or MultiPolygon",
-          );
           return null;
         }
 
@@ -78,7 +75,6 @@ export default function useAreaSearch(
                 parent.locationType === LocationType.Area &&
                 !booleanPointInPolygon(point, parent.polygon)
               ) {
-                console.log("foo");
                 return null;
               }
             }
@@ -101,14 +97,12 @@ export default function useAreaSearch(
                   parent.locationType === LocationType.Area &&
                   !booleanPointInPolygon(point, parent.polygon)
                 ) {
-                  console.log("bar");
                   return null;
                 }
               }
             }
           }
         } else {
-          console.log("baz");
           return null;
         }
 

@@ -19,9 +19,6 @@ export default function QuizBuilder() {
   const navBarHeight = useContext(NavBarHeightContext);
   const locationsMaxHeight = `calc(100vh - ${navBarHeight}px)`;
 
-  console.log(navBarHeight);
-  console.log(locationsMaxHeight);
-
   // TODO: is this a janky way to load Places?
   useEffect(() => {
     async function loadPlacesLibrary() {
@@ -109,10 +106,14 @@ export default function QuizBuilder() {
     replaceLocation(parentLocation, newParentLocation);
   }
 
-  function setLocationOpen(targetLocation: AreaState, open: boolean): void {
+  function toggleLocationOpen(targetLocation: AreaState): void {
+    const newOpen = !targetLocation.open;
+
+    console.log(newOpen);
+
     const newLocation = {
       ...targetLocation,
-      open,
+      open: newOpen,
     };
 
     setDisplayedLocation(newLocation);
@@ -128,11 +129,11 @@ export default function QuizBuilder() {
       {placesLoaded ? (
         <SplitPane>
           <Locations
-            className="p-3 overflow-auto"
+            className="p-3 overflow-auto custom-scrollbar"
             style={{ maxHeight: locationsMaxHeight }}
             parentLocation={locationTree}
             addLocation={addLocation}
-            setLocationOpen={setLocationOpen}
+            toggleLocationOpen={toggleLocationOpen}
             deleteLocation={deleteLocation}
             setDisplayedLocation={setDisplayedLocation}
           />
