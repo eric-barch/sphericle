@@ -7,7 +7,7 @@ import {
   OpenStreetMapResponseItem,
 } from "@/types";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
-import { MultiPolygon, Polygon, Position } from "geojson";
+import { MultiPolygon, Point, Polygon, Position } from "geojson";
 import { useCallback, useState } from "react";
 
 interface UseAreaSearchReturn {
@@ -19,7 +19,7 @@ interface UseAreaSearchReturn {
 }
 
 export default function useAreaSearch(
-  parentLocation: TreeState | AreaState,
+  parent: TreeState | AreaState,
 ): UseAreaSearchReturn {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
@@ -32,13 +32,11 @@ export default function useAreaSearch(
     setInternalSearchTerm(searchTerm);
     setInternalSearchStatus(SearchStatus.Searching);
 
-    // TODO: Align variable naming with use point search
     let query = searchTerm;
 
-    if (parentLocation.locationType === LocationType.Area) {
-      const { south, north, west, east } = parentLocation.bounds;
-      query =
-        searchTerm + `&viewbox=${west},${south},${east},${north}&bounded=1`;
+    if (parent.locationType === LocationType.Area) {
+      const { south, north, west, east } = parent.bounds;
+      query = `${searchTerm}&viewbox=${west},${south},${east},${north}&bounded=1`;
     }
 
     const url = `/api/search-areas?query=${query}`;
@@ -53,6 +51,9 @@ export default function useAreaSearch(
           openStreetMapResponseItem.geojson.type !== "Polygon" &&
           openStreetMapResponseItem.geojson.type !== "MultiPolygon"
         ) {
+          console.log(
+            "openStreetMapResponseItem.geoJson is not Polygon or MultiPolygon",
+          );
           return null;
         }
 
@@ -65,12 +66,49 @@ export default function useAreaSearch(
             type: "Polygon",
             coordinates: geojson.coordinates as Position[][],
           };
+
+          for (const coordinate of polygon.coordinates) {
+            for (const position of coordinate) {
+              const point: Point = {
+                type: "Point",
+                coordinates: position,
+              };
+
+              if (
+                parent.locationType === LocationType.Area &&
+                !booleanPointInPolygon(point, parent.polygon)
+              ) {
+                console.log("foo");
+                return null;
+              }
+            }
+          }
         } else if (geojson.type === "MultiPolygon") {
           polygon = {
             type: "MultiPolygon",
             coordinates: geojson.coordinates as Position[][][],
           };
+
+          for (const polygonCoordinates of polygon.coordinates) {
+            for (const coordinate of polygonCoordinates) {
+              for (const position of coordinate) {
+                const point: Point = {
+                  type: "Point",
+                  coordinates: position,
+                };
+
+                if (
+                  parent.locationType === LocationType.Area &&
+                  !booleanPointInPolygon(point, parent.polygon)
+                ) {
+                  console.log("bar");
+                  return null;
+                }
+              }
+            }
+          }
         } else {
+          console.log("baz");
           return null;
         }
 
@@ -82,7 +120,7 @@ export default function useAreaSearch(
         };
 
         return {
-          parent: parentLocation,
+          parent: parent,
           locationType: LocationType.Area,
           placeId: openStreetMapResponseItem.place_id,
           displayName: openStreetMapResponseItem.name,

@@ -1,5 +1,6 @@
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
+
   const query = requestUrl.searchParams.get("query");
   const viewbox = requestUrl.searchParams.get("viewbox");
   const bounded = requestUrl.searchParams.get("bounded");
