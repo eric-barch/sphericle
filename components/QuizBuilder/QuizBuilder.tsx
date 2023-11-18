@@ -1,5 +1,4 @@
 import Map from "@/components/Map";
-import { NavBarHeightContext } from "@/components/NavBar";
 import SplitPane from "@/components/SplitPane";
 import { AreaState, LocationType, PointState, TreeState } from "@/types";
 import { useContext, useEffect, useState } from "react";
@@ -15,9 +14,6 @@ export default function QuizBuilder() {
   const [displayedLocation, setDisplayedLocation] = useState<
     AreaState | PointState | null
   >(null);
-
-  const navBarHeight = useContext(NavBarHeightContext);
-  const locationsMaxHeight = `calc(100vh - ${navBarHeight}px)`;
 
   // TODO: is this a janky way to load Places?
   useEffect(() => {
@@ -130,7 +126,7 @@ export default function QuizBuilder() {
         <SplitPane>
           <Locations
             className="p-3 overflow-auto custom-scrollbar"
-            style={{ maxHeight: locationsMaxHeight }}
+            style={{ maxHeight: "calc(100vh - 48px)" }}
             parentLocation={locationTree}
             addLocation={addLocation}
             toggleLocationOpen={toggleLocationOpen}

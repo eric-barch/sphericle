@@ -26,9 +26,11 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
   }, []);
 
   function setBounds(bounds: google.maps.LatLngBoundsLiteral) {
-    if (googleMapRef.current) {
-      googleMapRef.current.fitBounds(bounds);
+    if (!googleMapRef.current) {
+      return;
     }
+
+    googleMapRef.current.fitBounds(bounds);
   }
 
   function setMarker(point: Point | null) {
