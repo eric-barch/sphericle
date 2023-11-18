@@ -32,18 +32,22 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
   }
 
   function setMarker(point: Point | null) {
-    if (googleMapRef.current) {
+    if (!googleMapRef.current) {
+      return;
+    }
+
+    if (point) {
       if (markerRef.current) {
         markerRef.current.setMap(null);
-        markerRef.current = null;
       }
 
-      if (point) {
-        markerRef.current = new google.maps.Marker({
-          position: { lng: point.coordinates[0], lat: point.coordinates[1] },
-          map: googleMapRef.current,
-        });
-      }
+      markerRef.current = new google.maps.Marker({
+        position: { lng: point.coordinates[0], lat: point.coordinates[1] },
+        map: googleMapRef.current,
+      });
+    } else if (markerRef.current) {
+      markerRef.current.setMap(null);
+      markerRef.current = null;
     }
   }
 
@@ -52,41 +56,39 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
       return;
     }
 
-    if (parentPolygonRef.current) {
+    if (polygon) {
+      let paths: google.maps.LatLngLiteral[] | google.maps.LatLngLiteral[][];
+
+      if (polygon.type === "MultiPolygon") {
+        paths = polygon.coordinates.map((polygon) =>
+          polygon[0].map((coordinate) => ({
+            lng: Number(coordinate[0]),
+            lat: Number(coordinate[1]),
+          })),
+        );
+      } else if (polygon.type === "Polygon") {
+        paths = polygon.coordinates[0].map((coordinate) => ({
+          lng: Number(coordinate[0]),
+          lat: Number(coordinate[1]),
+        }));
+      }
+
+      if (parentPolygonRef.current) {
+        parentPolygonRef.current.setMap(null);
+      }
+
+      parentPolygonRef.current = new google.maps.Polygon({
+        paths,
+        map: googleMapRef.current,
+        strokeColor: "#d61613",
+        strokeWeight: 1.5,
+        fillColor: "#d61613",
+        fillOpacity: 0.0,
+      });
+    } else if (parentPolygonRef.current) {
       parentPolygonRef.current.setMap(null);
       parentPolygonRef.current = null;
     }
-
-    if (!polygon) {
-      return;
-    }
-
-    let paths: google.maps.LatLngLiteral[] | google.maps.LatLngLiteral[][];
-
-    if (polygon.type === "MultiPolygon") {
-      paths = polygon.coordinates.map((polygon) =>
-        polygon[0].map((coordinate) => ({
-          lng: Number(coordinate[0]),
-          lat: Number(coordinate[1]),
-        })),
-      );
-    } else if (polygon.type === "Polygon") {
-      paths = polygon.coordinates[0].map((coordinate) => ({
-        lng: Number(coordinate[0]),
-        lat: Number(coordinate[1]),
-      }));
-    }
-
-    console.log(paths);
-
-    parentPolygonRef.current = new google.maps.Polygon({
-      paths,
-      map: googleMapRef.current,
-      strokeColor: "#d61613",
-      strokeWeight: 1.5,
-      fillColor: "#d61613",
-      fillOpacity: 0.0,
-    });
   }
 
   function setChildPolygon(polygon: Polygon | MultiPolygon | null) {
@@ -94,41 +96,39 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
       return;
     }
 
-    if (childPolygonRef.current) {
+    if (polygon) {
+      let paths: google.maps.LatLngLiteral[] | google.maps.LatLngLiteral[][];
+
+      if (polygon.type === "MultiPolygon") {
+        paths = polygon.coordinates.map((polygon) =>
+          polygon[0].map((coordinate) => ({
+            lng: Number(coordinate[0]),
+            lat: Number(coordinate[1]),
+          })),
+        );
+      } else if (polygon.type === "Polygon") {
+        paths = polygon.coordinates[0].map((coordinate) => ({
+          lng: Number(coordinate[0]),
+          lat: Number(coordinate[1]),
+        }));
+      }
+
+      if (childPolygonRef.current) {
+        childPolygonRef.current.setMap(null);
+      }
+
+      childPolygonRef.current = new google.maps.Polygon({
+        paths,
+        map: googleMapRef.current,
+        strokeColor: "#d61613",
+        strokeWeight: 1.5,
+        fillColor: "#d61613",
+        fillOpacity: 0.2,
+      });
+    } else if (childPolygonRef.current) {
       childPolygonRef.current.setMap(null);
       childPolygonRef.current = null;
     }
-
-    if (!polygon) {
-      return;
-    }
-
-    let paths: google.maps.LatLngLiteral[] | google.maps.LatLngLiteral[][];
-
-    if (polygon.type === "MultiPolygon") {
-      paths = polygon.coordinates.map((polygon) =>
-        polygon[0].map((coordinate) => ({
-          lng: Number(coordinate[0]),
-          lat: Number(coordinate[1]),
-        })),
-      );
-    } else if (polygon.type === "Polygon") {
-      paths = polygon.coordinates[0].map((coordinate) => ({
-        lng: Number(coordinate[0]),
-        lat: Number(coordinate[1]),
-      }));
-    }
-
-    console.log(paths);
-
-    childPolygonRef.current = new google.maps.Polygon({
-      paths,
-      map: googleMapRef.current,
-      strokeColor: "#d61613",
-      strokeWeight: 1.5,
-      fillColor: "#d61613",
-      fillOpacity: 0.2,
-    });
   }
 
   useEffect(() => {

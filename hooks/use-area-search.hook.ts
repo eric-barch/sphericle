@@ -6,7 +6,7 @@ import {
   TreeState,
   OpenStreetMapResponseItem,
 } from "@/types";
-import booleanContains from "@turf/boolean-contains";
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { MultiPolygon, Polygon, Position } from "geojson";
 import { useCallback, useState } from "react";
 
