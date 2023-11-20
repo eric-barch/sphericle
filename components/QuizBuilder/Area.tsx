@@ -2,7 +2,7 @@ import { AreaState, PointState, TreeState } from "@/types";
 import { Disclosure } from "@headlessui/react";
 import { FaChevronRight, FaDrawPolygon } from "react-icons/fa6";
 import { Locations } from "./Locations";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface AreaProps {
   location: AreaState;
@@ -22,24 +22,35 @@ export default function Area({
   deleteLocation,
   setDisplayedLocation,
 }: AreaProps) {
-  const [focused, setFocused] = useState<boolean>(false);
+  const [mouseDown, setMouseDown] = useState<boolean>(false);
+  const [willToggle, setWillToggle] = useState<boolean>(false);
 
-  function handleFocus(event: React.FocusEvent<HTMLButtonElement>) {
-    setTimeout(() => {
-      setDisplayedLocation(location);
-      setFocused(true);
-    }, 0);
+  function handleFocus() {
+    if (!mouseDown) {
+      setWillToggle(true);
+    }
+
+    setDisplayedLocation(location);
   }
 
-  function handleBlur(event: React.FocusEvent<HTMLButtonElement>) {
-    setFocused(false);
+  function handleBlur() {
+    setWillToggle(false);
+  }
+
+  function handleMouseDown() {
+    setMouseDown(true);
+  }
+
+  function handleMouseUp() {
+    setMouseDown(false);
   }
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-    if (!focused) {
-      event.preventDefault();
-    } else {
+    if (willToggle) {
       toggleLocationOpen(location);
+    } else {
+      event.preventDefault();
+      setWillToggle(true);
     }
   }
 
@@ -53,9 +64,11 @@ export default function Area({
   return (
     <Disclosure defaultOpen={location.open}>
       <Disclosure.Button
-        className="relative quiz-builder-item quiz-builder-location cursor-pointer"
+        className={`"relative quiz-builder-item quiz-builder-location cursor-pointer focus:outline outline-2 outline-red-600`}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
       >
