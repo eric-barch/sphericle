@@ -30,6 +30,7 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
       return;
     }
 
+    googleMapRef.current.panToBounds(bounds);
     googleMapRef.current.fitBounds(bounds);
   }
 

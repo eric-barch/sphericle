@@ -202,7 +202,7 @@ function InputBox({
 
   return (
     <Combobox.Input
-      className="quiz-builder-item bg-transparent border-white border-2"
+      className="quiz-builder-item bg-transparent border-2 border-white"
       displayValue={() => input}
       placeholder={placeholder}
       onChange={handleChange}
