@@ -138,18 +138,18 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
     if (displayedLocation) {
       if (displayedLocation.locationType === LocationType.Area) {
         if (displayedLocation.open) {
-          setBounds(displayedLocation.bounds);
           setParentPolygon(displayedLocation.polygon);
           setChildPolygon(null);
+          setBounds(displayedLocation.displayBounds);
         } else {
           if (displayedLocation.parent.locationType === LocationType.Tree) {
-            setBounds(displayedLocation.bounds);
             setParentPolygon(null);
+            setBounds(displayedLocation.displayBounds);
           } else if (
             displayedLocation.parent.locationType === LocationType.Area
           ) {
-            setBounds(displayedLocation.parent.bounds);
             setParentPolygon(displayedLocation.parent.polygon);
+            setBounds(displayedLocation.parent.displayBounds);
           }
 
           setChildPolygon(displayedLocation.polygon);
@@ -166,11 +166,11 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
           const south = lat - diff;
           const west = lng - diff;
 
-          setBounds({ north, east, south, west });
           setParentPolygon(null);
+          setBounds({ north, east, south, west });
         } else {
-          setBounds(displayedLocation.parent.bounds);
           setParentPolygon(displayedLocation.parent.polygon);
+          setBounds(displayedLocation.parent.displayBounds);
         }
 
         setChildPolygon(null);

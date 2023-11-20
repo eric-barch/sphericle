@@ -35,7 +35,7 @@ export default function useAreaSearch(
     let query = searchTerm;
 
     if (parent.locationType === LocationType.Area) {
-      const { south, north, west, east } = parent.bounds;
+      const { south, north, west, east } = parent.searchBounds;
       query = `${searchTerm}&viewbox=${west},${south},${east},${north}&bounded=1`;
     }
 
@@ -58,6 +58,7 @@ export default function useAreaSearch(
 
         let polygon: Polygon | MultiPolygon;
 
+        // check if within bounds
         if (geojson.type === "Polygon") {
           polygon = {
             type: "Polygon",
@@ -102,16 +103,59 @@ export default function useAreaSearch(
               }
             }
           }
-        } else {
-          return null;
         }
 
-        const bounds: google.maps.LatLngBoundsLiteral = {
+        const searchBounds: google.maps.LatLngBoundsLiteral = {
           south: Number(openStreetMapResponseItem.boundingbox[0]),
           north: Number(openStreetMapResponseItem.boundingbox[1]),
           west: Number(openStreetMapResponseItem.boundingbox[2]),
           east: Number(openStreetMapResponseItem.boundingbox[3]),
         };
+
+        let longitudes: number[] = [];
+
+        if (polygon.type === "Polygon") {
+          longitudes = polygon.coordinates[0]
+            .map((coord) => coord[0])
+            .sort((a, b) => a - b);
+        } else if (polygon.type === "MultiPolygon") {
+          longitudes = polygon.coordinates
+            .flat(2)
+            .map((coord) => coord[0])
+            .sort((a, b) => a - b);
+        }
+
+        let maxGap = 0;
+        let maxGapWest = 0;
+        let maxGapEast = 0;
+
+        for (let i = 0; i < longitudes.length; i++) {
+          const longitude = longitudes[i];
+          const nextLongitude = longitudes[i + 1];
+          const gap = nextLongitude - longitude;
+          if (gap > maxGap) {
+            maxGap = gap;
+            maxGapWest = longitude;
+            maxGapEast = nextLongitude;
+          }
+        }
+
+        const westAntimeridianGap = longitudes[0] - -180;
+        const eastAntimeridianGap = 180 - longitudes[longitudes.length - 1];
+        const antiMeridianGap = westAntimeridianGap + eastAntimeridianGap;
+
+        let displayBounds: google.maps.LatLngBoundsLiteral;
+
+        if (antiMeridianGap > maxGap) {
+          displayBounds = searchBounds;
+        } else {
+          displayBounds = {
+            north: searchBounds.north,
+            east: maxGapWest,
+            south: searchBounds.south,
+            west: maxGapEast,
+          };
+        }
 
         return {
           parent: parent,
@@ -121,7 +165,8 @@ export default function useAreaSearch(
           fullName: openStreetMapResponseItem.display_name,
           open: false,
           polygon,
-          bounds,
+          displayBounds,
+          searchBounds,
           sublocations: [] as (AreaState | PointState)[],
         };
       })

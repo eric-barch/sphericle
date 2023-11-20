@@ -10,7 +10,8 @@ export type AreaState = {
   fullName: string;
   open: boolean;
   polygon: Polygon | MultiPolygon;
-  bounds: google.maps.LatLngBoundsLiteral;
+  displayBounds: google.maps.LatLngBoundsLiteral;
+  searchBounds: google.maps.LatLngBoundsLiteral;
   sublocations: (AreaState | PointState)[];
 };
 

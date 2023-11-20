@@ -47,7 +47,7 @@ export default function usePointSearch(
     };
 
     if (parent.locationType === LocationType.Area) {
-      request.locationRestriction = parent.bounds;
+      request.locationRestriction = parent.displayBounds;
     }
 
     const autocompletePredictions = (

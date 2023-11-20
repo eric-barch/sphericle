@@ -44,7 +44,10 @@ export default function LocationAdderInput({
   }
 
   return (
-    <div className="relative" onFocus={handleFocus}>
+    <div
+      className="relative focus:outline focus:outline-2 focus:outline-red-600"
+      onFocus={handleFocus}
+    >
       <ToggleLocationTypeButton
         locationAdderLocationType={locationAdderLocationType}
         setLocationAdderLocationType={setLocationAdderLocationType}
