@@ -1,4 +1,4 @@
-import { AreaState, LocationType, PointState, TreeState } from "@/types";
+import { AreaState, LocationType, PointState, QuizState } from "@/types";
 import { CSSProperties } from "react";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
@@ -7,9 +7,9 @@ import Point from "./Point";
 interface LocationsProps {
   className?: string;
   style?: CSSProperties;
-  parentLocation: TreeState | AreaState;
+  parentLocation: QuizState | AreaState;
   addLocation: (
-    parentLocation: TreeState | AreaState,
+    parentLocation: QuizState | AreaState,
     location: AreaState | PointState,
   ) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;

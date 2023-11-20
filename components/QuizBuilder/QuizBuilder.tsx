@@ -1,13 +1,13 @@
 import Map from "@/components/Map";
 import SplitPane from "@/components/SplitPane";
-import { AreaState, LocationType, PointState, TreeState } from "@/types";
+import { AreaState, LocationType, PointState, QuizState } from "@/types";
 import { useEffect, useState } from "react";
 import { Locations } from "./Locations";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
-  const [locationTree, setLocationTree] = useState<TreeState>({
-    locationType: LocationType.Tree,
+  const [quiz, setQuiz] = useState<QuizState>({
+    locationType: LocationType.Quiz,
     displayName: "Root",
     sublocations: [],
   });
@@ -32,10 +32,10 @@ export default function QuizBuilder() {
   }, []);
 
   function findLocation(
-    searchLocation: TreeState | AreaState | PointState,
-    targetLocation: TreeState | AreaState | PointState,
-    newLocation: TreeState | AreaState | PointState | null,
-  ): TreeState | AreaState | PointState | null {
+    searchLocation: QuizState | AreaState | PointState,
+    targetLocation: QuizState | AreaState | PointState,
+    newLocation: QuizState | AreaState | PointState | null,
+  ): QuizState | AreaState | PointState | null {
     if (searchLocation === targetLocation) {
       return newLocation;
     }
@@ -45,7 +45,7 @@ export default function QuizBuilder() {
     }
 
     if (
-      searchLocation.locationType === LocationType.Tree ||
+      searchLocation.locationType === LocationType.Quiz ||
       searchLocation.locationType === LocationType.Area
     ) {
       let newSublocations: (AreaState | PointState)[] = [];
@@ -79,16 +79,16 @@ export default function QuizBuilder() {
   }
 
   function replaceLocation(
-    targetLocation: TreeState | AreaState | PointState,
-    newLocation: TreeState | AreaState | PointState | null,
+    targetLocation: QuizState | AreaState | PointState,
+    newLocation: QuizState | AreaState | PointState | null,
   ): void {
-    const newRoot = findLocation(locationTree, targetLocation, newLocation);
+    const newQuiz = findLocation(quiz, targetLocation, newLocation);
 
-    if (newRoot?.locationType !== LocationType.Tree) {
+    if (newQuiz?.locationType !== LocationType.Quiz) {
       throw new Error("newRoot is not a RootState.");
     }
 
-    setLocationTree(newRoot);
+    setQuiz(newQuiz);
   }
 
   function setFocusedLocation(location: AreaState | PointState | null) {
@@ -99,7 +99,7 @@ export default function QuizBuilder() {
           setFilledAreas(null);
           setBounds(location.displayBounds);
         } else {
-          if (location.parent.locationType === LocationType.Tree) {
+          if (location.parent.locationType === LocationType.Quiz) {
             setEmptyAreas(null);
             setBounds(location.displayBounds);
           } else if (location.parent.locationType === LocationType.Area) {
@@ -111,7 +111,7 @@ export default function QuizBuilder() {
         }
         setMarkers(null);
       } else if (location.locationType === LocationType.Point) {
-        if (location.parent.locationType === LocationType.Tree) {
+        if (location.parent.locationType === LocationType.Quiz) {
           const lng = location.point.coordinates[0];
           const lat = location.point.coordinates[1];
           const diff = 0.1;
@@ -139,7 +139,7 @@ export default function QuizBuilder() {
   }
 
   function addLocation(
-    parentLocation: TreeState | AreaState,
+    parentLocation: QuizState | AreaState,
     location: AreaState | PointState,
   ): void {
     const newParentLocation = {
@@ -176,7 +176,7 @@ export default function QuizBuilder() {
           <Locations
             className="p-3 overflow-auto custom-scrollbar"
             style={{ maxHeight: "calc(100vh - 48px)" }}
-            parentLocation={locationTree}
+            parentLocation={quiz}
             addLocation={addLocation}
             toggleLocationOpen={toggleLocationOpen}
             deleteLocation={deleteLocation}

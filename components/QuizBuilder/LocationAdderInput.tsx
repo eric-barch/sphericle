@@ -1,11 +1,11 @@
-import { AreaState, LocationType, PointState, TreeState } from "@/types";
+import { AreaState, LocationType, PointState, QuizState } from "@/types";
 import debounce from "@/utils/debounce";
 import { Combobox } from "@headlessui/react";
 import { useCallback } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 
 interface LocationAdderInputProps {
-  parentLocation: TreeState | AreaState;
+  parentLocation: QuizState | AreaState;
   locationAdderLocationType: LocationType;
   setLocationAdderLocationType: React.Dispatch<
     React.SetStateAction<LocationType>
@@ -36,7 +36,7 @@ export default function LocationAdderInput({
       return;
     }
 
-    if (parentLocation.locationType === LocationType.Tree) {
+    if (parentLocation.locationType === LocationType.Quiz) {
       setFocusedLocation(null);
     } else {
       setFocusedLocation(parentLocation);
@@ -139,7 +139,7 @@ function InputBox({
   setPointSearchTerm,
 }: InputBoxProps) {
   const placeholder =
-    parentLocationType === LocationType.Tree
+    parentLocationType === LocationType.Quiz
       ? `Add ${locationAdderLocationType}`
       : `Add ${locationAdderLocationType} in ${parentLocationName}`;
 

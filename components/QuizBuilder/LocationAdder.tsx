@@ -2,16 +2,16 @@
 
 import useAreaSearch from "@/hooks/use-area-search.hook";
 import usePointSearch from "@/hooks/use-point-search.hook";
-import { AreaState, LocationType, PointState, TreeState } from "@/types";
+import { AreaState, LocationType, PointState, QuizState } from "@/types";
 import { Combobox } from "@headlessui/react";
 import React, { useState } from "react";
 import LocationAdderInput from "./LocationAdderInput";
 import LocationAdderOptions from "./LocationAdderOptions";
 
 interface LocationAdderProps {
-  parentLocation: TreeState | AreaState;
+  parentLocation: QuizState | AreaState;
   addLocation: (
-    parentLocation: TreeState | AreaState,
+    parentLocation: QuizState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
   setFocusedLocation: (location: AreaState | PointState | null) => void;

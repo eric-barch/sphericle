@@ -1,4 +1,4 @@
-import { AreaState, PointState, TreeState } from "@/types";
+import { AreaState, PointState, QuizState } from "@/types";
 import { FaLocationDot } from "react-icons/fa6";
 
 interface PointProps {

@@ -3,7 +3,7 @@ import {
   LocationType,
   PointState,
   SearchStatus,
-  TreeState,
+  QuizState,
 } from "@/types";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { Point } from "geojson";
@@ -18,7 +18,7 @@ interface UsePointSearchReturn {
 }
 
 export default function usePointSearch(
-  parent: TreeState | AreaState,
+  parent: QuizState | AreaState,
 ): UsePointSearchReturn {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
