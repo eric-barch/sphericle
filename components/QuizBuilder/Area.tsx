@@ -12,7 +12,7 @@ interface AreaProps {
   ) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
+  setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function Area({
@@ -20,7 +20,7 @@ export default function Area({
   addLocation,
   toggleLocationOpen,
   deleteLocation,
-  setDisplayedLocation,
+  setFocusedLocation,
 }: AreaProps) {
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
@@ -30,7 +30,7 @@ export default function Area({
       setWillToggle(true);
     }
 
-    setDisplayedLocation(location);
+    setFocusedLocation(location);
   }
 
   function handleBlur() {
@@ -89,7 +89,7 @@ export default function Area({
           addLocation={addLocation}
           toggleLocationOpen={toggleLocationOpen}
           deleteLocation={deleteLocation}
-          setDisplayedLocation={setDisplayedLocation}
+          setFocusedLocation={setFocusedLocation}
         />
       </Disclosure.Panel>
     </Disclosure>

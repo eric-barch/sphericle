@@ -14,7 +14,7 @@ interface LocationsProps {
   ) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
+  setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export function Locations({
@@ -24,7 +24,7 @@ export function Locations({
   addLocation,
   toggleLocationOpen,
   deleteLocation,
-  setDisplayedLocation,
+  setFocusedLocation,
 }: LocationsProps) {
   return (
     <div className={`${className} space-y-1`} style={style}>
@@ -37,7 +37,7 @@ export function Locations({
               addLocation={addLocation}
               toggleLocationOpen={toggleLocationOpen}
               deleteLocation={deleteLocation}
-              setDisplayedLocation={setDisplayedLocation}
+              setFocusedLocation={setFocusedLocation}
             />
           );
         }
@@ -48,7 +48,7 @@ export function Locations({
               key={sublocation.placeId}
               location={sublocation}
               deleteLocation={deleteLocation}
-              setDisplayedLocation={setDisplayedLocation}
+              setFocusedLocation={setFocusedLocation}
             />
           );
         }
@@ -56,7 +56,7 @@ export function Locations({
       <LocationAdder
         parentLocation={parentLocation}
         addLocation={addLocation}
-        setDisplayedLocation={setDisplayedLocation}
+        setFocusedLocation={setFocusedLocation}
       />
     </div>
   );

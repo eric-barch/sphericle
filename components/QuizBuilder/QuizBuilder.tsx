@@ -1,7 +1,7 @@
 import Map from "@/components/Map";
 import SplitPane from "@/components/SplitPane";
 import { AreaState, LocationType, PointState, TreeState } from "@/types";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Locations } from "./Locations";
 
 export default function QuizBuilder() {
@@ -11,11 +11,13 @@ export default function QuizBuilder() {
     displayName: "Root",
     sublocations: [],
   });
-  const [displayedLocation, setDisplayedLocation] = useState<
-    AreaState | PointState | null
-  >(null);
+  const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral | null>(
+    null,
+  );
+  const [filledAreas, setFilledAreas] = useState<AreaState[] | null>(null);
+  const [emptyAreas, setEmptyAreas] = useState<AreaState[] | null>(null);
+  const [markers, setMarkers] = useState<PointState[] | null>(null);
 
-  // TODO: is this a janky way to load Places?
   useEffect(() => {
     async function loadPlacesLibrary() {
       if (!window.google || !window.google.maps || !window.google.maps.places) {
@@ -89,6 +91,53 @@ export default function QuizBuilder() {
     setLocationTree(newRoot);
   }
 
+  function setFocusedLocation(location: AreaState | PointState | null) {
+    if (location) {
+      if (location.locationType === LocationType.Area) {
+        if (location.open) {
+          setEmptyAreas([location]);
+          setFilledAreas(null);
+          setBounds(location.displayBounds);
+        } else {
+          if (location.parent.locationType === LocationType.Tree) {
+            setEmptyAreas(null);
+            setBounds(location.displayBounds);
+          } else if (location.parent.locationType === LocationType.Area) {
+            setEmptyAreas([location.parent]);
+            setBounds(location.parent.displayBounds);
+          }
+
+          setFilledAreas([location]);
+        }
+        setMarkers(null);
+      } else if (location.locationType === LocationType.Point) {
+        if (location.parent.locationType === LocationType.Tree) {
+          const lng = location.point.coordinates[0];
+          const lat = location.point.coordinates[1];
+          const diff = 0.1;
+
+          const north = lat + diff;
+          const east = lng + diff;
+          const south = lat - diff;
+          const west = lng - diff;
+
+          setEmptyAreas(null);
+          setBounds({ north, east, south, west });
+        } else {
+          setEmptyAreas([location.parent]);
+          setBounds(location.parent.displayBounds);
+        }
+
+        setFilledAreas(null);
+        setMarkers([location]);
+      }
+    } else {
+      setEmptyAreas(null);
+      setFilledAreas(null);
+      setMarkers(null);
+    }
+  }
+
   function addLocation(
     parentLocation: TreeState | AreaState,
     location: AreaState | PointState,
@@ -98,7 +147,7 @@ export default function QuizBuilder() {
       sublocations: [...parentLocation.sublocations, location],
     };
 
-    setDisplayedLocation(location);
+    setFocusedLocation(location);
     replaceLocation(parentLocation, newParentLocation);
   }
 
@@ -112,7 +161,7 @@ export default function QuizBuilder() {
       open: newOpen,
     };
 
-    setDisplayedLocation(newLocation);
+    setFocusedLocation(newLocation);
     replaceLocation(targetLocation, newLocation);
   }
 
@@ -131,9 +180,15 @@ export default function QuizBuilder() {
             addLocation={addLocation}
             toggleLocationOpen={toggleLocationOpen}
             deleteLocation={deleteLocation}
-            setDisplayedLocation={setDisplayedLocation}
+            setFocusedLocation={setFocusedLocation}
           />
-          <Map mapId="696d0ea42431a75c" displayedLocation={displayedLocation} />
+          <Map
+            mapId="696d0ea42431a75c"
+            bounds={bounds}
+            filledAreas={filledAreas}
+            emptyAreas={emptyAreas}
+            markers={markers}
+          />
         </SplitPane>
       ) : (
         "Loading..."

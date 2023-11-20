@@ -4,16 +4,16 @@ import { FaLocationDot } from "react-icons/fa6";
 interface PointProps {
   location: PointState;
   deleteLocation: (targetLocation: PointState) => void;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
+  setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function Point({
   location,
   deleteLocation,
-  setDisplayedLocation,
+  setFocusedLocation,
 }: PointProps) {
   function handleFocus() {
-    setDisplayedLocation(location);
+    setFocusedLocation(location);
   }
 
   return (

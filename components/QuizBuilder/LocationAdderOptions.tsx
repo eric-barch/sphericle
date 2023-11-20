@@ -13,7 +13,7 @@ interface LocationAdderOptionsProps {
   pointSearchStatus: SearchStatus;
   pointSearchResults: PointState[] | null;
   activeOption: AreaState | PointState | null;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
+  setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function LocationAdderOptions({
@@ -27,7 +27,7 @@ export default function LocationAdderOptions({
   pointSearchStatus,
   pointSearchResults,
   activeOption,
-  setDisplayedLocation,
+  setFocusedLocation,
 }: LocationAdderOptionsProps) {
   function renderOptions(
     locationType: LocationType,
@@ -84,7 +84,7 @@ export default function LocationAdderOptions({
 
   useEffect(() => {
     if (activeOption) {
-      setDisplayedLocation(activeOption);
+      setFocusedLocation(activeOption);
     }
   }, [activeOption]);
 

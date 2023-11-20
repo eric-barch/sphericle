@@ -14,13 +14,13 @@ interface LocationAdderProps {
     parentLocation: TreeState | AreaState,
     childLocation: AreaState | PointState,
   ) => void;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
+  setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function LocationAdder({
   parentLocation,
   addLocation,
-  setDisplayedLocation,
+  setFocusedLocation,
 }: LocationAdderProps) {
   const [locationAdderLocationType, setLocationAdderLocationType] =
     useState<LocationType>(LocationType.Area);
@@ -91,7 +91,7 @@ export default function LocationAdder({
               setAreaSearchTerm={setAreaSearchTerm}
               pointSearchTerm={pointSearchTerm}
               setPointSearchTerm={setPointSearchTerm}
-              setDisplayedLocation={setDisplayedLocation}
+              setFocusedLocation={setFocusedLocation}
             />
             <LocationAdderOptions
               locationAdderLocationType={locationAdderLocationType}
@@ -104,7 +104,7 @@ export default function LocationAdder({
               pointSearchStatus={pointSearchStatus}
               pointSearchResults={pointSearchResults}
               activeOption={activeOption}
-              setDisplayedLocation={setDisplayedLocation}
+              setFocusedLocation={setFocusedLocation}
             />
           </>
         )}
