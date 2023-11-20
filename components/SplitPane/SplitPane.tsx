@@ -102,15 +102,11 @@ export default function SplitPane({ children }: SplitPaneProps) {
     >
       {childrenArray.map((child, index) => (
         <React.Fragment key={index}>
-          <div style={{ width: `${paneWidths[index]}px`, flexShrink: 0 }}>
-            {child}
-          </div>
+          <div style={{ width: `${paneWidths[index]}px` }}>{child}</div>
           {index < childrenArray.length - 1 && (
             <div
-              className="cursor-ew-resize bg-transparent absolute z-10"
+              className="cursor-ew-resize bg-transparent absolute z-10 h-full w-2"
               style={{
-                height: "100%",
-                width: "10px",
                 left: `${
                   paneWidths.slice(0, index + 1).reduce((a, b) => a + b, 0) - 5
                 }px`,

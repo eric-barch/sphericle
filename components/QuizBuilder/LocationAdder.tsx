@@ -9,16 +9,16 @@ import LocationAdderInput from "./LocationAdderInput";
 import LocationAdderOptions from "./LocationAdderOptions";
 
 interface LocationAdderProps {
-  parentLocation: QuizState | AreaState;
+  parent: QuizState | AreaState;
   addLocation: (
-    parentLocation: QuizState | AreaState,
-    childLocation: AreaState | PointState,
+    parent: QuizState | AreaState,
+    location: AreaState | PointState,
   ) => void;
   setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function LocationAdder({
-  parentLocation,
+  parent,
   addLocation,
   setFocusedLocation,
 }: LocationAdderProps) {
@@ -32,14 +32,14 @@ export default function LocationAdder({
     searchResults: areaSearchResults,
     setSearchTerm: setAreaSearchTerm,
     reset: resetAreaSearch,
-  } = useAreaSearch(parentLocation);
+  } = useAreaSearch(parent);
   const {
     searchTerm: pointSearchTerm,
     searchStatus: pointSearchStatus,
     searchResults: pointSearchResults,
     setSearchTerm: setPointSearchTerm,
     reset: resetPointSearch,
-  } = usePointSearch(parentLocation);
+  } = usePointSearch(parent);
 
   function handleFocus(event: React.FocusEvent) {
     const currentTarget = event.currentTarget;
@@ -66,10 +66,10 @@ export default function LocationAdder({
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
       ...location,
-      parent: parentLocation,
+      parent: parent,
     };
 
-    addLocation(parentLocation, newLocation);
+    addLocation(parent, newLocation);
 
     setInput("");
     resetAreaSearch();
@@ -82,7 +82,7 @@ export default function LocationAdder({
         {({ activeOption }) => (
           <>
             <LocationAdderInput
-              parentLocation={parentLocation}
+              parentLocation={parent}
               locationAdderLocationType={locationAdderLocationType}
               setLocationAdderLocationType={setLocationAdderLocationType}
               input={input}

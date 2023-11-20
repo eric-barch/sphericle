@@ -1,8 +1,8 @@
 import { AreaState, PointState, QuizState } from "@/types";
-import { Disclosure } from "@headlessui/react";
-import { FaChevronRight, FaDrawPolygon } from "react-icons/fa6";
+import { Disclosure, Menu } from "@headlessui/react";
+import { useState } from "react";
+import { FaChevronRight, FaEllipsisVertical } from "react-icons/fa6";
 import { Locations } from "./Locations";
-import { useState, useEffect } from "react";
 
 interface AreaProps {
   location: AreaState;
@@ -63,29 +63,59 @@ export default function Area({
 
   return (
     <Disclosure defaultOpen={location.open}>
-      <Disclosure.Button
-        className={`"relative quiz-builder-item quiz-builder-location cursor-pointer focus:outline outline-2 outline-red-600`}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-      >
-        <div className="quiz-builder-item-decorator-left-1">
-          <FaDrawPolygon className="text-gray-400" />
+      <div className="relative">
+        <div className="quiz-builder-item-decorator-left-1 z-20">
+          <Menu>
+            <Menu.Button className="h-full w-full rounded-3xl flex items-center justify-center">
+              <FaEllipsisVertical className="text-gray-400" />
+            </Menu.Button>
+            <Menu.Items className="absolute origin-top-left left-0 top-full z-30 bg-gray-500 rounded-3xl p-2 mt-2 mb-1">
+              <Menu.Item>
+                {({ active }) => (
+                  <div
+                    className={`p-1 rounded-3xl cursor-pointer min-w-max ${
+                      active ? "bg-gray-600" : ""
+                    }`}
+                  >
+                    Rename
+                  </div>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <div
+                    className={`p-1 rounded-3xl cursor-pointer min-w-max ${
+                      active ? "bg-gray-600" : ""
+                    }`}
+                  >
+                    Delete
+                  </div>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Menu>
         </div>
-        <span>{location.fullName}</span>
-        <div className="quiz-builder-item-decorator-right-1">
-          <FaChevronRight
-            className={`${location.open ? "rotate-90" : ""} w-4 h-auto`}
-          />
-        </div>
-      </Disclosure.Button>
+        <Disclosure.Button
+          className={`quiz-builder-item quiz-builder-location cursor-pointer focus:outline outline-2 outline-red-600`}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+        >
+          <span>{location.fullName}</span>
+          <div className="quiz-builder-item-decorator-right-1">
+            <FaChevronRight
+              className={`${location.open ? "rotate-90" : ""} w-4 h-auto`}
+            />
+          </div>
+        </Disclosure.Button>
+      </div>
       <Disclosure.Panel>
         <Locations
           className="ml-10"
-          parentLocation={location}
+          parent={location}
           addLocation={addLocation}
           toggleLocationOpen={toggleLocationOpen}
           deleteLocation={deleteLocation}

@@ -174,9 +174,8 @@ export default function QuizBuilder() {
       {placesLoaded ? (
         <SplitPane>
           <Locations
-            className="p-3 overflow-auto custom-scrollbar"
-            style={{ maxHeight: "calc(100vh - 48px)" }}
-            parentLocation={quiz}
+            className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
+            parent={quiz}
             addLocation={addLocation}
             toggleLocationOpen={toggleLocationOpen}
             deleteLocation={deleteLocation}

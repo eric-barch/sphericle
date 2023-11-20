@@ -12,8 +12,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const navBarHeight = 48;
-
   return (
     <html lang="en">
       <body className={`${font.className} min-h-screen`}>

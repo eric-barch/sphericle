@@ -1,5 +1,5 @@
 import { AreaState, PointState, QuizState } from "@/types";
-import { FaLocationDot } from "react-icons/fa6";
+import { FaEllipsisVertical, FaLocationDot } from "react-icons/fa6";
 
 interface PointProps {
   location: PointState;
@@ -23,7 +23,7 @@ export default function Point({
       onFocus={handleFocus}
     >
       <div className="quiz-builder-item-decorator-left-1">
-        <FaLocationDot className="text-gray-400" />
+        <FaEllipsisVertical className="text-gray-400" />
       </div>
       <span>{location.fullName}</span>
     </div>

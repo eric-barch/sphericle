@@ -1,15 +1,13 @@
 import { AreaState, LocationType, PointState, QuizState } from "@/types";
-import { CSSProperties } from "react";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 import Point from "./Point";
 
 interface LocationsProps {
   className?: string;
-  style?: CSSProperties;
-  parentLocation: QuizState | AreaState;
+  parent: QuizState | AreaState;
   addLocation: (
-    parentLocation: QuizState | AreaState,
+    parent: QuizState | AreaState,
     location: AreaState | PointState,
   ) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;
@@ -19,16 +17,15 @@ interface LocationsProps {
 
 export function Locations({
   className,
-  style,
-  parentLocation,
+  parent,
   addLocation,
   toggleLocationOpen,
   deleteLocation,
   setFocusedLocation,
 }: LocationsProps) {
   return (
-    <div className={`${className} space-y-1`} style={style}>
-      {parentLocation.sublocations.map((sublocation) => {
+    <div className={`${className ? className : ""} space-y-1 h-full`}>
+      {parent.sublocations.map((sublocation) => {
         if (sublocation.locationType === LocationType.Area) {
           return (
             <Area
@@ -52,9 +49,11 @@ export function Locations({
             />
           );
         }
+
+        return null; // return null when no conditions match
       })}
       <LocationAdder
-        parentLocation={parentLocation}
+        parent={parent}
         addLocation={addLocation}
         setFocusedLocation={setFocusedLocation}
       />
