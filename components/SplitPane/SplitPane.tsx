@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useRef } from "react";
+import { useCallback, useState, useEffect, useRef, Fragment } from "react";
 
 interface SplitPaneProps {
   children: React.ReactNode | React.ReactNode[];
@@ -101,7 +101,7 @@ export default function SplitPane({ children }: SplitPaneProps) {
       onMouseUp={handleMouseUp}
     >
       {childrenArray.map((child, index) => (
-        <React.Fragment key={index}>
+        <Fragment key={index}>
           <div style={{ width: `${paneWidths[index]}px` }}>{child}</div>
           {index < childrenArray.length - 1 && (
             <div
@@ -115,7 +115,7 @@ export default function SplitPane({ children }: SplitPaneProps) {
               onDoubleClick={() => handleDoubleClick(index)}
             />
           )}
-        </React.Fragment>
+        </Fragment>
       ))}
     </div>
   );

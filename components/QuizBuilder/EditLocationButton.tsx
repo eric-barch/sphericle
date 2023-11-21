@@ -13,7 +13,7 @@ export default function EditLocationButton({
       <Menu.Button className={className}>
         <FaEllipsisVertical className="w-4 h-4" />
       </Menu.Button>
-      <Menu.Items className="absolute top-full left-0 bg-gray-500 rounded-3xl p-2">
+      <Menu.Items className="absolute z-10 mt-1 top-full left-0 bg-gray-500 rounded-3xl p-1">
         <Menu.Item>
           {({ active }) => (
             <div

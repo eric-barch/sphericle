@@ -4,6 +4,7 @@ import { useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import { Locations } from "./Locations";
+import LocationText from "./LocationText";
 
 interface AreaProps {
   location: AreaState;
@@ -65,7 +66,7 @@ export default function Area({
   return (
     <Disclosure defaultOpen={location.open}>
       <Disclosure.Button
-        className={`relative quiz-builder-item quiz-builder-location cursor-pointer focus:outline outline-2 outline-red-600`}
+        className={`relative quiz-builder-item quiz-builder-location cursor-pointer focus:outline outline-2 outline-red-600 max-w-[px]`}
         onFocus={handleFocus}
         onBlur={handleBlur}
         onMouseDown={handleMouseDown}
@@ -74,12 +75,11 @@ export default function Area({
         onKeyDown={handleKeyDown}
       >
         <EditLocationButton className="quiz-builder-item-decorator-left-1" />
-        <span className="ml-8">{location.fullName}</span>
-        <div className="quiz-builder-item-decorator-right-1">
-          <FaChevronRight
-            className={`${location.open ? "rotate-90" : ""} w-4 h-4`}
-          />
-        </div>
+        <LocationText text={location.displayName} />
+        <OpenChevron
+          className="quiz-builder-item-decorator-right-1"
+          open={location.open}
+        />
       </Disclosure.Button>
       <Disclosure.Panel>
         <Locations
@@ -92,5 +92,18 @@ export default function Area({
         />
       </Disclosure.Panel>
     </Disclosure>
+  );
+}
+
+interface OpenChevronProps {
+  className?: string;
+  open: boolean;
+}
+
+function OpenChevron({ className, open }: OpenChevronProps) {
+  return (
+    <div className={className}>
+      <FaChevronRight className={`${open ? "rotate-90" : ""} w-4 h-4`} />
+    </div>
   );
 }

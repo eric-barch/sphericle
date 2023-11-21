@@ -44,10 +44,7 @@ export default function LocationAdderInput({
   }
 
   return (
-    <div
-      className="relative focus:outline focus:outline-2 focus:outline-red-600"
-      onFocus={handleFocus}
-    >
+    <div className="relative" onFocus={handleFocus}>
       <ToggleLocationTypeButton
         locationAdderLocationType={locationAdderLocationType}
         setLocationAdderLocationType={setLocationAdderLocationType}
@@ -205,7 +202,7 @@ function InputBox({
 
   return (
     <Combobox.Input
-      className="quiz-builder-item bg-transparent border-2 border-white"
+      className="quiz-builder-item bg-transparent border-2 border-white pl-8"
       displayValue={() => input}
       placeholder={placeholder}
       onChange={handleChange}
