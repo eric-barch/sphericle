@@ -39,7 +39,7 @@
   }
 
   .quiz-builder-item {
-    @apply w-full py-1 px-1 pl-8 rounded-3xl text-left relative;
+    @apply w-full py-1 px-1 rounded-3xl text-left relative;
   }
 
   .quiz-builder-location {
@@ -47,7 +47,7 @@
   }
 
   .quiz-builder-item-decorator {
-    @apply flex h-6 w-6 items-center justify-center z-10 absolute top-1/2 transform -translate-y-1/2 rounded-3xl;
+    @apply flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl;
   }
 
   .quiz-builder-item-decorator-left-1 {
