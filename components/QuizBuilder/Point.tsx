@@ -1,9 +1,11 @@
-import { AreaState, PointState, QuizState } from "@/types";
-import { FaEllipsisVertical, FaLocationDot } from "react-icons/fa6";
+import { AreaState, PointState } from "@/types";
+import { useState } from "react";
+import EditLocationButton from "./EditLocationButton";
 
 interface PointProps {
   location: PointState;
   deleteLocation: (targetLocation: PointState) => void;
+  setRenaming: (renaming: boolean) => void;
   setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
@@ -12,6 +14,8 @@ export default function Point({
   deleteLocation,
   setFocusedLocation,
 }: PointProps) {
+  const [renaming, setRenaming] = useState<boolean>(false);
+
   function handleFocus() {
     setFocusedLocation(location);
   }
@@ -22,10 +26,14 @@ export default function Point({
       tabIndex={0}
       onFocus={handleFocus}
     >
-      <div className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1">
-        <FaEllipsisVertical className="text-gray-400" />
-      </div>
-      <span>{location.fullName}</span>
+      <EditLocationButton
+        className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
+        location={location}
+        setRenaming={setRenaming}
+        deleteLocation={deleteLocation}
+        setFocusedLocation={setFocusedLocation}
+      />
+      <span className="pl-7">{location.fullName}</span>
     </div>
   );
 }

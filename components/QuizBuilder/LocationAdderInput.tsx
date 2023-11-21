@@ -31,8 +31,10 @@ export default function LocationAdderInput({
 }: LocationAdderInputProps) {
   const placeholder =
     parentLocation.locationType === LocationType.Quiz
-      ? `Add ${locationAdderLocationType}`
-      : `Add ${locationAdderLocationType} in ${parentLocation.displayName}`;
+      ? `Add ${locationAdderLocationType.toLowerCase()}`
+      : `Add ${locationAdderLocationType.toLowerCase()} in ${
+          parentLocation.displayName
+        }`;
 
   const debouncedSetPointSearchTerm = useCallback(
     debounce((searchTerm: string) => {
@@ -156,7 +158,7 @@ function ToggleLocationTypeButton({
 
   return (
     <button
-      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5 bg-gray-600 text-gray-400 focus:outline outline-2 outline-red-600"
+      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5 bg-gray-600 text-gray-400 "
       onClick={handleClick}
     >
       {icon}

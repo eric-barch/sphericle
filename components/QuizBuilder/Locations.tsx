@@ -10,8 +10,12 @@ interface LocationsProps {
     parent: QuizState | AreaState,
     location: AreaState | PointState,
   ) => void;
-  toggleLocationOpen: (targetLocation: AreaState) => void;
-  deleteLocation: (targetLocation: AreaState | PointState) => void;
+  deleteLocation: (location: AreaState | PointState) => void;
+  renameLocation: (
+    location: AreaState | PointState,
+    userDefinedName: string,
+  ) => void;
+  toggleLocationOpen: (location: AreaState) => void;
   setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
@@ -19,8 +23,9 @@ export function Locations({
   className,
   parent,
   addLocation,
-  toggleLocationOpen,
   deleteLocation,
+  renameLocation,
+  toggleLocationOpen,
   setFocusedLocation,
 }: LocationsProps) {
   return (
@@ -32,8 +37,9 @@ export function Locations({
               key={sublocation.placeId}
               location={sublocation}
               addLocation={addLocation}
-              toggleLocationOpen={toggleLocationOpen}
               deleteLocation={deleteLocation}
+              renameLocation={renameLocation}
+              toggleLocationOpen={toggleLocationOpen}
               setFocusedLocation={setFocusedLocation}
             />
           );
@@ -44,6 +50,7 @@ export function Locations({
             <Point
               key={sublocation.placeId}
               location={sublocation}
+              renameLocation={renameLocation}
               deleteLocation={deleteLocation}
               setFocusedLocation={setFocusedLocation}
             />

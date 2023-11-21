@@ -12,20 +12,23 @@ interface AreaProps {
     parentLocation: QuizState | AreaState,
     location: AreaState | PointState,
   ) => void;
-  toggleLocationOpen: (targetLocation: AreaState) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
+  renameLocation: (location: AreaState | PointState, name: string) => void;
+  toggleLocationOpen: (targetLocation: AreaState) => void;
   setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function Area({
   location,
   addLocation,
-  toggleLocationOpen,
   deleteLocation,
+  renameLocation,
+  toggleLocationOpen,
   setFocusedLocation,
 }: AreaProps) {
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
+  const [renaming, setRenaming] = useState<boolean>(false);
 
   function handleFocus() {
     if (!mouseDown) {
@@ -74,7 +77,13 @@ export default function Area({
         onClick={handleClick}
         onKeyDown={handleKeyDown}
       >
-        <EditLocationButton className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5" />
+        <EditLocationButton
+          className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
+          location={location}
+          setRenaming={setRenaming}
+          deleteLocation={deleteLocation}
+          setFocusedLocation={setFocusedLocation}
+        />
         <LocationText text={location.displayName} />
         <OpenChevron
           className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1"
@@ -86,8 +95,9 @@ export default function Area({
           className="ml-10"
           parent={location}
           addLocation={addLocation}
-          toggleLocationOpen={toggleLocationOpen}
           deleteLocation={deleteLocation}
+          renameLocation={renameLocation}
+          toggleLocationOpen={toggleLocationOpen}
           setFocusedLocation={setFocusedLocation}
         />
       </Disclosure.Panel>

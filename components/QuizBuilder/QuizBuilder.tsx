@@ -151,22 +151,36 @@ export default function QuizBuilder() {
     replaceLocation(parentLocation, newParentLocation);
   }
 
-  function toggleLocationOpen(targetLocation: AreaState): void {
-    const newOpen = !targetLocation.open;
+  function deleteLocation(location: AreaState | PointState): void {
+    replaceLocation(location, null);
+
+    if (location.parent.locationType === LocationType.Area) {
+      setFocusedLocation(location.parent);
+    } else {
+      setFocusedLocation(null);
+    }
+  }
+
+  function renameLocation(
+    location: AreaState | PointState,
+    userDefinedName: string,
+  ) {
+    const newLocation = { ...location, userDefinedName };
+    replaceLocation(location, newLocation);
+  }
+
+  function toggleLocationOpen(location: AreaState): void {
+    const newOpen = !location.open;
 
     console.log(newOpen);
 
     const newLocation = {
-      ...targetLocation,
+      ...location,
       open: newOpen,
     };
 
     setFocusedLocation(newLocation);
-    replaceLocation(targetLocation, newLocation);
-  }
-
-  function deleteLocation(targetLocation: AreaState | PointState): void {
-    replaceLocation(targetLocation, null);
+    replaceLocation(location, newLocation);
   }
 
   return (
@@ -177,8 +191,9 @@ export default function QuizBuilder() {
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
             parent={quiz}
             addLocation={addLocation}
-            toggleLocationOpen={toggleLocationOpen}
             deleteLocation={deleteLocation}
+            renameLocation={renameLocation}
+            toggleLocationOpen={toggleLocationOpen}
             setFocusedLocation={setFocusedLocation}
           />
           <Map
