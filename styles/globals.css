@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+*:focus-visible {
+  outline: 2px solid red;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 10px;
 }
@@ -30,31 +34,5 @@
   main {
     @apply flex-grow
     flex flex-col;
-  }
-
-  .top-navigation {
-    @apply sticky top-0 z-50
-    w-screen p-3
-    bg-gray-300 dark:bg-gray-900 shadow-md;
-  }
-
-  .quiz-builder-item {
-    @apply w-full py-1 px-1 rounded-3xl text-left relative;
-  }
-
-  .quiz-builder-location {
-    @apply bg-gray-600;
-  }
-
-  .quiz-builder-item-decorator {
-    @apply flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl;
-  }
-
-  .quiz-builder-item-decorator-left-1 {
-    @apply quiz-builder-item-decorator left-1.5;
-  }
-
-  .quiz-builder-item-decorator-right-1 {
-    @apply quiz-builder-item-decorator right-1;
   }
 }

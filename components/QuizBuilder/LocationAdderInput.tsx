@@ -1,4 +1,4 @@
-import { AreaState, LocationType, PointState, QuizState } from "@/types";
+import { AreaState, LocationType, QuizState } from "@/types";
 import debounce from "@/utils/debounce";
 import { Combobox } from "@headlessui/react";
 import { useCallback } from "react";
@@ -16,7 +16,6 @@ interface LocationAdderInputProps {
   setAreaSearchTerm: (searchTerm: string) => void;
   pointSearchTerm: string;
   setPointSearchTerm: (searchTerm: string) => void;
-  setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function LocationAdderInput({
@@ -29,116 +28,11 @@ export default function LocationAdderInput({
   setAreaSearchTerm,
   pointSearchTerm,
   setPointSearchTerm,
-  setFocusedLocation,
 }: LocationAdderInputProps) {
-  function handleFocus(event: React.FocusEvent<HTMLDivElement>) {
-    if (event.currentTarget.contains(event.relatedTarget as Node)) {
-      return;
-    }
-
-    if (parentLocation.locationType === LocationType.Quiz) {
-      setFocusedLocation(null);
-    } else {
-      setFocusedLocation(parentLocation);
-    }
-  }
-
-  return (
-    <div className="relative" onFocus={handleFocus}>
-      <ToggleLocationTypeButton
-        locationAdderLocationType={locationAdderLocationType}
-        setLocationAdderLocationType={setLocationAdderLocationType}
-        input={input}
-        pointSearchTerm={pointSearchTerm}
-        setPointSearchTerm={setPointSearchTerm}
-      />
-      <InputBox
-        parentLocationType={parentLocation.locationType}
-        parentLocationName={parentLocation.displayName}
-        locationAdderLocationType={locationAdderLocationType}
-        input={input}
-        setInput={setInput}
-        areaSearchTerm={areaSearchTerm}
-        setAreaSearchTerm={setAreaSearchTerm}
-        setPointSearchTerm={setPointSearchTerm}
-      />
-    </div>
-  );
-}
-
-interface ToggleLocationTypeButtonProps {
-  locationAdderLocationType: LocationType;
-  setLocationAdderLocationType: React.Dispatch<
-    React.SetStateAction<LocationType>
-  >;
-  input: string;
-  pointSearchTerm: string;
-  setPointSearchTerm: (searchTerm: string) => void;
-}
-
-function ToggleLocationTypeButton({
-  locationAdderLocationType,
-  setLocationAdderLocationType,
-  input,
-  pointSearchTerm,
-  setPointSearchTerm,
-}: ToggleLocationTypeButtonProps) {
-  const icon =
-    locationAdderLocationType === LocationType.Area ? (
-      <FaDrawPolygon />
-    ) : (
-      <FaLocationDot />
-    );
-
-  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
-    const currentLocationType = locationAdderLocationType;
-    const nextLocationType =
-      currentLocationType === LocationType.Area
-        ? LocationType.Point
-        : LocationType.Area;
-
-    setLocationAdderLocationType(nextLocationType);
-
-    if (nextLocationType === LocationType.Point && input !== pointSearchTerm) {
-      setPointSearchTerm(input);
-    }
-  }
-
-  return (
-    <button
-      className="quiz-builder-item-decorator-left-1 bg-gray-600 text-gray-400"
-      onClick={handleClick}
-    >
-      {icon}
-    </button>
-  );
-}
-
-interface InputBoxProps {
-  parentLocationType: LocationType;
-  parentLocationName: string | null;
-  locationAdderLocationType: LocationType;
-  input: string;
-  setInput: (input: string) => void;
-  areaSearchTerm: string;
-  setAreaSearchTerm: (searchTerm: string) => void;
-  setPointSearchTerm: (searchTerm: string) => void;
-}
-
-function InputBox({
-  parentLocationType,
-  parentLocationName,
-  locationAdderLocationType,
-  input,
-  setInput,
-  areaSearchTerm,
-  setAreaSearchTerm,
-  setPointSearchTerm,
-}: InputBoxProps) {
   const placeholder =
-    parentLocationType === LocationType.Quiz
+    parentLocation.locationType === LocationType.Quiz
       ? `Add ${locationAdderLocationType}`
-      : `Add ${locationAdderLocationType} in ${parentLocationName}`;
+      : `Add ${locationAdderLocationType} in ${parentLocation.displayName}`;
 
   const debouncedSetPointSearchTerm = useCallback(
     debounce((searchTerm: string) => {
@@ -201,14 +95,71 @@ function InputBox({
   }
 
   return (
-    <Combobox.Input
-      className="quiz-builder-item bg-transparent border-2 border-white pl-8"
-      displayValue={() => input}
-      placeholder={placeholder}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      onFocus={(e) => e.preventDefault()}
-      onBlur={(e) => e.preventDefault()}
-    />
+    <div className="relative">
+      <Combobox.Input
+        className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-white pl-8 pr-3 focus:outline-none text-ellipsis"
+        displayValue={() => input}
+        placeholder={placeholder}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        onFocus={(e) => e.preventDefault()}
+        onBlur={(e) => e.preventDefault()}
+      />
+      <ToggleLocationTypeButton
+        locationAdderLocationType={locationAdderLocationType}
+        setLocationAdderLocationType={setLocationAdderLocationType}
+        input={input}
+        pointSearchTerm={pointSearchTerm}
+        setPointSearchTerm={setPointSearchTerm}
+      />
+    </div>
+  );
+}
+
+interface ToggleLocationTypeButtonProps {
+  locationAdderLocationType: LocationType;
+  setLocationAdderLocationType: React.Dispatch<
+    React.SetStateAction<LocationType>
+  >;
+  input: string;
+  pointSearchTerm: string;
+  setPointSearchTerm: (searchTerm: string) => void;
+}
+
+function ToggleLocationTypeButton({
+  locationAdderLocationType,
+  setLocationAdderLocationType,
+  input,
+  pointSearchTerm,
+  setPointSearchTerm,
+}: ToggleLocationTypeButtonProps) {
+  const icon =
+    locationAdderLocationType === LocationType.Area ? (
+      <FaDrawPolygon />
+    ) : (
+      <FaLocationDot />
+    );
+
+  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+    const currentLocationType = locationAdderLocationType;
+    const nextLocationType =
+      currentLocationType === LocationType.Area
+        ? LocationType.Point
+        : LocationType.Area;
+
+    setLocationAdderLocationType(nextLocationType);
+
+    if (nextLocationType === LocationType.Point && input !== pointSearchTerm) {
+      setPointSearchTerm(input);
+    }
+  }
+
+  return (
+    <button
+      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5 bg-gray-600 text-gray-400 focus:outline outline-2 outline-red-600"
+      onClick={handleClick}
+    >
+      {icon}
+    </button>
   );
 }

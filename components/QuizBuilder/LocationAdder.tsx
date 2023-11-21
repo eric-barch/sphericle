@@ -91,7 +91,6 @@ export default function LocationAdder({
               setAreaSearchTerm={setAreaSearchTerm}
               pointSearchTerm={pointSearchTerm}
               setPointSearchTerm={setPointSearchTerm}
-              setFocusedLocation={setFocusedLocation}
             />
             <LocationAdderOptions
               locationAdderLocationType={locationAdderLocationType}

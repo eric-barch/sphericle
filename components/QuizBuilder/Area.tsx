@@ -66,7 +66,7 @@ export default function Area({
   return (
     <Disclosure defaultOpen={location.open}>
       <Disclosure.Button
-        className={`relative quiz-builder-item quiz-builder-location cursor-pointer focus:outline outline-2 outline-red-600 max-w-[px]`}
+        className={`relative w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600  focus:outline outline-2 outline-red-600`}
         onFocus={handleFocus}
         onBlur={handleBlur}
         onMouseDown={handleMouseDown}
@@ -74,10 +74,10 @@ export default function Area({
         onClick={handleClick}
         onKeyDown={handleKeyDown}
       >
-        <EditLocationButton className="quiz-builder-item-decorator-left-1" />
+        <EditLocationButton className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5" />
         <LocationText text={location.displayName} />
         <OpenChevron
-          className="quiz-builder-item-decorator-right-1"
+          className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1"
           open={location.open}
         />
       </Disclosure.Button>
