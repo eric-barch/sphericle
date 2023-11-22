@@ -1,17 +1,19 @@
 import { AreaState, PointState } from "@/types";
 import { useState } from "react";
 import EditLocationButton from "./EditLocationButton";
+import LocationName from "./LocationText";
 
 interface PointProps {
   location: PointState;
   deleteLocation: (targetLocation: PointState) => void;
-  setRenaming: (renaming: boolean) => void;
+  renameLocation: (location: PointState, name: string) => void;
   setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function Point({
   location,
   deleteLocation,
+  renameLocation,
   setFocusedLocation,
 }: PointProps) {
   const [renaming, setRenaming] = useState<boolean>(false);
@@ -33,7 +35,12 @@ export default function Point({
         deleteLocation={deleteLocation}
         setFocusedLocation={setFocusedLocation}
       />
-      <span className="pl-7">{location.fullName}</span>
+      <LocationName
+        location={location}
+        renaming={renaming}
+        renameLocation={renameLocation}
+        setRenaming={setRenaming}
+      />
     </div>
   );
 }

@@ -54,7 +54,7 @@ export default function LocationAdderOptions({
                 active ? "bg-gray-600" : ""
               }`}
             >
-              {searchResult.fullName}
+              {searchResult.longName}
             </div>
           )}
         </Combobox.Option>

@@ -76,8 +76,9 @@ export default function usePointSearch(
               parent,
               locationType: LocationType.Point as LocationType.Point,
               placeId: autocompletePrediction.place_id,
-              fullName: autocompletePrediction.description,
-              displayName: autocompletePrediction.description,
+              longName: autocompletePrediction.description,
+              shortName: autocompletePrediction.description,
+              userDefinedName: "",
               point,
             };
 

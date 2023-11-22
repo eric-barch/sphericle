@@ -6,8 +6,9 @@ export type AreaState = {
   parent: QuizState | AreaState;
   locationType: LocationType.Area;
   placeId: number;
-  displayName: string;
-  fullName: string;
+  shortName: string;
+  longName: string;
+  userDefinedName: string;
   open: boolean;
   polygon: Polygon | MultiPolygon;
   displayBounds: google.maps.LatLngBoundsLiteral;
@@ -37,8 +38,9 @@ export type PointState = {
   parent: QuizState | AreaState;
   locationType: LocationType.Point;
   placeId: string;
-  displayName: string;
-  fullName: string;
+  shortName: string;
+  longName: string;
+  userDefinedName: string;
   point: Point;
 };
 

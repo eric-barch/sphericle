@@ -23,6 +23,7 @@ export default function EditLocationButton({
 
   function handleRenameClick(event: React.MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
+    setRenaming(true);
   }
 
   function handleDeleteClick(event: React.MouseEvent<HTMLDivElement>) {

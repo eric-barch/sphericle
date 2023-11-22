@@ -161,18 +161,15 @@ export default function QuizBuilder() {
     }
   }
 
-  function renameLocation(
-    location: AreaState | PointState,
-    userDefinedName: string,
-  ) {
-    const newLocation = { ...location, userDefinedName };
+  function renameLocation(location: AreaState | PointState, name: string) {
+    const newLocation = { ...location, userDefinedName: name };
     replaceLocation(location, newLocation);
+
+    console.log(`renamed location: ${name}`);
   }
 
   function toggleLocationOpen(location: AreaState): void {
     const newOpen = !location.open;
-
-    console.log(newOpen);
 
     const newLocation = {
       ...location,

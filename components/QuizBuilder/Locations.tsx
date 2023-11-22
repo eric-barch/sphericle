@@ -11,10 +11,7 @@ interface LocationsProps {
     location: AreaState | PointState,
   ) => void;
   deleteLocation: (location: AreaState | PointState) => void;
-  renameLocation: (
-    location: AreaState | PointState,
-    userDefinedName: string,
-  ) => void;
+  renameLocation: (location: AreaState | PointState, name: string) => void;
   toggleLocationOpen: (location: AreaState) => void;
   setFocusedLocation: (location: AreaState | PointState | null) => void;
 }

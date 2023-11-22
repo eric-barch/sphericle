@@ -33,7 +33,7 @@ export default function LocationAdderInput({
     parentLocation.locationType === LocationType.Quiz
       ? `Add ${locationAdderLocationType.toLowerCase()}`
       : `Add ${locationAdderLocationType.toLowerCase()} in ${
-          parentLocation.displayName
+          parentLocation.shortName
         }`;
 
   const debouncedSetPointSearchTerm = useCallback(
@@ -99,7 +99,7 @@ export default function LocationAdderInput({
   return (
     <div className="relative">
       <Combobox.Input
-        className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-white pl-8 pr-3 focus:outline-none text-ellipsis"
+        className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-400 pl-8 pr-3 text-ellipsis focus:outline-none"
         displayValue={() => input}
         placeholder={placeholder}
         onChange={handleChange}
