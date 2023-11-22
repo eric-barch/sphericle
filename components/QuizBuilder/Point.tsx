@@ -1,7 +1,7 @@
 import { AreaState, PointState } from "@/types";
 import { useState } from "react";
 import EditLocationButton from "./EditLocationButton";
-import LocationName from "./LocationText";
+import LocationName from "./LocationName";
 
 interface PointProps {
   location: PointState;

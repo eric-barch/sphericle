@@ -1,10 +1,10 @@
 import { AreaState, PointState, QuizState } from "@/types";
 import { Disclosure } from "@headlessui/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import { Locations } from "./Locations";
-import LocationName from "./LocationText";
+import LocationName from "./LocationName";
 
 interface AreaProps {
   location: AreaState;

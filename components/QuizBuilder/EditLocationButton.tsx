@@ -1,5 +1,6 @@
 import { AreaState, PointState } from "@/types";
 import { Menu } from "@headlessui/react";
+import { RefObject } from "react";
 import { FaEllipsisVertical } from "react-icons/fa6";
 
 interface EditLocationButtonProps {

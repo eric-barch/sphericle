@@ -1,5 +1,5 @@
 import { AreaState, PointState } from "@/types";
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 
 interface LocationTextProps {
   location: AreaState | PointState;
@@ -19,6 +19,7 @@ export default function LocationName({
     : location.shortName;
 
   const [newName, setNewName] = useState(currentName);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
@@ -29,9 +30,6 @@ export default function LocationName({
     }
 
     if (event.key === "Escape") {
-      event.preventDefault();
-      event.stopPropagation();
-      setNewName(currentName);
       event.currentTarget.blur();
     }
 
@@ -41,22 +39,23 @@ export default function LocationName({
   }
 
   function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
-    if (currentName !== newName) {
-      renameLocation(location, newName);
-    }
+    setNewName(currentName);
     setRenaming(false);
   }
 
+  // TODO: consider whether it makes sense to refactor out this useEffect
   useEffect(() => {
-    console.log(
-      `\nuserDefinedName: ${location.userDefinedName}\nshortName: ${location.shortName}`,
-    );
-  }, [location]);
+    if (renaming && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [renaming, inputRef]);
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
       {renaming ? (
         <input
+          ref={inputRef}
           className="bg-transparent w-full focus:outline-none"
           type="text"
           value={newName}
