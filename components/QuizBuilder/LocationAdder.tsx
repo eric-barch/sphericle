@@ -45,6 +45,12 @@ export default function LocationAdder({
     const currentTarget = event.currentTarget;
     const relatedTarget = event.relatedTarget;
 
+    if (parent.locationType === LocationType.Area) {
+      setFocusedLocation(parent);
+    } else {
+      setFocusedLocation(null);
+    }
+
     if (currentTarget.contains(relatedTarget as Node)) {
       event.preventDefault();
     } else {
