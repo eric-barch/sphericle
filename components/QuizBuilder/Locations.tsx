@@ -5,9 +5,9 @@ import Point from "./Point";
 
 interface LocationsProps {
   className?: string;
-  parent: QuizState | AreaState;
+  parentLocation: QuizState | AreaState;
   addLocation: (
-    parent: QuizState | AreaState,
+    parentLocation: QuizState | AreaState,
     location: AreaState | PointState,
   ) => void;
   deleteLocation: (location: AreaState | PointState) => void;
@@ -18,7 +18,7 @@ interface LocationsProps {
 
 export function Locations({
   className,
-  parent,
+  parentLocation,
   addLocation,
   deleteLocation,
   renameLocation,
@@ -27,7 +27,7 @@ export function Locations({
 }: LocationsProps) {
   return (
     <div className={`${className ? className : ""} space-y-1 h-full`}>
-      {parent.sublocations.map((sublocation) => {
+      {parentLocation.sublocations.map((sublocation) => {
         if (sublocation.locationType === LocationType.Area) {
           return (
             <Area
@@ -57,7 +57,7 @@ export function Locations({
         return null; // return null when no conditions match
       })}
       <LocationAdder
-        parentState={parent}
+        parentLocation={parentLocation}
         addLocation={addLocation}
         setFocusedLocation={setFocusedLocation}
       />

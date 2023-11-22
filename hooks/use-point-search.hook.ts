@@ -18,7 +18,7 @@ interface UsePointSearchReturn {
 }
 
 export default function usePointSearch(
-  parent: QuizState | AreaState,
+  parentLocation: QuizState | AreaState,
 ): UsePointSearchReturn {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
@@ -46,8 +46,8 @@ export default function usePointSearch(
       input: searchTerm,
     };
 
-    if (parent.locationType === LocationType.Area) {
-      request.locationRestriction = parent.displayBounds;
+    if (parentLocation.locationType === LocationType.Area) {
+      request.locationRestriction = parentLocation.displayBounds;
     }
 
     const autocompletePredictions = (
@@ -73,7 +73,7 @@ export default function usePointSearch(
             const point: Point = { type: "Point", coordinates: [lng, lat] };
 
             const pointState = {
-              parent,
+              parent: parentLocation,
               locationType: LocationType.Point as LocationType.Point,
               placeId: autocompletePrediction.place_id,
               longName: autocompletePrediction.description,
@@ -83,8 +83,8 @@ export default function usePointSearch(
             };
 
             if (
-              parent.locationType === LocationType.Area &&
-              !booleanPointInPolygon(pointState.point, parent.polygon)
+              parentLocation.locationType === LocationType.Area &&
+              !booleanPointInPolygon(pointState.point, parentLocation.polygon)
             ) {
               return null;
             }

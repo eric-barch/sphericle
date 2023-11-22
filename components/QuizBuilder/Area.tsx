@@ -100,7 +100,7 @@ export default function Area({
       <Disclosure.Panel>
         <Locations
           className="ml-10"
-          parent={location}
+          parentLocation={location}
           addLocation={addLocation}
           deleteLocation={deleteLocation}
           renameLocation={renameLocation}

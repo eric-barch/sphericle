@@ -3,7 +3,7 @@ import { MultiPolygon, Point, Polygon } from "geojson";
 import { LocationType } from "./enums";
 
 export type AreaState = {
-  parent: QuizState | AreaState;
+  parentLocation: QuizState | AreaState;
   locationType: LocationType.Area;
   placeId: number;
   shortName: string;
@@ -35,7 +35,7 @@ export type OpenStreetMapResponseItem = {
 };
 
 export type PointState = {
-  parent: QuizState | AreaState;
+  parentLocation: QuizState | AreaState;
   locationType: LocationType.Point;
   placeId: string;
   shortName: string;

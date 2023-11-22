@@ -19,7 +19,7 @@ interface UseAreaSearchReturn {
 }
 
 export default function useAreaSearch(
-  parent: QuizState | AreaState,
+  parentLocation: QuizState | AreaState,
 ): UseAreaSearchReturn {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
@@ -34,8 +34,8 @@ export default function useAreaSearch(
 
     let query = searchTerm;
 
-    if (parent.locationType === LocationType.Area) {
-      const { south, north, west, east } = parent.searchBounds;
+    if (parentLocation.locationType === LocationType.Area) {
+      const { south, north, west, east } = parentLocation.searchBounds;
       query = `${searchTerm}&viewbox=${west},${south},${east},${north}&bounded=1`;
     }
 
@@ -73,8 +73,8 @@ export default function useAreaSearch(
               };
 
               if (
-                parent.locationType === LocationType.Area &&
-                !booleanPointInPolygon(point, parent.polygon)
+                parentLocation.locationType === LocationType.Area &&
+                !booleanPointInPolygon(point, parentLocation.polygon)
               ) {
                 return null;
               }
@@ -95,8 +95,8 @@ export default function useAreaSearch(
                 };
 
                 if (
-                  parent.locationType === LocationType.Area &&
-                  !booleanPointInPolygon(point, parent.polygon)
+                  parentLocation.locationType === LocationType.Area &&
+                  !booleanPointInPolygon(point, parentLocation.polygon)
                 ) {
                   return null;
                 }
@@ -158,7 +158,7 @@ export default function useAreaSearch(
         }
 
         return {
-          parent: parent,
+          parentLocation: parentLocation,
           locationType: LocationType.Area,
           placeId: openStreetMapResponseItem.place_id,
           shortName: openStreetMapResponseItem.name,

@@ -99,19 +99,21 @@ export default function QuizBuilder() {
           setFilledAreas(null);
           setBounds(location.displayBounds);
         } else {
-          if (location.parent.locationType === LocationType.Quiz) {
+          if (location.parentLocation.locationType === LocationType.Quiz) {
             setEmptyAreas(null);
             setBounds(location.displayBounds);
-          } else if (location.parent.locationType === LocationType.Area) {
-            setEmptyAreas([location.parent]);
-            setBounds(location.parent.displayBounds);
+          } else if (
+            location.parentLocation.locationType === LocationType.Area
+          ) {
+            setEmptyAreas([location.parentLocation]);
+            setBounds(location.parentLocation.displayBounds);
           }
 
           setFilledAreas([location]);
         }
         setMarkers(null);
       } else if (location.locationType === LocationType.Point) {
-        if (location.parent.locationType === LocationType.Quiz) {
+        if (location.parentLocation.locationType === LocationType.Quiz) {
           const lng = location.point.coordinates[0];
           const lat = location.point.coordinates[1];
           const diff = 0.1;
@@ -124,8 +126,8 @@ export default function QuizBuilder() {
           setEmptyAreas(null);
           setBounds({ north, east, south, west });
         } else {
-          setEmptyAreas([location.parent]);
-          setBounds(location.parent.displayBounds);
+          setEmptyAreas([location.parentLocation]);
+          setBounds(location.parentLocation.displayBounds);
         }
 
         setFilledAreas(null);
@@ -154,8 +156,8 @@ export default function QuizBuilder() {
   function deleteLocation(location: AreaState | PointState): void {
     replaceLocation(location, null);
 
-    if (location.parent.locationType === LocationType.Area) {
-      setFocusedLocation(location.parent);
+    if (location.parentLocation.locationType === LocationType.Area) {
+      setFocusedLocation(location.parentLocation);
     } else {
       setFocusedLocation(null);
     }
@@ -186,7 +188,7 @@ export default function QuizBuilder() {
         <SplitPane>
           <Locations
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
-            parent={quiz}
+            parentLocation={quiz}
             addLocation={addLocation}
             deleteLocation={deleteLocation}
             renameLocation={renameLocation}

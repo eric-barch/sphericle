@@ -9,16 +9,16 @@ import LocationAdderInput from "./LocationAdderInput";
 import LocationAdderOptions from "./LocationAdderOptions";
 
 interface LocationAdderProps {
-  parentState: QuizState | AreaState;
+  parentLocation: QuizState | AreaState;
   addLocation: (
-    parent: QuizState | AreaState,
+    parentLocation: QuizState | AreaState,
     location: AreaState | PointState,
   ) => void;
   setFocusedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function LocationAdder({
-  parentState,
+  parentLocation,
   addLocation,
   setFocusedLocation,
 }: LocationAdderProps) {
@@ -32,26 +32,23 @@ export default function LocationAdder({
     searchResults: areaSearchResults,
     setSearchTerm: setAreaSearchTerm,
     reset: resetAreaSearch,
-  } = useAreaSearch(parentState);
+  } = useAreaSearch(parentLocation);
   const {
     searchTerm: pointSearchTerm,
     searchStatus: pointSearchStatus,
     searchResults: pointSearchResults,
     setSearchTerm: setPointSearchTerm,
     reset: resetPointSearch,
-  } = usePointSearch(parentState);
+  } = usePointSearch(parentLocation);
 
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
-    const currentTarget = event.currentTarget;
-    const relatedTarget = event.relatedTarget;
-
-    if (parentState.locationType === LocationType.Area) {
-      setFocusedLocation(parentState);
+    if (parentLocation.locationType === LocationType.Area) {
+      setFocusedLocation(parentLocation);
     } else {
       setFocusedLocation(null);
     }
 
-    if (currentTarget.contains(relatedTarget as Node)) {
+    if (event.currentTarget.contains(event.relatedTarget as Node)) {
       event.preventDefault();
     } else {
       setOptionsVisible(true);
@@ -59,10 +56,7 @@ export default function LocationAdder({
   }
 
   function handleBlur(event: FocusEvent<HTMLDivElement>) {
-    const currentTarget = event.currentTarget;
-    const relatedTarget = event.relatedTarget;
-
-    if (currentTarget.contains(relatedTarget as Node)) {
+    if (event.currentTarget.contains(event.relatedTarget as Node)) {
       event.preventDefault();
     } else {
       setOptionsVisible(false);
@@ -72,10 +66,10 @@ export default function LocationAdder({
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
       ...location,
-      parent: parentState,
+      parent: parentLocation,
     };
 
-    addLocation(parentState, newLocation);
+    addLocation(parentLocation, newLocation);
 
     setInput("");
     resetAreaSearch();
@@ -88,7 +82,7 @@ export default function LocationAdder({
         {({ activeOption }) => (
           <>
             <LocationAdderInput
-              parentLocation={parentState}
+              parentLocation={parentLocation}
               locationAdderLocationType={locationAdderLocationType}
               setLocationAdderLocationType={setLocationAdderLocationType}
               input={input}
