@@ -4,12 +4,12 @@ import useAreaSearch from "@/hooks/use-area-search.hook";
 import usePointSearch from "@/hooks/use-point-search.hook";
 import { AreaState, LocationType, PointState, QuizState } from "@/types";
 import { Combobox } from "@headlessui/react";
-import React, { useState } from "react";
+import { FocusEvent, useState } from "react";
 import LocationAdderInput from "./LocationAdderInput";
 import LocationAdderOptions from "./LocationAdderOptions";
 
 interface LocationAdderProps {
-  parent: QuizState | AreaState;
+  parentState: QuizState | AreaState;
   addLocation: (
     parent: QuizState | AreaState,
     location: AreaState | PointState,
@@ -18,7 +18,7 @@ interface LocationAdderProps {
 }
 
 export default function LocationAdder({
-  parent,
+  parentState,
   addLocation,
   setFocusedLocation,
 }: LocationAdderProps) {
@@ -32,21 +32,21 @@ export default function LocationAdder({
     searchResults: areaSearchResults,
     setSearchTerm: setAreaSearchTerm,
     reset: resetAreaSearch,
-  } = useAreaSearch(parent);
+  } = useAreaSearch(parentState);
   const {
     searchTerm: pointSearchTerm,
     searchStatus: pointSearchStatus,
     searchResults: pointSearchResults,
     setSearchTerm: setPointSearchTerm,
     reset: resetPointSearch,
-  } = usePointSearch(parent);
+  } = usePointSearch(parentState);
 
-  function handleFocus(event: React.FocusEvent) {
+  function handleFocus(event: FocusEvent<HTMLDivElement>) {
     const currentTarget = event.currentTarget;
     const relatedTarget = event.relatedTarget;
 
-    if (parent.locationType === LocationType.Area) {
-      setFocusedLocation(parent);
+    if (parentState.locationType === LocationType.Area) {
+      setFocusedLocation(parentState);
     } else {
       setFocusedLocation(null);
     }
@@ -58,7 +58,7 @@ export default function LocationAdder({
     }
   }
 
-  function handleBlur(event: React.FocusEvent) {
+  function handleBlur(event: FocusEvent<HTMLDivElement>) {
     const currentTarget = event.currentTarget;
     const relatedTarget = event.relatedTarget;
 
@@ -72,10 +72,10 @@ export default function LocationAdder({
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
       ...location,
-      parent: parent,
+      parent: parentState,
     };
 
-    addLocation(parent, newLocation);
+    addLocation(parentState, newLocation);
 
     setInput("");
     resetAreaSearch();
@@ -88,7 +88,7 @@ export default function LocationAdder({
         {({ activeOption }) => (
           <>
             <LocationAdderInput
-              parentLocation={parent}
+              parentLocation={parentState}
               locationAdderLocationType={locationAdderLocationType}
               setLocationAdderLocationType={setLocationAdderLocationType}
               input={input}

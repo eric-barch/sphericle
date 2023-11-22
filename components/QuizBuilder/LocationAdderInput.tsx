@@ -1,15 +1,20 @@
 import { AreaState, LocationType, QuizState } from "@/types";
 import debounce from "@/utils/debounce";
 import { Combobox } from "@headlessui/react";
-import { useCallback } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  KeyboardEvent,
+  MouseEvent,
+  SetStateAction,
+  useCallback,
+} from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 
 interface LocationAdderInputProps {
   parentLocation: QuizState | AreaState;
   locationAdderLocationType: LocationType;
-  setLocationAdderLocationType: React.Dispatch<
-    React.SetStateAction<LocationType>
-  >;
+  setLocationAdderLocationType: Dispatch<SetStateAction<LocationType>>;
   input: string;
   setInput: (input: string) => void;
   areaSearchTerm: string;
@@ -43,7 +48,7 @@ export default function LocationAdderInput({
     [],
   );
 
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const input = event.target.value;
     setInput(input);
     if (locationAdderLocationType === LocationType.Point) {
@@ -51,7 +56,7 @@ export default function LocationAdderInput({
     }
   }
 
-  function handleEnter(event: React.KeyboardEvent<HTMLInputElement>) {
+  function handleEnter(event: KeyboardEvent<HTMLInputElement>) {
     const isArea = locationAdderLocationType === LocationType.Area;
     const isOutdated = input !== areaSearchTerm;
 
@@ -61,7 +66,7 @@ export default function LocationAdderInput({
     }
   }
 
-  function handleTab(event: React.KeyboardEvent<HTMLInputElement>) {
+  function handleTab(event: KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
 
     const focusableElements = Array.from(
@@ -85,7 +90,7 @@ export default function LocationAdderInput({
     }
   }
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
       handleEnter(event);
     }
@@ -120,9 +125,7 @@ export default function LocationAdderInput({
 
 interface ToggleLocationTypeButtonProps {
   locationAdderLocationType: LocationType;
-  setLocationAdderLocationType: React.Dispatch<
-    React.SetStateAction<LocationType>
-  >;
+  setLocationAdderLocationType: Dispatch<SetStateAction<LocationType>>;
   input: string;
   pointSearchTerm: string;
   setPointSearchTerm: (searchTerm: string) => void;
@@ -142,7 +145,7 @@ function ToggleLocationTypeButton({
       <FaLocationDot />
     );
 
-  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+  function handleClick(event: MouseEvent<HTMLButtonElement>) {
     const currentLocationType = locationAdderLocationType;
     const nextLocationType =
       currentLocationType === LocationType.Area

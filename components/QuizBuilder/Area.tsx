@@ -1,10 +1,10 @@
 import { AreaState, PointState, QuizState } from "@/types";
 import { Disclosure } from "@headlessui/react";
-import { useRef, useState } from "react";
+import { KeyboardEvent, MouseEvent, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
-import { Locations } from "./Locations";
 import LocationName from "./LocationName";
+import { Locations } from "./Locations";
 
 interface AreaProps {
   location: AreaState;
@@ -50,7 +50,7 @@ export default function Area({
     setMouseDown(false);
   }
 
-  function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+  function handleClick(event: MouseEvent<HTMLButtonElement>) {
     if (willToggle) {
       toggleLocationOpen(location);
     } else {
@@ -59,7 +59,7 @@ export default function Area({
     }
   }
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
+  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     if (event.key === "Enter") {
       event.preventDefault();
       event.currentTarget.click();

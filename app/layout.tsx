@@ -4,14 +4,11 @@ import GoogleMapsLoader from "@/components/GoogleMapsApiLoader/GoogleMapsApiLoad
 import NavBar from "@/components/NavBar";
 import "@/styles/globals.css";
 import { Nunito } from "next/font/google";
+import { ReactNode } from "react";
 
 const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={`${font.className} min-h-screen`}>

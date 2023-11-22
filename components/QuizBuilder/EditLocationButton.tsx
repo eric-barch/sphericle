@@ -1,6 +1,6 @@
 import { AreaState, PointState } from "@/types";
 import { Menu } from "@headlessui/react";
-import { RefObject } from "react";
+import { FocusEvent, MouseEvent, RefObject } from "react";
 import { FaEllipsisVertical } from "react-icons/fa6";
 
 interface EditLocationButtonProps {
@@ -18,16 +18,16 @@ export default function EditLocationButton({
   deleteLocation,
   setFocusedLocation,
 }: EditLocationButtonProps) {
-  function handleFocus(event: React.FocusEvent<HTMLButtonElement>) {
+  function handleFocus(event: FocusEvent<HTMLButtonElement>) {
     setFocusedLocation(location);
   }
 
-  function handleRenameClick(event: React.MouseEvent<HTMLDivElement>) {
+  function handleRenameClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
     setRenaming(true);
   }
 
-  function handleDeleteClick(event: React.MouseEvent<HTMLDivElement>) {
+  function handleDeleteClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
     deleteLocation(location);
   }

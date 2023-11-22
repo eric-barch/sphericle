@@ -1,5 +1,5 @@
 import { AreaState, PointState } from "@/types";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, KeyboardEvent, FocusEvent } from "react";
 
 interface LocationTextProps {
   location: AreaState | PointState;
@@ -21,7 +21,7 @@ export default function LocationName({
   const [newName, setNewName] = useState(currentName);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
       event.preventDefault();
       event.stopPropagation();
@@ -38,7 +38,7 @@ export default function LocationName({
     }
   }
 
-  function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
+  function handleBlur(event: FocusEvent<HTMLInputElement>) {
     setNewName(currentName);
     setRenaming(false);
   }

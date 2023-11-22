@@ -1,7 +1,15 @@
-import { useCallback, useState, useEffect, useRef, Fragment } from "react";
+import {
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+  Fragment,
+  ReactNode,
+  MouseEvent,
+} from "react";
 
 interface SplitPaneProps {
-  children: React.ReactNode | React.ReactNode[];
+  children: ReactNode | ReactNode[];
 }
 
 export default function SplitPane({ children }: SplitPaneProps) {
@@ -51,7 +59,7 @@ export default function SplitPane({ children }: SplitPaneProps) {
   }, []);
 
   const handleMouseMove = useCallback(
-    (event: React.MouseEvent) => {
+    (event: MouseEvent<HTMLDivElement>) => {
       if (!isResizing) return;
 
       const leftPanesWidth = paneWidths

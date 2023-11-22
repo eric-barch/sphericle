@@ -57,7 +57,7 @@ export function Locations({
         return null; // return null when no conditions match
       })}
       <LocationAdder
-        parent={parent}
+        parentState={parent}
         addLocation={addLocation}
         setFocusedLocation={setFocusedLocation}
       />
