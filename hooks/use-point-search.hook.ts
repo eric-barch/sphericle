@@ -5,6 +5,7 @@ import {
   SearchStatus,
   QuizState,
 } from "@/types";
+import debounce from "@/utils/debounce";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { Point } from "geojson";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -12,7 +13,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 interface UsePointSearchReturn {
   searchTerm: string;
   searchStatus: SearchStatus;
-  searchResults: PointState[] | null;
+  searchResults: PointState[];
   setSearchTerm: (searchTerm: string) => void;
   reset: () => void;
 }
@@ -24,8 +25,8 @@ export default function usePointSearch(
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
   const [internalSearchResults, setInternalSearchResults] = useState<
-    PointState[] | null
-  >(null);
+    PointState[]
+  >([]);
 
   const autocompleteServiceRef =
     useRef<google.maps.places.AutocompleteService>();
@@ -73,7 +74,7 @@ export default function usePointSearch(
             const point: Point = { type: "Point", coordinates: [lng, lat] };
 
             const pointState = {
-              parent: parentLocation,
+              parentLocation,
               locationType: LocationType.Point as LocationType.Point,
               placeId: autocompletePrediction.place_id,
               longName: autocompletePrediction.description,
@@ -100,17 +101,19 @@ export default function usePointSearch(
   }, []);
 
   const setSearchTerm = useCallback(
-    (searchTerm: string) => {
+    debounce((searchTerm: string) => {
       setInternalSearchTerm(searchTerm);
-      fetchSearchResults(searchTerm);
-    },
+      if (searchTerm !== "") {
+        fetchSearchResults(searchTerm);
+      }
+    }, 300), // 300ms delay
     [fetchSearchResults],
   );
 
   const reset = useCallback(() => {
     setInternalSearchTerm("");
     setInternalSearchStatus(SearchStatus.Searched);
-    setInternalSearchResults(null);
+    setInternalSearchResults([]);
   }, []);
 
   // initialize Google libraries

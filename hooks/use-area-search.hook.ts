@@ -13,7 +13,7 @@ import { useCallback, useState } from "react";
 interface UseAreaSearchReturn {
   searchTerm: string;
   searchStatus: SearchStatus;
-  searchResults: AreaState[] | null;
+  searchResults: AreaState[];
   setSearchTerm: (searchTerm: string) => void;
   reset: () => void;
 }
@@ -25,8 +25,8 @@ export default function useAreaSearch(
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
   const [internalSearchResults, setInternalSearchResults] = useState<
-    AreaState[] | null
-  >(null);
+    AreaState[]
+  >([]);
 
   const fetchSearchResults = useCallback(async (searchTerm: string) => {
     setInternalSearchTerm(searchTerm);
@@ -182,7 +182,9 @@ export default function useAreaSearch(
   const setSearchTerm = useCallback(
     (searchTerm: string) => {
       setInternalSearchTerm(searchTerm);
-      fetchSearchResults(searchTerm);
+      if (searchTerm !== "") {
+        fetchSearchResults(searchTerm);
+      }
     },
     [fetchSearchResults],
   );
@@ -190,7 +192,7 @@ export default function useAreaSearch(
   const reset = useCallback(() => {
     setInternalSearchTerm("");
     setInternalSearchStatus(SearchStatus.Searched);
-    setInternalSearchResults(null);
+    setInternalSearchResults([]);
   }, []);
 
   return {

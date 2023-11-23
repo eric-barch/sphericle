@@ -2,11 +2,27 @@
 
 import useAreaSearch from "@/hooks/use-area-search.hook";
 import usePointSearch from "@/hooks/use-point-search.hook";
-import { AreaState, LocationType, PointState, QuizState } from "@/types";
+import {
+  AreaState,
+  LocationType,
+  PointState,
+  QuizState,
+  SearchStatus,
+} from "@/types";
+import debounce from "@/utils/debounce";
 import { Combobox } from "@headlessui/react";
-import { FocusEvent, useState } from "react";
-import LocationAdderInput from "./LocationAdderInput";
-import LocationAdderOptions from "./LocationAdderOptions";
+import {
+  ChangeEvent,
+  Dispatch,
+  FocusEvent,
+  KeyboardEvent,
+  MouseEvent,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 
 interface LocationAdderProps {
   parentLocation: QuizState | AreaState;
@@ -22,8 +38,9 @@ export default function LocationAdder({
   addLocation,
   setFocusedLocation,
 }: LocationAdderProps) {
-  const [locationAdderLocationType, setLocationAdderLocationType] =
-    useState<LocationType>(LocationType.Area);
+  const [locationType, setLocationType] = useState<LocationType>(
+    LocationType.Area,
+  );
   const [input, setInput] = useState<string>("");
   const [optionsVisible, setOptionsVisible] = useState<boolean>(false);
   const {
@@ -66,7 +83,7 @@ export default function LocationAdder({
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
       ...location,
-      parent: parentLocation,
+      parentLocation,
     };
 
     addLocation(parentLocation, newLocation);
@@ -83,18 +100,19 @@ export default function LocationAdder({
           <>
             <LocationAdderInput
               parentLocation={parentLocation}
-              locationAdderLocationType={locationAdderLocationType}
-              setLocationAdderLocationType={setLocationAdderLocationType}
               input={input}
-              setInput={setInput}
+              locationType={locationType}
               areaSearchTerm={areaSearchTerm}
-              setAreaSearchTerm={setAreaSearchTerm}
               pointSearchTerm={pointSearchTerm}
+              setInput={setInput}
+              setLocationType={setLocationType}
+              setAreaSearchTerm={setAreaSearchTerm}
               setPointSearchTerm={setPointSearchTerm}
+              resetPointSearch={resetPointSearch}
             />
             <LocationAdderOptions
-              locationAdderLocationType={locationAdderLocationType}
               input={input}
+              locationType={locationType}
               visible={optionsVisible}
               areaSearchTerm={areaSearchTerm}
               areaSearchStatus={areaSearchStatus}
@@ -110,4 +128,262 @@ export default function LocationAdder({
       </Combobox>
     </div>
   );
+}
+
+interface LocationAdderInputProps {
+  parentLocation: QuizState | AreaState;
+  input: string;
+  locationType: LocationType;
+  areaSearchTerm: string;
+  pointSearchTerm: string;
+  setInput: (input: string) => void;
+  setLocationType: Dispatch<SetStateAction<LocationType>>;
+  setAreaSearchTerm: (searchTerm: string) => void;
+  setPointSearchTerm: (searchTerm: string) => void;
+  resetPointSearch: () => void;
+}
+
+export function LocationAdderInput({
+  parentLocation,
+  input,
+  locationType,
+  areaSearchTerm,
+  pointSearchTerm,
+  setInput,
+  setLocationType,
+  setAreaSearchTerm,
+  setPointSearchTerm,
+  resetPointSearch,
+}: LocationAdderInputProps) {
+  const placeholder =
+    parentLocation.locationType === LocationType.Quiz
+      ? `Add ${locationType.toLowerCase()}`
+      : `Add ${locationType.toLowerCase()} in ${
+          parentLocation.userDefinedName || parentLocation.shortName
+        }`;
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    setInput(event.target.value);
+
+    if (event.target.value === "") {
+      resetPointSearch();
+    } else if (locationType === LocationType.Point) {
+      setPointSearchTerm(event.target.value);
+    }
+  }
+
+  function handleEnter(event: KeyboardEvent<HTMLInputElement>) {
+    if (locationType === LocationType.Area && input !== areaSearchTerm) {
+      event.preventDefault();
+      setAreaSearchTerm(input);
+    }
+  }
+
+  // required to work around hardcoded HeadlessUI Combobox behavior 😡
+  function handleTab(event: KeyboardEvent<HTMLInputElement>) {
+    event.preventDefault();
+
+    const focusableElements = Array.from(
+      document.querySelectorAll(
+        'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    const currentIndex = focusableElements.indexOf(event.currentTarget);
+
+    if (event.shiftKey) {
+      // focus previous or cycle to last
+      const previousElement =
+        focusableElements[currentIndex - 1] ||
+        focusableElements[focusableElements.length - 1];
+      (previousElement as HTMLElement).focus();
+    } else {
+      // focus next or cycle to first
+      const nextElement =
+        focusableElements[currentIndex + 1] || focusableElements[0];
+      (nextElement as HTMLElement).focus();
+    }
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      handleEnter(event);
+    }
+
+    // required to work around hardcoded HeadlessUI Combobox behavior 😡
+    if (event.key === "Tab") {
+      handleTab(event);
+    }
+  }
+
+  return (
+    <div className="relative">
+      <ToggleLocationTypeButton
+        locationType={locationType}
+        setLocationType={setLocationType}
+        input={input}
+        pointSearchTerm={pointSearchTerm}
+        setPointSearchTerm={setPointSearchTerm}
+      />
+      <Combobox.Input
+        className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-400 pl-8 pr-3 text-ellipsis focus:outline-none"
+        displayValue={() => input}
+        placeholder={placeholder}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        onFocus={(e) => e.preventDefault()}
+        onBlur={(e) => e.preventDefault()}
+      />
+    </div>
+  );
+}
+
+interface ToggleLocationTypeButtonProps {
+  input: string;
+  locationType: LocationType;
+  pointSearchTerm: string;
+  setLocationType: Dispatch<SetStateAction<LocationType>>;
+  setPointSearchTerm: (searchTerm: string) => void;
+}
+
+function ToggleLocationTypeButton({
+  input,
+  locationType,
+  pointSearchTerm,
+  setLocationType,
+  setPointSearchTerm,
+}: ToggleLocationTypeButtonProps) {
+  function handleClick() {
+    const nextLocationType =
+      locationType === LocationType.Area
+        ? LocationType.Point
+        : LocationType.Area;
+
+    setLocationType(nextLocationType);
+
+    if (nextLocationType === LocationType.Point && input !== pointSearchTerm) {
+      setPointSearchTerm(input);
+    }
+  }
+
+  return (
+    <button
+      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5 bg-gray-600 text-gray-400 "
+      onClick={handleClick}
+    >
+      {locationType === LocationType.Area ? (
+        <FaDrawPolygon />
+      ) : (
+        <FaLocationDot />
+      )}
+    </button>
+  );
+}
+
+interface LocationAdderOptionsProps {
+  input: string;
+  locationType: LocationType;
+  visible: boolean;
+  areaSearchTerm: string;
+  areaSearchStatus: SearchStatus;
+  areaSearchResults: AreaState[] | null;
+  pointSearchTerm: string;
+  pointSearchStatus: SearchStatus;
+  pointSearchResults: PointState[] | null;
+  activeOption: AreaState | PointState | null;
+  setFocusedLocation: (location: AreaState | PointState | null) => void;
+}
+
+export function LocationAdderOptions({
+  input,
+  locationType,
+  visible,
+  areaSearchTerm,
+  areaSearchStatus,
+  areaSearchResults,
+  pointSearchTerm,
+  pointSearchStatus,
+  pointSearchResults,
+  activeOption,
+  setFocusedLocation,
+}: LocationAdderOptionsProps) {
+  function options() {
+    if (locationType === LocationType.Area) {
+      if (input !== areaSearchTerm) {
+        return <div className="pl-6">Press Enter to Search</div>;
+      } else if (areaSearchStatus === SearchStatus.Searching) {
+        return <div className="pl-6">Searching...</div>;
+      } else if (areaSearchResults.length < 1) {
+        return <div className="pl-6">No results found.</div>;
+      } else {
+        return areaSearchResults.map((searchResult: AreaState) => (
+          <Combobox.Option key={searchResult.placeId} value={searchResult}>
+            {({ active }) => (
+              <div
+                className={`p-1 pl-6 rounded-3xl cursor-pointer ${
+                  active ? "bg-gray-600" : ""
+                }`}
+              >
+                {searchResult.longName}
+              </div>
+            )}
+          </Combobox.Option>
+        ));
+      }
+    } else if (locationType === LocationType.Point) {
+      if (pointSearchResults.length < 1) {
+        return <div className="pl-6">No results found.</div>;
+      } else {
+        return pointSearchResults.map((searchResult: PointState) => (
+          <Combobox.Option key={searchResult.placeId} value={searchResult}>
+            {({ active }) => (
+              <div
+                className={`p-1 pl-6 rounded-3xl cursor-pointer ${
+                  active ? "bg-gray-600" : ""
+                }`}
+              >
+                {searchResult.longName}
+              </div>
+            )}
+          </Combobox.Option>
+        ));
+      }
+    }
+  }
+
+  function comboBox() {
+    if (!visible || input === "") {
+      return null;
+    }
+
+    if (locationType === LocationType.Point) {
+      if (pointSearchTerm === "") {
+        return null;
+      }
+
+      if (
+        pointSearchStatus === SearchStatus.Searching &&
+        pointSearchResults.length < 1
+      ) {
+        return null;
+      }
+    }
+
+    return (
+      <Combobox.Options
+        className="bg-gray-500 rounded-3xl p-2 mt-1 mb-1"
+        static
+      >
+        {options()}
+      </Combobox.Options>
+    );
+  }
+
+  // TODO: consider refactoring out this useEffect
+  useEffect(() => {
+    if (activeOption) {
+      setFocusedLocation(activeOption);
+    }
+  }, [activeOption]);
+
+  return <>{comboBox()}</>;
 }
