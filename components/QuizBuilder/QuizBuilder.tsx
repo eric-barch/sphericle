@@ -1,21 +1,21 @@
 import Map from "@/components/Map";
 import SplitPane from "@/components/SplitPane";
-import { AreaState, LocationType, PointState, QuizState } from "@/types";
+import { AreaState, LocationType, PointState, Quiz } from "@/types";
 import { useEffect, useState } from "react";
 import { Sublocations } from "./Sublocations";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
-  const [quiz, setQuiz] = useState<QuizState>({
-    locationType: LocationType.Quiz,
-    sublocations: [],
-  });
   const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral | null>(
     null,
   );
-  const [filledAreas, setFilledAreas] = useState<AreaState[] | null>(null);
-  const [markers, setMarkers] = useState<PointState[] | null>(null);
-  const [emptyAreas, setEmptyAreas] = useState<AreaState[] | null>(null);
+  const [emptyAreas, setEmptyAreas] = useState<AreaState[]>([]);
+  const [filledAreas, setFilledAreas] = useState<AreaState[]>([]);
+  const [markers, setMarkers] = useState<PointState[]>([]);
+  const [quiz, setQuiz] = useState<Quiz>({
+    locationType: LocationType.Quiz,
+    sublocations: [],
+  });
 
   useEffect(() => {
     async function loadPlacesLibrary() {
@@ -31,10 +31,10 @@ export default function QuizBuilder() {
   }, []);
 
   function findLocation(
-    searchLocation: QuizState | AreaState | PointState,
-    targetLocation: QuizState | AreaState | PointState,
-    newLocation: QuizState | AreaState | PointState | null,
-  ): QuizState | AreaState | PointState | null {
+    searchLocation: Quiz | AreaState | PointState,
+    targetLocation: Quiz | AreaState | PointState,
+    newLocation: Quiz | AreaState | PointState | null,
+  ): Quiz | AreaState | PointState | null {
     if (searchLocation === targetLocation) {
       return newLocation;
     }
@@ -78,8 +78,8 @@ export default function QuizBuilder() {
   }
 
   function replaceLocation(
-    targetLocation: QuizState | AreaState | PointState,
-    newLocation: QuizState | AreaState | PointState | null,
+    targetLocation: Quiz | AreaState | PointState,
+    newLocation: Quiz | AreaState | PointState | null,
   ): void {
     const newQuiz = findLocation(quiz, targetLocation, newLocation);
 
@@ -88,6 +88,46 @@ export default function QuizBuilder() {
     }
 
     setQuiz(newQuiz);
+  }
+
+  function addLocation(
+    parentLocation: Quiz | AreaState,
+    location: AreaState | PointState,
+  ): void {
+    const newParentLocation = {
+      ...parentLocation,
+      sublocations: [...parentLocation.sublocations, location],
+    };
+
+    setDisplayedLocation(location);
+    replaceLocation(parentLocation, newParentLocation);
+  }
+
+  function deleteLocation(location: AreaState | PointState): void {
+    replaceLocation(location, null);
+
+    if (location.parentLocation.locationType === LocationType.Area) {
+      setDisplayedLocation(location.parentLocation);
+    } else {
+      setDisplayedLocation(null);
+    }
+  }
+
+  function renameLocation(location: AreaState | PointState, name: string) {
+    const newLocation = { ...location, userDefinedName: name };
+    replaceLocation(location, newLocation);
+  }
+
+  function toggleLocationOpen(location: AreaState): void {
+    const newOpen = !location.open;
+
+    const newLocation = {
+      ...location,
+      open: newOpen,
+    };
+
+    setDisplayedLocation(newLocation);
+    replaceLocation(location, newLocation);
   }
 
   function setDisplayedLocation(location: AreaState | PointState | null) {
@@ -139,65 +179,25 @@ export default function QuizBuilder() {
     }
   }
 
-  function addLocation(
-    parentLocation: QuizState | AreaState,
-    location: AreaState | PointState,
-  ): void {
-    const newParentLocation = {
-      ...parentLocation,
-      sublocations: [...parentLocation.sublocations, location],
-    };
-
-    setDisplayedLocation(location);
-    replaceLocation(parentLocation, newParentLocation);
-  }
-
-  function deleteLocation(location: AreaState | PointState): void {
-    replaceLocation(location, null);
-
-    if (location.parentLocation.locationType === LocationType.Area) {
-      setDisplayedLocation(location.parentLocation);
-    } else {
-      setDisplayedLocation(null);
-    }
-  }
-
-  function renameLocation(location: AreaState | PointState, name: string) {
-    const newLocation = { ...location, userDefinedName: name };
-    replaceLocation(location, newLocation);
-  }
-
-  function toggleLocationOpen(location: AreaState): void {
-    const newOpen = !location.open;
-
-    const newLocation = {
-      ...location,
-      open: newOpen,
-    };
-
-    setDisplayedLocation(newLocation);
-    replaceLocation(location, newLocation);
-  }
-
   return (
     <>
       {placesLoaded ? (
         <SplitPane>
           <Sublocations
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
-            parentLocation={quiz}
-            setParentOutlined={() => {}}
+            parentState={quiz}
             addLocation={addLocation}
             deleteLocation={deleteLocation}
             renameLocation={renameLocation}
             toggleLocationOpen={toggleLocationOpen}
             setDisplayedLocation={setDisplayedLocation}
+            setParentOutlined={() => {}}
           />
           <Map
             mapId="696d0ea42431a75c"
             bounds={bounds}
-            filledAreas={filledAreas}
             emptyAreas={emptyAreas}
+            filledAreas={filledAreas}
             markers={markers}
           />
         </SplitPane>

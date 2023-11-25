@@ -3,7 +3,7 @@ import {
   LocationType,
   PointState,
   SearchStatus,
-  QuizState,
+  Quiz,
   OpenStreetMapResponseItem,
 } from "@/types";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
@@ -19,7 +19,7 @@ interface UseAreaSearchReturn {
 }
 
 export default function useAreaSearch(
-  parentLocation: QuizState | AreaState,
+  parentLocation: Quiz | AreaState,
 ): UseAreaSearchReturn {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =

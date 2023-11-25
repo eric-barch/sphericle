@@ -2,8 +2,8 @@ import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Point, Polygon } from "geojson";
 import { LocationType } from "./enums";
 
-export type AreaState = {
-  parentLocation: QuizState | AreaState;
+export interface AreaState {
+  parentLocation: Quiz | AreaState;
   locationType: LocationType.Area;
   placeId: number;
   shortName: string;
@@ -14,9 +14,9 @@ export type AreaState = {
   displayBounds: google.maps.LatLngBoundsLiteral;
   searchBounds: google.maps.LatLngBoundsLiteral;
   sublocations: (AreaState | PointState)[];
-};
+}
 
-export type OpenStreetMapResponseItem = {
+export interface OpenStreetMapResponseItem {
   place_id: number;
   licence: string;
   osm_type: string;
@@ -32,19 +32,19 @@ export type OpenStreetMapResponseItem = {
   display_name: string;
   boundingbox: number[];
   geojson: AllGeoJSON;
-};
+}
 
-export type PointState = {
-  parentLocation: QuizState | AreaState;
+export interface PointState {
+  parentLocation: Quiz | AreaState;
   locationType: LocationType.Point;
   placeId: string;
   shortName: string;
   longName: string;
   userDefinedName: string;
   point: Point;
-};
+}
 
-export type QuizState = {
+export interface Quiz {
   locationType: LocationType.Quiz;
   sublocations: (AreaState | PointState)[];
-};
+}

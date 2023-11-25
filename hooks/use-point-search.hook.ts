@@ -3,7 +3,7 @@ import {
   LocationType,
   PointState,
   SearchStatus,
-  QuizState,
+  Quiz,
 } from "@/types";
 import debounce from "@/utils/debounce";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
@@ -19,7 +19,7 @@ interface UsePointSearchReturn {
 }
 
 export default function usePointSearch(
-  parentLocation: QuizState | AreaState,
+  parentLocation: Quiz | AreaState,
 ): UsePointSearchReturn {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =

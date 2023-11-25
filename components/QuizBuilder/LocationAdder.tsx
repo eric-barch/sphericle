@@ -6,7 +6,7 @@ import {
   AreaState,
   LocationType,
   PointState,
-  QuizState,
+  Quiz,
   SearchStatus,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
@@ -15,105 +15,74 @@ import {
   Dispatch,
   FocusEvent,
   KeyboardEvent,
-  RefObject,
+  MouseEvent,
   SetStateAction,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 
 interface LocationAdderProps {
-  parentLocation: QuizState | AreaState;
-  setParentOutlined: (outlined: boolean) => void;
+  parentState: Quiz | AreaState;
   addLocation: (
-    parentLocation: QuizState | AreaState,
+    parentLocation: Quiz | AreaState,
     location: AreaState | PointState,
   ) => void;
   setDisplayedLocation: (location: AreaState | PointState | null) => void;
+  setParentOutlined: (parentOutlined: boolean) => void;
 }
 
 export default function LocationAdder({
-  parentLocation,
-  setParentOutlined,
+  parentState,
   addLocation,
   setDisplayedLocation,
+  setParentOutlined,
 }: LocationAdderProps) {
   const [locationType, setLocationType] = useState<LocationType>(
     LocationType.Area,
   );
   const [input, setInput] = useState<string>("");
-  const [inputFocused, setInputFocused] = useState<boolean>(false);
-  const [optionsFocused, setOptionsFocused] = useState<boolean>(false);
+  const [optionClicked, setOptionClicked] = useState<boolean>(false);
   const {
     searchTerm: areaSearchTerm,
     searchStatus: areaSearchStatus,
     searchResults: areaSearchResults,
     setSearchTerm: setAreaSearchTerm,
     reset: resetAreaSearch,
-  } = useAreaSearch(parentLocation);
+  } = useAreaSearch(parentState);
   const {
     searchTerm: pointSearchTerm,
     searchStatus: pointSearchStatus,
     searchResults: pointSearchResults,
     setSearchTerm: setPointSearchTerm,
     reset: resetPointSearch,
-  } = usePointSearch(parentLocation);
+  } = usePointSearch(parentState);
 
-  function handleFocus(event: FocusEvent<HTMLDivElement>) {
-    const begInputFocused = inputFocused;
-    const begOptionsFocused = optionsFocused;
-    let endInputFocused = inputFocused;
-    let endOptionsFocused = optionsFocused;
-
-    if (inputFocused) {
+  function handleInputFocus(event: FocusEvent<HTMLDivElement>) {
+    if (optionClicked) {
+      setOptionClicked(false);
       return;
     }
 
-    if (parentLocation.locationType === LocationType.Area) {
+    if (parentState.locationType === LocationType.Area) {
+      setDisplayedLocation(parentState);
       setParentOutlined(true);
-      setDisplayedLocation(parentLocation);
-    }
-
-    if (optionsFocused) {
-      endOptionsFocused = false;
-      setOptionsFocused(false);
     } else {
       setDisplayedLocation(null);
     }
-
-    endInputFocused = true;
-    setInputFocused(true);
-
-    console.log(
-      `\nbegInputFocused: ${begInputFocused}` +
-        `\nbegOptionsFocused: ${begOptionsFocused}` +
-        `\nendInputFocused: ${endInputFocused}` +
-        `\nendOptionsFocused: ${endOptionsFocused}`,
-    );
   }
 
-  function handleBlur(event: FocusEvent<HTMLDivElement>) {
-    const currentTarget = event.currentTarget;
-
-    // Defer the check until after the browser has updated document.activeElement
-    setTimeout(() => {
-      // cancel if the new focused element is a child of LocationAdder.
-      if (currentTarget.contains(document.activeElement)) {
-        return;
-      }
-
-      setInputFocused(false);
-    }, 0);
+  function handleInputBlur(event: FocusEvent<HTMLDivElement>) {
+    setParentOutlined(false);
   }
 
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
       ...location,
-      parentLocation,
+      parentLocation: parentState,
     };
 
-    addLocation(parentLocation, newLocation);
+    addLocation(parentState, newLocation);
 
     setInput("");
     resetAreaSearch();
@@ -121,50 +90,50 @@ export default function LocationAdder({
   }
 
   return (
-    <div onFocus={handleFocus} onBlur={handleBlur}>
-      <Combobox onChange={handleChange}>
-        {({ activeOption }) => (
-          <>
-            <Input
-              parentLocation={parentLocation}
-              input={input}
-              locationType={locationType}
-              areaSearchTerm={areaSearchTerm}
-              pointSearchTerm={pointSearchTerm}
-              setInput={setInput}
-              setLocationType={setLocationType}
-              setAreaSearchTerm={setAreaSearchTerm}
-              setPointSearchTerm={setPointSearchTerm}
-              resetPointSearch={resetPointSearch}
-            />
-            <Options
-              input={input}
-              inputFocused={inputFocused}
-              optionsFocused={optionsFocused}
-              locationType={locationType}
-              areaSearchTerm={areaSearchTerm}
-              areaSearchStatus={areaSearchStatus}
-              areaSearchResults={areaSearchResults}
-              pointSearchTerm={pointSearchTerm}
-              pointSearchStatus={pointSearchStatus}
-              pointSearchResults={pointSearchResults}
-              activeOption={activeOption}
-              setDisplayedLocation={setDisplayedLocation}
-              setOptionsFocused={setOptionsFocused}
-            />
-          </>
-        )}
-      </Combobox>
-    </div>
+    <Combobox onChange={handleChange}>
+      {({ activeOption }) => (
+        <>
+          <Input
+            parentLocation={parentState}
+            input={input}
+            locationType={locationType}
+            areaSearchTerm={areaSearchTerm}
+            pointSearchTerm={pointSearchTerm}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            setInput={setInput}
+            setLocationType={setLocationType}
+            setAreaSearchTerm={setAreaSearchTerm}
+            setPointSearchTerm={setPointSearchTerm}
+            resetPointSearch={resetPointSearch}
+          />
+          <Options
+            input={input}
+            locationType={locationType}
+            areaSearchTerm={areaSearchTerm}
+            areaSearchStatus={areaSearchStatus}
+            areaSearchResults={areaSearchResults}
+            pointSearchTerm={pointSearchTerm}
+            pointSearchStatus={pointSearchStatus}
+            pointSearchResults={pointSearchResults}
+            activeOption={activeOption}
+            setDisplayedLocation={setDisplayedLocation}
+            setOptionsClicked={setOptionClicked}
+          />
+        </>
+      )}
+    </Combobox>
   );
 }
 
 interface InputProps {
-  parentLocation: QuizState | AreaState;
+  parentLocation: Quiz | AreaState;
   input: string;
   locationType: LocationType;
   areaSearchTerm: string;
   pointSearchTerm: string;
+  onFocus: (event: FocusEvent<HTMLDivElement>) => void;
+  onBlur: (event: FocusEvent<HTMLDivElement>) => void;
   setInput: (input: string) => void;
   setLocationType: Dispatch<SetStateAction<LocationType>>;
   setAreaSearchTerm: (searchTerm: string) => void;
@@ -178,6 +147,8 @@ export function Input({
   locationType,
   areaSearchTerm,
   pointSearchTerm,
+  onFocus,
+  onBlur,
   setInput,
   setLocationType,
   setAreaSearchTerm,
@@ -245,7 +216,7 @@ export function Input({
   }
 
   return (
-    <div className="relative">
+    <div className="relative" onFocus={onFocus} onBlur={onBlur}>
       <ToggleLocationTypeButton
         locationType={locationType}
         setLocationType={setLocationType}
@@ -308,8 +279,6 @@ function ToggleLocationTypeButton({
 
 interface OptionsProps {
   input: string;
-  inputFocused: boolean;
-  optionsFocused: boolean;
   locationType: LocationType;
   areaSearchTerm: string;
   areaSearchStatus: SearchStatus;
@@ -319,13 +288,11 @@ interface OptionsProps {
   pointSearchResults: PointState[] | null;
   activeOption: AreaState | PointState | null;
   setDisplayedLocation: (location: AreaState | PointState | null) => void;
-  setOptionsFocused: (optionsFocused: boolean) => void;
+  setOptionsClicked: (optionsClicked: boolean) => void;
 }
 
 export function Options({
   input,
-  inputFocused,
-  optionsFocused,
   locationType,
   areaSearchTerm,
   areaSearchStatus,
@@ -335,11 +302,10 @@ export function Options({
   pointSearchResults,
   activeOption,
   setDisplayedLocation,
-  setOptionsFocused,
+  setOptionsClicked,
 }: OptionsProps) {
-  function handleOptionFocus() {
-    console.log("Option focused.");
-    setOptionsFocused(true);
+  function handleClick(event: MouseEvent<HTMLUListElement>) {
+    setOptionsClicked(true);
   }
 
   const comboboxContent = (() => {
@@ -352,11 +318,7 @@ export function Options({
         return <div className="pl-6">No results found.</div>;
       } else {
         return areaSearchResults.map((searchResult: AreaState) => (
-          <Combobox.Option
-            key={searchResult.placeId}
-            onFocus={handleOptionFocus}
-            value={searchResult}
-          >
+          <Combobox.Option key={searchResult.placeId} value={searchResult}>
             {({ active }) => (
               <div
                 className={`p-1 pl-6 rounded-3xl cursor-pointer ${
@@ -374,11 +336,7 @@ export function Options({
         return <div className="pl-6">No results found.</div>;
       } else {
         return pointSearchResults.map((searchResult: PointState) => (
-          <Combobox.Option
-            key={searchResult.placeId}
-            onFocus={handleOptionFocus}
-            value={searchResult}
-          >
+          <Combobox.Option key={searchResult.placeId} value={searchResult}>
             {({ active }) => (
               <div
                 className={`p-1 pl-6 rounded-3xl cursor-pointer ${
@@ -395,10 +353,6 @@ export function Options({
   })();
 
   const combobox = (() => {
-    if (!inputFocused && !optionsFocused) {
-      return null;
-    }
-
     if (input === "") {
       return null;
     }
@@ -420,6 +374,7 @@ export function Options({
       <Combobox.Options
         className="bg-gray-500 rounded-3xl p-2 mt-1 mb-1"
         static
+        onClick={handleClick}
       >
         {comboboxContent}
       </Combobox.Options>

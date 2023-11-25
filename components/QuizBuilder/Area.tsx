@@ -1,4 +1,4 @@
-import { AreaState, PointState, QuizState } from "@/types";
+import { AreaState, PointState, Quiz } from "@/types";
 import { Disclosure } from "@headlessui/react";
 import { KeyboardEvent, MouseEvent, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
@@ -7,9 +7,9 @@ import LocationName from "./LocationName";
 import { Sublocations } from "./Sublocations";
 
 interface AreaProps {
-  location: AreaState;
+  areaState: AreaState;
   addLocation: (
-    parentLocation: QuizState | AreaState,
+    parentLocation: Quiz | AreaState,
     location: AreaState | PointState,
   ) => void;
   deleteLocation: (targetLocation: AreaState | PointState) => void;
@@ -19,7 +19,7 @@ interface AreaProps {
 }
 
 export default function Area({
-  location,
+  areaState,
   addLocation,
   deleteLocation,
   renameLocation,
@@ -37,7 +37,7 @@ export default function Area({
     }
 
     setOutlined(true);
-    setDisplayedLocation(location);
+    setDisplayedLocation(areaState);
   }
 
   function handleBlur() {
@@ -55,7 +55,7 @@ export default function Area({
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
     if (willToggle) {
-      toggleLocationOpen(location);
+      toggleLocationOpen(areaState);
     } else {
       event.preventDefault();
       setWillToggle(true);
@@ -70,11 +70,11 @@ export default function Area({
   }
 
   return (
-    <Disclosure defaultOpen={location.open}>
+    <Disclosure defaultOpen={areaState.open}>
       <div className="relative">
         <EditLocationButton
           className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
-          location={location}
+          location={areaState}
           setRenaming={setRenaming}
           deleteLocation={deleteLocation}
           setDisplayedLocation={setDisplayedLocation}
@@ -91,27 +91,27 @@ export default function Area({
           onKeyDown={handleKeyDown}
         >
           <LocationName
-            location={location}
+            location={areaState}
             renaming={renaming}
             renameLocation={renameLocation}
             setRenaming={setRenaming}
           />
           <OpenChevron
             className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1"
-            open={location.open}
+            open={areaState.open}
           />
         </Disclosure.Button>
       </div>
       <Disclosure.Panel>
         <Sublocations
           className="ml-10"
-          parentLocation={location}
-          setParentOutlined={setOutlined}
+          parentState={areaState}
           addLocation={addLocation}
           deleteLocation={deleteLocation}
           renameLocation={renameLocation}
           toggleLocationOpen={toggleLocationOpen}
           setDisplayedLocation={setDisplayedLocation}
+          setParentOutlined={setOutlined}
         />
       </Disclosure.Panel>
     </Disclosure>
