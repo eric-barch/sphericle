@@ -46,6 +46,5 @@ export type PointState = {
 
 export type QuizState = {
   locationType: LocationType.Quiz;
-  displayName: string;
   sublocations: (AreaState | PointState)[];
 };

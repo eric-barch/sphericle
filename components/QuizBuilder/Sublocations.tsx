@@ -3,9 +3,10 @@ import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 import Point from "./Point";
 
-interface LocationsProps {
+interface SublocationsProps {
   className?: string;
   parentLocation: QuizState | AreaState;
+  setParentOutlined: (outlined: boolean) => void;
   addLocation: (
     parentLocation: QuizState | AreaState,
     location: AreaState | PointState,
@@ -13,18 +14,19 @@ interface LocationsProps {
   deleteLocation: (location: AreaState | PointState) => void;
   renameLocation: (location: AreaState | PointState, name: string) => void;
   toggleLocationOpen: (location: AreaState) => void;
-  setFocusedLocation: (location: AreaState | PointState | null) => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
-export function Locations({
+export function Sublocations({
   className,
   parentLocation,
+  setParentOutlined,
   addLocation,
   deleteLocation,
   renameLocation,
   toggleLocationOpen,
-  setFocusedLocation,
-}: LocationsProps) {
+  setDisplayedLocation,
+}: SublocationsProps) {
   return (
     <div className={`${className ? className : ""} space-y-1 h-full`}>
       {parentLocation.sublocations.map((sublocation) => {
@@ -37,7 +39,7 @@ export function Locations({
               deleteLocation={deleteLocation}
               renameLocation={renameLocation}
               toggleLocationOpen={toggleLocationOpen}
-              setFocusedLocation={setFocusedLocation}
+              setDisplayedLocation={setDisplayedLocation}
             />
           );
         }
@@ -49,7 +51,7 @@ export function Locations({
               location={sublocation}
               renameLocation={renameLocation}
               deleteLocation={deleteLocation}
-              setFocusedLocation={setFocusedLocation}
+              setDisplayedLocation={setDisplayedLocation}
             />
           );
         }
@@ -58,8 +60,9 @@ export function Locations({
       })}
       <LocationAdder
         parentLocation={parentLocation}
+        setParentOutlined={setParentOutlined}
         addLocation={addLocation}
-        setFocusedLocation={setFocusedLocation}
+        setDisplayedLocation={setDisplayedLocation}
       />
     </div>
   );

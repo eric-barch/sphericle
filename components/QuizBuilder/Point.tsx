@@ -7,19 +7,19 @@ interface PointProps {
   location: PointState;
   deleteLocation: (targetLocation: PointState) => void;
   renameLocation: (location: PointState, name: string) => void;
-  setFocusedLocation: (location: AreaState | PointState | null) => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function Point({
   location,
   deleteLocation,
   renameLocation,
-  setFocusedLocation,
+  setDisplayedLocation,
 }: PointProps) {
   const [renaming, setRenaming] = useState<boolean>(false);
 
   function handleFocus() {
-    setFocusedLocation(location);
+    setDisplayedLocation(location);
   }
 
   return (
@@ -33,7 +33,7 @@ export default function Point({
         location={location}
         setRenaming={setRenaming}
         deleteLocation={deleteLocation}
-        setFocusedLocation={setFocusedLocation}
+        setDisplayedLocation={setDisplayedLocation}
       />
       <LocationName
         location={location}

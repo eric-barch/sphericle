@@ -9,40 +9,42 @@ import {
   QuizState,
   SearchStatus,
 } from "@/types";
-import debounce from "@/utils/debounce";
 import { Combobox } from "@headlessui/react";
 import {
   ChangeEvent,
   Dispatch,
   FocusEvent,
   KeyboardEvent,
-  MouseEvent,
+  RefObject,
   SetStateAction,
-  useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 
 interface LocationAdderProps {
   parentLocation: QuizState | AreaState;
+  setParentOutlined: (outlined: boolean) => void;
   addLocation: (
     parentLocation: QuizState | AreaState,
     location: AreaState | PointState,
   ) => void;
-  setFocusedLocation: (location: AreaState | PointState | null) => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function LocationAdder({
   parentLocation,
+  setParentOutlined,
   addLocation,
-  setFocusedLocation,
+  setDisplayedLocation,
 }: LocationAdderProps) {
   const [locationType, setLocationType] = useState<LocationType>(
     LocationType.Area,
   );
   const [input, setInput] = useState<string>("");
-  const [optionsVisible, setOptionsVisible] = useState<boolean>(false);
+  const [inputFocused, setInputFocused] = useState<boolean>(false);
+  const [optionsFocused, setOptionsFocused] = useState<boolean>(false);
   const {
     searchTerm: areaSearchTerm,
     searchStatus: areaSearchStatus,
@@ -59,25 +61,50 @@ export default function LocationAdder({
   } = usePointSearch(parentLocation);
 
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
-    if (parentLocation.locationType === LocationType.Area) {
-      setFocusedLocation(parentLocation);
-    } else {
-      setFocusedLocation(null);
+    const begInputFocused = inputFocused;
+    const begOptionsFocused = optionsFocused;
+    let endInputFocused = inputFocused;
+    let endOptionsFocused = optionsFocused;
+
+    if (inputFocused) {
+      return;
     }
 
-    if (event.currentTarget.contains(event.relatedTarget as Node)) {
-      event.preventDefault();
-    } else {
-      setOptionsVisible(true);
+    if (parentLocation.locationType === LocationType.Area) {
+      setParentOutlined(true);
+      setDisplayedLocation(parentLocation);
     }
+
+    if (optionsFocused) {
+      endOptionsFocused = false;
+      setOptionsFocused(false);
+    } else {
+      setDisplayedLocation(null);
+    }
+
+    endInputFocused = true;
+    setInputFocused(true);
+
+    console.log(
+      `\nbegInputFocused: ${begInputFocused}` +
+        `\nbegOptionsFocused: ${begOptionsFocused}` +
+        `\nendInputFocused: ${endInputFocused}` +
+        `\nendOptionsFocused: ${endOptionsFocused}`,
+    );
   }
 
   function handleBlur(event: FocusEvent<HTMLDivElement>) {
-    if (event.currentTarget.contains(event.relatedTarget as Node)) {
-      event.preventDefault();
-    } else {
-      setOptionsVisible(false);
-    }
+    const currentTarget = event.currentTarget;
+
+    // Defer the check until after the browser has updated document.activeElement
+    setTimeout(() => {
+      // cancel if the new focused element is a child of LocationAdder.
+      if (currentTarget.contains(document.activeElement)) {
+        return;
+      }
+
+      setInputFocused(false);
+    }, 0);
   }
 
   function handleChange(location: AreaState | PointState) {
@@ -98,7 +125,7 @@ export default function LocationAdder({
       <Combobox onChange={handleChange}>
         {({ activeOption }) => (
           <>
-            <LocationAdderInput
+            <Input
               parentLocation={parentLocation}
               input={input}
               locationType={locationType}
@@ -110,10 +137,11 @@ export default function LocationAdder({
               setPointSearchTerm={setPointSearchTerm}
               resetPointSearch={resetPointSearch}
             />
-            <LocationAdderOptions
+            <Options
               input={input}
+              inputFocused={inputFocused}
+              optionsFocused={optionsFocused}
               locationType={locationType}
-              visible={optionsVisible}
               areaSearchTerm={areaSearchTerm}
               areaSearchStatus={areaSearchStatus}
               areaSearchResults={areaSearchResults}
@@ -121,7 +149,8 @@ export default function LocationAdder({
               pointSearchStatus={pointSearchStatus}
               pointSearchResults={pointSearchResults}
               activeOption={activeOption}
-              setFocusedLocation={setFocusedLocation}
+              setDisplayedLocation={setDisplayedLocation}
+              setOptionsFocused={setOptionsFocused}
             />
           </>
         )}
@@ -130,7 +159,7 @@ export default function LocationAdder({
   );
 }
 
-interface LocationAdderInputProps {
+interface InputProps {
   parentLocation: QuizState | AreaState;
   input: string;
   locationType: LocationType;
@@ -143,7 +172,7 @@ interface LocationAdderInputProps {
   resetPointSearch: () => void;
 }
 
-export function LocationAdderInput({
+export function Input({
   parentLocation,
   input,
   locationType,
@@ -154,7 +183,7 @@ export function LocationAdderInput({
   setAreaSearchTerm,
   setPointSearchTerm,
   resetPointSearch,
-}: LocationAdderInputProps) {
+}: InputProps) {
   const placeholder =
     parentLocation.locationType === LocationType.Quiz
       ? `Add ${locationType.toLowerCase()}`
@@ -230,8 +259,6 @@ export function LocationAdderInput({
         placeholder={placeholder}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        onFocus={(e) => e.preventDefault()}
-        onBlur={(e) => e.preventDefault()}
       />
     </div>
   );
@@ -279,10 +306,11 @@ function ToggleLocationTypeButton({
   );
 }
 
-interface LocationAdderOptionsProps {
+interface OptionsProps {
   input: string;
+  inputFocused: boolean;
+  optionsFocused: boolean;
   locationType: LocationType;
-  visible: boolean;
   areaSearchTerm: string;
   areaSearchStatus: SearchStatus;
   areaSearchResults: AreaState[] | null;
@@ -290,13 +318,15 @@ interface LocationAdderOptionsProps {
   pointSearchStatus: SearchStatus;
   pointSearchResults: PointState[] | null;
   activeOption: AreaState | PointState | null;
-  setFocusedLocation: (location: AreaState | PointState | null) => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
+  setOptionsFocused: (optionsFocused: boolean) => void;
 }
 
-export function LocationAdderOptions({
+export function Options({
   input,
+  inputFocused,
+  optionsFocused,
   locationType,
-  visible,
   areaSearchTerm,
   areaSearchStatus,
   areaSearchResults,
@@ -304,9 +334,15 @@ export function LocationAdderOptions({
   pointSearchStatus,
   pointSearchResults,
   activeOption,
-  setFocusedLocation,
-}: LocationAdderOptionsProps) {
-  function options() {
+  setDisplayedLocation,
+  setOptionsFocused,
+}: OptionsProps) {
+  function handleOptionFocus() {
+    console.log("Option focused.");
+    setOptionsFocused(true);
+  }
+
+  const comboboxContent = (() => {
     if (locationType === LocationType.Area) {
       if (input !== areaSearchTerm) {
         return <div className="pl-6">Press Enter to Search</div>;
@@ -316,7 +352,11 @@ export function LocationAdderOptions({
         return <div className="pl-6">No results found.</div>;
       } else {
         return areaSearchResults.map((searchResult: AreaState) => (
-          <Combobox.Option key={searchResult.placeId} value={searchResult}>
+          <Combobox.Option
+            key={searchResult.placeId}
+            onFocus={handleOptionFocus}
+            value={searchResult}
+          >
             {({ active }) => (
               <div
                 className={`p-1 pl-6 rounded-3xl cursor-pointer ${
@@ -334,7 +374,11 @@ export function LocationAdderOptions({
         return <div className="pl-6">No results found.</div>;
       } else {
         return pointSearchResults.map((searchResult: PointState) => (
-          <Combobox.Option key={searchResult.placeId} value={searchResult}>
+          <Combobox.Option
+            key={searchResult.placeId}
+            onFocus={handleOptionFocus}
+            value={searchResult}
+          >
             {({ active }) => (
               <div
                 className={`p-1 pl-6 rounded-3xl cursor-pointer ${
@@ -348,10 +392,14 @@ export function LocationAdderOptions({
         ));
       }
     }
-  }
+  })();
 
-  function comboBox() {
-    if (!visible || input === "") {
+  const combobox = (() => {
+    if (!inputFocused && !optionsFocused) {
+      return null;
+    }
+
+    if (input === "") {
       return null;
     }
 
@@ -373,17 +421,17 @@ export function LocationAdderOptions({
         className="bg-gray-500 rounded-3xl p-2 mt-1 mb-1"
         static
       >
-        {options()}
+        {comboboxContent}
       </Combobox.Options>
     );
-  }
+  })();
 
   // TODO: consider refactoring out this useEffect
   useEffect(() => {
     if (activeOption) {
-      setFocusedLocation(activeOption);
+      setDisplayedLocation(activeOption);
     }
   }, [activeOption]);
 
-  return <>{comboBox()}</>;
+  return <>{combobox}</>;
 }

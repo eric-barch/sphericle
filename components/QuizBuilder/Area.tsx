@@ -4,7 +4,7 @@ import { KeyboardEvent, MouseEvent, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
-import { Locations } from "./Locations";
+import { Sublocations } from "./Sublocations";
 
 interface AreaProps {
   location: AreaState;
@@ -15,7 +15,7 @@ interface AreaProps {
   deleteLocation: (targetLocation: AreaState | PointState) => void;
   renameLocation: (location: AreaState | PointState, name: string) => void;
   toggleLocationOpen: (targetLocation: AreaState) => void;
-  setFocusedLocation: (location: AreaState | PointState | null) => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function Area({
@@ -24,21 +24,24 @@ export default function Area({
   deleteLocation,
   renameLocation,
   toggleLocationOpen,
-  setFocusedLocation,
+  setDisplayedLocation,
 }: AreaProps) {
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
   const [renaming, setRenaming] = useState<boolean>(false);
+  const [outlined, setOutlined] = useState<boolean>(false);
 
   function handleFocus() {
     if (!mouseDown) {
       setWillToggle(true);
     }
 
-    setFocusedLocation(location);
+    setOutlined(true);
+    setDisplayedLocation(location);
   }
 
   function handleBlur() {
+    setOutlined(false);
     setWillToggle(false);
   }
 
@@ -74,10 +77,12 @@ export default function Area({
           location={location}
           setRenaming={setRenaming}
           deleteLocation={deleteLocation}
-          setFocusedLocation={setFocusedLocation}
+          setDisplayedLocation={setDisplayedLocation}
         />
         <Disclosure.Button
-          className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600  focus:outline outline-2 outline-red-600`}
+          className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
+            outlined ? "outline outline-2 outline-red-600" : ""
+          }`}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onMouseDown={handleMouseDown}
@@ -98,14 +103,15 @@ export default function Area({
         </Disclosure.Button>
       </div>
       <Disclosure.Panel>
-        <Locations
+        <Sublocations
           className="ml-10"
           parentLocation={location}
+          setParentOutlined={setOutlined}
           addLocation={addLocation}
           deleteLocation={deleteLocation}
           renameLocation={renameLocation}
           toggleLocationOpen={toggleLocationOpen}
-          setFocusedLocation={setFocusedLocation}
+          setDisplayedLocation={setDisplayedLocation}
         />
       </Disclosure.Panel>
     </Disclosure>

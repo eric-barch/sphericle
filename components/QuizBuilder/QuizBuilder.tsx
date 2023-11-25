@@ -2,21 +2,20 @@ import Map from "@/components/Map";
 import SplitPane from "@/components/SplitPane";
 import { AreaState, LocationType, PointState, QuizState } from "@/types";
 import { useEffect, useState } from "react";
-import { Locations } from "./Locations";
+import { Sublocations } from "./Sublocations";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
   const [quiz, setQuiz] = useState<QuizState>({
     locationType: LocationType.Quiz,
-    displayName: "Root",
     sublocations: [],
   });
   const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral | null>(
     null,
   );
   const [filledAreas, setFilledAreas] = useState<AreaState[] | null>(null);
-  const [emptyAreas, setEmptyAreas] = useState<AreaState[] | null>(null);
   const [markers, setMarkers] = useState<PointState[] | null>(null);
+  const [emptyAreas, setEmptyAreas] = useState<AreaState[] | null>(null);
 
   useEffect(() => {
     async function loadPlacesLibrary() {
@@ -91,7 +90,7 @@ export default function QuizBuilder() {
     setQuiz(newQuiz);
   }
 
-  function setFocusedLocation(location: AreaState | PointState | null) {
+  function setDisplayedLocation(location: AreaState | PointState | null) {
     if (location) {
       if (location.locationType === LocationType.Area) {
         if (location.open) {
@@ -149,7 +148,7 @@ export default function QuizBuilder() {
       sublocations: [...parentLocation.sublocations, location],
     };
 
-    setFocusedLocation(location);
+    setDisplayedLocation(location);
     replaceLocation(parentLocation, newParentLocation);
   }
 
@@ -157,17 +156,15 @@ export default function QuizBuilder() {
     replaceLocation(location, null);
 
     if (location.parentLocation.locationType === LocationType.Area) {
-      setFocusedLocation(location.parentLocation);
+      setDisplayedLocation(location.parentLocation);
     } else {
-      setFocusedLocation(null);
+      setDisplayedLocation(null);
     }
   }
 
   function renameLocation(location: AreaState | PointState, name: string) {
     const newLocation = { ...location, userDefinedName: name };
     replaceLocation(location, newLocation);
-
-    console.log(`renamed location: ${name}`);
   }
 
   function toggleLocationOpen(location: AreaState): void {
@@ -178,7 +175,7 @@ export default function QuizBuilder() {
       open: newOpen,
     };
 
-    setFocusedLocation(newLocation);
+    setDisplayedLocation(newLocation);
     replaceLocation(location, newLocation);
   }
 
@@ -186,14 +183,15 @@ export default function QuizBuilder() {
     <>
       {placesLoaded ? (
         <SplitPane>
-          <Locations
+          <Sublocations
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
             parentLocation={quiz}
+            setParentOutlined={() => {}}
             addLocation={addLocation}
             deleteLocation={deleteLocation}
             renameLocation={renameLocation}
             toggleLocationOpen={toggleLocationOpen}
-            setFocusedLocation={setFocusedLocation}
+            setDisplayedLocation={setDisplayedLocation}
           />
           <Map
             mapId="696d0ea42431a75c"
