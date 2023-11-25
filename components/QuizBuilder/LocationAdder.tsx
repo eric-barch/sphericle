@@ -42,7 +42,7 @@ export default function LocationAdder({
     LocationType.Area,
   );
   const [input, setInput] = useState<string>("");
-  const [optionClicked, setOptionClicked] = useState<boolean>(false);
+  const [optionsClicked, setOptionsClicked] = useState<boolean>(false);
   const {
     searchTerm: areaSearchTerm,
     searchStatus: areaSearchStatus,
@@ -57,24 +57,6 @@ export default function LocationAdder({
     setSearchTerm: setPointSearchTerm,
     reset: resetPointSearch,
   } = usePointSearch(parentState);
-
-  function handleInputFocus(event: FocusEvent<HTMLDivElement>) {
-    if (optionClicked) {
-      setOptionClicked(false);
-      return;
-    }
-
-    if (parentState.locationType === LocationType.Area) {
-      setDisplayedLocation(parentState);
-      setParentOutlined(true);
-    } else {
-      setDisplayedLocation(null);
-    }
-  }
-
-  function handleInputBlur(event: FocusEvent<HTMLDivElement>) {
-    setParentOutlined(false);
-  }
 
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
@@ -94,18 +76,20 @@ export default function LocationAdder({
       {({ activeOption }) => (
         <>
           <Input
-            parentLocation={parentState}
+            parentState={parentState}
             input={input}
             locationType={locationType}
             areaSearchTerm={areaSearchTerm}
             pointSearchTerm={pointSearchTerm}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
+            optionsClicked={optionsClicked}
             setInput={setInput}
             setLocationType={setLocationType}
             setAreaSearchTerm={setAreaSearchTerm}
             setPointSearchTerm={setPointSearchTerm}
             resetPointSearch={resetPointSearch}
+            setOptionsClicked={setOptionsClicked}
+            setDisplayedLocation={setDisplayedLocation}
+            setParentOutlined={setParentOutlined}
           />
           <Options
             input={input}
@@ -118,7 +102,7 @@ export default function LocationAdder({
             pointSearchResults={pointSearchResults}
             activeOption={activeOption}
             setDisplayedLocation={setDisplayedLocation}
-            setOptionsClicked={setOptionClicked}
+            setOptionsClicked={setOptionsClicked}
           />
         </>
       )}
@@ -127,39 +111,43 @@ export default function LocationAdder({
 }
 
 interface InputProps {
-  parentLocation: Quiz | AreaState;
+  parentState: Quiz | AreaState;
   input: string;
   locationType: LocationType;
   areaSearchTerm: string;
   pointSearchTerm: string;
-  onFocus: (event: FocusEvent<HTMLDivElement>) => void;
-  onBlur: (event: FocusEvent<HTMLDivElement>) => void;
+  optionsClicked: boolean;
   setInput: (input: string) => void;
   setLocationType: Dispatch<SetStateAction<LocationType>>;
   setAreaSearchTerm: (searchTerm: string) => void;
   setPointSearchTerm: (searchTerm: string) => void;
   resetPointSearch: () => void;
+  setOptionsClicked: (optionsClicked: boolean) => void;
+  setDisplayedLocation: (displayedLocation: AreaState | PointState) => void;
+  setParentOutlined: (parentOutlined: boolean) => void;
 }
 
 export function Input({
-  parentLocation,
+  parentState,
   input,
   locationType,
   areaSearchTerm,
   pointSearchTerm,
-  onFocus,
-  onBlur,
+  optionsClicked,
   setInput,
   setLocationType,
   setAreaSearchTerm,
   setPointSearchTerm,
   resetPointSearch,
+  setOptionsClicked,
+  setDisplayedLocation,
+  setParentOutlined,
 }: InputProps) {
   const placeholder =
-    parentLocation.locationType === LocationType.Quiz
+    parentState.locationType === LocationType.Quiz
       ? `Add ${locationType.toLowerCase()}`
       : `Add ${locationType.toLowerCase()} in ${
-          parentLocation.userDefinedName || parentLocation.shortName
+          parentState.userDefinedName || parentState.shortName
         }`;
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -215,8 +203,26 @@ export function Input({
     }
   }
 
+  function handleFocus(event: FocusEvent<HTMLDivElement>) {
+    if (optionsClicked) {
+      setOptionsClicked(false);
+      return;
+    }
+
+    if (parentState.locationType === LocationType.Area) {
+      setDisplayedLocation(parentState);
+      setParentOutlined(true);
+    } else {
+      setDisplayedLocation(null);
+    }
+  }
+
+  function handleBlur(event: FocusEvent<HTMLDivElement>) {
+    setParentOutlined(false);
+  }
+
   return (
-    <div className="relative" onFocus={onFocus} onBlur={onBlur}>
+    <div className="relative" onFocus={handleFocus} onBlur={handleBlur}>
       <ToggleLocationTypeButton
         locationType={locationType}
         setLocationType={setLocationType}
