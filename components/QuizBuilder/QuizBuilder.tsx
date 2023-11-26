@@ -12,7 +12,7 @@ export default function QuizBuilder() {
   const [emptyAreas, setEmptyAreas] = useState<AreaState[]>([]);
   const [filledAreas, setFilledAreas] = useState<AreaState[]>([]);
   const [markers, setMarkers] = useState<PointState[]>([]);
-  const [quiz, setQuiz] = useState<Quiz>({
+  const [quiz, setQuiz] = useState<Quiz | AreaState>({
     locationType: LocationType.Quiz,
     sublocations: [],
   });
@@ -29,106 +29,6 @@ export default function QuizBuilder() {
 
     loadPlacesLibrary();
   }, []);
-
-  function findLocation(
-    searchLocation: Quiz | AreaState | PointState,
-    targetLocation: Quiz | AreaState | PointState,
-    newLocation: Quiz | AreaState | PointState | null,
-  ): Quiz | AreaState | PointState | null {
-    if (searchLocation === targetLocation) {
-      return newLocation;
-    }
-
-    if (searchLocation.locationType === LocationType.Point) {
-      return searchLocation;
-    }
-
-    if (
-      searchLocation.locationType === LocationType.Quiz ||
-      searchLocation.locationType === LocationType.Area
-    ) {
-      let newSublocations: (AreaState | PointState)[] = [];
-
-      for (const currentSublocation of searchLocation.sublocations) {
-        const newSublocation = findLocation(
-          currentSublocation,
-          targetLocation,
-          newLocation,
-        );
-
-        if (
-          newSublocation?.locationType === LocationType.Area ||
-          newSublocation?.locationType === LocationType.Point
-        ) {
-          newSublocations.push(newSublocation);
-        }
-      }
-
-      const newSearchLocation = {
-        ...searchLocation,
-        sublocations: newSublocations,
-      };
-
-      return newSearchLocation;
-    }
-
-    throw new Error(
-      "Could not classify searchLocation as Root, Area, or Point.",
-    );
-  }
-
-  function replaceLocation(
-    targetLocation: Quiz | AreaState | PointState,
-    newLocation: Quiz | AreaState | PointState | null,
-  ): void {
-    const newQuiz = findLocation(quiz, targetLocation, newLocation);
-
-    if (newQuiz?.locationType !== LocationType.Quiz) {
-      throw new Error("newRoot is not a RootState.");
-    }
-
-    setQuiz(newQuiz);
-  }
-
-  function addLocation(
-    parentLocation: Quiz | AreaState,
-    location: AreaState | PointState,
-  ): void {
-    const newParentLocation = {
-      ...parentLocation,
-      sublocations: [...parentLocation.sublocations, location],
-    };
-
-    setDisplayedLocation(location);
-    replaceLocation(parentLocation, newParentLocation);
-  }
-
-  function deleteLocation(location: AreaState | PointState): void {
-    replaceLocation(location, null);
-
-    if (location.parentLocation.locationType === LocationType.Area) {
-      setDisplayedLocation(location.parentLocation);
-    } else {
-      setDisplayedLocation(null);
-    }
-  }
-
-  function renameLocation(location: AreaState | PointState, name: string) {
-    const newLocation = { ...location, userDefinedName: name };
-    replaceLocation(location, newLocation);
-  }
-
-  function toggleLocationOpen(location: AreaState): void {
-    const newOpen = !location.open;
-
-    const newLocation = {
-      ...location,
-      open: newOpen,
-    };
-
-    setDisplayedLocation(newLocation);
-    replaceLocation(location, newLocation);
-  }
 
   function setDisplayedLocation(location: AreaState | PointState | null) {
     if (location) {
@@ -179,6 +79,10 @@ export default function QuizBuilder() {
     }
   }
 
+  useEffect(() => {
+    console.log(quiz);
+  }, [quiz]);
+
   return (
     <>
       {placesLoaded ? (
@@ -186,10 +90,7 @@ export default function QuizBuilder() {
           <Sublocations
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
             parentState={quiz}
-            addLocation={addLocation}
-            deleteLocation={deleteLocation}
-            renameLocation={renameLocation}
-            toggleLocationOpen={toggleLocationOpen}
+            setParentState={setQuiz}
             setDisplayedLocation={setDisplayedLocation}
             setParentOutlined={() => {}}
           />

@@ -4,14 +4,14 @@ import { useRef, useEffect, useState, KeyboardEvent, FocusEvent } from "react";
 interface LocationTextProps {
   location: AreaState | PointState;
   renaming: boolean;
-  renameLocation: (location: AreaState | PointState, name: string) => void;
+  rename: (name: string) => void;
   setRenaming: (renaming: boolean) => void;
 }
 
 export default function LocationName({
   location,
   renaming,
-  renameLocation,
+  rename: renameLocation,
   setRenaming,
 }: LocationTextProps) {
   const currentName = location.userDefinedName
@@ -25,7 +25,7 @@ export default function LocationName({
     if (event.key === "Enter") {
       event.preventDefault();
       event.stopPropagation();
-      renameLocation(location, newName);
+      renameLocation(newName);
       setRenaming(false);
     }
 

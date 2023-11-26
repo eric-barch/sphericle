@@ -7,16 +7,16 @@ interface EditLocationButtonProps {
   className?: string;
   location: AreaState | PointState;
   setRenaming: (renaming: boolean) => void;
-  deleteLocation: (location: AreaState | PointState | null) => void;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
+  onDelete: (location: AreaState | PointState | null) => void;
+  onDisplay: (location: AreaState | PointState | null) => void;
 }
 
 export default function EditLocationButton({
   className,
   location,
   setRenaming,
-  deleteLocation,
-  setDisplayedLocation,
+  onDelete: deleteLocation,
+  onDisplay: setDisplayedLocation,
 }: EditLocationButtonProps) {
   function handleFocus(event: FocusEvent<HTMLButtonElement>) {
     setDisplayedLocation(location);

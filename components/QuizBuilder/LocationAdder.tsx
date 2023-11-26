@@ -24,10 +24,7 @@ import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 
 interface LocationAdderProps {
   parentState: Quiz | AreaState;
-  addLocation: (
-    parentLocation: Quiz | AreaState,
-    location: AreaState | PointState,
-  ) => void;
+  addLocation: (location: AreaState | PointState) => void;
   setDisplayedLocation: (location: AreaState | PointState | null) => void;
   setParentOutlined: (parentOutlined: boolean) => void;
 }
@@ -64,7 +61,7 @@ export default function LocationAdder({
       parentLocation: parentState,
     };
 
-    addLocation(parentState, newLocation);
+    addLocation(newLocation);
 
     setInput("");
     resetAreaSearch();
@@ -92,6 +89,7 @@ export default function LocationAdder({
             setParentOutlined={setParentOutlined}
           />
           <Options
+            activeOption={activeOption}
             input={input}
             locationType={locationType}
             areaSearchTerm={areaSearchTerm}
@@ -100,7 +98,6 @@ export default function LocationAdder({
             pointSearchTerm={pointSearchTerm}
             pointSearchStatus={pointSearchStatus}
             pointSearchResults={pointSearchResults}
-            activeOption={activeOption}
             setDisplayedLocation={setDisplayedLocation}
             setOptionsClicked={setOptionsClicked}
           />
@@ -167,7 +164,7 @@ export function Input({
     }
   }
 
-  // required to work around hardcoded HeadlessUI Combobox behavior 😡
+  // work around hardcoded HeadlessUI Combobox behavior
   function handleTab(event: KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
 
@@ -179,13 +176,11 @@ export function Input({
     const currentIndex = focusableElements.indexOf(event.currentTarget);
 
     if (event.shiftKey) {
-      // focus previous or cycle to last
       const previousElement =
         focusableElements[currentIndex - 1] ||
         focusableElements[focusableElements.length - 1];
       (previousElement as HTMLElement).focus();
     } else {
-      // focus next or cycle to first
       const nextElement =
         focusableElements[currentIndex + 1] || focusableElements[0];
       (nextElement as HTMLElement).focus();
@@ -197,7 +192,7 @@ export function Input({
       handleEnter(event);
     }
 
-    // required to work around hardcoded HeadlessUI Combobox behavior 😡
+    // work around hardcoded HeadlessUI Combobox behavior
     if (event.key === "Tab") {
       handleTab(event);
     }

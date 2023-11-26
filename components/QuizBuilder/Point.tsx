@@ -1,25 +1,25 @@
-import { AreaState, PointState } from "@/types";
+import { PointState } from "@/types";
 import { useState } from "react";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
 
 interface PointProps {
   pointState: PointState;
-  deleteLocation: (targetLocation: PointState) => void;
-  renameLocation: (location: PointState, name: string) => void;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
+  onDelete: () => void;
+  rename: (name: string) => void;
+  onDisplay: () => void;
 }
 
 export default function Point({
   pointState,
-  deleteLocation,
-  renameLocation,
-  setDisplayedLocation,
+  onDelete,
+  rename,
+  onDisplay,
 }: PointProps) {
   const [renaming, setRenaming] = useState<boolean>(false);
 
   function handleFocus() {
-    setDisplayedLocation(pointState);
+    onDisplay();
   }
 
   return (
@@ -31,15 +31,15 @@ export default function Point({
       <EditLocationButton
         className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
         location={pointState}
+        onDisplay={onDisplay}
+        onDelete={onDelete}
         setRenaming={setRenaming}
-        deleteLocation={deleteLocation}
-        setDisplayedLocation={setDisplayedLocation}
       />
       <LocationName
         location={pointState}
         renaming={renaming}
-        renameLocation={renameLocation}
         setRenaming={setRenaming}
+        rename={rename}
       />
     </div>
   );
