@@ -18,6 +18,7 @@ import {
   MouseEvent,
   SetStateAction,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
@@ -140,9 +141,11 @@ export function Input({
   setDisplayedLocation,
   setParentOutlined,
 }: InputProps) {
+  const componentRef = useRef<HTMLDivElement>();
+
   const placeholder =
     parentState.locationType === LocationType.Quiz
-      ? `Add ${locationType.toLowerCase()}`
+      ? `Add ${locationType.toLowerCase()} anywhere`
       : `Add ${locationType.toLowerCase()} in ${
           parentState.userDefinedName || parentState.shortName
         }`;
@@ -199,10 +202,19 @@ export function Input({
   }
 
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
+    if (
+      componentRef.current &&
+      componentRef.current.contains(event.relatedTarget as Node)
+    ) {
+      return;
+    }
+
     if (optionsClicked) {
       setOptionsClicked(false);
       return;
     }
+
+    console.log("focus");
 
     if (parentState.locationType === LocationType.Area) {
       setDisplayedLocation(parentState);
@@ -217,7 +229,12 @@ export function Input({
   }
 
   return (
-    <div className="relative" onFocus={handleFocus} onBlur={handleBlur}>
+    <div
+      ref={componentRef}
+      className="relative"
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+    >
       <ToggleLocationTypeButton
         locationType={locationType}
         setLocationType={setLocationType}

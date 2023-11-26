@@ -24,7 +24,7 @@ export function Sublocations({
     setParentState(newParentState);
   }
 
-  function setSublocation(sublocation) {
+  function useSetSublocation(sublocation: AreaState | PointState) {
     return (newSublocation: AreaState | PointState) => {
       const index = sublocations.findIndex((subloc) => subloc === sublocation);
 
@@ -38,19 +38,22 @@ export function Sublocations({
     };
   }
 
-  function toggleSublocationOpen(sublocation: AreaState) {
+  function useToggleSublocationOpen(sublocation: AreaState) {
     return () => {
       const newSublocation = { ...sublocation, open: !sublocation.open };
-      setSublocation(sublocation)(newSublocation);
+      setDisplayedLocation(newSublocation);
+      useSetSublocation(sublocation)(newSublocation);
     };
   }
 
-  function addSublocation(sublocation: AreaState | PointState) {
-    const newSublocations = [...sublocations, sublocation];
-    setSublocations(newSublocations);
+  function useRenameSublocation(sublocation: AreaState | PointState) {
+    return (name: string) => {
+      const newSublocation = { ...sublocation, userDefinedName: name };
+      useSetSublocation(sublocation)(newSublocation);
+    };
   }
 
-  function deleteSublocation(sublocation: AreaState | PointState) {
+  function useDeleteSublocation(sublocation: AreaState | PointState) {
     return () => {
       const newSublocations = sublocations.filter(
         (subloc) => subloc !== sublocation,
@@ -59,11 +62,9 @@ export function Sublocations({
     };
   }
 
-  function renameSublocation(sublocation: AreaState | PointState) {
-    return (name: string) => {
-      const newSublocation = { ...sublocation, userDefinedName: name };
-      setSublocation(sublocation)(newSublocation);
-    };
+  function addSublocation(sublocation: AreaState | PointState) {
+    const newSublocations = [...sublocations, sublocation];
+    setSublocations(newSublocations);
   }
 
   return (
@@ -74,11 +75,11 @@ export function Sublocations({
             <Area
               key={sublocation.placeId}
               areaState={sublocation}
-              setAreaState={setSublocation(sublocation)}
-              onToggleOpen={toggleSublocationOpen(sublocation)}
-              onDelete={deleteSublocation(sublocation)}
-              rename={renameSublocation(sublocation)}
-              onDisplay={() => setDisplayedLocation(sublocation)}
+              setAreaState={useSetSublocation(sublocation)}
+              onToggleOpen={useToggleSublocationOpen(sublocation)}
+              rename={useRenameSublocation(sublocation)}
+              onDelete={useDeleteSublocation(sublocation)}
+              setDisplayedLocation={setDisplayedLocation}
             />
           );
         }
@@ -88,9 +89,9 @@ export function Sublocations({
             <Point
               key={sublocation.placeId}
               pointState={sublocation}
-              onDisplay={() => setDisplayedLocation(sublocation)}
-              onDelete={() => deleteSublocation(sublocation)}
-              rename={renameSublocation(sublocation)}
+              rename={useRenameSublocation(sublocation)}
+              onDelete={useDeleteSublocation(sublocation)}
+              setDisplayedLocation={setDisplayedLocation}
             />
           );
         }

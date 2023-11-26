@@ -79,10 +79,6 @@ export default function QuizBuilder() {
     }
   }
 
-  useEffect(() => {
-    console.log(quiz);
-  }, [quiz]);
-
   return (
     <>
       {placesLoaded ? (

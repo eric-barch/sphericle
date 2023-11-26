@@ -5,21 +5,25 @@ import LocationName from "./LocationName";
 
 interface PointProps {
   pointState: PointState;
-  onDelete: () => void;
   rename: (name: string) => void;
-  onDisplay: () => void;
+  onDelete: () => void;
+  setDisplayedLocation: (pointState: PointState) => void;
 }
 
 export default function Point({
   pointState,
-  onDelete,
   rename,
-  onDisplay,
+  onDelete,
+  setDisplayedLocation,
 }: PointProps) {
   const [renaming, setRenaming] = useState<boolean>(false);
 
   function handleFocus() {
-    onDisplay();
+    handleDisplay();
+  }
+
+  function handleDisplay() {
+    setDisplayedLocation(pointState);
   }
 
   return (
@@ -31,9 +35,9 @@ export default function Point({
       <EditLocationButton
         className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
         location={pointState}
-        onDisplay={onDisplay}
-        onDelete={onDelete}
         setRenaming={setRenaming}
+        onDisplay={handleDisplay}
+        onDelete={onDelete}
       />
       <LocationName
         location={pointState}

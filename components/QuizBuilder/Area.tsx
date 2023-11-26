@@ -1,4 +1,4 @@
-import { AreaState } from "@/types";
+import { AreaState, PointState } from "@/types";
 import { Disclosure } from "@headlessui/react";
 import { KeyboardEvent, MouseEvent, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
@@ -9,19 +9,19 @@ import { Sublocations } from "./Sublocations";
 interface AreaProps {
   areaState: AreaState;
   setAreaState: (areaState: AreaState) => void;
-  onDisplay: () => void;
   onToggleOpen: () => void;
-  onDelete: () => void;
   rename: (name: string) => void;
+  onDelete: () => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function Area({
   areaState,
   setAreaState,
-  onDisplay,
   onToggleOpen,
-  onDelete,
   rename,
+  onDelete,
+  setDisplayedLocation,
 }: AreaProps) {
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
@@ -34,7 +34,7 @@ export default function Area({
     }
 
     setOutlined(true);
-    onDisplay();
+    handleDisplay();
   }
 
   function handleBlur() {
@@ -66,6 +66,10 @@ export default function Area({
     }
   }
 
+  function handleDisplay() {
+    setDisplayedLocation(areaState);
+  }
+
   return (
     <Disclosure defaultOpen={areaState.open}>
       <div className="relative">
@@ -73,8 +77,8 @@ export default function Area({
           className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
           location={areaState}
           setRenaming={setRenaming}
+          onDisplay={handleDisplay}
           onDelete={onDelete}
-          onDisplay={onDisplay}
         />
         <Disclosure.Button
           className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
@@ -104,7 +108,7 @@ export default function Area({
           className="ml-10"
           parentState={areaState}
           setParentState={setAreaState}
-          setDisplayedLocation={onDisplay}
+          setDisplayedLocation={setDisplayedLocation}
           setParentOutlined={setOutlined}
         />
       </Disclosure.Panel>
