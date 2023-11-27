@@ -1,5 +1,5 @@
 import { AreaState, PointState } from "@/types";
-import { Disclosure } from "@headlessui/react";
+import { Disclosure, Transition } from "@headlessui/react";
 import { KeyboardEvent, MouseEvent, useState, useRef } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
@@ -104,15 +104,17 @@ export default function Area({
           />
         </Disclosure.Button>
       </div>
-      <Disclosure.Panel>
-        <Sublocations
-          className="ml-10"
-          parentState={areaState}
-          setParentState={setAreaState}
-          setDisplayedLocation={setDisplayedLocation}
-          setParentOutlined={setOutlined}
-        />
-      </Disclosure.Panel>
+      <Transition>
+        <Disclosure.Panel>
+          <Sublocations
+            className="ml-10"
+            parentState={areaState}
+            setParentState={setAreaState}
+            setDisplayedLocation={setDisplayedLocation}
+            setParentOutlined={setOutlined}
+          />
+        </Disclosure.Panel>
+      </Transition>
     </Disclosure>
   );
 }
