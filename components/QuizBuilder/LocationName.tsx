@@ -1,5 +1,5 @@
 import { AreaState, PointState } from "@/types";
-import { useRef, useEffect, useState, KeyboardEvent, FocusEvent } from "react";
+import { FocusEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
 interface LocationTextProps {
   location: AreaState | PointState;
@@ -11,7 +11,7 @@ interface LocationTextProps {
 export default function LocationName({
   location,
   renaming,
-  rename: renameLocation,
+  rename,
   setRenaming,
 }: LocationTextProps) {
   const currentName = location.userDefinedName
@@ -25,7 +25,7 @@ export default function LocationName({
     if (event.key === "Enter") {
       event.preventDefault();
       event.stopPropagation();
-      renameLocation(newName);
+      rename(newName);
       setRenaming(false);
     }
 

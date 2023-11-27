@@ -1,4 +1,6 @@
 import { AreaState, LocationType, PointState, Quiz } from "@/types";
+import { AnimatePresence, Reorder } from "framer-motion";
+import { useState } from "react";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 import Point from "./Point";
@@ -38,12 +40,14 @@ export function Sublocations({
     };
   }
 
-  function useToggleSublocationOpen(sublocation: AreaState) {
-    return () => {
-      const newSublocation = { ...sublocation, open: !sublocation.open };
-      setDisplayedLocation(newSublocation);
-      useSetSublocation(sublocation)(newSublocation);
-    };
+  function useToggleSublocationOpen(sublocation: AreaState | PointState) {
+    if (sublocation.locationType === LocationType.Area) {
+      return () => {
+        const newSublocation = { ...sublocation, open: !sublocation.open };
+        setDisplayedLocation(newSublocation);
+        useSetSublocation(sublocation)(newSublocation);
+      };
+    }
   }
 
   function useRenameSublocation(sublocation: AreaState | PointState) {
@@ -69,41 +73,83 @@ export function Sublocations({
 
   return (
     <div className={`${className ? className : ""} space-y-1 h-full`}>
-      {parentState.sublocations.map((sublocation) => {
-        if (sublocation.locationType === LocationType.Area) {
-          return (
-            <Area
+      <AnimatePresence>
+        <Reorder.Group
+          className="mt-1 space-y-1"
+          axis="y"
+          values={sublocations}
+          onReorder={setSublocations}
+        >
+          {sublocations.map((sublocation) => (
+            <Reorder.Item
               key={sublocation.placeId}
-              areaState={sublocation}
-              setAreaState={useSetSublocation(sublocation)}
-              onToggleOpen={useToggleSublocationOpen(sublocation)}
-              rename={useRenameSublocation(sublocation)}
-              onDelete={useDeleteSublocation(sublocation)}
-              setDisplayedLocation={setDisplayedLocation}
-            />
-          );
-        }
-
-        if (sublocation.locationType === LocationType.Point) {
-          return (
-            <Point
-              key={sublocation.placeId}
-              pointState={sublocation}
-              rename={useRenameSublocation(sublocation)}
-              onDelete={useDeleteSublocation(sublocation)}
-              setDisplayedLocation={setDisplayedLocation}
-            />
-          );
-        }
-
-        return null;
-      })}
-      <LocationAdder
-        parentState={parentState}
-        addLocation={addSublocation}
-        setDisplayedLocation={setDisplayedLocation}
-        setParentOutlined={setParentOutlined}
-      />
+              value={sublocation}
+              transition={{ duration: 0 }}
+            >
+              <Sublocation
+                sublocation={sublocation}
+                setSublocation={useSetSublocation(sublocation)}
+                onToggleOpen={useToggleSublocationOpen(sublocation)}
+                rename={useRenameSublocation(sublocation)}
+                onDelete={useDeleteSublocation(sublocation)}
+                setDisplayedLocation={setDisplayedLocation}
+              />
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+        <LocationAdder
+          parentState={parentState}
+          addLocation={addSublocation}
+          setDisplayedLocation={setDisplayedLocation}
+          setParentOutlined={setParentOutlined}
+        />
+      </AnimatePresence>
     </div>
   );
+}
+
+interface SublocationProps {
+  sublocation: AreaState | PointState;
+  setSublocation: (sublocation: AreaState | PointState) => void;
+  onToggleOpen: () => void;
+  rename: (name: string) => void;
+  onDelete: () => void;
+  setDisplayedLocation: (location: AreaState | PointState | null) => void;
+}
+
+function Sublocation({
+  sublocation,
+  setSublocation,
+  onToggleOpen,
+  rename,
+  onDelete,
+  setDisplayedLocation,
+}: SublocationProps) {
+  if (sublocation.locationType === LocationType.Area) {
+    return (
+      <Area
+        key={sublocation.placeId}
+        areaState={sublocation}
+        setAreaState={setSublocation}
+        onToggleOpen={onToggleOpen}
+        rename={rename}
+        onDelete={onDelete}
+        setDisplayedLocation={setDisplayedLocation}
+      />
+    );
+  }
+
+  if (sublocation.locationType === LocationType.Point) {
+    return (
+      <Point
+        key={sublocation.placeId}
+        pointState={sublocation}
+        rename={rename}
+        onDelete={onDelete}
+        setDisplayedLocation={setDisplayedLocation}
+      />
+    );
+  }
+
+  return null;
 }
