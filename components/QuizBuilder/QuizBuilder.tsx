@@ -4,6 +4,7 @@ import SplitPane from "@/components/SplitPane";
 import { AreaState, LocationType, PointState, Quiz } from "@/types";
 import { useEffect, useState } from "react";
 import { Sublocations } from "./Sublocations";
+import Link from "next/link";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
@@ -92,11 +93,12 @@ export default function QuizBuilder() {
               setDisplayedLocation={setDisplayedLocation}
               setParentOutlined={() => {}}
             />
-            <FloatingActionButton
-              className="absolute bottom-0 right-0"
-              text="Take Quiz"
-              onClick={() => {}}
-            />
+            <Link
+              className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
+              href="/take-quiz"
+            >
+              Take Quiz
+            </Link>
           </div>
           <Map
             mapId="696d0ea42431a75c"
