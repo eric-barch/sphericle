@@ -1,4 +1,3 @@
-import FloatingActionButton from "@/components/FloatingActionButton";
 import Map from "@/components/Map";
 import SplitPane from "@/components/SplitPane";
 import { AreaState, LocationType, PointState, Quiz } from "@/types";
