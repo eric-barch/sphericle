@@ -72,7 +72,7 @@ export default function LocationAdder({
   return (
     <Combobox onChange={handleChange}>
       {({ activeOption }) => (
-        <>
+        <div className="relative">
           <Input
             parentState={parentState}
             input={input}
@@ -102,7 +102,7 @@ export default function LocationAdder({
             setDisplayedLocation={setDisplayedLocation}
             setOptionsClicked={setOptionsClicked}
           />
-        </>
+        </div>
       )}
     </Combobox>
   );
@@ -334,17 +334,17 @@ export function Options({
   const comboboxContent = (() => {
     if (locationType === LocationType.Area) {
       if (input !== areaSearchTerm) {
-        return <div className="pl-6">Press Enter to Search</div>;
+        return <div className="pl-7 p-1">Press Enter to Search</div>;
       } else if (areaSearchStatus === SearchStatus.Searching) {
-        return <div className="pl-6">Searching...</div>;
+        return <div className="pl-7 p-1">Searching...</div>;
       } else if (areaSearchResults.length < 1) {
-        return <div className="pl-6">No results found.</div>;
+        return <div className="pl-7 p-1">No results found.</div>;
       } else {
         return areaSearchResults.map((searchResult: AreaState) => (
           <Combobox.Option key={searchResult.placeId} value={searchResult}>
             {({ active }) => (
               <div
-                className={`p-1 pl-6 rounded-3xl cursor-pointer ${
+                className={`p-1 pl-7 rounded-3xl cursor-pointer ${
                   active ? "bg-gray-600" : ""
                 }`}
               >
@@ -356,13 +356,13 @@ export function Options({
       }
     } else if (locationType === LocationType.Point) {
       if (pointSearchResults.length < 1) {
-        return <div className="pl-6">No results found.</div>;
+        return <div className="p-1 pl-7">No results found.</div>;
       } else {
         return pointSearchResults.map((searchResult: PointState) => (
           <Combobox.Option key={searchResult.placeId} value={searchResult}>
             {({ active }) => (
               <div
-                className={`p-1 pl-6 rounded-3xl cursor-pointer ${
+                className={`p-1 pl-7 rounded-3xl cursor-pointer ${
                   active ? "bg-gray-600" : ""
                 }`}
               >
@@ -395,7 +395,7 @@ export function Options({
 
     return (
       <Combobox.Options
-        className="bg-gray-500 rounded-3xl p-2 mt-1 mb-1"
+        className="absolute w-full z-10 left-0 bg-gray-500 rounded-custom p-1 space-y-1"
         static
         onClick={handleClick}
       >
