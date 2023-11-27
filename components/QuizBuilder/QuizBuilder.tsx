@@ -1,3 +1,4 @@
+import FloatingActionButton from "@/components/FloatingActionButton";
 import Map from "@/components/Map";
 import SplitPane from "@/components/SplitPane";
 import { AreaState, LocationType, PointState, Quiz } from "@/types";
@@ -83,13 +84,20 @@ export default function QuizBuilder() {
     <>
       {placesLoaded ? (
         <SplitPane>
-          <Sublocations
-            className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
-            parentState={quiz}
-            setParentState={setQuiz}
-            setDisplayedLocation={setDisplayedLocation}
-            setParentOutlined={() => {}}
-          />
+          <div className="relative h-full">
+            <Sublocations
+              className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
+              parentState={quiz}
+              setParentState={setQuiz}
+              setDisplayedLocation={setDisplayedLocation}
+              setParentOutlined={() => {}}
+            />
+            <FloatingActionButton
+              className="absolute bottom-0 right-0"
+              text="Take Quiz"
+              onClick={() => {}}
+            />
+          </div>
           <Map
             mapId="696d0ea42431a75c"
             bounds={bounds}
