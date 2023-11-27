@@ -214,8 +214,6 @@ export function Input({
       return;
     }
 
-    console.log("focus");
-
     if (parentState.locationType === LocationType.Area) {
       setDisplayedLocation(parentState);
       setParentOutlined(true);
@@ -225,6 +223,13 @@ export function Input({
   }
 
   function handleBlur(event: FocusEvent<HTMLDivElement>) {
+    if (
+      componentRef.current &&
+      componentRef.current.contains(event.relatedTarget as Node)
+    ) {
+      return;
+    }
+
     setParentOutlined(false);
   }
 

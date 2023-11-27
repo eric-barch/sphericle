@@ -1,6 +1,5 @@
 import { AreaState, LocationType, PointState, Quiz } from "@/types";
-import { AnimatePresence, Reorder } from "framer-motion";
-import { useState } from "react";
+import { Reorder } from "framer-motion";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 import Point from "./Point";
@@ -73,37 +72,36 @@ export function Sublocations({
 
   return (
     <div className={`${className ? className : ""} space-y-1 h-full`}>
-      <AnimatePresence>
-        <Reorder.Group
-          className="mt-1 space-y-1"
-          axis="y"
-          values={sublocations}
-          onReorder={setSublocations}
-        >
-          {sublocations.map((sublocation) => (
-            <Reorder.Item
-              key={sublocation.placeId}
-              value={sublocation}
-              transition={{ duration: 0 }}
-            >
-              <Sublocation
-                sublocation={sublocation}
-                setSublocation={useSetSublocation(sublocation)}
-                onToggleOpen={useToggleSublocationOpen(sublocation)}
-                rename={useRenameSublocation(sublocation)}
-                onDelete={useDeleteSublocation(sublocation)}
-                setDisplayedLocation={setDisplayedLocation}
-              />
-            </Reorder.Item>
-          ))}
-        </Reorder.Group>
-        <LocationAdder
-          parentState={parentState}
-          addLocation={addSublocation}
-          setDisplayedLocation={setDisplayedLocation}
-          setParentOutlined={setParentOutlined}
-        />
-      </AnimatePresence>
+      <Reorder.Group
+        className="mt-1 space-y-1"
+        axis="y"
+        values={sublocations}
+        onReorder={setSublocations}
+      >
+        {sublocations.map((sublocation) => (
+          <Reorder.Item
+            key={sublocation.placeId}
+            layout="position"
+            layoutScroll
+            value={sublocation}
+          >
+            <Sublocation
+              sublocation={sublocation}
+              setSublocation={useSetSublocation(sublocation)}
+              onToggleOpen={useToggleSublocationOpen(sublocation)}
+              rename={useRenameSublocation(sublocation)}
+              onDelete={useDeleteSublocation(sublocation)}
+              setDisplayedLocation={setDisplayedLocation}
+            />
+          </Reorder.Item>
+        ))}
+      </Reorder.Group>
+      <LocationAdder
+        parentState={parentState}
+        addLocation={addSublocation}
+        setDisplayedLocation={setDisplayedLocation}
+        setParentOutlined={setParentOutlined}
+      />
     </div>
   );
 }
