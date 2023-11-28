@@ -1,9 +1,10 @@
 import Map from "@/components/Map";
 import SplitPane from "@/components/SplitPane";
 import { AreaState, LocationType, PointState, Quiz } from "@/types";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Sublocations } from "./Sublocations";
-import Link from "next/link";
+import { useQuiz, useSetQuiz } from "@/components/QuizContext";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
@@ -13,10 +14,8 @@ export default function QuizBuilder() {
   const [emptyAreas, setEmptyAreas] = useState<AreaState[]>([]);
   const [filledAreas, setFilledAreas] = useState<AreaState[]>([]);
   const [markers, setMarkers] = useState<PointState[]>([]);
-  const [quiz, setQuiz] = useState<Quiz | AreaState>({
-    locationType: LocationType.Quiz,
-    sublocations: [],
-  });
+  const quiz = useQuiz();
+  const setQuiz = useSetQuiz();
 
   useEffect(() => {
     async function loadPlacesLibrary() {

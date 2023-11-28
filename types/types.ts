@@ -1,6 +1,6 @@
 import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Point, Polygon } from "geojson";
-import { LocationType } from "./enums";
+import { DispatchType, LocationType } from "./enums";
 
 export interface AreaState {
   parentLocation: Quiz | AreaState;
@@ -47,4 +47,24 @@ export interface PointState {
 export interface Quiz {
   locationType: LocationType.Quiz;
   sublocations: (AreaState | PointState)[];
+}
+
+export interface Dispatch {
+  type: DispatchType;
+}
+
+export interface AddLocationDispatch extends Dispatch {
+  type: DispatchType.Added;
+  parentId: string;
+  location: AreaState | PointState;
+}
+
+export interface ChangeLocationDispatch extends Dispatch {
+  type: DispatchType.Changed;
+  location: AreaState | PointState;
+}
+
+export interface DeleteLocationDispatch extends Dispatch {
+  type: DispatchType.Deleted;
+  location: AreaState | PointState;
 }
