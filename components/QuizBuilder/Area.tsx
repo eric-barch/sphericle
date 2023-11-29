@@ -1,6 +1,7 @@
-import { AreaState, PointState } from "@/types";
+import { useQuiz, useSetQuiz } from "@/components/QuizContext";
+import { AreaState } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
-import { KeyboardEvent, MouseEvent, useState, useRef } from "react";
+import { KeyboardEvent, MouseEvent, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
@@ -12,7 +13,6 @@ interface AreaProps {
   onToggleOpen: () => void;
   rename: (name: string) => void;
   onDelete: () => void;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
 export default function Area({
@@ -21,25 +21,25 @@ export default function Area({
   onToggleOpen,
   rename,
   onDelete,
-  setDisplayedLocation,
 }: AreaProps) {
+  const quiz = useQuiz();
+  const setQuiz = useSetQuiz();
+
   const areaRef = useRef<HTMLDivElement>(null);
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
   const [renaming, setRenaming] = useState<boolean>(false);
-  const [outlined, setOutlined] = useState<boolean>(false);
 
   function handleFocus() {
     if (!mouseDown) {
       setWillToggle(true);
     }
 
-    setOutlined(true);
-    handleDisplay();
+    setQuiz({ ...quiz, selectedSublocation: areaState });
   }
 
   function handleBlur() {
-    setOutlined(false);
+    setQuiz({ ...quiz, selectedSublocation: null });
     setWillToggle(false);
   }
 
@@ -67,10 +67,6 @@ export default function Area({
     }
   }
 
-  function handleDisplay() {
-    setDisplayedLocation(areaState);
-  }
-
   return (
     <Disclosure defaultOpen={areaState.open}>
       <div ref={areaRef} className="relative">
@@ -78,12 +74,13 @@ export default function Area({
           className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
           location={areaState}
           setRenaming={setRenaming}
-          onDisplay={handleDisplay}
           onDelete={onDelete}
         />
         <Disclosure.Button
           className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
-            outlined ? "outline outline-2 outline-red-600" : ""
+            quiz.selectedSublocation?.placeId === areaState.placeId
+              ? "outline outline-2 outline-red-600"
+              : ""
           }`}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -110,8 +107,6 @@ export default function Area({
             className="ml-10"
             parentState={areaState}
             setParentState={setAreaState}
-            setDisplayedLocation={setDisplayedLocation}
-            setParentOutlined={setOutlined}
           />
         </Disclosure.Panel>
       </Transition>

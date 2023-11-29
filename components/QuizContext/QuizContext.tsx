@@ -1,8 +1,7 @@
 import { LocationType, Quiz } from "@/types";
 import { ReactNode, createContext, useContext, useState } from "react";
 
-const QuizContext = createContext<Quiz>(null);
-
+const QuizContext = createContext(null);
 const SetQuizContext = createContext(null);
 
 export function QuizProvider({ children }: { children: ReactNode }) {
@@ -17,15 +16,16 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useQuiz() {
+export function useQuiz(): Quiz {
   return useContext(QuizContext);
 }
 
-export function useSetQuiz() {
+export function useSetQuiz(): (quiz: Quiz) => void {
   return useContext(SetQuizContext);
 }
 
 const initialQuiz = {
   locationType: LocationType.Quiz as LocationType.Quiz,
   sublocations: [],
+  selectedSublocation: null,
 };

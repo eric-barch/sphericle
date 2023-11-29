@@ -1,6 +1,12 @@
 import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Point, Polygon } from "geojson";
-import { DispatchType, LocationType } from "./enums";
+import { LocationType } from "./enums";
+
+export interface Quiz {
+  locationType: LocationType.Quiz;
+  sublocations: (AreaState | PointState)[];
+  selectedSublocation: AreaState | PointState | null;
+}
 
 export interface AreaState {
   parentLocation: Quiz | AreaState;
@@ -14,6 +20,16 @@ export interface AreaState {
   displayBounds: google.maps.LatLngBoundsLiteral;
   searchBounds: google.maps.LatLngBoundsLiteral;
   sublocations: (AreaState | PointState)[];
+}
+
+export interface PointState {
+  parentLocation: Quiz | AreaState;
+  locationType: LocationType.Point;
+  placeId: string;
+  shortName: string;
+  longName: string;
+  userDefinedName: string;
+  point: Point;
 }
 
 export interface OpenStreetMapResponseItem {
@@ -32,39 +48,4 @@ export interface OpenStreetMapResponseItem {
   display_name: string;
   boundingbox: number[];
   geojson: AllGeoJSON;
-}
-
-export interface PointState {
-  parentLocation: Quiz | AreaState;
-  locationType: LocationType.Point;
-  placeId: string;
-  shortName: string;
-  longName: string;
-  userDefinedName: string;
-  point: Point;
-}
-
-export interface Quiz {
-  locationType: LocationType.Quiz;
-  sublocations: (AreaState | PointState)[];
-}
-
-export interface Dispatch {
-  type: DispatchType;
-}
-
-export interface AddLocationDispatch extends Dispatch {
-  type: DispatchType.Added;
-  parentId: string;
-  location: AreaState | PointState;
-}
-
-export interface ChangeLocationDispatch extends Dispatch {
-  type: DispatchType.Changed;
-  location: AreaState | PointState;
-}
-
-export interface DeleteLocationDispatch extends Dispatch {
-  type: DispatchType.Deleted;
-  location: AreaState | PointState;
 }

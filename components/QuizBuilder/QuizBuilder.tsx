@@ -1,10 +1,10 @@
 import Map from "@/components/Map";
+import { useQuiz, useSetQuiz } from "@/components/QuizContext";
 import SplitPane from "@/components/SplitPane";
-import { AreaState, LocationType, PointState, Quiz } from "@/types";
+import { AreaState, LocationType, PointState } from "@/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Sublocations } from "./Sublocations";
-import { useQuiz, useSetQuiz } from "@/components/QuizContext";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
@@ -88,8 +88,6 @@ export default function QuizBuilder() {
               className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
               parentState={quiz}
               setParentState={setQuiz}
-              setDisplayedLocation={setDisplayedLocation}
-              setParentOutlined={() => {}}
             />
             <Link
               className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"

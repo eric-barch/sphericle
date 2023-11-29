@@ -1,8 +1,8 @@
 import Map from "@/components/Map";
 import { useQuiz } from "@/components/QuizContext";
-import { AreaState, PointState } from "@/types";
+import { AreaState, LocationType, PointState } from "@/types";
 import { useEffect, useState } from "react";
-import InputBox from "./InputBox";
+import AnswerBox from "./AnswerBox";
 
 interface QuizTakerProps {}
 
@@ -30,8 +30,6 @@ export default function QuizTaker({}: QuizTakerProps) {
     }
 
     loadPlacesLibrary();
-
-    console.log(quiz);
   }, []);
 
   return (
@@ -45,7 +43,7 @@ export default function QuizTaker({}: QuizTakerProps) {
             filledAreas={filledAreas}
             markers={markers}
           />
-          <InputBox />
+          <AnswerBox />
         </div>
       ) : (
         "Loading..."

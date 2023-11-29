@@ -8,9 +8,3 @@ export enum SearchStatus {
   Searching = "Searching",
   Searched = "Searched",
 }
-
-export enum DispatchType {
-  Added = "added",
-  Changed = "changed",
-  Deleted = "deleted",
-}

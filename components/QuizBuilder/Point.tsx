@@ -2,33 +2,31 @@ import { PointState } from "@/types";
 import { useState } from "react";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
+import { useQuiz, useSetQuiz } from "../QuizContext";
 
 interface PointProps {
   pointState: PointState;
   rename: (name: string) => void;
   onDelete: () => void;
-  setDisplayedLocation: (pointState: PointState) => void;
 }
 
-export default function Point({
-  pointState,
-  rename,
-  onDelete,
-  setDisplayedLocation,
-}: PointProps) {
+export default function Point({ pointState, rename, onDelete }: PointProps) {
+  const quiz = useQuiz();
+  const setQuiz = useSetQuiz();
+
   const [renaming, setRenaming] = useState<boolean>(false);
 
   function handleFocus() {
-    handleDisplay();
-  }
-
-  function handleDisplay() {
-    setDisplayedLocation(pointState);
+    setQuiz({ ...quiz, selectedSublocation: pointState });
   }
 
   return (
     <div
-      className="relative w-full py-1 px-1 rounded-3xl text-left bg-gray-600 cursor-pointer focus:outline focus:outline-2 focus:outline-red-600"
+      className={`relative w-full py-1 px-1 rounded-3xl text-left bg-gray-600 cursor-pointer ${
+        quiz.selectedSublocation?.placeId === pointState.placeId
+          ? "outline outline-2 outline-red-600"
+          : ""
+      }`}
       tabIndex={0}
       onFocus={handleFocus}
     >
@@ -36,7 +34,6 @@ export default function Point({
         className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
         location={pointState}
         setRenaming={setRenaming}
-        onDisplay={handleDisplay}
         onDelete={onDelete}
       />
       <LocationName

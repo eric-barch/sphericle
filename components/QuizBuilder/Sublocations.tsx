@@ -1,3 +1,4 @@
+import { useQuiz, useSetQuiz } from "@/components/QuizContext";
 import { AreaState, LocationType, PointState, Quiz } from "@/types";
 import { Reorder } from "framer-motion";
 import Area from "./Area";
@@ -8,16 +9,12 @@ interface SublocationsProps {
   className?: string;
   parentState: Quiz | AreaState;
   setParentState: (parentState: Quiz | AreaState) => void;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
-  setParentOutlined: (outlined: boolean) => void;
 }
 
 export function Sublocations({
   className,
   parentState,
   setParentState,
-  setDisplayedLocation,
-  setParentOutlined,
 }: SublocationsProps) {
   const sublocations = parentState.sublocations;
   function setSublocations(sublocations: (AreaState | PointState)[]) {
@@ -43,7 +40,6 @@ export function Sublocations({
     if (sublocation.locationType === LocationType.Area) {
       return () => {
         const newSublocation = { ...sublocation, open: !sublocation.open };
-        setDisplayedLocation(newSublocation);
         useSetSublocation(sublocation)(newSublocation);
       };
     }
@@ -91,17 +87,11 @@ export function Sublocations({
               onToggleOpen={useToggleSublocationOpen(sublocation)}
               rename={useRenameSublocation(sublocation)}
               onDelete={useDeleteSublocation(sublocation)}
-              setDisplayedLocation={setDisplayedLocation}
             />
           </Reorder.Item>
         ))}
       </Reorder.Group>
-      <LocationAdder
-        parentState={parentState}
-        addLocation={addSublocation}
-        setDisplayedLocation={setDisplayedLocation}
-        setParentOutlined={setParentOutlined}
-      />
+      <LocationAdder parentState={parentState} addLocation={addSublocation} />
     </div>
   );
 }
@@ -112,7 +102,6 @@ interface SublocationProps {
   onToggleOpen: () => void;
   rename: (name: string) => void;
   onDelete: () => void;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
 }
 
 function Sublocation({
@@ -121,7 +110,6 @@ function Sublocation({
   onToggleOpen,
   rename,
   onDelete,
-  setDisplayedLocation,
 }: SublocationProps) {
   if (sublocation.locationType === LocationType.Area) {
     return (
@@ -132,7 +120,6 @@ function Sublocation({
         onToggleOpen={onToggleOpen}
         rename={rename}
         onDelete={onDelete}
-        setDisplayedLocation={setDisplayedLocation}
       />
     );
   }
@@ -144,7 +131,6 @@ function Sublocation({
         pointState={sublocation}
         rename={rename}
         onDelete={onDelete}
-        setDisplayedLocation={setDisplayedLocation}
       />
     );
   }

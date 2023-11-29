@@ -2,13 +2,13 @@ import { AreaState, PointState } from "@/types";
 import { Menu } from "@headlessui/react";
 import { FocusEvent, MouseEvent, RefObject } from "react";
 import { FaEllipsisVertical } from "react-icons/fa6";
+import { useQuiz, useSetQuiz } from "../QuizContext";
 
 interface EditLocationButtonProps {
   className?: string;
   location: AreaState | PointState;
   setRenaming: (renaming: boolean) => void;
   onDelete: (location: AreaState | PointState | null) => void;
-  onDisplay: (location: AreaState | PointState | null) => void;
 }
 
 export default function EditLocationButton({
@@ -16,10 +16,12 @@ export default function EditLocationButton({
   location,
   setRenaming,
   onDelete: deleteLocation,
-  onDisplay: setDisplayedLocation,
 }: EditLocationButtonProps) {
+  const quiz = useQuiz();
+  const setQuiz = useSetQuiz();
+
   function handleFocus(event: FocusEvent<HTMLButtonElement>) {
-    setDisplayedLocation(location);
+    setQuiz({ ...quiz, selectedSublocation: location });
   }
 
   function handleRenameClick(event: MouseEvent<HTMLDivElement>) {

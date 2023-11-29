@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuiz, useSetQuiz } from "@/components/QuizContext";
 import useAreaSearch from "@/hooks/use-area-search.hook";
 import usePointSearch from "@/hooks/use-point-search.hook";
 import {
@@ -26,15 +27,11 @@ import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 interface LocationAdderProps {
   parentState: Quiz | AreaState;
   addLocation: (location: AreaState | PointState) => void;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
-  setParentOutlined: (parentOutlined: boolean) => void;
 }
 
 export default function LocationAdder({
   parentState,
   addLocation,
-  setDisplayedLocation,
-  setParentOutlined,
 }: LocationAdderProps) {
   const [locationType, setLocationType] = useState<LocationType>(
     LocationType.Area,
@@ -86,8 +83,6 @@ export default function LocationAdder({
             setPointSearchTerm={setPointSearchTerm}
             resetPointSearch={resetPointSearch}
             setOptionsClicked={setOptionsClicked}
-            setDisplayedLocation={setDisplayedLocation}
-            setParentOutlined={setParentOutlined}
           />
           <Options
             activeOption={activeOption}
@@ -99,7 +94,6 @@ export default function LocationAdder({
             pointSearchTerm={pointSearchTerm}
             pointSearchStatus={pointSearchStatus}
             pointSearchResults={pointSearchResults}
-            setDisplayedLocation={setDisplayedLocation}
             setOptionsClicked={setOptionsClicked}
           />
         </div>
@@ -121,8 +115,6 @@ interface InputProps {
   setPointSearchTerm: (searchTerm: string) => void;
   resetPointSearch: () => void;
   setOptionsClicked: (optionsClicked: boolean) => void;
-  setDisplayedLocation: (displayedLocation: AreaState | PointState) => void;
-  setParentOutlined: (parentOutlined: boolean) => void;
 }
 
 export function Input({
@@ -138,10 +130,11 @@ export function Input({
   setPointSearchTerm,
   resetPointSearch,
   setOptionsClicked,
-  setDisplayedLocation,
-  setParentOutlined,
 }: InputProps) {
   const componentRef = useRef<HTMLDivElement>();
+
+  const quiz = useQuiz();
+  const setQuiz = useSetQuiz();
 
   const placeholder =
     parentState.locationType === LocationType.Quiz
@@ -215,10 +208,9 @@ export function Input({
     }
 
     if (parentState.locationType === LocationType.Area) {
-      setDisplayedLocation(parentState);
-      setParentOutlined(true);
+      setQuiz({ ...quiz, selectedSublocation: parentState });
     } else {
-      setDisplayedLocation(null);
+      setQuiz({ ...quiz, selectedSublocation: null });
     }
   }
 
@@ -230,7 +222,7 @@ export function Input({
       return;
     }
 
-    setParentOutlined(false);
+    setQuiz({ ...quiz, selectedSublocation: null });
   }
 
   return (
@@ -310,7 +302,6 @@ interface OptionsProps {
   pointSearchStatus: SearchStatus;
   pointSearchResults: PointState[] | null;
   activeOption: AreaState | PointState | null;
-  setDisplayedLocation: (location: AreaState | PointState | null) => void;
   setOptionsClicked: (optionsClicked: boolean) => void;
 }
 
@@ -324,9 +315,11 @@ export function Options({
   pointSearchStatus,
   pointSearchResults,
   activeOption,
-  setDisplayedLocation,
   setOptionsClicked,
 }: OptionsProps) {
+  const quiz = useQuiz();
+  const setQuiz = useSetQuiz();
+
   function handleClick(event: MouseEvent<HTMLUListElement>) {
     setOptionsClicked(true);
   }
@@ -407,7 +400,7 @@ export function Options({
   // TODO: consider refactoring out this useEffect
   useEffect(() => {
     if (activeOption) {
-      setDisplayedLocation(activeOption);
+      setQuiz({ ...quiz, selectedSublocation: activeOption });
     }
   }, [activeOption]);
 
