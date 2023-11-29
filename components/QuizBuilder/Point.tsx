@@ -2,7 +2,7 @@ import { PointState } from "@/types";
 import { useState } from "react";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
-import { useQuiz, useSetQuiz } from "../QuizProvider";
+import { useQuiz, useQuizDispatch } from "../QuizProvider";
 
 interface PointProps {
   pointState: PointState;
@@ -12,7 +12,7 @@ interface PointProps {
 
 export default function Point({ pointState, rename, onDelete }: PointProps) {
   const quiz = useQuiz();
-  const setQuiz = useSetQuiz();
+  const setQuiz = useQuizDispatch();
 
   const [renaming, setRenaming] = useState<boolean>(false);
 
@@ -23,7 +23,8 @@ export default function Point({ pointState, rename, onDelete }: PointProps) {
   return (
     <div
       className={`relative w-full py-1 px-1 rounded-3xl text-left bg-gray-600 cursor-pointer ${
-        quiz.selectedSublocation?.placeId === pointState.placeId
+        quiz.selectedSublocationId &&
+        quiz.selectedSublocationId === pointState.id
           ? "outline outline-2 outline-red-600"
           : ""
       }`}

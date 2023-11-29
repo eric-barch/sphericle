@@ -3,15 +3,17 @@ import { MultiPolygon, Point, Polygon } from "geojson";
 import { LocationType } from "./enums";
 
 export interface Quiz {
+  id: string;
   locationType: LocationType.Quiz;
   sublocations: (AreaState | PointState)[];
-  selectedSublocation: AreaState | PointState | null;
+  selectedSublocationId: string;
 }
 
 export interface AreaState {
+  id: string;
+  openStreetMapPlaceId: number;
   parentLocation: Quiz | AreaState;
   locationType: LocationType.Area;
-  placeId: number;
   shortName: string;
   longName: string;
   userDefinedName: string;
@@ -23,9 +25,10 @@ export interface AreaState {
 }
 
 export interface PointState {
+  id: string;
+  googlePlaceId: string;
   parentLocation: Quiz | AreaState;
   locationType: LocationType.Point;
-  placeId: string;
   shortName: string;
   longName: string;
   userDefinedName: string;

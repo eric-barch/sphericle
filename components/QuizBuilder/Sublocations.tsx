@@ -1,4 +1,4 @@
-import { useQuiz, useSetQuiz } from "@/components/QuizProvider";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, PointState, Quiz } from "@/types";
 import { Reorder } from "framer-motion";
 import Area from "./Area";
@@ -17,7 +17,7 @@ export function Sublocations({
   setParentState,
 }: SublocationsProps) {
   const quiz = useQuiz();
-  const setQuiz = useSetQuiz();
+  const setQuiz = useQuizDispatch();
 
   const sublocations = parentState.sublocations;
   function setSublocations(sublocations: (AreaState | PointState)[]) {
@@ -102,7 +102,7 @@ export function Sublocations({
       >
         {sublocations.map((sublocation) => (
           <Reorder.Item
-            key={sublocation.placeId}
+            key={sublocation.id}
             layout="position"
             layoutScroll
             value={sublocation}
@@ -140,7 +140,7 @@ function Sublocation({
   if (sublocation.locationType === LocationType.Area) {
     return (
       <Area
-        key={sublocation.placeId}
+        key={sublocation.openStreetMapPlaceId}
         areaState={sublocation}
         setAreaState={setSublocation}
         onToggleOpen={onToggleOpen}
@@ -153,7 +153,7 @@ function Sublocation({
   if (sublocation.locationType === LocationType.Point) {
     return (
       <Point
-        key={sublocation.placeId}
+        key={sublocation.googlePlaceId}
         pointState={sublocation}
         rename={rename}
         onDelete={onDelete}

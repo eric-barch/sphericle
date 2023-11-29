@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuiz, useSetQuiz } from "@/components/QuizProvider";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import useAreaSearch from "@/hooks/use-area-search.hook";
 import usePointSearch from "@/hooks/use-point-search.hook";
 import {
@@ -134,7 +134,7 @@ export function Input({
   const componentRef = useRef<HTMLDivElement>();
 
   const quiz = useQuiz();
-  const setQuiz = useSetQuiz();
+  const setQuiz = useQuizDispatch();
 
   const placeholder =
     parentState.locationType === LocationType.Quiz
@@ -318,7 +318,7 @@ export function Options({
   setOptionsClicked,
 }: OptionsProps) {
   const quiz = useQuiz();
-  const setQuiz = useSetQuiz();
+  const setQuiz = useQuizDispatch();
 
   function handleClick(event: MouseEvent<HTMLUListElement>) {
     setOptionsClicked(true);
@@ -334,7 +334,10 @@ export function Options({
         return <div className="pl-7 p-1">No results found.</div>;
       } else {
         return areaSearchResults.map((searchResult: AreaState) => (
-          <Combobox.Option key={searchResult.placeId} value={searchResult}>
+          <Combobox.Option
+            key={searchResult.openStreetMapPlaceId}
+            value={searchResult}
+          >
             {({ active }) => (
               <div
                 className={`p-1 pl-7 rounded-3xl cursor-pointer ${
@@ -352,7 +355,10 @@ export function Options({
         return <div className="p-1 pl-7">No results found.</div>;
       } else {
         return pointSearchResults.map((searchResult: PointState) => (
-          <Combobox.Option key={searchResult.placeId} value={searchResult}>
+          <Combobox.Option
+            key={searchResult.googlePlaceId}
+            value={searchResult}
+          >
             {({ active }) => (
               <div
                 className={`p-1 pl-7 rounded-3xl cursor-pointer ${

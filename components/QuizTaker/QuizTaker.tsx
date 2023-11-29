@@ -1,5 +1,5 @@
 import Map from "@/components/Map";
-import { useQuiz } from "@/components/QuizProvider";
+import { useGetLocation, useQuiz } from "@/components/QuizProvider";
 import { useEffect, useState } from "react";
 import AnswerBox from "./AnswerBox";
 
@@ -7,7 +7,9 @@ interface QuizTakerProps {}
 
 export default function QuizTaker({}: QuizTakerProps) {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
+
   const quiz = useQuiz();
+  const getLocation = useGetLocation();
 
   useEffect(() => {
     async function loadPlacesLibrary() {
@@ -28,7 +30,7 @@ export default function QuizTaker({}: QuizTakerProps) {
         <div className="h-[calc(100vh-48px)] relative flex justify-center content-center">
           <Map
             mapId="8777b9e5230900fc"
-            displayedLocation={quiz.selectedSublocation}
+            displayedLocation={getLocation(quiz.selectedSublocationId)}
           />
           <AnswerBox />
         </div>

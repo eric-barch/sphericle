@@ -74,9 +74,10 @@ export default function usePointSearch(
             const point: Point = { type: "Point", coordinates: [lng, lat] };
 
             const pointState = {
+              id: crypto.randomUUID(),
+              googlePlaceId: autocompletePrediction.place_id,
               parentLocation,
               locationType: LocationType.Point as LocationType.Point,
-              placeId: autocompletePrediction.place_id,
               longName: autocompletePrediction.description,
               shortName: autocompletePrediction.description,
               userDefinedName: "",

@@ -2,7 +2,7 @@ import { AreaState, PointState } from "@/types";
 import { Menu } from "@headlessui/react";
 import { FocusEvent, MouseEvent, RefObject } from "react";
 import { FaEllipsisVertical } from "react-icons/fa6";
-import { useQuiz, useSetQuiz } from "../QuizProvider";
+import { useQuiz, useQuizDispatch } from "../QuizProvider";
 
 interface EditLocationButtonProps {
   className?: string;
@@ -18,7 +18,7 @@ export default function EditLocationButton({
   onDelete: deleteLocation,
 }: EditLocationButtonProps) {
   const quiz = useQuiz();
-  const setQuiz = useSetQuiz();
+  const setQuiz = useQuizDispatch();
 
   function handleFocus(event: FocusEvent<HTMLButtonElement>) {
     setQuiz({ ...quiz, selectedSublocation: location });

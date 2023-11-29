@@ -1,4 +1,4 @@
-import { useQuiz, useSetQuiz } from "@/components/QuizProvider";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
 import { KeyboardEvent, MouseEvent, useRef, useState } from "react";
@@ -23,7 +23,7 @@ export default function Area({
   onDelete,
 }: AreaProps) {
   const quiz = useQuiz();
-  const setQuiz = useSetQuiz();
+  const setQuiz = useQuizDispatch();
 
   const areaRef = useRef<HTMLDivElement>(null);
   const [mouseDown, setMouseDown] = useState<boolean>(false);
@@ -78,7 +78,8 @@ export default function Area({
         />
         <Disclosure.Button
           className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
-            quiz.selectedSublocation?.placeId === areaState.placeId
+            quiz.selectedSublocationId &&
+            quiz.selectedSublocationId === areaState.id
               ? "outline outline-2 outline-red-600"
               : ""
           }`}
