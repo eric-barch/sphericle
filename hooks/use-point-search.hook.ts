@@ -10,17 +10,17 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { Point } from "geojson";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-interface UsePointSearchReturn {
-  searchTerm: string;
-  searchStatus: SearchStatus;
-  searchResults: PointState[];
-  setSearchTerm: (searchTerm: string) => void;
+export interface PointSearch {
+  term: string;
+  status: SearchStatus;
+  results: PointState[];
+  setTerm: (searchTerm: string) => void;
   reset: () => void;
 }
 
 export default function usePointSearch(
   parentLocation: Quiz | AreaState,
-): UsePointSearchReturn {
+): PointSearch {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
@@ -143,10 +143,10 @@ export default function usePointSearch(
   }, []);
 
   return {
-    searchTerm: internalSearchTerm,
-    searchStatus: internalSearchStatus,
-    searchResults: internalSearchResults,
-    setSearchTerm,
+    term: internalSearchTerm,
+    status: internalSearchStatus,
+    results: internalSearchResults,
+    setTerm: setSearchTerm,
     reset,
   };
 }

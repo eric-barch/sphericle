@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuizDispatch } from "@/components/QuizProvider";
-import useAreaSearch from "@/hooks/use-area-search.hook";
-import usePointSearch from "@/hooks/use-point-search.hook";
+import useAreaSearch, { AreaSearch } from "@/hooks/use-area-search.hook";
+import usePointSearch, { PointSearch } from "@/hooks/use-point-search.hook";
 import {
   AreaState,
   LocationType,
@@ -17,7 +17,6 @@ import {
   Dispatch,
   FocusEvent,
   KeyboardEvent,
-  MouseEvent,
   SetStateAction,
   useEffect,
   useRef,
@@ -36,21 +35,9 @@ export default function LocationAdder({ parent }: LocationAdderProps) {
     LocationType.Area,
   );
   const [input, setInput] = useState<string>("");
-  const [optionsClicked, setOptionsClicked] = useState<boolean>(false);
-  const {
-    searchTerm: areaSearchTerm,
-    searchStatus: areaSearchStatus,
-    searchResults: areaSearchResults,
-    setSearchTerm: setAreaSearchTerm,
-    reset: resetAreaSearch,
-  } = useAreaSearch(parent);
-  const {
-    searchTerm: pointSearchTerm,
-    searchStatus: pointSearchStatus,
-    searchResults: pointSearchResults,
-    setSearchTerm: setPointSearchTerm,
-    reset: resetPointSearch,
-  } = usePointSearch(parent);
+  const [optionsFocused, setOptionsFocused] = useState<boolean>(false);
+  const areaSearch = useAreaSearch(parent);
+  const pointSearch = usePointSearch(parent);
 
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
@@ -65,8 +52,8 @@ export default function LocationAdder({ parent }: LocationAdderProps) {
     });
 
     setInput("");
-    resetAreaSearch();
-    resetPointSearch();
+    areaSearch.reset();
+    pointSearch.reset();
   }
 
   return (
@@ -77,27 +64,21 @@ export default function LocationAdder({ parent }: LocationAdderProps) {
             parent={parent}
             input={input}
             locationType={locationType}
-            areaSearchTerm={areaSearchTerm}
-            pointSearchTerm={pointSearchTerm}
-            optionsClicked={optionsClicked}
+            areaSearch={areaSearch}
+            pointSearch={pointSearch}
+            optionsClicked={optionsFocused}
             setInput={setInput}
             setLocationType={setLocationType}
-            setAreaSearchTerm={setAreaSearchTerm}
-            setPointSearchTerm={setPointSearchTerm}
-            resetPointSearch={resetPointSearch}
-            setOptionsClicked={setOptionsClicked}
+            setOptionsClicked={setOptionsFocused}
           />
+          {/* TODO: would really like to remove this active option render prop */}
           <Options
             activeOption={activeOption}
             input={input}
+            areaSearch={areaSearch}
+            pointSearch={pointSearch}
             locationType={locationType}
-            areaSearchTerm={areaSearchTerm}
-            areaSearchStatus={areaSearchStatus}
-            areaSearchResults={areaSearchResults}
-            pointSearchTerm={pointSearchTerm}
-            pointSearchStatus={pointSearchStatus}
-            pointSearchResults={pointSearchResults}
-            setOptionsClicked={setOptionsClicked}
+            setOptionsClicked={setOptionsFocused}
           />
         </div>
       )}
@@ -108,30 +89,24 @@ export default function LocationAdder({ parent }: LocationAdderProps) {
 interface InputProps {
   parent: Quiz | AreaState;
   input: string;
+  areaSearch: AreaSearch;
+  pointSearch: PointSearch;
   locationType: LocationType;
-  areaSearchTerm: string;
-  pointSearchTerm: string;
   optionsClicked: boolean;
   setInput: (input: string) => void;
   setLocationType: Dispatch<SetStateAction<LocationType>>;
-  setAreaSearchTerm: (searchTerm: string) => void;
-  setPointSearchTerm: (searchTerm: string) => void;
-  resetPointSearch: () => void;
   setOptionsClicked: (optionsClicked: boolean) => void;
 }
 
 export function Input({
   parent,
   input,
+  areaSearch,
+  pointSearch,
   locationType,
-  areaSearchTerm,
-  pointSearchTerm,
   optionsClicked,
   setInput,
   setLocationType,
-  setAreaSearchTerm,
-  setPointSearchTerm,
-  resetPointSearch,
   setOptionsClicked,
 }: InputProps) {
   const componentRef = useRef<HTMLDivElement>();
@@ -149,16 +124,16 @@ export function Input({
     setInput(event.target.value);
 
     if (event.target.value === "") {
-      resetPointSearch();
+      pointSearch.reset();
     } else if (locationType === LocationType.Point) {
-      setPointSearchTerm(event.target.value);
+      pointSearch.setTerm(event.target.value);
     }
   }
 
   function handleEnter(event: KeyboardEvent<HTMLInputElement>) {
-    if (locationType === LocationType.Area && input !== areaSearchTerm) {
+    if (locationType === LocationType.Area && input !== areaSearch.term) {
       event.preventDefault();
-      setAreaSearchTerm(input);
+      areaSearch.setTerm(input);
     }
   }
 
@@ -230,10 +205,12 @@ export function Input({
       return;
     }
 
-    quizDispatch({
-      type: QuizDispatchType.Selected,
-      location: null,
-    });
+    if (event.currentTarget !== componentRef.current) {
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: null,
+      });
+    }
   }
 
   return (
@@ -247,8 +224,7 @@ export function Input({
         locationType={locationType}
         setLocationType={setLocationType}
         input={input}
-        pointSearchTerm={pointSearchTerm}
-        setPointSearchTerm={setPointSearchTerm}
+        pointSearch={pointSearch}
       />
       <Combobox.Input
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-400 pl-8 pr-3 text-ellipsis focus:outline-none"
@@ -264,17 +240,15 @@ export function Input({
 interface ToggleLocationTypeButtonProps {
   input: string;
   locationType: LocationType;
-  pointSearchTerm: string;
+  pointSearch: PointSearch;
   setLocationType: Dispatch<SetStateAction<LocationType>>;
-  setPointSearchTerm: (searchTerm: string) => void;
 }
 
 function ToggleLocationTypeButton({
   input,
   locationType,
-  pointSearchTerm,
+  pointSearch,
   setLocationType,
-  setPointSearchTerm,
 }: ToggleLocationTypeButtonProps) {
   function handleClick() {
     const nextLocationType =
@@ -284,8 +258,8 @@ function ToggleLocationTypeButton({
 
     setLocationType(nextLocationType);
 
-    if (nextLocationType === LocationType.Point && input !== pointSearchTerm) {
-      setPointSearchTerm(input);
+    if (nextLocationType === LocationType.Point && input !== pointSearch.term) {
+      pointSearch.setTerm(input);
     }
   }
 
@@ -306,12 +280,8 @@ function ToggleLocationTypeButton({
 interface OptionsProps {
   input: string;
   locationType: LocationType;
-  areaSearchTerm: string;
-  areaSearchStatus: SearchStatus;
-  areaSearchResults: AreaState[] | null;
-  pointSearchTerm: string;
-  pointSearchStatus: SearchStatus;
-  pointSearchResults: PointState[] | null;
+  areaSearch: AreaSearch;
+  pointSearch: PointSearch;
   activeOption: AreaState | PointState | null;
   setOptionsClicked: (optionsClicked: boolean) => void;
 }
@@ -319,31 +289,28 @@ interface OptionsProps {
 export function Options({
   input,
   locationType,
-  areaSearchTerm,
-  areaSearchStatus,
-  areaSearchResults,
-  pointSearchTerm,
-  pointSearchStatus,
-  pointSearchResults,
+  areaSearch,
+  pointSearch,
   activeOption,
   setOptionsClicked,
 }: OptionsProps) {
   const quizDispatch = useQuizDispatch();
 
-  function handleClick(event: MouseEvent<HTMLUListElement>) {
+  function handleFocus() {
+    console.log("options focused");
     setOptionsClicked(true);
   }
 
   const comboboxContent = (() => {
     if (locationType === LocationType.Area) {
-      if (input !== areaSearchTerm) {
+      if (input !== areaSearch.term) {
         return <div className="pl-7 p-1">Press Enter to Search</div>;
-      } else if (areaSearchStatus === SearchStatus.Searching) {
+      } else if (areaSearch.status === SearchStatus.Searching) {
         return <div className="pl-7 p-1">Searching...</div>;
-      } else if (areaSearchResults.length < 1) {
+      } else if (areaSearch.results.length < 1) {
         return <div className="pl-7 p-1">No results found.</div>;
       } else {
-        return areaSearchResults.map((searchResult: AreaState) => (
+        return areaSearch.results.map((searchResult: AreaState) => (
           <Combobox.Option
             key={searchResult.openStreetMapPlaceId}
             value={searchResult}
@@ -361,10 +328,10 @@ export function Options({
         ));
       }
     } else if (locationType === LocationType.Point) {
-      if (pointSearchResults.length < 1) {
+      if (pointSearch.results.length < 1) {
         return <div className="p-1 pl-7">No results found.</div>;
       } else {
-        return pointSearchResults.map((searchResult: PointState) => (
+        return pointSearch.results.map((searchResult: PointState) => (
           <Combobox.Option
             key={searchResult.googlePlaceId}
             value={searchResult}
@@ -390,13 +357,13 @@ export function Options({
     }
 
     if (locationType === LocationType.Point) {
-      if (pointSearchTerm === "") {
+      if (pointSearch.term === "") {
         return null;
       }
 
       if (
-        pointSearchStatus === SearchStatus.Searching &&
-        pointSearchResults.length < 1
+        pointSearch.status === SearchStatus.Searching &&
+        pointSearch.results.length < 1
       ) {
         return null;
       }
@@ -406,7 +373,7 @@ export function Options({
       <Combobox.Options
         className="absolute w-full z-10 left-0 bg-gray-500 rounded-custom p-1 space-y-1"
         static
-        onClick={handleClick}
+        onFocus={handleFocus}
       >
         {comboboxContent}
       </Combobox.Options>

@@ -10,17 +10,17 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { MultiPolygon, Point, Polygon, Position } from "geojson";
 import { useCallback, useState } from "react";
 
-interface UseAreaSearchReturn {
-  searchTerm: string;
-  searchStatus: SearchStatus;
-  searchResults: AreaState[];
-  setSearchTerm: (searchTerm: string) => void;
+export interface AreaSearch {
+  term: string;
+  status: SearchStatus;
+  results: AreaState[];
+  setTerm: (searchTerm: string) => void;
   reset: () => void;
 }
 
 export default function useAreaSearch(
   parentLocation: Quiz | AreaState,
-): UseAreaSearchReturn {
+): AreaSearch {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
@@ -197,10 +197,10 @@ export default function useAreaSearch(
   }, []);
 
   return {
-    searchTerm: internalSearchTerm,
-    searchStatus: internalSearchStatus,
-    searchResults: internalSearchResults,
-    setSearchTerm,
+    term: internalSearchTerm,
+    status: internalSearchStatus,
+    results: internalSearchResults,
+    setTerm: setSearchTerm,
     reset,
   };
 }
