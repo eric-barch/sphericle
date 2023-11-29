@@ -1,5 +1,11 @@
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState, LocationType, PointState, Quiz } from "@/types";
+import { useQuizDispatch } from "@/components/QuizProvider";
+import {
+  AreaState,
+  LocationType,
+  PointState,
+  Quiz,
+  QuizDispatchType,
+} from "@/types";
 import { Reorder } from "framer-motion";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
@@ -7,89 +13,19 @@ import Point from "./Point";
 
 interface SublocationsProps {
   className?: string;
-  parentState: Quiz | AreaState;
-  setParentState: (parentState: Quiz | AreaState) => void;
+  parent: Quiz | AreaState;
 }
 
-export function Sublocations({
-  className,
-  parentState,
-  setParentState,
-}: SublocationsProps) {
-  const quiz = useQuiz();
-  const setQuiz = useQuizDispatch();
+export function Sublocations({ className, parent }: SublocationsProps) {
+  const quizDispatch = useQuizDispatch();
 
-  const sublocations = parentState.sublocations;
+  const sublocations = parent.sublocations;
   function setSublocations(sublocations: (AreaState | PointState)[]) {
-    const newParentState = { ...parentState, sublocations };
-    setParentState(newParentState);
-  }
-
-  function useSetSublocation(sublocation: AreaState | PointState) {
-    return (newSublocation: AreaState | PointState) => {
-      const index = sublocations.findIndex((subloc) => subloc === sublocation);
-
-      if (index < 0) {
-        return;
-      }
-
-      const newSublocations = [...sublocations];
-      newSublocations[index] = newSublocation;
-      setSublocations(newSublocations);
-    };
-  }
-
-  function useSetSublocationAndQuiz(sublocation: AreaState | PointState) {
-    return (newSublocation: AreaState | PointState) => {
-      const index = sublocations.findIndex((subloc) => subloc === sublocation);
-
-      if (index < 0) {
-        return;
-      }
-
-      const newSublocations = [...sublocations];
-      newSublocations[index] = newSublocation;
-      const newParentState = { ...parentState, sublocations: newSublocations };
-      setParentState(newParentState);
-
-      setQuiz({ ...quiz, selectedSublocation: newSublocation });
-    };
-  }
-
-  function useToggleSublocationOpen(sublocation: AreaState | PointState) {
-    if (sublocation.locationType !== LocationType.Area) {
-      return;
-    }
-
-    return () => {
-      const newSublocation: AreaState = {
-        ...sublocation,
-        open: !sublocation.open,
-      };
-
-      useSetSublocationAndQuiz(sublocation)(newSublocation);
-    };
-  }
-
-  function useRenameSublocation(sublocation: AreaState | PointState) {
-    return (name: string) => {
-      const newSublocation = { ...sublocation, userDefinedName: name };
-      useSetSublocation(sublocation)(newSublocation);
-    };
-  }
-
-  function useDeleteSublocation(sublocation: AreaState | PointState) {
-    return () => {
-      const newSublocations = sublocations.filter(
-        (subloc) => subloc !== sublocation,
-      );
-      setSublocations(newSublocations);
-    };
-  }
-
-  function addSublocation(sublocation: AreaState | PointState) {
-    const newSublocations = [...sublocations, sublocation];
-    setSublocations(newSublocations);
+    quizDispatch({
+      type: QuizDispatchType.ReorderedSublocations,
+      parent,
+      sublocations,
+    });
   }
 
   return (
@@ -107,58 +43,28 @@ export function Sublocations({
             layoutScroll
             value={sublocation}
           >
-            <Sublocation
-              sublocation={sublocation}
-              setSublocation={useSetSublocation(sublocation)}
-              onToggleOpen={useToggleSublocationOpen(sublocation)}
-              rename={useRenameSublocation(sublocation)}
-              onDelete={useDeleteSublocation(sublocation)}
-            />
+            <Sublocation sublocation={sublocation} />
           </Reorder.Item>
         ))}
       </Reorder.Group>
-      <LocationAdder parentState={parentState} addLocation={addSublocation} />
+      <LocationAdder parent={parent} />
     </div>
   );
 }
 
 interface SublocationProps {
   sublocation: AreaState | PointState;
-  setSublocation: (sublocation: AreaState | PointState) => void;
-  onToggleOpen: () => void;
-  rename: (name: string) => void;
-  onDelete: () => void;
 }
 
-function Sublocation({
-  sublocation,
-  setSublocation,
-  onToggleOpen,
-  rename,
-  onDelete,
-}: SublocationProps) {
+function Sublocation({ sublocation }: SublocationProps) {
   if (sublocation.locationType === LocationType.Area) {
     return (
-      <Area
-        key={sublocation.openStreetMapPlaceId}
-        areaState={sublocation}
-        setAreaState={setSublocation}
-        onToggleOpen={onToggleOpen}
-        rename={rename}
-        onDelete={onDelete}
-      />
+      <Area key={sublocation.openStreetMapPlaceId} areaState={sublocation} />
     );
   }
 
   if (sublocation.locationType === LocationType.Point) {
-    return (
-      <Point
-        key={sublocation.googlePlaceId}
-        pointState={sublocation}
-        rename={rename}
-        onDelete={onDelete}
-      />
-    );
+    return <Point key={sublocation.googlePlaceId} pointState={sublocation} />;
   }
 
   return null;

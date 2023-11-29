@@ -1,19 +1,20 @@
-import { AreaState, PointState } from "@/types";
+import { AreaState, PointState, QuizDispatchType } from "@/types";
 import { FocusEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useQuizDispatch } from "../QuizProvider";
 
 interface LocationTextProps {
   location: AreaState | PointState;
   renaming: boolean;
-  rename: (name: string) => void;
   setRenaming: (renaming: boolean) => void;
 }
 
 export default function LocationName({
   location,
   renaming,
-  rename,
   setRenaming,
 }: LocationTextProps) {
+  const quizDispatch = useQuizDispatch();
+
   const currentName = location.userDefinedName
     ? location.userDefinedName
     : location.shortName;
@@ -25,7 +26,13 @@ export default function LocationName({
     if (event.key === "Enter") {
       event.preventDefault();
       event.stopPropagation();
-      rename(newName);
+
+      quizDispatch({
+        type: QuizDispatchType.Renamed,
+        location,
+        name: newName,
+      });
+
       setRenaming(false);
     }
 

@@ -8,6 +8,7 @@ import {
   LocationType,
   PointState,
   Quiz,
+  QuizDispatchType,
   SearchStatus,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
@@ -25,14 +26,12 @@ import {
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 
 interface LocationAdderProps {
-  parentState: Quiz | AreaState;
-  addLocation: (location: AreaState | PointState) => void;
+  parent: Quiz | AreaState;
 }
 
-export default function LocationAdder({
-  parentState,
-  addLocation,
-}: LocationAdderProps) {
+export default function LocationAdder({ parent }: LocationAdderProps) {
+  const quizDispatch = useQuizDispatch();
+
   const [locationType, setLocationType] = useState<LocationType>(
     LocationType.Area,
   );
@@ -44,22 +43,26 @@ export default function LocationAdder({
     searchResults: areaSearchResults,
     setSearchTerm: setAreaSearchTerm,
     reset: resetAreaSearch,
-  } = useAreaSearch(parentState);
+  } = useAreaSearch(parent);
   const {
     searchTerm: pointSearchTerm,
     searchStatus: pointSearchStatus,
     searchResults: pointSearchResults,
     setSearchTerm: setPointSearchTerm,
     reset: resetPointSearch,
-  } = usePointSearch(parentState);
+  } = usePointSearch(parent);
 
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
       ...location,
-      parentLocation: parentState,
+      parentLocation: parent,
     };
 
-    addLocation(newLocation);
+    quizDispatch({
+      type: QuizDispatchType.Added,
+      parent,
+      location: newLocation,
+    });
 
     setInput("");
     resetAreaSearch();
@@ -71,7 +74,7 @@ export default function LocationAdder({
       {({ activeOption }) => (
         <div className="relative">
           <Input
-            parentState={parentState}
+            parent={parent}
             input={input}
             locationType={locationType}
             areaSearchTerm={areaSearchTerm}
@@ -103,7 +106,7 @@ export default function LocationAdder({
 }
 
 interface InputProps {
-  parentState: Quiz | AreaState;
+  parent: Quiz | AreaState;
   input: string;
   locationType: LocationType;
   areaSearchTerm: string;
@@ -118,7 +121,7 @@ interface InputProps {
 }
 
 export function Input({
-  parentState,
+  parent,
   input,
   locationType,
   areaSearchTerm,
@@ -133,14 +136,13 @@ export function Input({
 }: InputProps) {
   const componentRef = useRef<HTMLDivElement>();
 
-  const quiz = useQuiz();
-  const setQuiz = useQuizDispatch();
+  const quizDispatch = useQuizDispatch();
 
   const placeholder =
-    parentState.locationType === LocationType.Quiz
+    parent.locationType === LocationType.Quiz
       ? `Add ${locationType.toLowerCase()} anywhere`
       : `Add ${locationType.toLowerCase()} in ${
-          parentState.userDefinedName || parentState.shortName
+          parent.userDefinedName || parent.shortName
         }`;
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -207,10 +209,18 @@ export function Input({
       return;
     }
 
-    if (parentState.locationType === LocationType.Area) {
-      setQuiz({ ...quiz, selectedSublocation: parentState });
+    if (parent.locationType === LocationType.Area) {
+      console.log("parent area");
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: parent,
+      });
     } else {
-      setQuiz({ ...quiz, selectedSublocation: null });
+      console.log("parent quiz");
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: null,
+      });
     }
   }
 
@@ -222,7 +232,10 @@ export function Input({
       return;
     }
 
-    setQuiz({ ...quiz, selectedSublocation: null });
+    quizDispatch({
+      type: QuizDispatchType.Selected,
+      location: null,
+    });
   }
 
   return (
@@ -317,8 +330,7 @@ export function Options({
   activeOption,
   setOptionsClicked,
 }: OptionsProps) {
-  const quiz = useQuiz();
-  const setQuiz = useQuizDispatch();
+  const quizDispatch = useQuizDispatch();
 
   function handleClick(event: MouseEvent<HTMLUListElement>) {
     setOptionsClicked(true);
@@ -406,7 +418,10 @@ export function Options({
   // TODO: consider refactoring out this useEffect
   useEffect(() => {
     if (activeOption) {
-      setQuiz({ ...quiz, selectedSublocation: activeOption });
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: activeOption,
+      });
     }
   }, [activeOption]);
 

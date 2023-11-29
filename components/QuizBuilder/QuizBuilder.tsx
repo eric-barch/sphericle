@@ -1,19 +1,14 @@
 import Map from "@/components/Map";
-import {
-  useGetLocation,
-  useQuiz,
-  useQuizDispatch,
-} from "@/components/QuizProvider";
+import { useGetLocation, useQuiz } from "@/components/QuizProvider";
 import SplitPane from "@/components/SplitPane";
 import Link from "next/link";
-import { MouseEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Sublocations } from "./Sublocations";
 
 export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
 
   const quiz = useQuiz();
-  const setQuiz = useQuizDispatch();
   const getLocation = useGetLocation();
 
   useEffect(() => {
@@ -29,10 +24,6 @@ export default function QuizBuilder() {
     loadPlacesLibrary();
   }, []);
 
-  function handleMouseDown(event: MouseEvent<HTMLAnchorElement>) {
-    console.log(event.relatedTarget);
-  }
-
   return (
     <>
       {placesLoaded ? (
@@ -40,12 +31,10 @@ export default function QuizBuilder() {
           <div className="relative h-full">
             <Sublocations
               className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
-              parentState={quiz}
-              setParentState={setQuiz}
+              parent={quiz}
             />
             <Link
               className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
-              onMouseDown={handleMouseDown}
               href="/take-quiz"
             >
               Take Quiz

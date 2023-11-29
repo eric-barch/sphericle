@@ -1,5 +1,5 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState } from "@/types";
+import { AreaState, QuizDispatchType } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
 import { KeyboardEvent, MouseEvent, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
@@ -9,23 +9,14 @@ import { Sublocations } from "./Sublocations";
 
 interface AreaProps {
   areaState: AreaState;
-  setAreaState: (areaState: AreaState) => void;
-  onToggleOpen: () => void;
-  rename: (name: string) => void;
-  onDelete: () => void;
 }
 
-export default function Area({
-  areaState,
-  setAreaState,
-  onToggleOpen,
-  rename,
-  onDelete,
-}: AreaProps) {
-  const quiz = useQuiz();
-  const setQuiz = useQuizDispatch();
-
+export default function Area({ areaState }: AreaProps) {
   const areaRef = useRef<HTMLDivElement>(null);
+
+  const quiz = useQuiz();
+  const quizDispatch = useQuizDispatch();
+
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
   const [renaming, setRenaming] = useState<boolean>(false);
@@ -35,11 +26,13 @@ export default function Area({
       setWillToggle(true);
     }
 
-    setQuiz({ ...quiz, selectedSublocation: areaState });
+    quizDispatch({
+      type: QuizDispatchType.Selected,
+      location: areaState,
+    });
   }
 
   function handleBlur() {
-    // setQuiz({ ...quiz, selectedSublocation: null });
     setWillToggle(false);
   }
 
@@ -53,7 +46,10 @@ export default function Area({
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
     if (willToggle) {
-      onToggleOpen();
+      quizDispatch({
+        type: QuizDispatchType.ToggledOpen,
+        location: areaState,
+      });
     } else {
       event.preventDefault();
       setWillToggle(true);
@@ -74,7 +70,6 @@ export default function Area({
           className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
           location={areaState}
           setRenaming={setRenaming}
-          onDelete={onDelete}
         />
         <Disclosure.Button
           className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
@@ -93,7 +88,6 @@ export default function Area({
           <LocationName
             location={areaState}
             renaming={renaming}
-            rename={rename}
             setRenaming={setRenaming}
           />
           <OpenChevron
@@ -104,11 +98,7 @@ export default function Area({
       </div>
       <Transition>
         <Disclosure.Panel>
-          <Sublocations
-            className="ml-10"
-            parentState={areaState}
-            setParentState={setAreaState}
-          />
+          <Sublocations className="ml-10" parent={areaState} />
         </Disclosure.Panel>
       </Transition>
     </Disclosure>

@@ -1,6 +1,6 @@
 import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Point, Polygon } from "geojson";
-import { LocationType } from "./enums";
+import { LocationType, QuizDispatchType } from "./enums";
 
 export interface Quiz {
   id: string;
@@ -8,6 +8,14 @@ export interface Quiz {
   sublocations: (AreaState | PointState)[];
   selectedSublocationId: string;
 }
+
+export type QuizDispatch =
+  | AddedQuizDispatch
+  | SelectedQuizDispatch
+  | ToggledOpenQuizDispatch
+  | ReorderedSublocationsQuizDispatch
+  | RenamedQuizDispatch
+  | DeletedQuizDispatch;
 
 export interface AreaState {
   id: string;
@@ -51,4 +59,41 @@ export interface OpenStreetMapResponseItem {
   display_name: string;
   boundingbox: number[];
   geojson: AllGeoJSON;
+}
+
+interface BaseQuizDispatch {
+  type: QuizDispatchType;
+}
+
+interface AddedQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.Added;
+  parent: Quiz | AreaState;
+  location: AreaState | PointState;
+}
+
+interface SelectedQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.Selected;
+  location: AreaState | PointState;
+}
+
+interface ToggledOpenQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.ToggledOpen;
+  location: AreaState;
+}
+
+interface ReorderedSublocationsQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.ReorderedSublocations;
+  parent: Quiz | AreaState;
+  sublocations: (AreaState | PointState)[];
+}
+
+interface RenamedQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.Renamed;
+  location: AreaState | PointState;
+  name: string;
+}
+
+interface DeletedQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.Deleted;
+  location: AreaState | PointState;
 }

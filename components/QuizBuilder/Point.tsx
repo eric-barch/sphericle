@@ -1,4 +1,4 @@
-import { PointState } from "@/types";
+import { PointState, QuizDispatchType } from "@/types";
 import { useState } from "react";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
@@ -6,18 +6,19 @@ import { useQuiz, useQuizDispatch } from "../QuizProvider";
 
 interface PointProps {
   pointState: PointState;
-  rename: (name: string) => void;
-  onDelete: () => void;
 }
 
-export default function Point({ pointState, rename, onDelete }: PointProps) {
+export default function Point({ pointState }: PointProps) {
   const quiz = useQuiz();
-  const setQuiz = useQuizDispatch();
+  const quizDispatch = useQuizDispatch();
 
   const [renaming, setRenaming] = useState<boolean>(false);
 
   function handleFocus() {
-    setQuiz({ ...quiz, selectedSublocation: pointState });
+    quizDispatch({
+      type: QuizDispatchType.Selected,
+      location: pointState,
+    });
   }
 
   return (
@@ -35,13 +36,11 @@ export default function Point({ pointState, rename, onDelete }: PointProps) {
         className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
         location={pointState}
         setRenaming={setRenaming}
-        onDelete={onDelete}
       />
       <LocationName
         location={pointState}
         renaming={renaming}
         setRenaming={setRenaming}
-        rename={rename}
       />
     </div>
   );

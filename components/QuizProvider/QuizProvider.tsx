@@ -1,8 +1,14 @@
-import { AreaState, LocationType, PointState, Quiz } from "@/types";
+import {
+  AreaState,
+  LocationType,
+  PointState,
+  Quiz,
+  QuizDispatch,
+} from "@/types";
 import { ReactNode, createContext, useContext, useReducer } from "react";
 
-const QuizContext = createContext(null);
-const QuizDispatchContext = createContext(null);
+const QuizContext = createContext<Quiz>(null);
+const QuizDispatchContext = createContext<React.Dispatch<QuizDispatch>>(null);
 
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, dispatchQuiz] = useReducer(quizReducer, initialQuiz);
@@ -21,7 +27,8 @@ export function useQuiz(): Quiz {
 }
 
 export function useQuizDispatch() {
-  return useContext(QuizDispatchContext);
+  const foo = useContext(QuizDispatchContext);
+  return foo;
 }
 
 export function useGetLocation(): (
@@ -65,7 +72,7 @@ export function useGetLocation(): (
   };
 }
 
-function quizReducer(quiz: Quiz, action): Quiz {
+function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
   switch (action.type) {
     case "added": {
       return addLocation(quiz, action.parent, action.location);
@@ -115,7 +122,8 @@ function selectLocation(
   quiz: Quiz,
   location: AreaState | PointState | null,
 ): Quiz {
-  const newQuiz: Quiz = { ...quiz, selectedSublocationId: location.id };
+  const selectedSublocationId = location ? location.id : null;
+  const newQuiz: Quiz = { ...quiz, selectedSublocationId };
   return newQuiz;
 }
 
