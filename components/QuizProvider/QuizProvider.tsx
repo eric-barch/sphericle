@@ -5,13 +5,23 @@ import {
   Quiz,
   QuizDispatch,
 } from "@/types";
-import { ReactNode, createContext, useContext, useReducer } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+} from "react";
 
 const QuizContext = createContext<Quiz>(null);
 const QuizDispatchContext = createContext<React.Dispatch<QuizDispatch>>(null);
 
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, dispatchQuiz] = useReducer(quizReducer, initialQuiz);
+
+  useEffect(() => {
+    console.log("quiz", quiz);
+  }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
@@ -29,47 +39,6 @@ export function useQuiz(): Quiz {
 export function useQuizDispatch() {
   const foo = useContext(QuizDispatchContext);
   return foo;
-}
-
-export function useGetLocation(): (
-  targetId: string,
-) => AreaState | PointState | null {
-  const quiz = useQuiz();
-
-  return function (targetId: string): AreaState | PointState | null {
-    function findLocation(
-      searchLocation: Quiz | AreaState | PointState,
-      targetId: string,
-    ): AreaState | PointState | null {
-      if (searchLocation.id === targetId) {
-        if (searchLocation.locationType === LocationType.Quiz) {
-          return null;
-        } else {
-          return searchLocation as AreaState | PointState;
-        }
-      }
-
-      if (searchLocation.locationType === LocationType.Point) {
-        return null;
-      }
-
-      if (
-        searchLocation.locationType === LocationType.Quiz ||
-        searchLocation.locationType === LocationType.Area
-      ) {
-        for (const currentSublocation of searchLocation.sublocations) {
-          const foundLocation = findLocation(currentSublocation, targetId);
-          if (foundLocation) {
-            return foundLocation;
-          }
-        }
-      }
-
-      return null;
-    }
-
-    return findLocation(quiz, targetId);
-  };
 }
 
 function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
@@ -102,7 +71,7 @@ const initialQuiz = {
   id: "quiz",
   locationType: LocationType.Quiz as LocationType.Quiz,
   sublocations: [],
-  selectedSublocationId: null,
+  selectedSublocation: null,
 };
 
 function addLocation(
@@ -122,8 +91,7 @@ function selectLocation(
   quiz: Quiz,
   location: AreaState | PointState | null,
 ): Quiz {
-  const selectedSublocationId = location ? location.id : null;
-  const newQuiz: Quiz = { ...quiz, selectedSublocationId };
+  const newQuiz: Quiz = { ...quiz, selectedSublocation: location };
   return newQuiz;
 }
 

@@ -24,8 +24,7 @@ export default function Point({ pointState }: PointProps) {
   return (
     <div
       className={`relative w-full py-1 px-1 rounded-3xl text-left bg-gray-600 cursor-pointer ${
-        quiz.selectedSublocationId &&
-        quiz.selectedSublocationId === pointState.id
+        quiz.selectedSublocation?.id === pointState.id
           ? "outline outline-2 outline-red-600"
           : ""
       }`}

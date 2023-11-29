@@ -1,5 +1,5 @@
 import Map from "@/components/Map";
-import { useGetLocation, useQuiz } from "@/components/QuizProvider";
+import { useQuiz } from "@/components/QuizProvider";
 import SplitPane from "@/components/SplitPane";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -9,7 +9,6 @@ export default function QuizBuilder() {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
 
   const quiz = useQuiz();
-  const getLocation = useGetLocation();
 
   useEffect(() => {
     async function loadPlacesLibrary() {
@@ -42,7 +41,7 @@ export default function QuizBuilder() {
           </div>
           <Map
             mapId="696d0ea42431a75c"
-            displayedLocation={getLocation(quiz.selectedSublocationId)}
+            displayedLocation={quiz.selectedSublocation}
           />
         </SplitPane>
       ) : (

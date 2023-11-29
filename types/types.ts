@@ -6,7 +6,7 @@ export interface Quiz {
   id: string;
   locationType: LocationType.Quiz;
   sublocations: (AreaState | PointState)[];
-  selectedSublocationId: string;
+  selectedSublocation: AreaState | PointState;
 }
 
 export type QuizDispatch =

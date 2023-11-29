@@ -58,13 +58,11 @@ interface SublocationProps {
 
 function Sublocation({ sublocation }: SublocationProps) {
   if (sublocation.locationType === LocationType.Area) {
-    return (
-      <Area key={sublocation.openStreetMapPlaceId} areaState={sublocation} />
-    );
+    return <Area key={sublocation.id} areaState={sublocation} />;
   }
 
   if (sublocation.locationType === LocationType.Point) {
-    return <Point key={sublocation.googlePlaceId} pointState={sublocation} />;
+    return <Point key={sublocation.id} pointState={sublocation} />;
   }
 
   return null;

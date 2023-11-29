@@ -35,7 +35,7 @@ export default function LocationAdder({ parent }: LocationAdderProps) {
   const [locationType, setLocationType] = useState<LocationType>(
     LocationType.Area,
   );
-  const [input, setInput] = useState<string>("");
+  const [input, setInput] = useState("");
   const [optionsClicked, setOptionsClicked] = useState<boolean>(false);
   const {
     searchTerm: areaSearchTerm,
@@ -256,7 +256,7 @@ export function Input({
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-400 pl-8 pr-3 text-ellipsis focus:outline-none"
         displayValue={() => input}
         placeholder={placeholder}
-        onChange={handleChange}
+        // onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
     </div>
