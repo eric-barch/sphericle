@@ -1,4 +1,4 @@
-import { useQuiz, useSetQuiz } from "@/components/QuizContext";
+import { useQuiz, useSetQuiz } from "@/components/QuizProvider";
 import { AreaState } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
 import { KeyboardEvent, MouseEvent, useRef, useState } from "react";
@@ -39,7 +39,7 @@ export default function Area({
   }
 
   function handleBlur() {
-    setQuiz({ ...quiz, selectedSublocation: null });
+    // setQuiz({ ...quiz, selectedSublocation: null });
     setWillToggle(false);
   }
 

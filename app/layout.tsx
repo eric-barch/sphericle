@@ -2,7 +2,7 @@
 
 import GoogleMapsLoader from "@/components/GoogleMapsApiLoader/GoogleMapsApiLoader";
 import NavBar from "@/components/NavBar";
-import { QuizProvider } from "@/components/QuizContext";
+import QuizProvider from "@/components/QuizProvider";
 import "@/styles/globals.css";
 import { Nunito } from "next/font/google";
 import { ReactNode } from "react";

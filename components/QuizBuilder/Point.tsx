@@ -2,7 +2,7 @@ import { PointState } from "@/types";
 import { useState } from "react";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
-import { useQuiz, useSetQuiz } from "../QuizContext";
+import { useQuiz, useSetQuiz } from "../QuizProvider";
 
 interface PointProps {
   pointState: PointState;

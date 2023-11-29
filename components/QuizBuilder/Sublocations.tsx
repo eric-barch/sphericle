@@ -1,4 +1,4 @@
-import { useQuiz, useSetQuiz } from "@/components/QuizContext";
+import { useQuiz, useSetQuiz } from "@/components/QuizProvider";
 import { AreaState, LocationType, PointState, Quiz } from "@/types";
 import { Reorder } from "framer-motion";
 import Area from "./Area";
@@ -16,6 +16,9 @@ export function Sublocations({
   parentState,
   setParentState,
 }: SublocationsProps) {
+  const quiz = useQuiz();
+  const setQuiz = useSetQuiz();
+
   const sublocations = parentState.sublocations;
   function setSublocations(sublocations: (AreaState | PointState)[]) {
     const newParentState = { ...parentState, sublocations };
@@ -36,13 +39,36 @@ export function Sublocations({
     };
   }
 
+  function useSetSublocationAndQuiz(sublocation: AreaState | PointState) {
+    return (newSublocation: AreaState | PointState) => {
+      const index = sublocations.findIndex((subloc) => subloc === sublocation);
+
+      if (index < 0) {
+        return;
+      }
+
+      const newSublocations = [...sublocations];
+      newSublocations[index] = newSublocation;
+      const newParentState = { ...parentState, sublocations: newSublocations };
+      setParentState(newParentState);
+
+      setQuiz({ ...quiz, selectedSublocation: newSublocation });
+    };
+  }
+
   function useToggleSublocationOpen(sublocation: AreaState | PointState) {
-    if (sublocation.locationType === LocationType.Area) {
-      return () => {
-        const newSublocation = { ...sublocation, open: !sublocation.open };
-        useSetSublocation(sublocation)(newSublocation);
-      };
+    if (sublocation.locationType !== LocationType.Area) {
+      return;
     }
+
+    return () => {
+      const newSublocation: AreaState = {
+        ...sublocation,
+        open: !sublocation.open,
+      };
+
+      useSetSublocationAndQuiz(sublocation)(newSublocation);
+    };
   }
 
   function useRenameSublocation(sublocation: AreaState | PointState) {

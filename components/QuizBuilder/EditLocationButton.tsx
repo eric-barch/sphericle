@@ -2,7 +2,7 @@ import { AreaState, PointState } from "@/types";
 import { Menu } from "@headlessui/react";
 import { FocusEvent, MouseEvent, RefObject } from "react";
 import { FaEllipsisVertical } from "react-icons/fa6";
-import { useQuiz, useSetQuiz } from "../QuizContext";
+import { useQuiz, useSetQuiz } from "../QuizProvider";
 
 interface EditLocationButtonProps {
   className?: string;

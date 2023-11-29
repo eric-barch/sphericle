@@ -4,7 +4,7 @@ import { ReactNode, createContext, useContext, useState } from "react";
 const QuizContext = createContext(null);
 const SetQuizContext = createContext(null);
 
-export function QuizProvider({ children }: { children: ReactNode }) {
+export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, setQuiz] = useState<Quiz>(initialQuiz);
 
   return (

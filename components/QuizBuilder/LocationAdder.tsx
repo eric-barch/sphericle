@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuiz, useSetQuiz } from "@/components/QuizContext";
+import { useQuiz, useSetQuiz } from "@/components/QuizProvider";
 import useAreaSearch from "@/hooks/use-area-search.hook";
 import usePointSearch from "@/hooks/use-point-search.hook";
 import {

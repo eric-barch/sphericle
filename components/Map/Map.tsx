@@ -1,22 +1,13 @@
-import { AreaState, PointState } from "@/types";
+import { AreaState, LocationType, PointState } from "@/types";
 import { MultiPolygon, Point, Polygon } from "geojson";
 import { useEffect, useRef } from "react";
 
 interface MapProps {
   mapId: string;
-  bounds: google.maps.LatLngBoundsLiteral;
-  filledAreas: AreaState[] | null;
-  emptyAreas: AreaState[] | null;
-  markers: PointState[] | null;
+  displayedLocation: AreaState | PointState | null;
 }
 
-export default function Map({
-  mapId,
-  bounds,
-  emptyAreas,
-  filledAreas,
-  markers,
-}: MapProps) {
+export default function Map({ mapId, displayedLocation }: MapProps) {
   const mapRef = useRef(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);
   const filledAreasRef = useRef<google.maps.Polygon[] | null>(null);
@@ -42,6 +33,11 @@ export default function Map({
       });
     }
   }, []);
+
+  function setBounds(bounds: google.maps.LatLngBoundsLiteral) {
+    googleMapRef.current.panToBounds(bounds);
+    googleMapRef.current.fitBounds(bounds);
+  }
 
   function setFilledPolygons(polygons: (Polygon | MultiPolygon)[] | null) {
     if (!googleMapRef.current) {
@@ -154,37 +150,57 @@ export default function Map({
   }
 
   useEffect(() => {
-    if (bounds) {
-      googleMapRef.current.panToBounds(bounds);
-      googleMapRef.current.fitBounds(bounds);
-    }
-  }, [bounds]);
+    if (displayedLocation) {
+      if (displayedLocation.locationType === LocationType.Area) {
+        if (displayedLocation.open) {
+          setEmptyPolygons([displayedLocation.polygon]);
+          setFilledPolygons(null);
+          setBounds(displayedLocation.displayBounds);
+        } else {
+          if (
+            displayedLocation.parentLocation.locationType === LocationType.Quiz
+          ) {
+            setEmptyPolygons(null);
+            setBounds(displayedLocation.displayBounds);
+          } else if (
+            displayedLocation.parentLocation.locationType === LocationType.Area
+          ) {
+            setEmptyPolygons([displayedLocation.parentLocation.polygon]);
+            setBounds(displayedLocation.parentLocation.displayBounds);
+          }
 
-  useEffect(() => {
-    if (filledAreas) {
-      setFilledPolygons(
-        filledAreas.flatMap((filledArea) => filledArea.polygon),
-      );
-    } else {
-      setFilledPolygons(null);
-    }
-  }, [filledAreas]);
+          setFilledPolygons([displayedLocation.polygon]);
+        }
+        setMarkers(null);
+      } else if (displayedLocation.locationType === LocationType.Point) {
+        if (
+          displayedLocation.parentLocation.locationType === LocationType.Quiz
+        ) {
+          const lng = displayedLocation.point.coordinates[0];
+          const lat = displayedLocation.point.coordinates[1];
+          const diff = 0.1;
 
-  useEffect(() => {
-    if (emptyAreas) {
-      setEmptyPolygons(emptyAreas.flatMap((emptyArea) => emptyArea.polygon));
+          const north = lat + diff;
+          const east = lng + diff;
+          const south = lat - diff;
+          const west = lng - diff;
+
+          setEmptyPolygons(null);
+          setBounds({ north, east, south, west });
+        } else {
+          setEmptyPolygons([displayedLocation.parentLocation.polygon]);
+          setBounds(displayedLocation.parentLocation.displayBounds);
+        }
+
+        setFilledPolygons(null);
+        setMarkers([displayedLocation.point]);
+      }
     } else {
       setEmptyPolygons(null);
-    }
-  }, [emptyAreas]);
-
-  useEffect(() => {
-    if (markers) {
-      setMarkers(markers.map((marker) => marker.point));
-    } else {
+      setFilledPolygons(null);
       setMarkers(null);
     }
-  }, [markers]);
+  }, [displayedLocation]);
 
   return <div className="h-full w-full" ref={mapRef} />;
 }
