@@ -5,23 +5,13 @@ import {
   Quiz,
   QuizDispatch,
 } from "@/types";
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useReducer,
-  useEffect,
-} from "react";
+import { ReactNode, createContext, useContext, useReducer } from "react";
 
 const QuizContext = createContext<Quiz>(null);
 const QuizDispatchContext = createContext<React.Dispatch<QuizDispatch>>(null);
 
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, dispatchQuiz] = useReducer(quizReducer, initialQuiz);
-
-  useEffect(() => {
-    console.log("quiz", quiz);
-  }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
@@ -37,8 +27,7 @@ export function useQuiz(): Quiz {
 }
 
 export function useQuizDispatch() {
-  const foo = useContext(QuizDispatchContext);
-  return foo;
+  return useContext(QuizDispatchContext);
 }
 
 function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
@@ -97,7 +86,9 @@ function selectLocation(
 
 function toggleLocationOpen(quiz: Quiz, location: AreaState): Quiz {
   const newLocation = { ...location, open: !location.open };
-  return replaceLocation(quiz, location.id, newLocation);
+  const newQuiz = replaceLocation(quiz, location.id, newLocation);
+  newQuiz.selectedSublocation = newLocation;
+  return newQuiz;
 }
 
 function reorderSublocations(

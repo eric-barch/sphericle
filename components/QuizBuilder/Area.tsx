@@ -15,20 +15,48 @@ export default function Area({ areaState }: AreaProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
+  // TODO: hate this state management
   const [renaming, setRenaming] = useState<boolean>(false);
+  const [mouseDown, setMouseDown] = useState<boolean>(false);
+  const [willToggle, setWillToggle] = useState<boolean>(false);
 
   function handleFocus() {
+    if (!mouseDown) {
+      setWillToggle(true);
+    }
+
     quizDispatch({
       type: QuizDispatchType.Selected,
       location: areaState,
     });
   }
 
+  function handleBlur() {
+    setWillToggle(false);
+  }
+
+  function handleMouseLeave() {
+    setWillToggle(false);
+  }
+
+  function handleMouseDown() {
+    setMouseDown(true);
+  }
+
+  function handleMouseUp() {
+    setMouseDown(false);
+  }
+
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    quizDispatch({
-      type: QuizDispatchType.ToggledOpen,
-      location: areaState,
-    });
+    if (willToggle) {
+      quizDispatch({
+        type: QuizDispatchType.ToggledOpen,
+        location: areaState,
+      });
+    } else {
+      event.preventDefault();
+      setWillToggle(true);
+    }
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
@@ -40,7 +68,14 @@ export default function Area({ areaState }: AreaProps) {
 
   return (
     <Disclosure defaultOpen={areaState.open}>
-      <div className="relative">
+      <div
+        className="relative"
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+      >
         <EditLocationButton
           className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
           location={areaState}
@@ -52,7 +87,6 @@ export default function Area({ areaState }: AreaProps) {
               ? "outline outline-2 outline-red-600"
               : ""
           }`}
-          onFocus={handleFocus}
           onClick={handleClick}
           onKeyDown={handleKeyDown}
         >

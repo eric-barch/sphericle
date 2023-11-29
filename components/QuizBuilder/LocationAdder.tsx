@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import { useQuizDispatch } from "@/components/QuizProvider";
 import useAreaSearch from "@/hooks/use-area-search.hook";
 import usePointSearch from "@/hooks/use-point-search.hook";
 import {
@@ -35,7 +35,7 @@ export default function LocationAdder({ parent }: LocationAdderProps) {
   const [locationType, setLocationType] = useState<LocationType>(
     LocationType.Area,
   );
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState<string>("");
   const [optionsClicked, setOptionsClicked] = useState<boolean>(false);
   const {
     searchTerm: areaSearchTerm,
@@ -210,13 +210,11 @@ export function Input({
     }
 
     if (parent.locationType === LocationType.Area) {
-      console.log("parent area");
       quizDispatch({
         type: QuizDispatchType.Selected,
         location: parent,
       });
     } else {
-      console.log("parent quiz");
       quizDispatch({
         type: QuizDispatchType.Selected,
         location: null,
@@ -256,7 +254,7 @@ export function Input({
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-400 pl-8 pr-3 text-ellipsis focus:outline-none"
         displayValue={() => input}
         placeholder={placeholder}
-        // onChange={handleChange}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
     </div>
