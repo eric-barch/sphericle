@@ -34,7 +34,7 @@ export default function Point({ pointState }: PointProps) {
       <EditLocationButton
         className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
         location={pointState}
-        setRenaming={setRenaming}
+        setIsRenaming={setRenaming}
       />
       <LocationName
         location={pointState}

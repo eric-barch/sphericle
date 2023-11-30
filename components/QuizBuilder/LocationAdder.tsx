@@ -21,25 +21,31 @@ import {
   SetStateAction,
   useEffect,
   useState,
-  useRef,
 } from "react";
-import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
+import { FaDrawPolygon, FaLocationDot, FaPlus } from "react-icons/fa6";
 
 interface LocationAdderProps {
   parent: Quiz | AreaState;
+  isAdding: boolean;
+  inputRef: RefObject<HTMLInputElement>;
+  setIsAdding: (isAdding: boolean) => void;
 }
 
-export default function LocationAdder({ parent }: LocationAdderProps) {
+export default function LocationAdder({
+  parent,
+  isAdding,
+  inputRef,
+  setIsAdding,
+}: LocationAdderProps) {
   const quizDispatch = useQuizDispatch();
 
+  const [isFocused, setIsFocused] = useState<boolean>(false);
   const [locationType, setLocationType] = useState<LocationType>(
     LocationType.Area,
   );
   const [input, setInput] = useState<string>("");
   const areaSearch = useAreaSearch(parent);
   const pointSearch = usePointSearch(parent);
-
-  const inputRef = useRef<HTMLInputElement>();
 
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
@@ -53,48 +59,67 @@ export default function LocationAdder({ parent }: LocationAdderProps) {
       location: newLocation,
     });
 
+    if (inputRef) {
+      inputRef.current.value = "";
+    }
+
     setInput("");
-    inputRef.current.value = "";
     areaSearch.reset();
     pointSearch.reset();
   }
 
-  function handleFocus() {
-    if (parent.locationType === LocationType.Area) {
-      quizDispatch({
-        type: QuizDispatchType.Selected,
-        location: parent,
-      });
-    } else {
-      quizDispatch({
-        type: QuizDispatchType.Selected,
-        location: null,
-      });
-    }
-  }
-
-  function handleBlur() {
-    quizDispatch({
-      type: QuizDispatchType.Selected,
-      location: null,
-    });
-  }
-
   function handleFocusCapture(event: FocusEvent) {
+    console.log("LocationAdder focusCapture");
+
+    // Check if the focus is coming from outside of the component
+    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+      console.log("LocationAdder focus");
+
+      setIsFocused(true);
+
+      if (parent.locationType === LocationType.Area) {
+        quizDispatch({
+          type: QuizDispatchType.Selected,
+          location: parent,
+        });
+      } else {
+        quizDispatch({
+          type: QuizDispatchType.Selected,
+          location: null,
+        });
+      }
+    }
+
     event.stopPropagation();
   }
 
   function handleBlurCapture(event: FocusEvent) {
+    console.log("LocationAdder blurCapture");
+
+    // Check if the focus is going outside of the component
+    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+      console.log("LocationAdder blur");
+
+      setIsFocused(false);
+
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: null,
+      });
+
+      if (input === "" && setIsAdding) {
+        setIsAdding(false);
+      }
+    }
+
     event.stopPropagation();
   }
 
-  return (
+  return isAdding || parent.sublocations.length === 0 ? (
     <div
       className="relative"
       onFocusCapture={handleFocusCapture}
       onBlurCapture={handleBlurCapture}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
     >
       <Combobox onChange={handleChange}>
         {({ activeOption }) => (
@@ -116,12 +141,13 @@ export default function LocationAdder({ parent }: LocationAdderProps) {
               areaSearch={areaSearch}
               pointSearch={pointSearch}
               locationType={locationType}
+              locationAdderFocused={isFocused}
             />
           </>
         )}
       </Combobox>
     </div>
-  );
+  ) : null;
 }
 
 interface InputProps {
@@ -214,6 +240,7 @@ function Input({
       <Combobox.Input
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-400 pl-8 pr-3 text-ellipsis focus:outline-none"
         ref={inputRef}
+        displayValue={() => input}
         placeholder={placeholder}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
@@ -269,6 +296,7 @@ interface OptionsProps {
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
   activeOption: AreaState | PointState;
+  locationAdderFocused: boolean;
 }
 
 function Options({
@@ -277,6 +305,7 @@ function Options({
   areaSearch,
   pointSearch,
   activeOption,
+  locationAdderFocused,
 }: OptionsProps) {
   const optionsContent = (() => {
     if (locationType === LocationType.Area) {
@@ -309,7 +338,7 @@ function Options({
   })();
 
   const options = (() => {
-    if (input === "") {
+    if (input === "" || !locationAdderFocused) {
       return null;
     }
 

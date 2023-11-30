@@ -1,7 +1,7 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, QuizDispatchType } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
-import { KeyboardEvent, MouseEvent, useState } from "react";
+import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
@@ -15,10 +15,36 @@ export default function Area({ areaState }: AreaProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
-  // TODO: hate this state management
-  const [renaming, setRenaming] = useState<boolean>(false);
+  // TODO: lot of messy hacks here, try to refactor
+  const [isAdding, setIsAddingRaw] = useState<boolean>(false);
+  const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
+  const [disclosureKey, setDisclosureKey] = useState<number>(Math.random());
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
+
+  const locationAdderInputRef = useRef<HTMLInputElement>();
+
+  function setIsAdding(isAdding: boolean) {
+    setIsAddingRaw(isAdding);
+
+    if (isAdding && !areaState.open) {
+      quizDispatch({
+        type: QuizDispatchType.ToggledOpen,
+        location: areaState,
+      });
+
+      // force Disclosure to render new open state
+      setDisclosureKey(Math.random());
+
+      setTimeout(() => {
+        locationAdderInputRef.current.focus();
+      }, 0);
+    }
+  }
+
+  function setIsRenaming(isRenaming: boolean) {
+    setIsRenamingRaw(isRenaming);
+  }
 
   function handleFocus() {
     if (!mouseDown) {
@@ -67,7 +93,7 @@ export default function Area({ areaState }: AreaProps) {
   }
 
   return (
-    <Disclosure defaultOpen={areaState.open}>
+    <Disclosure key={disclosureKey} defaultOpen={areaState.open}>
       <div
         className="relative"
         onFocus={handleFocus}
@@ -79,7 +105,8 @@ export default function Area({ areaState }: AreaProps) {
         <EditLocationButton
           className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
           location={areaState}
-          setRenaming={setRenaming}
+          setIsAdding={setIsAdding}
+          setIsRenaming={setIsRenaming}
         />
         <Disclosure.Button
           className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
@@ -92,8 +119,8 @@ export default function Area({ areaState }: AreaProps) {
         >
           <LocationName
             location={areaState}
-            renaming={renaming}
-            setRenaming={setRenaming}
+            renaming={isRenaming}
+            setRenaming={setIsRenaming}
           />
           <OpenChevron
             className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1"
@@ -103,7 +130,13 @@ export default function Area({ areaState }: AreaProps) {
       </div>
       <Transition>
         <Disclosure.Panel>
-          <Sublocations className="ml-10" parent={areaState} />
+          <Sublocations
+            className="ml-10"
+            parent={areaState}
+            isAdding={isAdding}
+            locationAdderInputRef={locationAdderInputRef}
+            setIsAdding={setIsAdding}
+          />
         </Disclosure.Panel>
       </Transition>
     </Disclosure>

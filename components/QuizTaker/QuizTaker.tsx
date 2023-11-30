@@ -1,7 +1,8 @@
 import Map from "@/components/Map";
-import { useQuiz } from "@/components/QuizProvider";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { useEffect, useState } from "react";
 import AnswerBox from "./AnswerBox";
+import { QuizDispatchType } from "@/types";
 
 interface QuizTakerProps {}
 
@@ -9,18 +10,22 @@ export default function QuizTaker({}: QuizTakerProps) {
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
 
   const quiz = useQuiz();
+  const quizDispatch = useQuizDispatch();
 
   useEffect(() => {
-    async function loadPlacesLibrary() {
+    (async function loadPlacesLibrary() {
       if (!window.google || !window.google.maps || !window.google.maps.places) {
         await google.maps.importLibrary("places");
         setPlacesLoaded(true);
       } else {
         setPlacesLoaded(true);
       }
-    }
+    })();
 
-    loadPlacesLibrary();
+    quizDispatch({
+      type: QuizDispatchType.Selected,
+      location: quiz.sublocations[0],
+    });
   }, []);
 
   return (

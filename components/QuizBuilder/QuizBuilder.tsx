@@ -31,6 +31,7 @@ export default function QuizBuilder() {
             <Sublocations
               className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
               parent={quiz}
+              isAdding={true}
             />
             <Link
               className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
