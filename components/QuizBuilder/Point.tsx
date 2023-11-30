@@ -1,5 +1,5 @@
 import { PointState, QuizDispatchType } from "@/types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
 import { useQuiz, useQuizDispatch } from "../QuizProvider";
@@ -12,7 +12,20 @@ export default function Point({ pointState }: PointProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
-  const [renaming, setRenaming] = useState<boolean>(false);
+  const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
+
+  const locationNameInputRef = useRef<HTMLInputElement>();
+
+  function setIsRenaming(isRenaming: boolean) {
+    setIsRenamingRaw(isRenaming);
+
+    if (isRenaming) {
+      setTimeout(() => {
+        locationNameInputRef.current.focus();
+        locationNameInputRef.current.select();
+      });
+    }
+  }
 
   function handleFocus() {
     quizDispatch({
@@ -34,12 +47,12 @@ export default function Point({ pointState }: PointProps) {
       <EditLocationButton
         className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
         location={pointState}
-        setIsRenaming={setRenaming}
+        setIsRenaming={setIsRenaming}
       />
       <LocationName
         location={pointState}
-        renaming={renaming}
-        setRenaming={setRenaming}
+        inputRef={locationNameInputRef}
+        setIsRenaming={setIsRenaming}
       />
     </div>
   );

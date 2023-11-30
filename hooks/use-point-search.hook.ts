@@ -80,6 +80,7 @@ export default function usePointSearch(
               locationType: LocationType.Point as LocationType.Point,
               longName: autocompletePrediction.description,
               shortName: autocompletePrediction.description,
+              isRenaming: false,
               userDefinedName: "",
               point,
             };

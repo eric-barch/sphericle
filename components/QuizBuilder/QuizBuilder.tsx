@@ -2,13 +2,15 @@ import Map from "@/components/Map";
 import { useQuiz } from "@/components/QuizProvider";
 import SplitPane from "@/components/SplitPane";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sublocations } from "./Sublocations";
 
 export default function QuizBuilder() {
+  const quiz = useQuiz();
+
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
 
-  const quiz = useQuiz();
+  const locationAdderInputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
     async function loadPlacesLibrary() {
@@ -31,7 +33,8 @@ export default function QuizBuilder() {
             <Sublocations
               className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
               parent={quiz}
-              isAdding={true}
+              locationAdderInputRef={locationAdderInputRef}
+              setIsAdding={() => {}}
             />
             <Link
               className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"

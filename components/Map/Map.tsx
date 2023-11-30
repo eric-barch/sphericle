@@ -152,7 +152,7 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
   useEffect(() => {
     if (displayedLocation) {
       if (displayedLocation.locationType === LocationType.Area) {
-        if (displayedLocation.open) {
+        if (displayedLocation.isOpen) {
           setEmptyPolygons([displayedLocation.polygon]);
           setFilledPolygons(null);
           setBounds(displayedLocation.displayBounds);

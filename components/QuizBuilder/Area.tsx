@@ -12,27 +12,29 @@ interface AreaProps {
 }
 
 export default function Area({ areaState }: AreaProps) {
+  useEffect(() => {
+    console.log("areaLocation", areaState);
+  }, [areaState]);
+
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
   // TODO: lot of messy hacks here, try to refactor
-  const [isAdding, setIsAddingRaw] = useState<boolean>(false);
-  const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
   const [disclosureKey, setDisclosureKey] = useState<number>(Math.random());
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
 
+  const locationNameInputRef = useRef<HTMLInputElement>();
   const locationAdderInputRef = useRef<HTMLInputElement>();
 
   function setIsAdding(isAdding: boolean) {
-    setIsAddingRaw(isAdding);
+    quizDispatch({
+      type: QuizDispatchType.SetIsAdding,
+      location: areaState,
+      isAdding,
+    });
 
-    if (isAdding && !areaState.open) {
-      quizDispatch({
-        type: QuizDispatchType.ToggledOpen,
-        location: areaState,
-      });
-
+    if (isAdding) {
       // force Disclosure to render new open state
       setDisclosureKey(Math.random());
 
@@ -43,7 +45,18 @@ export default function Area({ areaState }: AreaProps) {
   }
 
   function setIsRenaming(isRenaming: boolean) {
-    setIsRenamingRaw(isRenaming);
+    quizDispatch({
+      type: QuizDispatchType.SetIsRenaming,
+      location: areaState,
+      isRenaming,
+    });
+
+    if (isRenaming) {
+      setTimeout(() => {
+        locationNameInputRef.current.focus();
+        locationNameInputRef.current.select();
+      }, 0);
+    }
   }
 
   function handleFocus() {
@@ -76,8 +89,9 @@ export default function Area({ areaState }: AreaProps) {
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
     if (willToggle) {
       quizDispatch({
-        type: QuizDispatchType.ToggledOpen,
+        type: QuizDispatchType.SetIsOpen,
         location: areaState,
+        isOpen: !areaState.isOpen,
       });
     } else {
       event.preventDefault();
@@ -93,7 +107,7 @@ export default function Area({ areaState }: AreaProps) {
   }
 
   return (
-    <Disclosure key={disclosureKey} defaultOpen={areaState.open}>
+    <Disclosure key={disclosureKey} defaultOpen={areaState.isOpen}>
       <div
         className="relative"
         onFocus={handleFocus}
@@ -119,12 +133,12 @@ export default function Area({ areaState }: AreaProps) {
         >
           <LocationName
             location={areaState}
-            renaming={isRenaming}
-            setRenaming={setIsRenaming}
+            inputRef={locationNameInputRef}
+            setIsRenaming={setIsRenaming}
           />
           <OpenChevron
             className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1"
-            open={areaState.open}
+            open={areaState.isOpen}
           />
         </Disclosure.Button>
       </div>
@@ -133,7 +147,6 @@ export default function Area({ areaState }: AreaProps) {
           <Sublocations
             className="ml-10"
             parent={areaState}
-            isAdding={isAdding}
             locationAdderInputRef={locationAdderInputRef}
             setIsAdding={setIsAdding}
           />

@@ -5,17 +5,10 @@ import { LocationType, QuizDispatchType } from "./enums";
 export interface Quiz {
   id: string;
   locationType: LocationType.Quiz;
+  isAdding: boolean;
   sublocations: (AreaState | PointState)[];
   selectedSublocation: AreaState | PointState;
 }
-
-export type QuizDispatch =
-  | AddedQuizDispatch
-  | SelectedQuizDispatch
-  | ToggledOpenQuizDispatch
-  | ReorderedSublocationsQuizDispatch
-  | RenamedQuizDispatch
-  | DeletedQuizDispatch;
 
 export interface AreaState {
   id: string;
@@ -25,7 +18,9 @@ export interface AreaState {
   shortName: string;
   longName: string;
   userDefinedName: string;
-  open: boolean;
+  isRenaming: boolean;
+  isOpen: boolean;
+  isAdding: boolean;
   polygon: Polygon | MultiPolygon;
   displayBounds: google.maps.LatLngBoundsLiteral;
   searchBounds: google.maps.LatLngBoundsLiteral;
@@ -40,8 +35,19 @@ export interface PointState {
   shortName: string;
   longName: string;
   userDefinedName: string;
+  isRenaming: boolean;
   point: Point;
 }
+
+export type QuizDispatch =
+  | AddedQuizDispatch
+  | SelectedQuizDispatch
+  | SetIsRenamingQuizDispatch
+  | SetIsOpenQuizDispatch
+  | SetIsAddingQuizDispatch
+  | ReorderedSublocationsQuizDispatch
+  | RenamedQuizDispatch
+  | DeletedQuizDispatch;
 
 export interface OpenStreetMapResponseItem {
   place_id: number;
@@ -76,9 +82,22 @@ interface SelectedQuizDispatch extends BaseQuizDispatch {
   location: AreaState | PointState;
 }
 
-interface ToggledOpenQuizDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.ToggledOpen;
+interface SetIsRenamingQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.SetIsRenaming;
+  location: AreaState | PointState;
+  isRenaming: boolean;
+}
+
+interface SetIsOpenQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.SetIsOpen;
   location: AreaState;
+  isOpen: boolean;
+}
+
+interface SetIsAddingQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.SetIsAdding;
+  location: AreaState;
+  isAdding: boolean;
 }
 
 interface ReorderedSublocationsQuizDispatch extends BaseQuizDispatch {

@@ -1,17 +1,17 @@
 import { AreaState, PointState, QuizDispatchType } from "@/types";
-import { FocusEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, RefObject, useEffect, useState } from "react";
 import { useQuizDispatch } from "../QuizProvider";
 
 interface LocationTextProps {
   location: AreaState | PointState;
-  renaming: boolean;
-  setRenaming: (renaming: boolean) => void;
+  inputRef: RefObject<HTMLInputElement>;
+  setIsRenaming: (isRenaming: boolean) => void;
 }
 
 export default function LocationName({
   location,
-  renaming,
-  setRenaming,
+  inputRef,
+  setIsRenaming,
 }: LocationTextProps) {
   const quizDispatch = useQuizDispatch();
 
@@ -20,7 +20,6 @@ export default function LocationName({
     : location.shortName;
 
   const [newName, setNewName] = useState(currentName);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
@@ -32,8 +31,6 @@ export default function LocationName({
         location,
         name: newName,
       });
-
-      setRenaming(false);
     }
 
     if (event.key === "Escape") {
@@ -45,22 +42,14 @@ export default function LocationName({
     }
   }
 
-  function handleBlur(event: FocusEvent<HTMLInputElement>) {
+  function handleBlur() {
     setNewName(currentName);
-    setRenaming(false);
+    setIsRenaming(false);
   }
-
-  // TODO: consider whether it makes sense to refactor out this useEffect
-  useEffect(() => {
-    if (renaming && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [renaming, inputRef]);
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
-      {renaming ? (
+      {location.isRenaming ? (
         <input
           ref={inputRef}
           className="bg-transparent w-full focus:outline-none"

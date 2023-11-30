@@ -15,7 +15,6 @@ import { RefObject } from "react";
 interface SublocationsProps {
   className?: string;
   parent: Quiz | AreaState;
-  isAdding: boolean;
   locationAdderInputRef: RefObject<HTMLInputElement>;
   setIsAdding: (isAdding: boolean) => void;
 }
@@ -23,14 +22,13 @@ interface SublocationsProps {
 export function Sublocations({
   className,
   parent,
-  isAdding,
   locationAdderInputRef,
   setIsAdding,
 }: SublocationsProps) {
   const quizDispatch = useQuizDispatch();
 
   const sublocations = parent.sublocations;
-  function setSublocations(sublocations: (AreaState | PointState)[]) {
+  function handleReorder(sublocations: (AreaState | PointState)[]) {
     quizDispatch({
       type: QuizDispatchType.ReorderedSublocations,
       parent,
@@ -44,7 +42,7 @@ export function Sublocations({
         className="mt-1 space-y-1"
         axis="y"
         values={sublocations}
-        onReorder={setSublocations}
+        onReorder={handleReorder}
       >
         {sublocations.map((sublocation) => (
           <Reorder.Item
@@ -59,7 +57,6 @@ export function Sublocations({
       </Reorder.Group>
       <LocationAdder
         parent={parent}
-        isAdding={isAdding}
         inputRef={locationAdderInputRef}
         setIsAdding={setIsAdding}
       />
@@ -73,11 +70,11 @@ interface SublocationProps {
 
 function Sublocation({ sublocation }: SublocationProps) {
   if (sublocation.locationType === LocationType.Area) {
-    return <Area key={sublocation.id} areaState={sublocation} />;
+    return <Area areaState={sublocation} />;
   }
 
   if (sublocation.locationType === LocationType.Point) {
-    return <Point key={sublocation.id} pointState={sublocation} />;
+    return <Point pointState={sublocation} />;
   }
 
   return null;

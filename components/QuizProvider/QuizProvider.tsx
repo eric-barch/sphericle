@@ -4,6 +4,7 @@ import {
   PointState,
   Quiz,
   QuizDispatch,
+  QuizDispatchType,
 } from "@/types";
 import { ReactNode, createContext, useContext, useReducer } from "react";
 
@@ -32,26 +33,29 @@ export function useQuizDispatch() {
 
 function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
   switch (action.type) {
-    case "added": {
+    case QuizDispatchType.Added: {
       return addLocation(quiz, action.parent, action.location);
     }
-    case "selected": {
+    case QuizDispatchType.Selected: {
       return selectLocation(quiz, action.location);
     }
-    case "toggledOpen": {
-      return toggleLocationOpen(quiz, action.location);
+    case QuizDispatchType.SetIsRenaming: {
+      return setLocationIsRenaming(quiz, action.location, action.isRenaming);
     }
-    case "reorderedSublocations": {
+    case QuizDispatchType.SetIsOpen: {
+      return setLocationIsOpen(quiz, action.location, action.isOpen);
+    }
+    case QuizDispatchType.SetIsAdding: {
+      return setLocationIsAdding(quiz, action.location, action.isAdding);
+    }
+    case QuizDispatchType.ReorderedSublocations: {
       return reorderSublocations(quiz, action.parent, action.sublocations);
     }
-    case "renamed": {
+    case QuizDispatchType.Renamed: {
       return renameLocation(quiz, action.location, action.name);
     }
-    case "deleted": {
+    case QuizDispatchType.Deleted: {
       return deleteLocation(quiz, action.location);
-    }
-    default: {
-      throw Error("Unknown action: " + action.type);
     }
   }
 }
@@ -59,6 +63,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 const initialQuiz = {
   id: "quiz",
   locationType: LocationType.Quiz as LocationType.Quiz,
+  isAdding: true,
   sublocations: [],
   selectedSublocation: null,
 };
@@ -84,11 +89,58 @@ function selectLocation(
   return newQuiz;
 }
 
-function toggleLocationOpen(quiz: Quiz, location: AreaState): Quiz {
-  const newLocation = { ...location, open: !location.open };
+function setLocationIsRenaming(
+  quiz: Quiz,
+  location: AreaState | PointState,
+  isRenaming: boolean,
+) {
+  if (location.isRenaming === isRenaming) {
+    return quiz;
+  }
+
+  const newLocation = { ...location, isRenaming };
   const newQuiz = replaceLocation(quiz, location.id, newLocation);
-  newQuiz.selectedSublocation = newLocation;
+
   return newQuiz;
+}
+
+function setLocationIsOpen(
+  quiz: Quiz,
+  location: AreaState,
+  isOpen: boolean,
+): Quiz {
+  if (location.isOpen === isOpen) {
+    return quiz;
+  }
+
+  const newLocation = { ...location, isOpen };
+  const newQuiz = replaceLocation(quiz, location.id, newLocation);
+
+  return newQuiz;
+}
+
+function setLocationIsAdding(
+  quiz: Quiz,
+  location: AreaState,
+  isAdding: boolean,
+) {
+  if (location.isAdding === isAdding) {
+    return quiz;
+  }
+
+  let newLocation: AreaState;
+
+  if (isAdding) {
+    newLocation = {
+      ...location,
+      isOpen: true,
+      isAdding,
+    };
+  } else {
+    newLocation = { ...location, isAdding };
+  }
+
+  return replaceLocation(quiz, location.id, newLocation);
 }
 
 function reorderSublocations(
@@ -111,6 +163,7 @@ function renameLocation(
 ): Quiz {
   const newLocation = {
     ...location,
+    isRenaming: false,
     userDefinedName: name,
   };
 

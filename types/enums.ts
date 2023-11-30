@@ -12,7 +12,9 @@ export enum SearchStatus {
 export enum QuizDispatchType {
   Added = "added",
   Selected = "selected",
-  ToggledOpen = "toggledOpen",
+  SetIsRenaming = "setIsRenaming",
+  SetIsOpen = "setIsOpen",
+  SetIsAdding = "setIsAdding",
   ReorderedSublocations = "reorderedSublocations",
   Renamed = "renamed",
   Deleted = "deleted",
