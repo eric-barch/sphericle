@@ -17,10 +17,11 @@ import {
   Dispatch,
   FocusEvent,
   KeyboardEvent,
+  RefObject,
   SetStateAction,
   useEffect,
-  useRef,
   useState,
+  useRef,
 } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 
@@ -35,9 +36,10 @@ export default function LocationAdder({ parent }: LocationAdderProps) {
     LocationType.Area,
   );
   const [input, setInput] = useState<string>("");
-  const [optionsFocused, setOptionsFocused] = useState<boolean>(false);
   const areaSearch = useAreaSearch(parent);
   const pointSearch = usePointSearch(parent);
+
+  const inputRef = useRef<HTMLInputElement>();
 
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
@@ -52,67 +54,97 @@ export default function LocationAdder({ parent }: LocationAdderProps) {
     });
 
     setInput("");
+    inputRef.current.value = "";
     areaSearch.reset();
     pointSearch.reset();
   }
 
+  function handleFocus() {
+    if (parent.locationType === LocationType.Area) {
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: parent,
+      });
+    } else {
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: null,
+      });
+    }
+  }
+
+  function handleBlur() {
+    quizDispatch({
+      type: QuizDispatchType.Selected,
+      location: null,
+    });
+  }
+
+  function handleFocusCapture(event: FocusEvent) {
+    event.stopPropagation();
+  }
+
+  function handleBlurCapture(event: FocusEvent) {
+    event.stopPropagation();
+  }
+
   return (
-    <Combobox onChange={handleChange}>
-      {({ activeOption }) => (
-        <div className="relative">
-          <Input
-            parent={parent}
-            input={input}
-            locationType={locationType}
-            areaSearch={areaSearch}
-            pointSearch={pointSearch}
-            optionsClicked={optionsFocused}
-            setInput={setInput}
-            setLocationType={setLocationType}
-            setOptionsClicked={setOptionsFocused}
-          />
-          {/* TODO: would really like to remove this active option render prop */}
-          <Options
-            activeOption={activeOption}
-            input={input}
-            areaSearch={areaSearch}
-            pointSearch={pointSearch}
-            locationType={locationType}
-            setOptionsClicked={setOptionsFocused}
-          />
-        </div>
-      )}
-    </Combobox>
+    <div
+      className="relative"
+      onFocusCapture={handleFocusCapture}
+      onBlurCapture={handleBlurCapture}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+    >
+      <Combobox onChange={handleChange}>
+        {({ activeOption }) => (
+          <>
+            <Input
+              parent={parent}
+              input={input}
+              locationType={locationType}
+              areaSearch={areaSearch}
+              pointSearch={pointSearch}
+              inputRef={inputRef}
+              setInput={setInput}
+              setLocationType={setLocationType}
+            />
+            <Options
+              parent={parent}
+              activeOption={activeOption}
+              input={input}
+              areaSearch={areaSearch}
+              pointSearch={pointSearch}
+              locationType={locationType}
+            />
+          </>
+        )}
+      </Combobox>
+    </div>
   );
 }
 
 interface InputProps {
   parent: Quiz | AreaState;
   input: string;
+  locationType: LocationType;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
-  locationType: LocationType;
-  optionsClicked: boolean;
+  inputRef: RefObject<HTMLInputElement>;
   setInput: (input: string) => void;
   setLocationType: Dispatch<SetStateAction<LocationType>>;
-  setOptionsClicked: (optionsClicked: boolean) => void;
 }
 
-export function Input({
+function Input({
   parent,
   input,
+  locationType,
   areaSearch,
   pointSearch,
-  locationType,
-  optionsClicked,
+  inputRef,
   setInput,
   setLocationType,
-  setOptionsClicked,
 }: InputProps) {
-  const componentRef = useRef<HTMLDivElement>();
-
-  const quizDispatch = useQuizDispatch();
-
   const placeholder =
     parent.locationType === LocationType.Quiz
       ? `Add ${locationType.toLowerCase()} anywhere`
@@ -137,7 +169,7 @@ export function Input({
     }
   }
 
-  // work around hardcoded HeadlessUI Combobox behavior
+  // override HeadlessUI Combobox behavior in favor of accessibility tab element navigation
   function handleTab(event: KeyboardEvent<HTMLInputElement>) {
     event.preventDefault();
 
@@ -165,70 +197,23 @@ export function Input({
       handleEnter(event);
     }
 
-    // work around hardcoded HeadlessUI Combobox behavior
+    // override HeadlessUI Combobox behavior in favor of accessibility tab element navigation
     if (event.key === "Tab") {
       handleTab(event);
     }
   }
 
-  function handleFocus(event: FocusEvent<HTMLDivElement>) {
-    if (
-      componentRef.current &&
-      componentRef.current.contains(event.relatedTarget as Node)
-    ) {
-      return;
-    }
-
-    if (optionsClicked) {
-      setOptionsClicked(false);
-      return;
-    }
-
-    if (parent.locationType === LocationType.Area) {
-      quizDispatch({
-        type: QuizDispatchType.Selected,
-        location: parent,
-      });
-    } else {
-      quizDispatch({
-        type: QuizDispatchType.Selected,
-        location: null,
-      });
-    }
-  }
-
-  function handleBlur(event: FocusEvent<HTMLDivElement>) {
-    if (
-      componentRef.current &&
-      componentRef.current.contains(event.relatedTarget as Node)
-    ) {
-      return;
-    }
-
-    if (event.currentTarget !== componentRef.current) {
-      quizDispatch({
-        type: QuizDispatchType.Selected,
-        location: null,
-      });
-    }
-  }
-
   return (
-    <div
-      ref={componentRef}
-      className="relative"
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-    >
+    <div className="relative">
       <ToggleLocationTypeButton
         locationType={locationType}
-        setLocationType={setLocationType}
         input={input}
         pointSearch={pointSearch}
+        setLocationType={setLocationType}
       />
       <Combobox.Input
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-400 pl-8 pr-3 text-ellipsis focus:outline-none"
-        displayValue={() => input}
+        ref={inputRef}
         placeholder={placeholder}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
@@ -278,80 +263,52 @@ function ToggleLocationTypeButton({
 }
 
 interface OptionsProps {
+  parent: Quiz | AreaState;
   input: string;
   locationType: LocationType;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
-  activeOption: AreaState | PointState | null;
-  setOptionsClicked: (optionsClicked: boolean) => void;
+  activeOption: AreaState | PointState;
 }
 
-export function Options({
+function Options({
   input,
   locationType,
   areaSearch,
   pointSearch,
   activeOption,
-  setOptionsClicked,
 }: OptionsProps) {
-  const quizDispatch = useQuizDispatch();
-
-  function handleFocus() {
-    console.log("options focused");
-    setOptionsClicked(true);
-  }
-
-  const comboboxContent = (() => {
+  const optionsContent = (() => {
     if (locationType === LocationType.Area) {
       if (input !== areaSearch.term) {
-        return <div className="pl-7 p-1">Press Enter to Search</div>;
-      } else if (areaSearch.status === SearchStatus.Searching) {
-        return <div className="pl-7 p-1">Searching...</div>;
-      } else if (areaSearch.results.length < 1) {
-        return <div className="pl-7 p-1">No results found.</div>;
-      } else {
-        return areaSearch.results.map((searchResult: AreaState) => (
-          <Combobox.Option
-            key={searchResult.openStreetMapPlaceId}
-            value={searchResult}
-          >
-            {({ active }) => (
-              <div
-                className={`p-1 pl-7 rounded-3xl cursor-pointer ${
-                  active ? "bg-gray-600" : ""
-                }`}
-              >
-                {searchResult.longName}
-              </div>
-            )}
-          </Combobox.Option>
-        ));
+        return <OptionsSubstitute text="Press Enter to Search" />;
       }
-    } else if (locationType === LocationType.Point) {
+
+      if (areaSearch.status === SearchStatus.Searching) {
+        return <OptionsSubstitute text="Searching..." />;
+      }
+
+      if (areaSearch.results.length < 1) {
+        return <OptionsSubstitute text="No results found." />;
+      }
+
+      return areaSearch.results.map((result: AreaState) => (
+        <Option key={result.id} activeOption={activeOption} location={result} />
+      ));
+    }
+
+    if (locationType === LocationType.Point) {
       if (pointSearch.results.length < 1) {
-        return <div className="p-1 pl-7">No results found.</div>;
-      } else {
-        return pointSearch.results.map((searchResult: PointState) => (
-          <Combobox.Option
-            key={searchResult.googlePlaceId}
-            value={searchResult}
-          >
-            {({ active }) => (
-              <div
-                className={`p-1 pl-7 rounded-3xl cursor-pointer ${
-                  active ? "bg-gray-600" : ""
-                }`}
-              >
-                {searchResult.longName}
-              </div>
-            )}
-          </Combobox.Option>
-        ));
+        return <OptionsSubstitute text="No results found." />;
       }
+
+      return pointSearch.results.map((result: PointState) => (
+        <Option key={result.id} activeOption={activeOption} location={result} />
+      ));
     }
   })();
 
-  const combobox = (() => {
+  const options = (() => {
     if (input === "") {
       return null;
     }
@@ -373,22 +330,51 @@ export function Options({
       <Combobox.Options
         className="absolute w-full z-10 left-0 bg-gray-500 rounded-custom p-1 space-y-1"
         static
-        onFocus={handleFocus}
       >
-        {comboboxContent}
+        {optionsContent}
       </Combobox.Options>
     );
   })();
 
-  // TODO: consider refactoring out this useEffect
+  return <>{options}</>;
+}
+
+interface OptionProps {
+  activeOption: AreaState | PointState;
+  location: AreaState | PointState;
+}
+
+function Option({ activeOption, location }: OptionProps) {
+  const quizDispatch = useQuizDispatch();
+
+  const active = activeOption?.id === location.id;
+
   useEffect(() => {
-    if (activeOption) {
+    if (active) {
       quizDispatch({
         type: QuizDispatchType.Selected,
-        location: activeOption,
+        location,
       });
     }
-  }, [activeOption]);
+  }, [active]);
 
-  return <>{combobox}</>;
+  return (
+    <Combobox.Option value={location}>
+      <div
+        className={`p-1 pl-7 rounded-3xl cursor-pointer ${
+          active ? "bg-gray-600" : ""
+        }`}
+      >
+        {location.longName}
+      </div>
+    </Combobox.Option>
+  );
+}
+
+interface OptionsSubstituteProps {
+  text: string;
+}
+
+function OptionsSubstitute({ text }: OptionsSubstituteProps) {
+  return <div className="pl-7 p-1">{text}</div>;
 }
