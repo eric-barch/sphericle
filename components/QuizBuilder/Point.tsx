@@ -1,5 +1,5 @@
 import { PointState, QuizDispatchType } from "@/types";
-import { useRef, useState } from "react";
+import { FocusEvent, useRef, useState } from "react";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
 import { useQuiz, useQuizDispatch } from "../QuizProvider";
@@ -12,26 +12,44 @@ export default function Point({ pointState }: PointProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
-  const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
-
   const locationNameInputRef = useRef<HTMLInputElement>();
 
   function setIsRenaming(isRenaming: boolean) {
-    setIsRenamingRaw(isRenaming);
+    quizDispatch({
+      type: QuizDispatchType.SetIsRenaming,
+      location: pointState,
+      isRenaming,
+    });
 
     if (isRenaming) {
       setTimeout(() => {
         locationNameInputRef.current.focus();
         locationNameInputRef.current.select();
+      }, 0);
+    }
+  }
+
+  function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
+    // check if focus is coming from outside component
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      console.log(
+        `focus Point ${pointState.shortName} from ${event.relatedTarget}`,
+      );
+
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: pointState,
       });
     }
   }
 
-  function handleFocus() {
-    quizDispatch({
-      type: QuizDispatchType.Selected,
-      location: pointState,
-    });
+  function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
+    // check if focus is going outside component
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      console.log(
+        `blur Point ${pointState.shortName} to ${event.relatedTarget}`,
+      );
+    }
   }
 
   return (
@@ -42,7 +60,8 @@ export default function Point({ pointState }: PointProps) {
           : ""
       }`}
       tabIndex={0}
-      onFocus={handleFocus}
+      onFocusCapture={handleFocusCapture}
+      onBlurCapture={handleBlurCapture}
     >
       <EditLocationButton
         className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"

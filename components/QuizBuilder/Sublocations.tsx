@@ -7,27 +7,24 @@ import {
   QuizDispatchType,
 } from "@/types";
 import { Reorder } from "framer-motion";
+import { RefObject } from "react";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 import Point from "./Point";
-import { RefObject } from "react";
 
 interface SublocationsProps {
   className?: string;
   parent: Quiz | AreaState;
-  locationAdderInputRef: RefObject<HTMLInputElement>;
-  setIsAdding: (isAdding: boolean) => void;
+  locationAdderInputRef?: RefObject<HTMLInputElement>;
 }
 
 export function Sublocations({
   className,
   parent,
   locationAdderInputRef,
-  setIsAdding,
 }: SublocationsProps) {
   const quizDispatch = useQuizDispatch();
 
-  const sublocations = parent.sublocations;
   function handleReorder(sublocations: (AreaState | PointState)[]) {
     quizDispatch({
       type: QuizDispatchType.ReorderedSublocations,
@@ -41,10 +38,10 @@ export function Sublocations({
       <Reorder.Group
         className="mt-1 space-y-1"
         axis="y"
-        values={sublocations}
+        values={parent.sublocations}
         onReorder={handleReorder}
       >
-        {sublocations.map((sublocation) => (
+        {parent.sublocations.map((sublocation) => (
           <Reorder.Item
             key={sublocation.id}
             layout="position"
@@ -55,11 +52,7 @@ export function Sublocations({
           </Reorder.Item>
         ))}
       </Reorder.Group>
-      <LocationAdder
-        parent={parent}
-        inputRef={locationAdderInputRef}
-        setIsAdding={setIsAdding}
-      />
+      <LocationAdder parent={parent} inputRef={locationAdderInputRef} />
     </div>
   );
 }

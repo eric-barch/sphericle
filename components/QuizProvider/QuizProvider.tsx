@@ -113,10 +113,17 @@ function setLocationIsOpen(
     return quiz;
   }
 
-  const newLocation = { ...location, isOpen };
-  const newQuiz = replaceLocation(quiz, location.id, newLocation);
+  let newLocation: AreaState;
 
-  return newQuiz;
+  if (isOpen && location.sublocations.length === 0) {
+    newLocation = { ...location, isAdding: true, isOpen: true };
+  } else if (!isOpen && location.sublocations.length === 0) {
+    newLocation = { ...location, isAdding: false, isOpen: false };
+  } else {
+    newLocation = { ...location, isOpen };
+  }
+
+  return replaceLocation(quiz, location.id, newLocation);
 }
 
 function setLocationIsAdding(

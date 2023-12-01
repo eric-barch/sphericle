@@ -1,8 +1,8 @@
+import { useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
-import { Menu } from "@headlessui/react";
-import { FocusEvent, MouseEvent } from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { MouseEvent } from "react";
 import { FaEllipsisVertical } from "react-icons/fa6";
-import { useQuiz, useQuizDispatch } from "../QuizProvider";
 
 interface EditLocationButtonProps {
   className?: string;
@@ -17,7 +17,6 @@ export default function EditLocationButton({
   setIsAdding = () => {},
   setIsRenaming,
 }: EditLocationButtonProps) {
-  const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
   function handleAddSublocationClick(event: MouseEvent<HTMLDivElement>) {
@@ -39,50 +38,39 @@ export default function EditLocationButton({
   }
 
   return (
-    <Menu>
-      <Menu.Button className={className}>
-        <FaEllipsisVertical className="w-4 h-4" />
-      </Menu.Button>
-      <Menu.Items className="absolute z-10 top-full left-0 bg-gray-500 rounded-custom p-1 space-y-1 focus:outline-none">
-        {location.locationType === LocationType.Area && (
-          <Menu.Item>
-            {({ active }) => (
-              <div
+    <div className={className}>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <FaEllipsisVertical className="w-4 h-4" />
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content
+            className="absolute z-10 top-2 ml-[-1.2rem] bg-gray-500 rounded-custom p-1 space-y-1 focus:outline-none"
+            onCloseAutoFocus={(e) => e.preventDefault()}
+          >
+            {location.locationType === LocationType.Area && (
+              <DropdownMenu.Item
                 onClick={handleAddSublocationClick}
-                className={`rounded-3xl cursor-pointer px-7 py-1 min-w-max ${
-                  active ? "bg-gray-600" : ""
-                }`}
+                className="rounded-3xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
               >
                 Add Sublocation
-              </div>
+              </DropdownMenu.Item>
             )}
-          </Menu.Item>
-        )}
-        <Menu.Item>
-          {({ active }) => (
-            <div
+            <DropdownMenu.Item
               onClick={handleRenameClick}
-              className={`rounded-3xl cursor-pointer px-7 py-1 min-w-max ${
-                active ? "bg-gray-600" : ""
-              }`}
+              className="rounded-3xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
             >
               Rename
-            </div>
-          )}
-        </Menu.Item>
-        <Menu.Item>
-          {({ active }) => (
-            <div
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
               onClick={handleDeleteClick}
-              className={`rounded-3xl cursor-pointer px-7 py-1 min-w-max ${
-                active ? "bg-gray-600" : ""
-              }`}
+              className="rounded-3xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
             >
               Delete
-            </div>
-          )}
-        </Menu.Item>
-      </Menu.Items>
-    </Menu>
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    </div>
   );
 }

@@ -167,7 +167,7 @@ export default function useAreaSearch(
           userDefinedName: "",
           isRenaming: false,
           isOpen: false,
-          isAdding: true,
+          isAdding: false,
           polygon,
           displayBounds,
           searchBounds,

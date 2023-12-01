@@ -1,7 +1,7 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, QuizDispatchType } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
-import { KeyboardEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, MouseEvent, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
@@ -12,15 +12,13 @@ interface AreaProps {
 }
 
 export default function Area({ areaState }: AreaProps) {
-  useEffect(() => {
-    console.log("areaLocation", areaState);
-  }, [areaState]);
-
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
   // TODO: lot of messy hacks here, try to refactor
-  const [disclosureKey, setDisclosureKey] = useState<number>(Math.random());
+  const [disclosureKey, setDisclosureKey] = useState<string>(
+    crypto.randomUUID(),
+  );
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
 
@@ -34,10 +32,10 @@ export default function Area({ areaState }: AreaProps) {
       isAdding,
     });
 
-    if (isAdding) {
-      // force Disclosure to render new open state
-      setDisclosureKey(Math.random());
+    // force Disclosure to render new open state
+    setDisclosureKey(crypto.randomUUID());
 
+    if (isAdding) {
       setTimeout(() => {
         locationAdderInputRef.current.focus();
       }, 0);
@@ -60,9 +58,7 @@ export default function Area({ areaState }: AreaProps) {
   }
 
   function handleFocus() {
-    if (!mouseDown) {
-      setWillToggle(true);
-    }
+    console.log("focus Area", areaState.shortName);
 
     quizDispatch({
       type: QuizDispatchType.Selected,
@@ -71,7 +67,12 @@ export default function Area({ areaState }: AreaProps) {
   }
 
   function handleBlur() {
-    setWillToggle(false);
+    console.log("blur Area", areaState.shortName);
+
+    quizDispatch({
+      type: QuizDispatchType.Selected,
+      location: null,
+    });
   }
 
   function handleMouseLeave() {
@@ -107,52 +108,52 @@ export default function Area({ areaState }: AreaProps) {
   }
 
   return (
-    <Disclosure key={disclosureKey} defaultOpen={areaState.isOpen}>
-      <div
-        className="relative"
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-      >
-        <EditLocationButton
-          className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
-          location={areaState}
-          setIsAdding={setIsAdding}
-          setIsRenaming={setIsRenaming}
-        />
-        <Disclosure.Button
-          className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
-            quiz.selectedSublocation?.id === areaState.id
-              ? "outline outline-2 outline-red-600"
-              : ""
-          }`}
-          onClick={handleClick}
-          onKeyDown={handleKeyDown}
-        >
-          <LocationName
+    <div
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+    >
+      <Disclosure key={disclosureKey} defaultOpen={areaState.isOpen}>
+        <div className="relative">
+          <EditLocationButton
+            className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
             location={areaState}
-            inputRef={locationNameInputRef}
+            setIsAdding={setIsAdding}
             setIsRenaming={setIsRenaming}
           />
-          <OpenChevron
-            className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1"
-            open={areaState.isOpen}
-          />
-        </Disclosure.Button>
-      </div>
-      <Transition>
-        <Disclosure.Panel>
-          <Sublocations
-            className="ml-10"
-            parent={areaState}
-            locationAdderInputRef={locationAdderInputRef}
-            setIsAdding={setIsAdding}
-          />
-        </Disclosure.Panel>
-      </Transition>
-    </Disclosure>
+          <Disclosure.Button
+            className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
+              quiz.selectedSublocation?.id === areaState.id
+                ? "outline outline-2 outline-red-600"
+                : ""
+            }`}
+            onClick={handleClick}
+            onKeyDown={handleKeyDown}
+          >
+            <LocationName
+              location={areaState}
+              inputRef={locationNameInputRef}
+              setIsRenaming={setIsRenaming}
+            />
+            <OpenChevron
+              className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1"
+              open={areaState.isOpen}
+            />
+          </Disclosure.Button>
+        </div>
+        <Transition>
+          <Disclosure.Panel>
+            <Sublocations
+              className="ml-10"
+              parent={areaState}
+              locationAdderInputRef={locationAdderInputRef}
+            />
+          </Disclosure.Panel>
+        </Transition>
+      </Disclosure>
+    </div>
   );
 }
 

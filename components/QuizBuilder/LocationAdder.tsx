@@ -27,13 +27,11 @@ import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
 interface LocationAdderProps {
   parent: Quiz | AreaState;
   inputRef: RefObject<HTMLInputElement>;
-  setIsAdding: (isAdding: boolean) => void;
 }
 
 export default function LocationAdder({
   parent,
   inputRef,
-  setIsAdding,
 }: LocationAdderProps) {
   const quizDispatch = useQuizDispatch();
 
@@ -67,8 +65,10 @@ export default function LocationAdder({
   }
 
   function handleFocusCapture(event: FocusEvent) {
-    // Check if the focus is coming from outside of the component
+    // check if the focus is coming from outside component
     if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+      console.log(`focus LocationAdder`);
+
       setIsFocused(true);
 
       if (parent.locationType === LocationType.Area) {
@@ -87,9 +87,11 @@ export default function LocationAdder({
     event.stopPropagation();
   }
 
-  function handleBlurCapture(event: FocusEvent) {
-    // Check if the focus is going outside of the component
+  function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
+    // check if focus is going outside component
     if (!event.currentTarget.contains(event.relatedTarget as Node)) {
+      console.log(`blur LocationAdder`);
+
       setIsFocused(false);
 
       quizDispatch({
@@ -97,9 +99,11 @@ export default function LocationAdder({
         location: null,
       });
 
-      if (input === "" && setIsAdding) {
-        setIsAdding(false);
-      }
+      // if (input === "" && setIsAdding) {
+      //   setTimeout(() => {
+      //     setIsAdding(false);
+      //   }, 0);
+      // }
     }
 
     event.stopPropagation();
