@@ -1,7 +1,7 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, QuizDispatchType } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
-import { KeyboardEvent, MouseEvent, useRef, useState } from "react";
+import { FocusEvent, KeyboardEvent, MouseEvent, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
@@ -20,7 +20,7 @@ export default function Area({ areaState }: AreaProps) {
     crypto.randomUUID(),
   );
   const [mouseDown, setMouseDown] = useState<boolean>(false);
-  const [willToggle, setWillToggle] = useState<boolean>(false);
+  const [toggleOnClick, setToggleOnClick] = useState<boolean>(false);
 
   const locationNameInputRef = useRef<HTMLInputElement>();
   const locationAdderInputRef = useRef<HTMLInputElement>();
@@ -57,38 +57,25 @@ export default function Area({ areaState }: AreaProps) {
     }
   }
 
-  function handleFocus() {
-    console.log("focus Area", areaState.shortName);
-
+  function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
     quizDispatch({
       type: QuizDispatchType.Selected,
       location: areaState,
     });
+
+    if (mouseDown) {
+      setToggleOnClick(false);
+    } else {
+      setToggleOnClick(true);
+    }
   }
 
-  function handleBlur() {
-    console.log("blur Area", areaState.shortName);
-
-    quizDispatch({
-      type: QuizDispatchType.Selected,
-      location: null,
-    });
-  }
-
-  function handleMouseLeave() {
-    setWillToggle(false);
-  }
-
-  function handleMouseDown() {
-    setMouseDown(true);
-  }
-
-  function handleMouseUp() {
-    setMouseDown(false);
+  function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
+    setToggleOnClick(false);
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (willToggle) {
+    if (toggleOnClick && quiz.selectedSublocation?.id === areaState.id) {
       quizDispatch({
         type: QuizDispatchType.SetIsOpen,
         location: areaState,
@@ -96,8 +83,9 @@ export default function Area({ areaState }: AreaProps) {
       });
     } else {
       event.preventDefault();
-      setWillToggle(true);
     }
+
+    setToggleOnClick(true);
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
@@ -107,10 +95,22 @@ export default function Area({ areaState }: AreaProps) {
     }
   }
 
+  function handleMouseDown(event: MouseEvent<HTMLDivElement>) {
+    setMouseDown(true);
+  }
+
+  function handleMouseUp(event: MouseEvent<HTMLDivElement>) {
+    setMouseDown(false);
+  }
+
+  function handleMouseLeave(event: MouseEvent<HTMLDivElement>) {
+    setMouseDown(false);
+  }
+
   return (
     <div
-      onFocus={handleFocus}
-      onBlur={handleBlur}
+      onFocusCapture={handleFocusCapture}
+      onBlurCapture={handleBlurCapture}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}

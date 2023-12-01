@@ -67,8 +67,6 @@ export default function LocationAdder({
   function handleFocusCapture(event: FocusEvent) {
     // check if the focus is coming from outside component
     if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-      console.log(`focus LocationAdder`);
-
       setIsFocused(true);
 
       if (parent.locationType === LocationType.Area) {
@@ -83,30 +81,13 @@ export default function LocationAdder({
         });
       }
     }
-
-    event.stopPropagation();
   }
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
     // check if focus is going outside component
     if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-      console.log(`blur LocationAdder`);
-
       setIsFocused(false);
-
-      quizDispatch({
-        type: QuizDispatchType.Selected,
-        location: null,
-      });
-
-      // if (input === "" && setIsAdding) {
-      //   setTimeout(() => {
-      //     setIsAdding(false);
-      //   }, 0);
-      // }
     }
-
-    event.stopPropagation();
   }
 
   return parent.isAdding || parent.sublocations.length === 0 ? (
