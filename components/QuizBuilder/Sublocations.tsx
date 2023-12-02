@@ -7,21 +7,25 @@ import {
   QuizDispatchType,
 } from "@/types";
 import { Reorder } from "framer-motion";
-import { RefObject } from "react";
+import { FocusEvent, RefObject } from "react";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
 import Point from "./Point";
 
 interface SublocationsProps {
+  sublocationsRef?: RefObject<HTMLDivElement>;
+  locationAdderInputRef?: RefObject<HTMLInputElement>;
   className?: string;
   parent: Quiz | AreaState;
-  locationAdderInputRef?: RefObject<HTMLInputElement>;
+  onBlurCapture: (event: FocusEvent<HTMLDivElement>) => void;
 }
 
 export function Sublocations({
+  sublocationsRef,
   className,
   parent,
   locationAdderInputRef,
+  onBlurCapture,
 }: SublocationsProps) {
   const quizDispatch = useQuizDispatch();
 
@@ -34,7 +38,11 @@ export function Sublocations({
   }
 
   return (
-    <div className={`${className ? className : ""} space-y-1 h-full`}>
+    <div
+      ref={sublocationsRef}
+      className={`${className ? className : ""} space-y-1 h-full`}
+      onBlurCapture={onBlurCapture}
+    >
       <Reorder.Group
         className="mt-1 space-y-1"
         axis="y"

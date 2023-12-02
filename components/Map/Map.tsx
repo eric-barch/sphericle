@@ -1,14 +1,15 @@
 import { AreaState, LocationType, PointState } from "@/types";
 import { MultiPolygon, Point, Polygon } from "geojson";
-import { useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef } from "react";
 
 interface MapProps {
+  mapRef?: RefObject<HTMLDivElement>;
   mapId: string;
   displayedLocation: AreaState | PointState | null;
 }
 
-export default function Map({ mapId, displayedLocation }: MapProps) {
-  const mapRef = useRef(null);
+export default function Map({ mapRef, mapId, displayedLocation }: MapProps) {
+  const ref = mapRef || useRef(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);
   const filledAreasRef = useRef<google.maps.Polygon[] | null>(null);
   const emptyAreasRef = useRef<google.maps.Polygon[] | null>(null);
@@ -20,8 +21,8 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
       new google.maps.LatLng(85, 180),
     );
 
-    if (google && mapRef.current && !googleMapRef.current) {
-      googleMapRef.current = new google.maps.Map(mapRef.current, {
+    if (google && ref.current && !googleMapRef.current) {
+      googleMapRef.current = new google.maps.Map(ref.current, {
         mapId,
         center: { lat: 40.69149154234791, lng: -73.98507972271125 },
         zoom: 12,
@@ -202,5 +203,5 @@ export default function Map({ mapId, displayedLocation }: MapProps) {
     }
   }, [displayedLocation]);
 
-  return <div className="h-full w-full" ref={mapRef} />;
+  return <div className="h-full w-full" ref={ref} />;
 }
