@@ -74,11 +74,28 @@ export default function LocationAdder({
 
     let locationToSelect = null;
 
-    if (event.currentTarget.contains(event.relatedTarget)) {
-      locationToSelect = lastAddedLocation ? lastAddedLocation : parent;
+    /**TODO: this check for null here is not a robust solution, but is the best way i can figure
+     * without being able to modify Headless UI Combobox. Long term fix is to refactor to Radix
+     * components which give more control over focus. */
+    if (
+      event.currentTarget.contains(event.relatedTarget) ||
+      /**Headless UI sets focus to null after selection is made, so this is the only way to direct
+       * the code into this block. It is not robust because it only works if the LocationAdder
+       * unmounts when its parent loses focus. That is currently the behavior of the component, but
+       * could change and would break this solution. */
+      event.relatedTarget === null
+    ) {
+      if (lastAddedLocation) {
+        locationToSelect = lastAddedLocation;
+      } else {
+        locationToSelect = parent;
+      }
     } else {
-      locationToSelect =
-        parent.locationType === LocationType.Area ? parent : null;
+      if (parent.locationType === LocationType.Area) {
+        locationToSelect = parent;
+      } else {
+        locationToSelect = null;
+      }
     }
 
     quizDispatch({
@@ -360,6 +377,13 @@ function Option({ activeOption, location }: OptionProps) {
 
   const active = activeOption?.id === location.id;
 
+  function handleFocusCapture(event: FocusEvent) {
+    quizDispatch({
+      type: QuizDispatchType.Selected,
+      location,
+    });
+  }
+
   useEffect(() => {
     if (active) {
       quizDispatch({
@@ -370,7 +394,7 @@ function Option({ activeOption, location }: OptionProps) {
   }, [active]);
 
   return (
-    <Combobox.Option value={location}>
+    <Combobox.Option value={location} onFocusCapture={handleFocusCapture}>
       <div
         className={`p-1 pl-7 rounded-3xl cursor-pointer ${
           active ? "bg-gray-600" : ""

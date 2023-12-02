@@ -78,7 +78,11 @@ function addLocation(
     sublocations: [...parent.sublocations, location],
   };
 
-  return replaceLocation(quiz, parent.id, newParent);
+  const newQuiz = replaceLocation(quiz, parent.id, newParent);
+
+  newQuiz.selectedSublocation = location;
+
+  return newQuiz;
 }
 
 function selectLocation(
