@@ -21,6 +21,7 @@ export default function Area({ areaState }: AreaProps) {
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [toggleOnClick, setToggleOnClick] = useState<boolean>(false);
 
+  const areaRef = useRef<HTMLDivElement>();
   const locationNameInputRef = useRef<HTMLInputElement>();
   const locationAdderInputRef = useRef<HTMLInputElement>();
 
@@ -71,6 +72,12 @@ export default function Area({ areaState }: AreaProps) {
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
     setToggleOnClick(false);
+
+    const relatedTarget = event.relatedTarget;
+
+    if (areaRef.current && !areaRef.current.contains(relatedTarget)) {
+      setIsAdding(false);
+    }
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
@@ -109,6 +116,7 @@ export default function Area({ areaState }: AreaProps) {
   return (
     <div
       id="area"
+      ref={areaRef}
       onFocusCapture={handleFocusCapture}
       onBlurCapture={handleBlurCapture}
       onMouseDown={handleMouseDown}
