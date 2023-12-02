@@ -15,7 +15,6 @@ export default function Area({ areaState }: AreaProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
-  // TODO: lot of messy hacks here, try to refactor
   const [disclosureKey, setDisclosureKey] = useState<string>(
     crypto.randomUUID(),
   );
@@ -109,6 +108,7 @@ export default function Area({ areaState }: AreaProps) {
 
   return (
     <div
+      id="area"
       onFocusCapture={handleFocusCapture}
       onBlurCapture={handleBlurCapture}
       onMouseDown={handleMouseDown}

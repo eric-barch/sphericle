@@ -85,8 +85,7 @@ function selectLocation(
   quiz: Quiz,
   location: AreaState | PointState | null,
 ): Quiz {
-  const newQuiz: Quiz = { ...quiz, selectedSublocation: location };
-  return newQuiz;
+  return { ...quiz, selectedSublocation: location };
 }
 
 function setLocationIsRenaming(

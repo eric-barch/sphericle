@@ -30,26 +30,10 @@ export default function Point({ pointState }: PointProps) {
   }
 
   function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
-    // check if focus is coming from outside component
-    if (!event.currentTarget.contains(event.relatedTarget)) {
-      console.log(
-        `focus Point ${pointState.shortName} from ${event.relatedTarget}`,
-      );
-
-      quizDispatch({
-        type: QuizDispatchType.Selected,
-        location: pointState,
-      });
-    }
-  }
-
-  function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
-    // check if focus is going outside component
-    if (!event.currentTarget.contains(event.relatedTarget)) {
-      console.log(
-        `blur Point ${pointState.shortName} to ${event.relatedTarget}`,
-      );
-    }
+    quizDispatch({
+      type: QuizDispatchType.Selected,
+      location: pointState,
+    });
   }
 
   return (
@@ -61,7 +45,6 @@ export default function Point({ pointState }: PointProps) {
       }`}
       tabIndex={0}
       onFocusCapture={handleFocusCapture}
-      onBlurCapture={handleBlurCapture}
     >
       <EditLocationButton
         className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"

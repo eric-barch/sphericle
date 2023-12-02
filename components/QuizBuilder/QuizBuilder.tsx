@@ -23,6 +23,10 @@ export default function QuizBuilder() {
     loadPlacesLibrary();
   }, []);
 
+  // useEffect(() => {
+  //   console.log("quiz", quiz);
+  // }, [quiz]);
+
   return (
     <>
       {placesLoaded ? (

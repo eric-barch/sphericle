@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuizDispatch } from "@/components/QuizProvider";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import useAreaSearch, { AreaSearch } from "@/hooks/use-area-search.hook";
 import usePointSearch, { PointSearch } from "@/hooks/use-point-search.hook";
 import {
@@ -33,15 +33,25 @@ export default function LocationAdder({
   parent,
   inputRef,
 }: LocationAdderProps) {
+  const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [isFocused, setIsFocused] = useState<boolean>(null);
+  const [lastSelectedLocation, setLastSelectedLocation] = useState<
+    AreaState | PointState | null
+  >(null);
   const [locationType, setLocationType] = useState<LocationType>(
     LocationType.Area,
   );
   const [input, setInput] = useState<string>("");
   const areaSearch = useAreaSearch(parent);
   const pointSearch = usePointSearch(parent);
+
+  useEffect(() => {
+    if (isFocused) {
+      setLastSelectedLocation(quiz.selectedSublocation);
+    }
+  }, [quiz.selectedSublocation]);
 
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
@@ -65,33 +75,33 @@ export default function LocationAdder({
   }
 
   function handleFocusCapture(event: FocusEvent) {
-    // check if the focus is coming from outside component
-    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-      setIsFocused(true);
+    setIsFocused(true);
 
-      if (parent.locationType === LocationType.Area) {
-        quizDispatch({
-          type: QuizDispatchType.Selected,
-          location: parent,
-        });
-      } else {
-        quizDispatch({
-          type: QuizDispatchType.Selected,
-          location: null,
-        });
-      }
+    if (event.currentTarget.contains(event.relatedTarget)) {
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: lastSelectedLocation,
+      });
+    } else if (parent.locationType === LocationType.Area) {
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: parent,
+      });
+    } else if (parent.locationType === LocationType.Quiz) {
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: null,
+      });
     }
   }
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
-    // check if focus is going outside component
-    if (!event.currentTarget.contains(event.relatedTarget as Node)) {
-      setIsFocused(false);
-    }
+    setIsFocused(false);
   }
 
   return parent.isAdding || parent.sublocations.length === 0 ? (
     <div
+      id="location-adder"
       className="relative"
       onFocusCapture={handleFocusCapture}
       onBlurCapture={handleBlurCapture}
