@@ -50,37 +50,33 @@ export default function QuizBuilder() {
     }
   }
 
-  const displayedLocation = quiz.buildSelected;
+  const buildSelected = quiz.buildSelected;
 
   useEffect(() => {
-    if (displayedLocation) {
-      if (displayedLocation.locationType === LocationType.Area) {
-        if (displayedLocation.isOpen) {
-          setEmptyAreas(displayedLocation);
+    if (buildSelected) {
+      if (buildSelected.locationType === LocationType.Area) {
+        if (buildSelected.isOpen) {
+          setEmptyAreas(buildSelected);
           setFilledAreas(null);
-          setBounds(displayedLocation.displayBounds);
+          setBounds(buildSelected.displayBounds);
         } else {
-          if (
-            displayedLocation.parentLocation.locationType === LocationType.Quiz
-          ) {
+          if (buildSelected.parentLocation.locationType === LocationType.Quiz) {
             setEmptyAreas(null);
-            setBounds(displayedLocation.displayBounds);
+            setBounds(buildSelected.displayBounds);
           } else if (
-            displayedLocation.parentLocation.locationType === LocationType.Area
+            buildSelected.parentLocation.locationType === LocationType.Area
           ) {
-            setEmptyAreas(displayedLocation.parentLocation);
-            setBounds(displayedLocation.parentLocation.displayBounds);
+            setEmptyAreas(buildSelected.parentLocation);
+            setBounds(buildSelected.parentLocation.displayBounds);
           }
 
-          setFilledAreas(displayedLocation);
+          setFilledAreas(buildSelected);
         }
         setPoints(null);
-      } else if (displayedLocation.locationType === LocationType.Point) {
-        if (
-          displayedLocation.parentLocation.locationType === LocationType.Quiz
-        ) {
-          const lng = displayedLocation.point.coordinates[0];
-          const lat = displayedLocation.point.coordinates[1];
+      } else if (buildSelected.locationType === LocationType.Point) {
+        if (buildSelected.parentLocation.locationType === LocationType.Quiz) {
+          const lng = buildSelected.point.coordinates[0];
+          const lat = buildSelected.point.coordinates[1];
           const diff = 0.1;
 
           const north = lat + diff;
@@ -91,19 +87,19 @@ export default function QuizBuilder() {
           setEmptyAreas(null);
           setBounds({ north, east, south, west });
         } else {
-          setEmptyAreas(displayedLocation.parentLocation);
-          setBounds(displayedLocation.parentLocation.displayBounds);
+          setEmptyAreas(buildSelected.parentLocation);
+          setBounds(buildSelected.parentLocation.displayBounds);
         }
 
         setFilledAreas(null);
-        setPoints(displayedLocation);
+        setPoints(buildSelected);
       }
     } else {
       setEmptyAreas(null);
       setFilledAreas(null);
       setPoints(null);
     }
-  }, [displayedLocation]);
+  }, [buildSelected]);
 
   return (
     <>

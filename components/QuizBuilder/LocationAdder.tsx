@@ -1,8 +1,12 @@
 "use client";
 
 import { useQuizDispatch } from "@/components/QuizProvider";
-import useAreaSearch, { AreaSearch } from "@/hooks/use-area-search.hook";
-import usePointSearch, { PointSearch } from "@/hooks/use-point-search.hook";
+import useAreaSearch, {
+  AreaSearch,
+} from "@/components/QuizBuilder/use-area-search.hook";
+import usePointSearch, {
+  PointSearch,
+} from "@/components/QuizBuilder/use-point-search.hook";
 import {
   AreaState,
   LocationType,
