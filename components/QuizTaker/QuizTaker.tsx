@@ -20,12 +20,12 @@ export default function QuizTaker({}: QuizTakerProps) {
       } else {
         setPlacesLoaded(true);
       }
-    })();
 
-    quizDispatch({
-      type: QuizDispatchType.Selected,
-      location: quiz.sublocations[0],
-    });
+      quizDispatch({
+        type: QuizDispatchType.Selected,
+        location: quiz.sublocations[0],
+      });
+    })();
   }, []);
 
   return (
