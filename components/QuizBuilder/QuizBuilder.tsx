@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FocusEvent, useEffect, useRef, useState } from "react";
 import { Sublocations } from "./Sublocations";
 import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
+import { getLocationMapItems } from "./QuizBuilder.helpers";
 
 export default function QuizBuilder() {
   const quiz = useQuiz();
@@ -35,6 +36,28 @@ export default function QuizBuilder() {
     })();
   }, []);
 
+  const buildSelected = quiz.buildSelected;
+
+  useEffect(() => {
+    if (buildSelected) {
+      console.log("buildSelected", buildSelected);
+      const {
+        bounds = null,
+        emptyAreas,
+        filledAreas,
+        points,
+      } = getLocationMapItems(buildSelected);
+
+      if (bounds) {
+        setBounds(bounds);
+      }
+
+      setEmptyAreas(emptyAreas);
+      setFilledAreas(filledAreas);
+      setPoints(points);
+    }
+  }, [buildSelected]);
+
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
     const relatedTarget = event.relatedTarget as Node;
 
@@ -49,57 +72,6 @@ export default function QuizBuilder() {
       });
     }
   }
-
-  const buildSelected = quiz.buildSelected;
-
-  useEffect(() => {
-    if (buildSelected) {
-      if (buildSelected.locationType === LocationType.Area) {
-        if (buildSelected.isOpen) {
-          setEmptyAreas(buildSelected);
-          setFilledAreas(null);
-          setBounds(buildSelected.displayBounds);
-        } else {
-          if (buildSelected.parentLocation.locationType === LocationType.Quiz) {
-            setEmptyAreas(null);
-            setBounds(buildSelected.displayBounds);
-          } else if (
-            buildSelected.parentLocation.locationType === LocationType.Area
-          ) {
-            setEmptyAreas(buildSelected.parentLocation);
-            setBounds(buildSelected.parentLocation.displayBounds);
-          }
-
-          setFilledAreas(buildSelected);
-        }
-        setPoints(null);
-      } else if (buildSelected.locationType === LocationType.Point) {
-        if (buildSelected.parentLocation.locationType === LocationType.Quiz) {
-          const lng = buildSelected.point.coordinates[0];
-          const lat = buildSelected.point.coordinates[1];
-          const diff = 0.1;
-
-          const north = lat + diff;
-          const east = lng + diff;
-          const south = lat - diff;
-          const west = lng - diff;
-
-          setEmptyAreas(null);
-          setBounds({ north, east, south, west });
-        } else {
-          setEmptyAreas(buildSelected.parentLocation);
-          setBounds(buildSelected.parentLocation.displayBounds);
-        }
-
-        setFilledAreas(null);
-        setPoints(buildSelected);
-      }
-    } else {
-      setEmptyAreas(null);
-      setFilledAreas(null);
-      setPoints(null);
-    }
-  }, [buildSelected]);
 
   return (
     <>

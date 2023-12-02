@@ -160,7 +160,7 @@ export default function useAreaSearch(
         return {
           id: crypto.randomUUID(),
           openStreetMapPlaceId: openStreetMapResponseItem.place_id,
-          parentLocation,
+          parent: parentLocation,
           locationType: LocationType.Area,
           shortName: openStreetMapResponseItem.name,
           longName: openStreetMapResponseItem.display_name,

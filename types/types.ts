@@ -14,7 +14,7 @@ export interface Quiz {
 export interface AreaState {
   id: string;
   openStreetMapPlaceId: number;
-  parentLocation: Quiz | AreaState;
+  parent: Quiz | AreaState;
   locationType: LocationType.Area;
   shortName: string;
   longName: string;
@@ -32,7 +32,7 @@ export interface AreaState {
 export interface PointState {
   id: string;
   googlePlaceId: string;
-  parentLocation: Quiz | AreaState;
+  parent: Quiz | AreaState;
   locationType: LocationType.Point;
   shortName: string;
   longName: string;
@@ -41,17 +41,6 @@ export interface PointState {
   point: Point;
   answeredCorrectly: boolean | null;
 }
-
-export type QuizDispatch =
-  | AddedQuizDispatch
-  | BuildSelectedQuizDispatch
-  | TakeSelectedQuizDispatch
-  | SetIsRenamingQuizDispatch
-  | SetIsOpenQuizDispatch
-  | SetIsAddingQuizDispatch
-  | ReorderedSublocationsQuizDispatch
-  | RenamedQuizDispatch
-  | DeletedQuizDispatch;
 
 export interface OpenStreetMapResponseItem {
   place_id: number;
@@ -70,6 +59,24 @@ export interface OpenStreetMapResponseItem {
   boundingbox: number[];
   geojson: AllGeoJSON;
 }
+
+export interface MapItems {
+  bounds?: google.maps.LatLngBoundsLiteral;
+  emptyAreas: AreaState[] | AreaState | null;
+  filledAreas: AreaState[] | AreaState | null;
+  points: PointState[] | PointState | null;
+}
+
+export type QuizDispatch =
+  | AddedQuizDispatch
+  | BuildSelectedQuizDispatch
+  | TakeSelectedQuizDispatch
+  | SetIsRenamingQuizDispatch
+  | SetIsOpenQuizDispatch
+  | SetIsAddingQuizDispatch
+  | ReorderedSublocationsQuizDispatch
+  | RenamedQuizDispatch
+  | DeletedQuizDispatch;
 
 interface BaseQuizDispatch {
   type: QuizDispatchType;

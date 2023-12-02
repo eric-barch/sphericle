@@ -40,11 +40,11 @@ export default function QuizTaker({}: QuizTakerProps) {
 
   useEffect(() => {
     if (takeSelected) {
-      if (takeSelected.parentLocation.locationType === LocationType.Quiz) {
+      if (takeSelected.parent.locationType === LocationType.Quiz) {
         setEmptyAreas(null);
       } else {
-        setBounds(takeSelected.parentLocation.displayBounds);
-        setEmptyAreas(takeSelected.parentLocation);
+        setBounds(takeSelected.parent.displayBounds);
+        setEmptyAreas(takeSelected.parent);
       }
 
       if (takeSelected.locationType === LocationType.Area) {

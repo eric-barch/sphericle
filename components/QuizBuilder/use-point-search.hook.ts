@@ -18,9 +18,7 @@ export interface PointSearch {
   reset: () => void;
 }
 
-export default function usePointSearch(
-  parentLocation: Quiz | AreaState,
-): PointSearch {
+export default function usePointSearch(parent: Quiz | AreaState): PointSearch {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
@@ -47,8 +45,8 @@ export default function usePointSearch(
       input: searchTerm,
     };
 
-    if (parentLocation.locationType === LocationType.Area) {
-      request.locationRestriction = parentLocation.displayBounds;
+    if (parent.locationType === LocationType.Area) {
+      request.locationRestriction = parent.displayBounds;
     }
 
     const autocompletePredictions = (
@@ -76,7 +74,7 @@ export default function usePointSearch(
             const pointState = {
               id: crypto.randomUUID(),
               googlePlaceId: autocompletePrediction.place_id,
-              parentLocation,
+              parent,
               locationType: LocationType.Point as LocationType.Point,
               longName: autocompletePrediction.description,
               shortName: autocompletePrediction.description,
@@ -87,8 +85,8 @@ export default function usePointSearch(
             };
 
             if (
-              parentLocation.locationType === LocationType.Area &&
-              !booleanPointInPolygon(pointState.point, parentLocation.polygon)
+              parent.locationType === LocationType.Area &&
+              !booleanPointInPolygon(pointState.point, parent.polygon)
             ) {
               return null;
             }
