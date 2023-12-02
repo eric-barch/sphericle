@@ -21,28 +21,27 @@ export default function QuizBuilder() {
   const [points, setPoints] = useState<PointState[] | PointState | null>(null);
 
   const sublocationsRef = useRef<HTMLDivElement>();
+  const takeQuizButtonRef = useRef<HTMLAnchorElement>();
   const mapRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
-    async function loadPlacesLibrary() {
+    (async function loadPlacesLibrary() {
       if (!window.google || !window.google.maps || !window.google.maps.places) {
         await google.maps.importLibrary("places");
         setPlacesLoaded(true);
       } else {
         setPlacesLoaded(true);
       }
-    }
-
-    loadPlacesLibrary();
+    })();
   }, []);
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
-    const relatedTarget = event.relatedTarget;
+    const relatedTarget = event.relatedTarget as Node;
 
     if (
-      (!sublocationsRef.current?.contains(relatedTarget) &&
-        !mapRef.current?.contains(relatedTarget)) ||
-      relatedTarget === null
+      !sublocationsRef.current?.contains(relatedTarget) &&
+      !takeQuizButtonRef.current?.contains(relatedTarget) &&
+      !mapRef.current?.contains(relatedTarget)
     ) {
       quizDispatch({
         type: QuizDispatchType.BuildSelected,
@@ -118,6 +117,7 @@ export default function QuizBuilder() {
               onBlurCapture={handleBlurCapture}
             />
             <Link
+              ref={takeQuizButtonRef}
               className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
               href="/take-quiz"
             >

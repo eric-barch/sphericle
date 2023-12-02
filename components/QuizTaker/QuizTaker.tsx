@@ -2,15 +2,23 @@ import Map from "@/components/Map";
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { useEffect, useState } from "react";
 import AnswerBox from "./AnswerBox";
-import { QuizDispatchType } from "@/types";
+import { AreaState, PointState, QuizDispatchType } from "@/types";
 
 interface QuizTakerProps {}
 
 export default function QuizTaker({}: QuizTakerProps) {
-  const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
-
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
+
+  const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
+  const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>(null);
+  const [emptyAreas, setEmptyAreas] = useState<AreaState[] | AreaState | null>(
+    null,
+  );
+  const [filledAreas, setFilledAreas] = useState<
+    AreaState[] | AreaState | null
+  >(null);
+  const [points, setPoints] = useState<PointState[] | PointState | null>(null);
 
   useEffect(() => {
     (async function loadPlacesLibrary() {
@@ -20,11 +28,6 @@ export default function QuizTaker({}: QuizTakerProps) {
       } else {
         setPlacesLoaded(true);
       }
-
-      quizDispatch({
-        type: QuizDispatchType.BuildSelected,
-        location: quiz.sublocations[0],
-      });
     })();
   }, []);
 
@@ -32,10 +35,13 @@ export default function QuizTaker({}: QuizTakerProps) {
     <>
       {placesLoaded ? (
         <div className="h-[calc(100vh-48px)] relative flex justify-center content-center">
-          {/* <Map
+          <Map
             mapId="8777b9e5230900fc"
-            displayedLocation={quiz.selectedSublocation}
-          /> */}
+            bounds={bounds}
+            emptyAreas={emptyAreas}
+            filledAreas={filledAreas}
+            points={points}
+          />
           <AnswerBox />
         </div>
       ) : (

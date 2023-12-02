@@ -106,7 +106,6 @@ export default function LocationAdder({
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      console.log("foo");
       setIsFocused(false);
       setLastAddedLocation(null);
     }
