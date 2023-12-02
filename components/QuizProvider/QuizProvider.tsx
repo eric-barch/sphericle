@@ -37,7 +37,10 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       return addLocation(quiz, action.parent, action.location);
     }
     case QuizDispatchType.BuildSelected: {
-      return selectLocation(quiz, action.location);
+      return selectBuildLocation(quiz, action.location);
+    }
+    case QuizDispatchType.TakeSelected: {
+      return selectTakeLocation(quiz, action.location);
     }
     case QuizDispatchType.SetIsRenaming: {
       return setLocationIsRenaming(quiz, action.location, action.isRenaming);
@@ -65,7 +68,8 @@ const initialQuiz = {
   locationType: LocationType.Quiz as LocationType.Quiz,
   isAdding: true,
   sublocations: [],
-  selectedSublocation: null,
+  buildSelected: null,
+  takeSelected: null,
 };
 
 function addLocation(
@@ -80,16 +84,23 @@ function addLocation(
 
   const newQuiz = replaceLocation(quiz, parent.id, newParent);
 
-  newQuiz.selectedSublocation = location;
+  newQuiz.buildSelected = location;
 
   return newQuiz;
 }
 
-function selectLocation(
+function selectBuildLocation(
   quiz: Quiz,
   location: AreaState | PointState | null,
 ): Quiz {
-  return { ...quiz, selectedSublocation: location };
+  return { ...quiz, buildSelected: location };
+}
+
+function selectTakeLocation(
+  quiz: Quiz,
+  location: AreaState | PointState | null,
+): Quiz {
+  return { ...quiz, takeSelected: location };
 }
 
 function setLocationIsRenaming(
@@ -128,7 +139,7 @@ function setLocationIsOpen(
 
   const newQuiz = replaceLocation(quiz, location.id, newLocation);
 
-  newQuiz.selectedSublocation = newLocation;
+  newQuiz.buildSelected = newLocation;
 
   return newQuiz;
 }

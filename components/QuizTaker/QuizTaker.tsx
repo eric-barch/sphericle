@@ -2,7 +2,7 @@ import Map from "@/components/Map";
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { useEffect, useState } from "react";
 import AnswerBox from "./AnswerBox";
-import { AreaState, PointState, QuizDispatchType } from "@/types";
+import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
 
 interface QuizTakerProps {}
 
@@ -28,8 +28,34 @@ export default function QuizTaker({}: QuizTakerProps) {
       } else {
         setPlacesLoaded(true);
       }
+
+      quizDispatch({
+        type: QuizDispatchType.TakeSelected,
+        location: quiz.sublocations[0],
+      });
     })();
   }, []);
+
+  const takeSelected = quiz.takeSelected;
+
+  useEffect(() => {
+    if (takeSelected) {
+      if (takeSelected.parentLocation.locationType === LocationType.Quiz) {
+        setEmptyAreas(null);
+      } else {
+        setBounds(takeSelected.parentLocation.displayBounds);
+        setEmptyAreas(takeSelected.parentLocation);
+      }
+
+      if (takeSelected.locationType === LocationType.Area) {
+        setFilledAreas(takeSelected);
+        setPoints(null);
+      } else if (takeSelected.locationType === LocationType.Point) {
+        setPoints(takeSelected);
+        setFilledAreas(null);
+      }
+    }
+  }, [takeSelected]);
 
   return (
     <>

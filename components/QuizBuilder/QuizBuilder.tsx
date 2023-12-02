@@ -50,7 +50,7 @@ export default function QuizBuilder() {
     }
   }
 
-  const displayedLocation = quiz.selectedSublocation;
+  const displayedLocation = quiz.buildSelected;
 
   useEffect(() => {
     if (displayedLocation) {

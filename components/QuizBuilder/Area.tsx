@@ -81,7 +81,7 @@ export default function Area({ areaState }: AreaProps) {
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (toggleOnClick && quiz.selectedSublocation?.id === areaState.id) {
+    if (toggleOnClick && quiz.buildSelected?.id === areaState.id) {
       quizDispatch({
         type: QuizDispatchType.SetIsOpen,
         location: areaState,
@@ -133,7 +133,7 @@ export default function Area({ areaState }: AreaProps) {
           />
           <Disclosure.Button
             className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
-              quiz.selectedSublocation?.id === areaState.id
+              quiz.buildSelected?.id === areaState.id
                 ? "outline outline-2 outline-red-600"
                 : ""
             }`}
