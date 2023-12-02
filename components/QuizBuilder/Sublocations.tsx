@@ -55,6 +55,7 @@ export function Sublocations({
             layout="position"
             layoutScroll
             value={sublocation}
+            transition={{ duration: 0 }}
           >
             <Sublocation sublocation={sublocation} />
           </Reorder.Item>
