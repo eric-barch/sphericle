@@ -17,7 +17,7 @@ interface SublocationsProps {
   locationAdderInputRef?: RefObject<HTMLInputElement>;
   className?: string;
   parent: Quiz | AreaState;
-  onBlurCapture: (event: FocusEvent<HTMLDivElement>) => void;
+  onBlurCapture?: (event: FocusEvent<HTMLDivElement>) => void;
 }
 
 export function Sublocations({

@@ -37,25 +37,26 @@ export default function Point({ pointState }: PointProps) {
   }
 
   return (
-    <div
-      className={`relative w-full py-1 px-1 rounded-3xl text-left bg-gray-600 cursor-pointer ${
-        quiz.selectedSublocation?.id === pointState.id
-          ? "outline outline-2 outline-red-600"
-          : ""
-      }`}
-      tabIndex={0}
-      onFocusCapture={handleFocusCapture}
-    >
+    <div id="point" className="relative" onFocusCapture={handleFocusCapture}>
       <EditLocationButton
         className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
         location={pointState}
         setIsRenaming={setIsRenaming}
       />
-      <LocationName
-        location={pointState}
-        inputRef={locationNameInputRef}
-        setIsRenaming={setIsRenaming}
-      />
+      <div
+        className={`w-full py-1 px-1 rounded-3xl text-left bg-gray-600 cursor-pointer ${
+          quiz.selectedSublocation?.id === pointState.id
+            ? "outline outline-2 outline-red-600"
+            : ""
+        }`}
+        tabIndex={0}
+      >
+        <LocationName
+          location={pointState}
+          inputRef={locationNameInputRef}
+          setIsRenaming={setIsRenaming}
+        />
+      </div>
     </div>
   );
 }
