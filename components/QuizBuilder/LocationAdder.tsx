@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import { useQuizDispatch } from "@/components/QuizProvider";
 import useAreaSearch, { AreaSearch } from "@/hooks/use-area-search.hook";
 import usePointSearch, { PointSearch } from "@/hooks/use-point-search.hook";
 import {
@@ -33,11 +33,10 @@ export default function LocationAdder({
   parent,
   inputRef,
 }: LocationAdderProps) {
-  const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
   const [isFocused, setIsFocused] = useState<boolean>(null);
-  const [lastSelectedLocation, setLastSelectedLocation] = useState<
+  const [lastAddedLocation, setLastAddedLocation] = useState<
     AreaState | PointState | null
   >(null);
   const [locationType, setLocationType] = useState<LocationType>(
@@ -46,12 +45,6 @@ export default function LocationAdder({
   const [input, setInput] = useState<string>("");
   const areaSearch = useAreaSearch(parent);
   const pointSearch = usePointSearch(parent);
-
-  useEffect(() => {
-    if (isFocused) {
-      setLastSelectedLocation(quiz.selectedSublocation);
-    }
-  }, [quiz.selectedSublocation]);
 
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
@@ -65,6 +58,8 @@ export default function LocationAdder({
       location: newLocation,
     });
 
+    setLastAddedLocation(newLocation);
+
     if (inputRef) {
       inputRef.current.value = "";
     }
@@ -77,26 +72,27 @@ export default function LocationAdder({
   function handleFocusCapture(event: FocusEvent) {
     setIsFocused(true);
 
+    let locationToSelect = null;
+
     if (event.currentTarget.contains(event.relatedTarget)) {
-      quizDispatch({
-        type: QuizDispatchType.Selected,
-        location: lastSelectedLocation,
-      });
-    } else if (parent.locationType === LocationType.Area) {
-      quizDispatch({
-        type: QuizDispatchType.Selected,
-        location: parent,
-      });
-    } else if (parent.locationType === LocationType.Quiz) {
-      quizDispatch({
-        type: QuizDispatchType.Selected,
-        location: null,
-      });
+      locationToSelect = lastAddedLocation ? lastAddedLocation : parent;
+    } else {
+      locationToSelect =
+        parent.locationType === LocationType.Area ? parent : null;
     }
+
+    quizDispatch({
+      type: QuizDispatchType.Selected,
+      location: locationToSelect,
+    });
   }
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
     setIsFocused(false);
+
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setLastAddedLocation(null);
+    }
   }
 
   return parent.isAdding || parent.sublocations.length === 0 ? (
@@ -262,6 +258,7 @@ function ToggleLocationTypeButton({
 
   return (
     <button
+      id="toggle-location-type-button"
       className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5 bg-gray-600 text-gray-400 "
       onClick={handleClick}
     >
