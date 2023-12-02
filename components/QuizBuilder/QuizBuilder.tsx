@@ -29,9 +29,7 @@ export default function QuizBuilder() {
   }, []);
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
-    console.log("sublocationsRef.curret", sublocationsRef.current);
     const relatedTarget = event.relatedTarget;
-    console.log("relatedTarget", relatedTarget);
 
     if (
       (!sublocationsRef.current?.contains(relatedTarget) &&

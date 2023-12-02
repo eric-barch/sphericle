@@ -88,9 +88,9 @@ export default function LocationAdder({
   }
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
-    setIsFocused(false);
-
     if (!event.currentTarget.contains(event.relatedTarget)) {
+      console.log("foo");
+      setIsFocused(false);
       setLastAddedLocation(null);
     }
   }
@@ -320,31 +320,31 @@ function Options({
   })();
 
   const options = (() => {
-    if (input === "" || !locationAdderFocused) {
-      return null;
-    }
+    if (input !== "" && locationAdderFocused) {
+      if (locationType === LocationType.Point) {
+        if (pointSearch.term === "") {
+          return null;
+        }
 
-    if (locationType === LocationType.Point) {
-      if (pointSearch.term === "") {
-        return null;
+        if (
+          pointSearch.status === SearchStatus.Searching &&
+          pointSearch.results.length < 1
+        ) {
+          return null;
+        }
       }
 
-      if (
-        pointSearch.status === SearchStatus.Searching &&
-        pointSearch.results.length < 1
-      ) {
-        return null;
-      }
+      return (
+        <Combobox.Options
+          className="absolute w-full z-10 left-0 bg-gray-500 rounded-custom p-1 space-y-1"
+          static
+        >
+          {optionsContent}
+        </Combobox.Options>
+      );
     }
 
-    return (
-      <Combobox.Options
-        className="absolute w-full z-10 left-0 bg-gray-500 rounded-custom p-1 space-y-1"
-        static
-      >
-        {optionsContent}
-      </Combobox.Options>
-    );
+    return null;
   })();
 
   return <>{options}</>;
