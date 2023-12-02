@@ -122,7 +122,11 @@ function setLocationIsOpen(
     newLocation = { ...location, isOpen };
   }
 
-  return replaceLocation(quiz, location.id, newLocation);
+  const newQuiz = replaceLocation(quiz, location.id, newLocation);
+
+  newQuiz.selectedSublocation = newLocation;
+
+  return newQuiz;
 }
 
 function setLocationIsAdding(
