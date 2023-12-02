@@ -172,6 +172,7 @@ export default function useAreaSearch(
           displayBounds,
           searchBounds,
           sublocations: [] as (AreaState | PointState)[],
+          answeredCorrectly: null,
         };
       })
       .filter(

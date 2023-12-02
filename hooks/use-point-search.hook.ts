@@ -83,6 +83,7 @@ export default function usePointSearch(
               isRenaming: false,
               userDefinedName: "",
               point,
+              answeredCorrectly: null,
             };
 
             if (

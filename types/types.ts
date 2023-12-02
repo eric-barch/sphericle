@@ -25,6 +25,7 @@ export interface AreaState {
   displayBounds: google.maps.LatLngBoundsLiteral;
   searchBounds: google.maps.LatLngBoundsLiteral;
   sublocations: (AreaState | PointState)[];
+  answeredCorrectly: boolean | null;
 }
 
 export interface PointState {
@@ -37,6 +38,7 @@ export interface PointState {
   userDefinedName: string;
   isRenaming: boolean;
   point: Point;
+  answeredCorrectly: boolean | null;
 }
 
 export type QuizDispatch =
