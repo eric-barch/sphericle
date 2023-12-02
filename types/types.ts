@@ -43,7 +43,7 @@ export interface PointState {
 
 export type QuizDispatch =
   | AddedQuizDispatch
-  | SelectedQuizDispatch
+  | BuildSelectedQuizDispatch
   | SetIsRenamingQuizDispatch
   | SetIsOpenQuizDispatch
   | SetIsAddingQuizDispatch
@@ -79,9 +79,14 @@ interface AddedQuizDispatch extends BaseQuizDispatch {
   location: AreaState | PointState;
 }
 
-interface SelectedQuizDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.Selected;
+interface BuildSelectedQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.BuildSelected;
   location: AreaState | PointState;
+}
+
+interface TakeSelectedQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.TakeSelected;
+  location: AreaState | PointState | null;
 }
 
 interface SetIsRenamingQuizDispatch extends BaseQuizDispatch {

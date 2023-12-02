@@ -2,11 +2,11 @@ import { AreaState, LocationType, PointState } from "@/types";
 import { MultiPolygon, Point, Polygon } from "geojson";
 import { RefObject, useEffect, useRef } from "react";
 
-const NYC: google.maps.LatLngBoundsLiteral = {
-  east: -73.70018, // East longitude of NYC
-  north: 40.916178, // North latitude of NYC
-  south: 40.495992, // South latitude of NYC
-  west: -74.25909, // West longitude of NYC
+const NYC_BOUNDS: google.maps.LatLngBoundsLiteral = {
+  east: -73.70018,
+  north: 40.916178,
+  south: 40.495992,
+  west: -74.25909,
 };
 
 interface MapProps {
@@ -26,7 +26,7 @@ export default function Map({
   filledAreas,
   points,
 }: MapProps) {
-  bounds = bounds || NYC;
+  bounds = bounds || NYC_BOUNDS;
 
   const ref = mapRef || useRef(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);

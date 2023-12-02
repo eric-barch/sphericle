@@ -99,7 +99,7 @@ export default function LocationAdder({
     }
 
     quizDispatch({
-      type: QuizDispatchType.Selected,
+      type: QuizDispatchType.BuildSelected,
       location: locationToSelect,
     });
   }
@@ -379,7 +379,7 @@ function Option({ activeOption, location }: OptionProps) {
 
   function handleFocusCapture(event: FocusEvent) {
     quizDispatch({
-      type: QuizDispatchType.Selected,
+      type: QuizDispatchType.BuildSelected,
       location,
     });
   }
@@ -387,7 +387,7 @@ function Option({ activeOption, location }: OptionProps) {
   useEffect(() => {
     if (active) {
       quizDispatch({
-        type: QuizDispatchType.Selected,
+        type: QuizDispatchType.BuildSelected,
         location,
       });
     }

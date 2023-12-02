@@ -45,7 +45,7 @@ export default function QuizBuilder() {
       relatedTarget === null
     ) {
       quizDispatch({
-        type: QuizDispatchType.Selected,
+        type: QuizDispatchType.BuildSelected,
         location: null,
       });
     }

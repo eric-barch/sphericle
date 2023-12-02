@@ -31,7 +31,7 @@ export default function Point({ pointState }: PointProps) {
 
   function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
     quizDispatch({
-      type: QuizDispatchType.Selected,
+      type: QuizDispatchType.BuildSelected,
       location: pointState,
     });
   }

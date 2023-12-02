@@ -59,7 +59,7 @@ export default function Area({ areaState }: AreaProps) {
 
   function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
     quizDispatch({
-      type: QuizDispatchType.Selected,
+      type: QuizDispatchType.BuildSelected,
       location: areaState,
     });
 

@@ -36,7 +36,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
     case QuizDispatchType.Added: {
       return addLocation(quiz, action.parent, action.location);
     }
-    case QuizDispatchType.Selected: {
+    case QuizDispatchType.BuildSelected: {
       return selectLocation(quiz, action.location);
     }
     case QuizDispatchType.SetIsRenaming: {

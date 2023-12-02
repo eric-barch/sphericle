@@ -22,7 +22,7 @@ export default function QuizTaker({}: QuizTakerProps) {
       }
 
       quizDispatch({
-        type: QuizDispatchType.Selected,
+        type: QuizDispatchType.BuildSelected,
         location: quiz.sublocations[0],
       });
     })();
@@ -32,10 +32,10 @@ export default function QuizTaker({}: QuizTakerProps) {
     <>
       {placesLoaded ? (
         <div className="h-[calc(100vh-48px)] relative flex justify-center content-center">
-          <Map
+          {/* <Map
             mapId="8777b9e5230900fc"
             displayedLocation={quiz.selectedSublocation}
-          />
+          /> */}
           <AnswerBox />
         </div>
       ) : (
