@@ -7,8 +7,8 @@ export interface Quiz {
   locationType: LocationType.Quiz;
   isAdding: boolean;
   sublocations: (AreaState | PointState)[];
-  buildSelected: AreaState | PointState | null;
-  takeSelected: AreaState | PointState | null;
+  builderSelected: AreaState | PointState | null;
+  takerSelected: AreaState | PointState | null;
 }
 
 export interface AreaState {
@@ -76,7 +76,8 @@ export type QuizDispatch =
   | SetIsAddingQuizDispatch
   | ReorderedSublocationsQuizDispatch
   | RenamedQuizDispatch
-  | DeletedQuizDispatch;
+  | DeletedQuizDispatch
+  | AdvancedQuestionQuizDispatch;
 
 interface BaseQuizDispatch {
   type: QuizDispatchType;
@@ -131,4 +132,8 @@ interface RenamedQuizDispatch extends BaseQuizDispatch {
 interface DeletedQuizDispatch extends BaseQuizDispatch {
   type: QuizDispatchType.Deleted;
   location: AreaState | PointState;
+}
+
+interface AdvancedQuestionQuizDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.AdvancedQuestion;
 }

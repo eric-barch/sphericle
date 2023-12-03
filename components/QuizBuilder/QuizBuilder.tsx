@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FocusEvent, useEffect, useRef, useState } from "react";
 import { Sublocations } from "./Sublocations";
 import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
-import { getLocationMapItems } from "./QuizBuilder.helpers";
+import { getQuizBuilderLocationMapItems } from "./QuizBuilder.helpers";
 
 export default function QuizBuilder() {
   const quiz = useQuiz();
@@ -36,17 +36,16 @@ export default function QuizBuilder() {
     })();
   }, []);
 
-  const buildSelected = quiz.buildSelected;
+  const builderSelected = quiz.builderSelected;
 
   useEffect(() => {
-    if (buildSelected) {
-      console.log("buildSelected", buildSelected);
+    if (builderSelected) {
       const {
         bounds = null,
         emptyAreas,
         filledAreas,
         points,
-      } = getLocationMapItems(buildSelected);
+      } = getQuizBuilderLocationMapItems(builderSelected);
 
       if (bounds) {
         setBounds(bounds);
@@ -56,7 +55,7 @@ export default function QuizBuilder() {
       setFilledAreas(filledAreas);
       setPoints(points);
     }
-  }, [buildSelected]);
+  }, [builderSelected]);
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
     const relatedTarget = event.relatedTarget as Node;

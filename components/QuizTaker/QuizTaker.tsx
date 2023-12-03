@@ -1,8 +1,9 @@
 import Map from "@/components/Map";
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
 import AnswerBox from "./AnswerBox";
 import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
+import { getQuizTakerLocationMapItems } from "./QuizTaker.helpers";
 
 interface QuizTakerProps {}
 
@@ -36,31 +37,42 @@ export default function QuizTaker({}: QuizTakerProps) {
     })();
   }, []);
 
-  const takeSelected = quiz.takeSelected;
+  const takerSelected = quiz.takerSelected;
 
   useEffect(() => {
-    if (takeSelected) {
-      if (takeSelected.parent.locationType === LocationType.Quiz) {
-        setEmptyAreas(null);
-      } else {
-        setBounds(takeSelected.parent.displayBounds);
-        setEmptyAreas(takeSelected.parent);
+    if (takerSelected) {
+      const {
+        bounds = null,
+        emptyAreas,
+        filledAreas,
+        points,
+      } = getQuizTakerLocationMapItems(takerSelected);
+
+      if (bounds) {
+        setBounds(bounds);
       }
 
-      if (takeSelected.locationType === LocationType.Area) {
-        setFilledAreas(takeSelected);
-        setPoints(null);
-      } else if (takeSelected.locationType === LocationType.Point) {
-        setPoints(takeSelected);
-        setFilledAreas(null);
-      }
+      setEmptyAreas(emptyAreas);
+      setFilledAreas(filledAreas);
+      setPoints(points);
     }
-  }, [takeSelected]);
+  }, [takerSelected]);
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    console.log("quiz at keyDown", quiz);
+
+    quizDispatch({
+      type: QuizDispatchType.AdvancedQuestion,
+    });
+  }
 
   return (
     <>
       {placesLoaded ? (
-        <div className="h-[calc(100vh-48px)] relative flex justify-center content-center">
+        <div
+          className="h-[calc(100vh-48px)] relative flex justify-center content-center"
+          onKeyDown={handleKeyDown}
+        >
           <Map
             mapId="8777b9e5230900fc"
             bounds={bounds}

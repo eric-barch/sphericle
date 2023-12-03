@@ -6,13 +6,24 @@ import {
   QuizDispatch,
   QuizDispatchType,
 } from "@/types";
-import { ReactNode, createContext, useContext, useReducer } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react";
+import { Sublocations } from "../QuizBuilder/Sublocations";
 
 const QuizContext = createContext<Quiz>(null);
 const QuizDispatchContext = createContext<React.Dispatch<QuizDispatch>>(null);
 
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, dispatchQuiz] = useReducer(quizReducer, initialQuiz);
+
+  useEffect(() => {
+    console.log("quiz", quiz);
+  }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
@@ -60,16 +71,19 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
     case QuizDispatchType.Deleted: {
       return deleteLocation(quiz, action.location);
     }
+    case QuizDispatchType.AdvancedQuestion: {
+      return advanceTakerSelected(quiz);
+    }
   }
 }
 
 const initialQuiz = {
-  id: "quiz",
+  id: crypto.randomUUID(),
   locationType: LocationType.Quiz as LocationType.Quiz,
   isAdding: true,
   sublocations: [],
-  buildSelected: null,
-  takeSelected: null,
+  builderSelected: null,
+  takerSelected: null,
 };
 
 function addLocation(
@@ -82,9 +96,14 @@ function addLocation(
     sublocations: [...parent.sublocations, location],
   };
 
+  for (const sublocation of newParent.sublocations) {
+    sublocation.parent = newParent;
+  }
+
   const newQuiz = replaceLocation(quiz, parent.id, newParent);
 
-  newQuiz.buildSelected = location;
+  newQuiz.builderSelected =
+    newParent.sublocations[newParent.sublocations.length - 1];
 
   return newQuiz;
 }
@@ -93,14 +112,14 @@ function selectBuildLocation(
   quiz: Quiz,
   location: AreaState | PointState | null,
 ): Quiz {
-  return { ...quiz, buildSelected: location };
+  return { ...quiz, builderSelected: location };
 }
 
 function selectTakeLocation(
   quiz: Quiz,
   location: AreaState | PointState | null,
 ): Quiz {
-  return { ...quiz, takeSelected: location };
+  return { ...quiz, takerSelected: location };
 }
 
 function setLocationIsRenaming(
@@ -139,7 +158,7 @@ function setLocationIsOpen(
 
   const newQuiz = replaceLocation(quiz, location.id, newLocation);
 
-  newQuiz.buildSelected = newLocation;
+  newQuiz.builderSelected = newLocation;
 
   return newQuiz;
 }
@@ -178,6 +197,10 @@ function reorderSublocations(
     sublocations,
   };
 
+  for (const sublocation of newParent.sublocations) {
+    sublocation.parent = newParent;
+  }
+
   return replaceLocation(quiz, parent.id, newParent);
 }
 
@@ -197,6 +220,28 @@ function renameLocation(
 
 function deleteLocation(quiz: Quiz, location: AreaState | PointState): Quiz {
   return replaceLocation(quiz, location.id, null);
+}
+
+function advanceTakerSelected(quiz: Quiz): Quiz {
+  console.log("quiz at adavnceTakerSelected", quiz);
+
+  const currentTakerSelected = quiz.takerSelected;
+  console.log("currentTakerSelected", currentTakerSelected);
+
+  const currentTakerSelectedParent = currentTakerSelected.parent;
+  console.log("currentTakerSelectedParent", currentTakerSelectedParent);
+
+  const currentTakerSelectedIndex =
+    currentTakerSelectedParent.sublocations.findIndex(
+      (sublocation) => sublocation.id === currentTakerSelected.id,
+    );
+  console.log("currentTakerSelectedIndex", currentTakerSelectedIndex);
+
+  const takerSelectedSibling =
+    currentTakerSelectedParent.sublocations[currentTakerSelectedIndex + 1];
+  if (takerSelectedSibling) {
+    return { ...quiz, takerSelected: takerSelectedSibling };
+  } else throw new Error("could not generate valid quiz");
 }
 
 function findAndReplaceLocation(

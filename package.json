@@ -15,7 +15,7 @@
     "@turf/boolean-point-in-polygon": "^6.5.0",
     "@types/geojson": "^7946.0.13",
     "framer-motion": "^10.16.5",
-    "next": "13.5.5",
+    "next": "^14.0.3",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^4.11.0"

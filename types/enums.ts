@@ -19,4 +19,5 @@ export enum QuizDispatchType {
   ReorderedSublocations = "reorderedSublocations",
   Renamed = "renamed",
   Deleted = "deleted",
+  AdvancedQuestion = "advancedQuestion",
 }
