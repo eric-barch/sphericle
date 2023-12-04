@@ -1,4 +1,5 @@
 import {
+  AreaSearchResult,
   AreaState,
   LocationType,
   OpenStreetMapResponseItem,
@@ -13,7 +14,7 @@ import { useCallback, useState } from "react";
 export interface AreaSearch {
   term: string;
   status: SearchStatus;
-  results: AreaState[];
+  results: AreaSearchResult[];
   setTerm: (searchTerm: string) => void;
   reset: () => void;
 }
@@ -23,7 +24,7 @@ export default function useAreaSearch(parent: Quiz | AreaState): AreaSearch {
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
   const [internalSearchResults, setInternalSearchResults] = useState<
-    AreaState[]
+    AreaSearchResult[]
   >([]);
 
   const fetchSearchResults = useCallback(async (searchTerm: string) => {
@@ -44,7 +45,7 @@ export default function useAreaSearch(parent: Quiz | AreaState): AreaSearch {
       (await response.json()) as OpenStreetMapResponseItem[];
 
     const searchResults = openStreetMapResponse
-      .map((openStreetMapResponseItem): AreaState | null => {
+      .map((openStreetMapResponseItem): AreaSearchResult | null => {
         if (
           openStreetMapResponseItem.geojson.type !== "Polygon" &&
           openStreetMapResponseItem.geojson.type !== "MultiPolygon"
@@ -173,7 +174,8 @@ export default function useAreaSearch(parent: Quiz | AreaState): AreaSearch {
         };
       })
       .filter(
-        (searchResult): searchResult is AreaState => searchResult !== null,
+        (searchResult): searchResult is AreaSearchResult =>
+          searchResult !== null,
       );
 
     setInternalSearchResults(searchResults);

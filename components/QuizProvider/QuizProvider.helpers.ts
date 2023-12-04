@@ -1,5 +1,4 @@
 import { AreaState, LocationType, PointState, Quiz } from "@/types";
-import _ from "lodash";
 
 export function findLocation(
   searchLocation: Quiz | AreaState | PointState,
@@ -34,57 +33,63 @@ export function findLocation(
 }
 
 export function replaceLocation(
-  quiz: Quiz,
-  targetId: string,
-  newLocation: Quiz | AreaState | PointState | null,
-): Quiz {
-  const newQuiz = findAndReplaceLocation(quiz, targetId, newLocation);
-
-  if (newQuiz?.locationType !== LocationType.Quiz) {
-    throw new Error("newQuiz is not a Quiz.");
-  }
-
-  return _.cloneDeep(newQuiz);
-}
-
-function findAndReplaceLocation(
   searchLocation: Quiz | AreaState | PointState,
-  targetId: string,
+  targetLocationId: string,
   newLocation: Quiz | AreaState | PointState | null,
+  parent: Quiz | AreaState | null,
 ): Quiz | AreaState | PointState | null {
-  const clonedSearchLocation = _.cloneDeep(searchLocation);
+  if (searchLocation.id === targetLocationId) {
+    let clonedNewLocation: Quiz | AreaState | PointState = {
+      ...newLocation,
+    };
 
-  if (clonedSearchLocation.id === targetId) {
-    return _.cloneDeep(newLocation);
+    if ("parent" in clonedNewLocation) {
+      clonedNewLocation.parent = parent;
+    }
+
+    if (
+      "sublocations" in clonedNewLocation &&
+      "sublocations" in searchLocation
+    ) {
+      const newSublocations = [];
+
+      for (const sublocation of searchLocation.sublocations) {
+        const newSublocation = replaceLocation(
+          sublocation,
+          targetLocationId,
+          newLocation,
+          clonedNewLocation,
+        );
+
+        if ("parent" in newSublocation) {
+          newSublocations.push(newSublocation);
+        }
+      }
+
+      clonedNewLocation.sublocations = newSublocations;
+    }
+
+    return clonedNewLocation;
   }
 
-  if (clonedSearchLocation.locationType === LocationType.Point) {
-    return clonedSearchLocation;
-  }
+  if ("sublocations" in searchLocation) {
+    const newSublocations = [];
 
-  if (
-    clonedSearchLocation.locationType === LocationType.Quiz ||
-    clonedSearchLocation.locationType === LocationType.Area
-  ) {
-    let newSublocations: (AreaState | PointState)[] = [];
-
-    for (const currentSublocation of clonedSearchLocation.sublocations) {
-      const newSublocation = findAndReplaceLocation(
-        currentSublocation,
-        targetId,
+    for (const sublocation of searchLocation.sublocations) {
+      const newSublocation = replaceLocation(
+        sublocation,
+        targetLocationId,
         newLocation,
+        searchLocation,
       );
 
-      if (newSublocation && newSublocation.locationType !== LocationType.Quiz) {
+      if ("parent" in newSublocation) {
         newSublocations.push(newSublocation);
       }
     }
 
-    return {
-      ...clonedSearchLocation,
-      sublocations: newSublocations,
-    };
+    searchLocation.sublocations = newSublocations;
   }
 
-  return null;
+  return searchLocation;
 }

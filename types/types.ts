@@ -11,7 +11,7 @@ export interface Quiz {
   takerSelected: AreaState | PointState | null;
 }
 
-export interface AreaState {
+export interface AreaSearchResult {
   id: string;
   openStreetMapPlaceId: number;
   locationType: LocationType.Area;
@@ -28,7 +28,11 @@ export interface AreaState {
   answeredCorrectly: boolean | null;
 }
 
-export interface PointState {
+export interface AreaState extends AreaSearchResult {
+  parent: Quiz | AreaState;
+}
+
+export interface PointSearchResult {
   id: string;
   googlePlaceId: string;
   locationType: LocationType.Point;
@@ -38,6 +42,10 @@ export interface PointState {
   isRenaming: boolean;
   point: Point;
   answeredCorrectly: boolean | null;
+}
+
+export interface PointState extends PointSearchResult {
+  parent: Quiz | AreaState;
 }
 
 export interface OpenStreetMapResponseItem {

@@ -1,7 +1,7 @@
 import {
   AreaState,
   LocationType,
-  PointState,
+  PointSearchResult,
   Quiz,
   SearchStatus,
 } from "@/types";
@@ -13,7 +13,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export interface PointSearch {
   term: string;
   status: SearchStatus;
-  results: PointState[];
+  results: PointSearchResult[];
   setTerm: (searchTerm: string) => void;
   reset: () => void;
 }
@@ -23,7 +23,7 @@ export default function usePointSearch(parent: Quiz | AreaState): PointSearch {
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
   const [internalSearchResults, setInternalSearchResults] = useState<
-    PointState[]
+    PointSearchResult[]
   >([]);
 
   const autocompleteServiceRef =
@@ -56,7 +56,7 @@ export default function usePointSearch(parent: Quiz | AreaState): PointSearch {
     const searchResults = (
       await Promise.all(
         autocompletePredictions.map(
-          async (autocompletePrediction): Promise<PointState | null> => {
+          async (autocompletePrediction): Promise<PointSearchResult | null> => {
             if (!geocoderRef.current) {
               return null;
             }
@@ -71,7 +71,7 @@ export default function usePointSearch(parent: Quiz | AreaState): PointSearch {
             const lng = geocoderResult.geometry.location.lng();
             const point: Point = { type: "Point", coordinates: [lng, lat] };
 
-            const pointState = {
+            const pointSearchResult = {
               id: crypto.randomUUID(),
               googlePlaceId: autocompletePrediction.place_id,
               locationType: LocationType.Point as LocationType.Point,
@@ -85,16 +85,16 @@ export default function usePointSearch(parent: Quiz | AreaState): PointSearch {
 
             if (
               parent.locationType === LocationType.Area &&
-              !booleanPointInPolygon(pointState.point, parent.polygon)
+              !booleanPointInPolygon(pointSearchResult.point, parent.polygon)
             ) {
               return null;
             }
 
-            return pointState;
+            return pointSearchResult;
           },
         ),
       )
-    ).filter((result): result is PointState => result !== null);
+    ).filter((result): result is PointSearchResult => result !== null);
 
     setInternalSearchResults(searchResults);
     setInternalSearchStatus(SearchStatus.Searched);
