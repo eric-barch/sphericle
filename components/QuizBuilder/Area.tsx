@@ -27,7 +27,7 @@ export default function Area({ areaState }: AreaProps) {
 
   function setIsAdding(isAdding: boolean) {
     quizDispatch({
-      type: QuizDispatchType.SetIsAdding,
+      type: QuizDispatchType.UpdatedLocationIsAdding,
       location: areaState,
       isAdding,
     });
@@ -44,7 +44,7 @@ export default function Area({ areaState }: AreaProps) {
 
   function setIsRenaming(isRenaming: boolean) {
     quizDispatch({
-      type: QuizDispatchType.SetIsRenaming,
+      type: QuizDispatchType.UpdatedLocationIsRenaming,
       location: areaState,
       isRenaming,
     });
@@ -59,7 +59,7 @@ export default function Area({ areaState }: AreaProps) {
 
   function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
     quizDispatch({
-      type: QuizDispatchType.BuildSelected,
+      type: QuizDispatchType.SelectedBuilderLocation,
       location: areaState,
     });
 
@@ -83,7 +83,7 @@ export default function Area({ areaState }: AreaProps) {
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
     if (toggleOnClick && quiz.builderSelected?.id === areaState.id) {
       quizDispatch({
-        type: QuizDispatchType.SetIsOpen,
+        type: QuizDispatchType.UpdatedLocationIsOpen,
         location: areaState,
         isOpen: !areaState.isOpen,
       });

@@ -1,10 +1,10 @@
 import {
   AreaState,
   LocationType,
-  PointState,
-  SearchStatus,
-  Quiz,
   OpenStreetMapResponseItem,
+  PointState,
+  Quiz,
+  SearchStatus,
 } from "@/types";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { MultiPolygon, Point, Polygon, Position } from "geojson";
@@ -18,9 +18,7 @@ export interface AreaSearch {
   reset: () => void;
 }
 
-export default function useAreaSearch(
-  parentLocation: Quiz | AreaState,
-): AreaSearch {
+export default function useAreaSearch(parent: Quiz | AreaState): AreaSearch {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);
@@ -34,8 +32,8 @@ export default function useAreaSearch(
 
     let query = searchTerm;
 
-    if (parentLocation.locationType === LocationType.Area) {
-      const { south, north, west, east } = parentLocation.searchBounds;
+    if (parent.locationType === LocationType.Area) {
+      const { south, north, west, east } = parent.searchBounds;
       query = `${searchTerm}&viewbox=${west},${south},${east},${north}&bounded=1`;
     }
 
@@ -73,8 +71,8 @@ export default function useAreaSearch(
               };
 
               if (
-                parentLocation.locationType === LocationType.Area &&
-                !booleanPointInPolygon(point, parentLocation.polygon)
+                parent.locationType === LocationType.Area &&
+                !booleanPointInPolygon(point, parent.polygon)
               ) {
                 return null;
               }
@@ -95,8 +93,8 @@ export default function useAreaSearch(
                 };
 
                 if (
-                  parentLocation.locationType === LocationType.Area &&
-                  !booleanPointInPolygon(point, parentLocation.polygon)
+                  parent.locationType === LocationType.Area &&
+                  !booleanPointInPolygon(point, parent.polygon)
                 ) {
                   return null;
                 }
@@ -160,7 +158,6 @@ export default function useAreaSearch(
         return {
           id: crypto.randomUUID(),
           openStreetMapPlaceId: openStreetMapResponseItem.place_id,
-          parent: parentLocation,
           locationType: LocationType.Area,
           shortName: openStreetMapResponseItem.name,
           longName: openStreetMapResponseItem.display_name,

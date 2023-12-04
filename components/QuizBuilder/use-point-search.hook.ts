@@ -2,8 +2,8 @@ import {
   AreaState,
   LocationType,
   PointState,
-  SearchStatus,
   Quiz,
+  SearchStatus,
 } from "@/types";
 import debounce from "@/utils/debounce";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
@@ -74,7 +74,6 @@ export default function usePointSearch(parent: Quiz | AreaState): PointSearch {
             const pointState = {
               id: crypto.randomUUID(),
               googlePlaceId: autocompletePrediction.place_id,
-              parent,
               locationType: LocationType.Point as LocationType.Point,
               longName: autocompletePrediction.description,
               shortName: autocompletePrediction.description,

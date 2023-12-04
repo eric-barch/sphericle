@@ -27,7 +27,7 @@ export default function LocationName({
       event.stopPropagation();
 
       quizDispatch({
-        type: QuizDispatchType.Renamed,
+        type: QuizDispatchType.RenamedLocation,
         location,
         name: newName,
       });

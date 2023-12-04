@@ -16,7 +16,7 @@ export default function Point({ pointState }: PointProps) {
 
   function setIsRenaming(isRenaming: boolean) {
     quizDispatch({
-      type: QuizDispatchType.SetIsRenaming,
+      type: QuizDispatchType.UpdatedLocationIsRenaming,
       location: pointState,
       isRenaming,
     });
@@ -31,7 +31,7 @@ export default function Point({ pointState }: PointProps) {
 
   function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
     quizDispatch({
-      type: QuizDispatchType.BuildSelected,
+      type: QuizDispatchType.SelectedBuilderLocation,
       location: pointState,
     });
   }

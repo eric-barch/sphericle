@@ -15,6 +15,7 @@
     "@turf/boolean-point-in-polygon": "^6.5.0",
     "@types/geojson": "^7946.0.13",
     "framer-motion": "^10.16.5",
+    "lodash": "^4.17.21",
     "next": "^14.0.3",
     "react": "^18",
     "react-dom": "^18",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@types/google.maps": "^3.54.8",
+    "@types/lodash": "^4.14.202",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

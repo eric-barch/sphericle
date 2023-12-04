@@ -10,14 +10,14 @@ export enum SearchStatus {
 }
 
 export enum QuizDispatchType {
-  Added = "added",
-  BuildSelected = "buildSelected",
-  TakeSelected = "takeSelected",
-  SetIsRenaming = "setIsRenaming",
-  SetIsOpen = "setIsOpen",
-  SetIsAdding = "setIsAdding",
+  AddedLocation = "addedLocation",
+  SelectedBuilderLocation = "selectedBuilderLocation",
+  UpdatedLocationIsRenaming = "updatedLocationIsRenaming",
+  UpdatedLocationIsOpen = "updatedLocationIsOpen",
+  UpdatedLocationIsAdding = "updatedLocationIsAdding",
   ReorderedSublocations = "reorderedSublocations",
-  Renamed = "renamed",
-  Deleted = "deleted",
-  AdvancedQuestion = "advancedQuestion",
+  RenamedLocation = "renamedLocation",
+  DeletedLocation = "deletedLocation",
+  SelectedTakerLocation = "selectedTakerLocation",
+  IncrementedTakerLocation = "incrementedTakerLocation",
 }

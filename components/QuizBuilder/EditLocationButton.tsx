@@ -32,7 +32,7 @@ export default function EditLocationButton({
   function handleDeleteClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
     quizDispatch({
-      type: QuizDispatchType.Deleted,
+      type: QuizDispatchType.DeletedLocation,
       location,
     });
   }

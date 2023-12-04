@@ -31,7 +31,7 @@ export default function QuizTaker({}: QuizTakerProps) {
       }
 
       quizDispatch({
-        type: QuizDispatchType.TakeSelected,
+        type: QuizDispatchType.SelectedTakerLocation,
         location: quiz.sublocations[0],
       });
     })();
@@ -41,12 +41,12 @@ export default function QuizTaker({}: QuizTakerProps) {
 
   useEffect(() => {
     if (takerSelected) {
-      const {
-        bounds = null,
-        emptyAreas,
-        filledAreas,
-        points,
-      } = getQuizTakerLocationMapItems(takerSelected);
+      // const {
+      //   bounds = null,
+      //   emptyAreas,
+      //   filledAreas,
+      //   points,
+      // } = getQuizTakerLocationMapItems(takerSelected);
 
       if (bounds) {
         setBounds(bounds);
@@ -59,11 +59,11 @@ export default function QuizTaker({}: QuizTakerProps) {
   }, [takerSelected]);
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    console.log("quiz at keyDown", quiz);
-
-    quizDispatch({
-      type: QuizDispatchType.AdvancedQuestion,
-    });
+    if (event.key === "Enter") {
+      quizDispatch({
+        type: QuizDispatchType.IncrementedTakerLocation,
+      });
+    }
   }
 
   return (

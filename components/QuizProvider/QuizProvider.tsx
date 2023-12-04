@@ -6,6 +6,7 @@ import {
   QuizDispatch,
   QuizDispatchType,
 } from "@/types";
+import _ from "lodash";
 import {
   ReactNode,
   createContext,
@@ -13,7 +14,7 @@ import {
   useEffect,
   useReducer,
 } from "react";
-import { Sublocations } from "../QuizBuilder/Sublocations";
+import { findLocation } from "./QuizProvider.helpers";
 
 const QuizContext = createContext<Quiz>(null);
 const QuizDispatchContext = createContext<React.Dispatch<QuizDispatch>>(null);
@@ -21,9 +22,9 @@ const QuizDispatchContext = createContext<React.Dispatch<QuizDispatch>>(null);
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, dispatchQuiz] = useReducer(quizReducer, initialQuiz);
 
-  useEffect(() => {
-    console.log("quiz", quiz);
-  }, [quiz]);
+  // useEffect(() => {
+  //   console.log("quiz", quiz);
+  // }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
@@ -44,35 +45,35 @@ export function useQuizDispatch() {
 
 function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
   switch (action.type) {
-    case QuizDispatchType.Added: {
+    case QuizDispatchType.AddedLocation: {
       return addLocation(quiz, action.parent, action.location);
     }
-    case QuizDispatchType.BuildSelected: {
-      return selectBuildLocation(quiz, action.location);
+    case QuizDispatchType.SelectedBuilderLocation: {
+      return selectBuilderLocation(quiz, action.location);
     }
-    case QuizDispatchType.TakeSelected: {
-      return selectTakeLocation(quiz, action.location);
+    case QuizDispatchType.UpdatedLocationIsRenaming: {
+      return updateLocationIsRenaming(quiz, action.location, action.isRenaming);
     }
-    case QuizDispatchType.SetIsRenaming: {
-      return setLocationIsRenaming(quiz, action.location, action.isRenaming);
+    case QuizDispatchType.UpdatedLocationIsOpen: {
+      return updateLocationIsOpen(quiz, action.location, action.isOpen);
     }
-    case QuizDispatchType.SetIsOpen: {
-      return setLocationIsOpen(quiz, action.location, action.isOpen);
-    }
-    case QuizDispatchType.SetIsAdding: {
-      return setLocationIsAdding(quiz, action.location, action.isAdding);
+    case QuizDispatchType.UpdatedLocationIsAdding: {
+      return updatedLocationIsAdding(quiz, action.location, action.isAdding);
     }
     case QuizDispatchType.ReorderedSublocations: {
       return reorderSublocations(quiz, action.parent, action.sublocations);
     }
-    case QuizDispatchType.Renamed: {
+    case QuizDispatchType.RenamedLocation: {
       return renameLocation(quiz, action.location, action.name);
     }
-    case QuizDispatchType.Deleted: {
+    case QuizDispatchType.DeletedLocation: {
       return deleteLocation(quiz, action.location);
     }
-    case QuizDispatchType.AdvancedQuestion: {
-      return advanceTakerSelected(quiz);
+    case QuizDispatchType.SelectedTakerLocation: {
+      return selectTakerLocation(quiz, action.location);
+    }
+    case QuizDispatchType.IncrementedTakerLocation: {
+      return incrementTakerLocation(quiz);
     }
   }
 }
@@ -91,100 +92,119 @@ function addLocation(
   parent: Quiz | AreaState,
   location: AreaState | PointState,
 ): Quiz {
-  const newParent: Quiz | AreaState = {
-    ...parent,
-    sublocations: [...parent.sublocations, location],
-  };
-
-  for (const sublocation of newParent.sublocations) {
-    sublocation.parent = newParent;
-  }
+  const newParent = _.cloneDeep(parent);
+  newParent.sublocations.push(location);
 
   const newQuiz = replaceLocation(quiz, parent.id, newParent);
-
-  newQuiz.builderSelected =
-    newParent.sublocations[newParent.sublocations.length - 1];
+  newQuiz.builderSelected = location;
 
   return newQuiz;
 }
 
-function selectBuildLocation(
+function selectBuilderLocation(
   quiz: Quiz,
   location: AreaState | PointState | null,
 ): Quiz {
-  return { ...quiz, builderSelected: location };
+  const newQuiz = _.cloneDeep(quiz);
+
+  if (location) {
+    const newBuilderSelected = findLocation(newQuiz, location.id);
+    newQuiz.builderSelected = newBuilderSelected;
+  } else {
+    newQuiz.builderSelected = null;
+  }
+
+  return newQuiz;
 }
 
-function selectTakeLocation(
+function selectTakerLocation(
   quiz: Quiz,
   location: AreaState | PointState | null,
 ): Quiz {
-  return { ...quiz, takerSelected: location };
+  const newQuiz = _.cloneDeep(quiz);
+
+  if (location) {
+    const newTakerSelected = findLocation(newQuiz, location.id);
+    newQuiz.takerSelected = newTakerSelected;
+  } else {
+    newQuiz.takerSelected = null;
+  }
+
+  return newQuiz;
 }
 
-function setLocationIsRenaming(
+function updateLocationIsRenaming(
   quiz: Quiz,
   location: AreaState | PointState,
   isRenaming: boolean,
 ) {
+  let newQuiz = _.cloneDeep(quiz);
+
   if (location.isRenaming === isRenaming) {
-    return quiz;
+    return newQuiz;
   }
 
-  const newLocation = { ...location, isRenaming };
-  const newQuiz = replaceLocation(quiz, location.id, newLocation);
+  const newLocation = _.cloneDeep(location);
+  newLocation.isRenaming = isRenaming;
 
-  return newQuiz;
-}
-
-function setLocationIsOpen(
-  quiz: Quiz,
-  location: AreaState,
-  isOpen: boolean,
-): Quiz {
-  if (location.isOpen === isOpen) {
-    return quiz;
-  }
-
-  let newLocation: AreaState;
-
-  if (isOpen && location.sublocations.length === 0) {
-    newLocation = { ...location, isAdding: true, isOpen: true };
-  } else if (!isOpen && location.sublocations.length === 0) {
-    newLocation = { ...location, isAdding: false, isOpen: false };
-  } else {
-    newLocation = { ...location, isOpen };
-  }
-
-  const newQuiz = replaceLocation(quiz, location.id, newLocation);
-
+  newQuiz = replaceLocation(quiz, location.id, newLocation);
   newQuiz.builderSelected = newLocation;
 
   return newQuiz;
 }
 
-function setLocationIsAdding(
+function updateLocationIsOpen(
+  quiz: Quiz,
+  location: AreaState,
+  isOpen: boolean,
+): Quiz {
+  let newQuiz = _.cloneDeep(quiz);
+
+  if (location.isOpen === isOpen) {
+    return newQuiz;
+  }
+
+  let newLocation = _.cloneDeep(location);
+
+  if (isOpen && location.sublocations.length === 0) {
+    newLocation.isAdding = true;
+    newLocation.isOpen = true;
+  } else if (!isOpen && location.sublocations.length === 0) {
+    newLocation.isAdding = false;
+    newLocation.isOpen = false;
+  } else {
+    newLocation.isOpen = isOpen;
+  }
+
+  newQuiz = replaceLocation(quiz, location.id, newLocation);
+  newQuiz.builderSelected = newLocation;
+
+  return newQuiz;
+}
+
+function updatedLocationIsAdding(
   quiz: Quiz,
   location: AreaState,
   isAdding: boolean,
 ) {
+  let newQuiz = _.cloneDeep(quiz);
+
   if (location.isAdding === isAdding) {
-    return quiz;
+    return newQuiz;
   }
 
-  let newLocation: AreaState;
+  let newLocation = _.cloneDeep(location);
 
   if (isAdding) {
-    newLocation = {
-      ...location,
-      isOpen: true,
-      isAdding,
-    };
+    newLocation.isOpen = true;
+    newLocation.isAdding = isAdding;
   } else {
-    newLocation = { ...location, isAdding };
+    newLocation.isAdding = isAdding;
   }
 
-  return replaceLocation(quiz, location.id, newLocation);
+  newQuiz = replaceLocation(quiz, location.id, newLocation);
+
+  return newQuiz;
 }
 
 function reorderSublocations(
@@ -192,16 +212,11 @@ function reorderSublocations(
   parent: Quiz | AreaState,
   sublocations: (AreaState | PointState)[],
 ): Quiz {
-  const newParent = {
-    ...parent,
-    sublocations,
-  };
+  const newParent = _.cloneDeep(parent);
+  newParent.sublocations = sublocations;
 
-  for (const sublocation of newParent.sublocations) {
-    sublocation.parent = newParent;
-  }
-
-  return replaceLocation(quiz, parent.id, newParent);
+  const newQuiz = replaceLocation(quiz, parent.id, newParent);
+  return newQuiz;
 }
 
 function renameLocation(
@@ -209,39 +224,23 @@ function renameLocation(
   location: AreaState | PointState,
   name: string,
 ): Quiz {
-  const newLocation = {
-    ...location,
-    isRenaming: false,
-    userDefinedName: name,
-  };
+  const newLocation = _.cloneDeep(location);
+  newLocation.isRenaming = false;
+  newLocation.userDefinedName = name;
 
-  return replaceLocation(quiz, location.id, newLocation);
+  const newQuiz = replaceLocation(quiz, location.id, newLocation);
+  return newQuiz;
 }
 
 function deleteLocation(quiz: Quiz, location: AreaState | PointState): Quiz {
-  return replaceLocation(quiz, location.id, null);
+  const newQuiz = replaceLocation(quiz, location.id, null);
+  return newQuiz;
 }
 
-function advanceTakerSelected(quiz: Quiz): Quiz {
-  console.log("quiz at adavnceTakerSelected", quiz);
-
-  const currentTakerSelected = quiz.takerSelected;
-  console.log("currentTakerSelected", currentTakerSelected);
-
-  const currentTakerSelectedParent = currentTakerSelected.parent;
-  console.log("currentTakerSelectedParent", currentTakerSelectedParent);
-
-  const currentTakerSelectedIndex =
-    currentTakerSelectedParent.sublocations.findIndex(
-      (sublocation) => sublocation.id === currentTakerSelected.id,
-    );
-  console.log("currentTakerSelectedIndex", currentTakerSelectedIndex);
-
-  const takerSelectedSibling =
-    currentTakerSelectedParent.sublocations[currentTakerSelectedIndex + 1];
-  if (takerSelectedSibling) {
-    return { ...quiz, takerSelected: takerSelectedSibling };
-  } else throw new Error("could not generate valid quiz");
+function incrementTakerLocation(quiz: Quiz): Quiz {
+  const newQuiz = _.cloneDeep(quiz);
+  const takerSelected = newQuiz.takerSelected;
+  return newQuiz;
 }
 
 function findAndReplaceLocation(

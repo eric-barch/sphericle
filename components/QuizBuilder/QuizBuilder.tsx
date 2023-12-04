@@ -40,12 +40,12 @@ export default function QuizBuilder() {
 
   useEffect(() => {
     if (builderSelected) {
-      const {
-        bounds = null,
-        emptyAreas,
-        filledAreas,
-        points,
-      } = getQuizBuilderLocationMapItems(builderSelected);
+      // const {
+      //   bounds = null,
+      //   emptyAreas,
+      //   filledAreas,
+      //   points,
+      // } = getQuizBuilderLocationMapItems(builderSelected);
 
       if (bounds) {
         setBounds(bounds);
@@ -66,7 +66,7 @@ export default function QuizBuilder() {
       !mapRef.current?.contains(relatedTarget)
     ) {
       quizDispatch({
-        type: QuizDispatchType.BuildSelected,
+        type: QuizDispatchType.SelectedBuilderLocation,
         location: null,
       });
     }

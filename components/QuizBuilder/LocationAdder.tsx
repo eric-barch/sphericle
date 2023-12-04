@@ -53,11 +53,11 @@ export default function LocationAdder({
   function handleChange(location: AreaState | PointState) {
     const newLocation = {
       ...location,
-      parentLocation: parent,
+      parent,
     };
 
     quizDispatch({
-      type: QuizDispatchType.Added,
+      type: QuizDispatchType.AddedLocation,
       parent,
       location: newLocation,
     });
@@ -103,7 +103,7 @@ export default function LocationAdder({
     }
 
     quizDispatch({
-      type: QuizDispatchType.BuildSelected,
+      type: QuizDispatchType.SelectedBuilderLocation,
       location: locationToSelect,
     });
   }
@@ -381,18 +381,18 @@ function Option({ activeOption, location }: OptionProps) {
   const active = activeOption?.id === location.id;
 
   function handleFocusCapture(event: FocusEvent) {
-    quizDispatch({
-      type: QuizDispatchType.BuildSelected,
-      location,
-    });
+    // quizDispatch({
+    //   type: QuizDispatchType.SelectedBuilderLocation,
+    //   location,
+    // });
   }
 
   useEffect(() => {
     if (active) {
-      quizDispatch({
-        type: QuizDispatchType.BuildSelected,
-        location,
-      });
+      // quizDispatch({
+      //   type: QuizDispatchType.SelectedBuilderLocation,
+      //   location,
+      // });
     }
   }, [active]);
 
