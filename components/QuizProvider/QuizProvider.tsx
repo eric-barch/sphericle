@@ -14,7 +14,7 @@ import {
   useEffect,
   useReducer,
 } from "react";
-import { findLocation } from "./QuizProvider.helpers";
+import { findLocation, replaceLocation } from "./QuizProvider.helpers";
 
 const QuizContext = createContext<Quiz>(null);
 const QuizDispatchContext = createContext<React.Dispatch<QuizDispatch>>(null);
@@ -22,9 +22,9 @@ const QuizDispatchContext = createContext<React.Dispatch<QuizDispatch>>(null);
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, dispatchQuiz] = useReducer(quizReducer, initialQuiz);
 
-  // useEffect(() => {
-  //   console.log("quiz", quiz);
-  // }, [quiz]);
+  useEffect(() => {
+    console.log("quiz", quiz);
+  }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
@@ -81,6 +81,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 const initialQuiz = {
   id: crypto.randomUUID(),
   locationType: LocationType.Quiz as LocationType.Quiz,
+  shortName: "quiz",
   isAdding: true,
   sublocations: [],
   builderSelected: null,
@@ -93,11 +94,20 @@ function addLocation(
   location: AreaState | PointState,
 ): Quiz {
   const newParent = _.cloneDeep(parent);
+
   newParent.sublocations.push(location);
+  location.parent = newParent;
 
   const newQuiz = replaceLocation(quiz, parent.id, newParent);
-  newQuiz.builderSelected = location;
 
+  const newBuilderSelected = findLocation(newQuiz, location.id);
+  console.log("newBuilderSelected", newBuilderSelected);
+
+  if (newQuiz.locationType !== LocationType.Quiz) {
+    throw new Error("newQuiz is not a Quiz.");
+  }
+
+  newQuiz.builderSelected = newBuilderSelected;
   return newQuiz;
 }
 
@@ -147,7 +157,7 @@ function updateLocationIsRenaming(
   const newLocation = _.cloneDeep(location);
   newLocation.isRenaming = isRenaming;
 
-  newQuiz = replaceLocation(quiz, location.id, newLocation);
+  newQuiz = replaceLocation(quiz, location.id, newLocation) as Quiz;
   newQuiz.builderSelected = newLocation;
 
   return newQuiz;
@@ -176,7 +186,7 @@ function updateLocationIsOpen(
     newLocation.isOpen = isOpen;
   }
 
-  newQuiz = replaceLocation(quiz, location.id, newLocation);
+  newQuiz = replaceLocation(quiz, location.id, newLocation) as Quiz;
   newQuiz.builderSelected = newLocation;
 
   return newQuiz;
@@ -202,7 +212,7 @@ function updatedLocationIsAdding(
     newLocation.isAdding = isAdding;
   }
 
-  newQuiz = replaceLocation(quiz, location.id, newLocation);
+  newQuiz = replaceLocation(quiz, location.id, newLocation) as Quiz;
 
   return newQuiz;
 }
@@ -215,7 +225,7 @@ function reorderSublocations(
   const newParent = _.cloneDeep(parent);
   newParent.sublocations = sublocations;
 
-  const newQuiz = replaceLocation(quiz, parent.id, newParent);
+  const newQuiz = replaceLocation(quiz, parent.id, newParent) as Quiz;
   return newQuiz;
 }
 
@@ -228,68 +238,27 @@ function renameLocation(
   newLocation.isRenaming = false;
   newLocation.userDefinedName = name;
 
-  const newQuiz = replaceLocation(quiz, location.id, newLocation);
+  const newQuiz = replaceLocation(quiz, location.id, newLocation) as Quiz;
   return newQuiz;
 }
 
 function deleteLocation(quiz: Quiz, location: AreaState | PointState): Quiz {
-  const newQuiz = replaceLocation(quiz, location.id, null);
+  const newQuiz = replaceLocation(quiz, location.id, null) as Quiz;
   return newQuiz;
 }
 
 function incrementTakerLocation(quiz: Quiz): Quiz {
   const newQuiz = _.cloneDeep(quiz);
+
   const takerSelected = newQuiz.takerSelected;
-  return newQuiz;
-}
 
-function findAndReplaceLocation(
-  searchLocation: Quiz | AreaState | PointState,
-  targetId: string,
-  newLocation: Quiz | AreaState | PointState | null,
-): Quiz | AreaState | PointState | null {
-  if (searchLocation.id === targetId) {
-    return newLocation;
-  }
+  const parent = takerSelected.parent;
 
-  if (searchLocation.locationType === LocationType.Point) {
-    return searchLocation;
-  }
+  const takerSelectedIndex = parent.sublocations.indexOf(takerSelected);
 
-  if (
-    searchLocation.locationType === LocationType.Quiz ||
-    searchLocation.locationType === LocationType.Area
-  ) {
-    let newSublocations: (AreaState | PointState)[] = [];
-
-    for (const currentSublocation of searchLocation.sublocations) {
-      const newSublocation = findAndReplaceLocation(
-        currentSublocation,
-        targetId,
-        newLocation,
-      );
-
-      if (newSublocation && newSublocation.locationType !== LocationType.Quiz) {
-        newSublocations.push(newSublocation);
-      }
-    }
-
-    return {
-      ...searchLocation,
-      sublocations: newSublocations,
-    };
-  }
-}
-
-function replaceLocation(
-  quiz: Quiz,
-  targetId: string,
-  newLocation: Quiz | AreaState | PointState | null,
-): Quiz {
-  const newQuiz = findAndReplaceLocation(quiz, targetId, newLocation);
-
-  if (newQuiz?.locationType !== LocationType.Quiz) {
-    throw new Error("newQuiz is not a Quiz.");
+  if (takerSelectedIndex < parent.sublocations.length - 1) {
+    const newTakerSelected = parent.sublocations[takerSelectedIndex + 1];
+    newQuiz.takerSelected = newTakerSelected;
   }
 
   return newQuiz;

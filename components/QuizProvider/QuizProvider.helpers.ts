@@ -33,63 +33,84 @@ export function findLocation(
 }
 
 export function replaceLocation(
-  searchLocation: Quiz | AreaState | PointState,
-  targetLocationId: string,
-  newLocation: Quiz | AreaState | PointState | null,
-  parent: Quiz | AreaState | null,
-): Quiz | AreaState | PointState | null {
-  if (searchLocation.id === targetLocationId) {
-    let clonedNewLocation: Quiz | AreaState | PointState = {
-      ...newLocation,
-    };
+  currentLocation: Quiz | AreaState | PointState,
+  targetId: string,
+  newLocation: Quiz | AreaState | PointState,
+  newParent?: Quiz | AreaState,
+) {
+  if (currentLocation.id === targetId) {
+    return { ...newLocation, parent: newParent };
+  }
 
-    if ("parent" in clonedNewLocation) {
-      clonedNewLocation.parent = parent;
+  if (currentLocation.locationType === LocationType.Quiz) {
+    if (currentLocation.sublocations.length <= 0) {
+      return { ...currentLocation };
     }
 
-    if (
-      "sublocations" in clonedNewLocation &&
-      "sublocations" in searchLocation
-    ) {
-      const newSublocations = [];
+    if (currentLocation.sublocations.length > 0) {
+      const newCurrentLocation = { ...currentLocation };
 
-      for (const sublocation of searchLocation.sublocations) {
+      const newSublocations: (AreaState | PointState)[] = [];
+
+      for (const sublocation of currentLocation.sublocations) {
         const newSublocation = replaceLocation(
           sublocation,
-          targetLocationId,
+          targetId,
           newLocation,
-          clonedNewLocation,
+          newCurrentLocation,
         );
 
-        if ("parent" in newSublocation) {
-          newSublocations.push(newSublocation);
+        if (
+          newSublocation.locationType !== LocationType.Area &&
+          newSublocation.locationType !== LocationType.Point
+        ) {
+          continue;
         }
-      }
 
-      clonedNewLocation.sublocations = newSublocations;
-    }
-
-    return clonedNewLocation;
-  }
-
-  if ("sublocations" in searchLocation) {
-    const newSublocations = [];
-
-    for (const sublocation of searchLocation.sublocations) {
-      const newSublocation = replaceLocation(
-        sublocation,
-        targetLocationId,
-        newLocation,
-        searchLocation,
-      );
-
-      if ("parent" in newSublocation) {
         newSublocations.push(newSublocation);
       }
-    }
 
-    searchLocation.sublocations = newSublocations;
+      newCurrentLocation.sublocations = newSublocations;
+
+      return newCurrentLocation;
+    }
   }
 
-  return searchLocation;
+  if (currentLocation.locationType === LocationType.Area) {
+    if (currentLocation.sublocations.length <= 0) {
+      return { ...currentLocation, parent: newParent };
+    }
+
+    if (currentLocation.sublocations.length > 0) {
+      const newCurrentLocation = { ...currentLocation, parent: newParent };
+
+      const newSublocations: (AreaState | PointState)[] = [];
+
+      for (const sublocation of currentLocation.sublocations) {
+        const newSublocation = replaceLocation(
+          sublocation,
+          targetId,
+          newLocation,
+          newCurrentLocation,
+        );
+
+        if (
+          newSublocation.locationType !== LocationType.Area &&
+          newSublocation.locationType !== LocationType.Point
+        ) {
+          continue;
+        }
+
+        newSublocations.push(newSublocation);
+      }
+
+      newCurrentLocation.sublocations = newSublocations;
+
+      return newCurrentLocation;
+    }
+  }
+
+  if (currentLocation.locationType === LocationType.Point) {
+    return { ...currentLocation, parent: newParent };
+  }
 }

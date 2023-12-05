@@ -1,8 +1,8 @@
 import Map from "@/components/Map";
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import { AreaState, PointState, QuizDispatchType } from "@/types";
 import { KeyboardEvent, useEffect, useState } from "react";
 import AnswerBox from "./AnswerBox";
-import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
 import { getQuizTakerLocationMapItems } from "./QuizTaker.helpers";
 
 interface QuizTakerProps {}
@@ -41,12 +41,12 @@ export default function QuizTaker({}: QuizTakerProps) {
 
   useEffect(() => {
     if (takerSelected) {
-      // const {
-      //   bounds = null,
-      //   emptyAreas,
-      //   filledAreas,
-      //   points,
-      // } = getQuizTakerLocationMapItems(takerSelected);
+      const {
+        bounds = null,
+        emptyAreas,
+        filledAreas,
+        points,
+      } = getQuizTakerLocationMapItems(takerSelected);
 
       if (bounds) {
         setBounds(bounds);

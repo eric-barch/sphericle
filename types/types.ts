@@ -6,6 +6,7 @@ export interface Quiz {
   id: string;
   locationType: LocationType.Quiz;
   isAdding: boolean;
+  shortName: string;
   sublocations: (AreaState | PointState)[];
   builderSelected: AreaState | PointState | null;
   takerSelected: AreaState | PointState | null;

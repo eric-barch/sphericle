@@ -1,7 +1,6 @@
 import { AreaState, LocationType, MapItems, PointState, Quiz } from "@/types";
 
 export function getQuizBuilderLocationMapItems(
-  parent: Quiz | AreaState,
   location: Quiz | AreaState | PointState | null,
 ): MapItems {
   if (!location || location.locationType === LocationType.Quiz) {
@@ -21,24 +20,24 @@ export function getQuizBuilderLocationMapItems(
         points: null,
       };
     } else if (!location.isOpen) {
-      if (parent.locationType === LocationType.Quiz) {
+      if (location.parent.locationType === LocationType.Quiz) {
         return {
           bounds: location.displayBounds,
           emptyAreas: null,
           filledAreas: location,
           points: null,
         };
-      } else if (parent.locationType === LocationType.Area) {
+      } else if (location.parent.locationType === LocationType.Area) {
         return {
-          bounds: parent.displayBounds,
-          emptyAreas: parent,
+          bounds: location.parent.displayBounds,
+          emptyAreas: location.parent,
           filledAreas: location,
           points: null,
         };
       }
     }
   } else if (location.locationType === LocationType.Point) {
-    if (parent.locationType === LocationType.Quiz) {
+    if (location.parent.locationType === LocationType.Quiz) {
       const lng = location.point.coordinates[0];
       const lat = location.point.coordinates[1];
       const diff = 0.1;
@@ -54,10 +53,10 @@ export function getQuizBuilderLocationMapItems(
         filledAreas: null,
         points: location,
       };
-    } else if (parent.locationType === LocationType.Area) {
+    } else if (location.parent.locationType === LocationType.Area) {
       return {
-        bounds: parent.displayBounds,
-        emptyAreas: parent,
+        bounds: location.parent.displayBounds,
+        emptyAreas: location.parent,
         filledAreas: null,
         points: location,
       };
