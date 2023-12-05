@@ -14,7 +14,7 @@ import {
   useEffect,
   useReducer,
 } from "react";
-import { findLocation, replaceLocation } from "./QuizProvider.helpers";
+import { findLocation, cloneQuizWithNewLocation } from "./QuizProvider.helpers";
 
 const QuizContext = createContext<Quiz>(null);
 const QuizDispatchContext = createContext<React.Dispatch<QuizDispatch>>(null);
@@ -98,15 +98,13 @@ function addLocation(
   newParent.sublocations.push(location);
   location.parent = newParent;
 
-  const newQuiz = replaceLocation(quiz, parent.id, newParent);
-
-  const newBuilderSelected = findLocation(newQuiz, location.id);
-  console.log("newBuilderSelected", newBuilderSelected);
+  const newQuiz = cloneQuizWithNewLocation(quiz, parent.id, newParent);
 
   if (newQuiz.locationType !== LocationType.Quiz) {
     throw new Error("newQuiz is not a Quiz.");
   }
 
+  const newBuilderSelected = findLocation(newQuiz, location.id);
   newQuiz.builderSelected = newBuilderSelected;
   return newQuiz;
 }
@@ -157,7 +155,7 @@ function updateLocationIsRenaming(
   const newLocation = _.cloneDeep(location);
   newLocation.isRenaming = isRenaming;
 
-  newQuiz = replaceLocation(quiz, location.id, newLocation) as Quiz;
+  newQuiz = cloneQuizWithNewLocation(quiz, location.id, newLocation) as Quiz;
   newQuiz.builderSelected = newLocation;
 
   return newQuiz;
@@ -186,7 +184,7 @@ function updateLocationIsOpen(
     newLocation.isOpen = isOpen;
   }
 
-  newQuiz = replaceLocation(quiz, location.id, newLocation) as Quiz;
+  newQuiz = cloneQuizWithNewLocation(quiz, location.id, newLocation) as Quiz;
   newQuiz.builderSelected = newLocation;
 
   return newQuiz;
@@ -212,7 +210,7 @@ function updatedLocationIsAdding(
     newLocation.isAdding = isAdding;
   }
 
-  newQuiz = replaceLocation(quiz, location.id, newLocation) as Quiz;
+  newQuiz = cloneQuizWithNewLocation(quiz, location.id, newLocation) as Quiz;
 
   return newQuiz;
 }
@@ -223,9 +221,13 @@ function reorderSublocations(
   sublocations: (AreaState | PointState)[],
 ): Quiz {
   const newParent = _.cloneDeep(parent);
-  newParent.sublocations = sublocations;
 
-  const newQuiz = replaceLocation(quiz, parent.id, newParent) as Quiz;
+  newParent.sublocations = sublocations.map((sublocation) => ({
+    ...sublocation,
+    parent: newParent,
+  }));
+
+  const newQuiz = cloneQuizWithNewLocation(quiz, parent.id, newParent) as Quiz;
   return newQuiz;
 }
 
@@ -238,12 +240,16 @@ function renameLocation(
   newLocation.isRenaming = false;
   newLocation.userDefinedName = name;
 
-  const newQuiz = replaceLocation(quiz, location.id, newLocation) as Quiz;
+  const newQuiz = cloneQuizWithNewLocation(
+    quiz,
+    location.id,
+    newLocation,
+  ) as Quiz;
   return newQuiz;
 }
 
 function deleteLocation(quiz: Quiz, location: AreaState | PointState): Quiz {
-  const newQuiz = replaceLocation(quiz, location.id, null) as Quiz;
+  const newQuiz = cloneQuizWithNewLocation(quiz, location.id, null) as Quiz;
   return newQuiz;
 }
 
@@ -251,15 +257,28 @@ function incrementTakerLocation(quiz: Quiz): Quiz {
   const newQuiz = _.cloneDeep(quiz);
 
   const takerSelected = newQuiz.takerSelected;
+  const takerSelectedSiblings = takerSelected.parent.sublocations;
 
-  const parent = takerSelected.parent;
+  const takerSelectedIndex = takerSelectedSiblings.indexOf(takerSelected);
 
-  const takerSelectedIndex = parent.sublocations.indexOf(takerSelected);
-
-  if (takerSelectedIndex < parent.sublocations.length - 1) {
-    const newTakerSelected = parent.sublocations[takerSelectedIndex + 1];
+  if (takerSelectedIndex < takerSelectedSiblings.length - 1) {
+    const newTakerSelected = takerSelectedSiblings[takerSelectedIndex + 1];
     newQuiz.takerSelected = newTakerSelected;
+    return newQuiz;
   }
 
+  for (const sibling of takerSelectedSiblings) {
+    if (
+      sibling.locationType === LocationType.Area &&
+      sibling.sublocations.length > 0
+    ) {
+      const newTakerSelected = sibling.sublocations[0];
+      newQuiz.takerSelected = newTakerSelected;
+      return newQuiz;
+    }
+  }
+
+  const newTakerSelected = newQuiz.sublocations[0];
+  newQuiz.takerSelected = newTakerSelected;
   return newQuiz;
 }

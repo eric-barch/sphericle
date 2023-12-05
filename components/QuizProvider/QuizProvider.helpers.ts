@@ -32,7 +32,7 @@ export function findLocation(
   return null;
 }
 
-export function replaceLocation(
+export function cloneQuizWithNewLocation(
   currentLocation: Quiz | AreaState | PointState,
   targetId: string,
   newLocation: Quiz | AreaState | PointState,
@@ -53,7 +53,7 @@ export function replaceLocation(
       const newSublocations: (AreaState | PointState)[] = [];
 
       for (const sublocation of currentLocation.sublocations) {
-        const newSublocation = replaceLocation(
+        const newSublocation = cloneQuizWithNewLocation(
           sublocation,
           targetId,
           newLocation,
@@ -87,7 +87,7 @@ export function replaceLocation(
       const newSublocations: (AreaState | PointState)[] = [];
 
       for (const sublocation of currentLocation.sublocations) {
-        const newSublocation = replaceLocation(
+        const newSublocation = cloneQuizWithNewLocation(
           sublocation,
           targetId,
           newLocation,
