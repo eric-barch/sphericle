@@ -22,10 +22,6 @@ const QuizDispatchContext = createContext<React.Dispatch<QuizDispatch>>(null);
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, dispatchQuiz] = useReducer(quizReducer, initialQuiz);
 
-  useEffect(() => {
-    console.log("quiz", quiz);
-  }, [quiz]);
-
   return (
     <QuizContext.Provider value={quiz}>
       <QuizDispatchContext.Provider value={dispatchQuiz}>
@@ -227,8 +223,7 @@ function reorderSublocations(
     parent: newParent,
   }));
 
-  const newQuiz = cloneQuizWithNewLocation(quiz, parent.id, newParent) as Quiz;
-  return newQuiz;
+  return cloneQuizWithNewLocation(quiz, parent.id, newParent) as Quiz;
 }
 
 function renameLocation(
@@ -255,30 +250,75 @@ function deleteLocation(quiz: Quiz, location: AreaState | PointState): Quiz {
 
 function incrementTakerLocation(quiz: Quiz): Quiz {
   const newQuiz = _.cloneDeep(quiz);
-
   const takerSelected = newQuiz.takerSelected;
-  const takerSelectedSiblings = takerSelected.parent.sublocations;
 
-  const takerSelectedIndex = takerSelectedSiblings.indexOf(takerSelected);
+  const parent = takerSelected.parent;
+  const siblings = parent.sublocations;
+  const index = siblings.indexOf(takerSelected);
 
-  if (takerSelectedIndex < takerSelectedSiblings.length - 1) {
-    const newTakerSelected = takerSelectedSiblings[takerSelectedIndex + 1];
-    newQuiz.takerSelected = newTakerSelected;
+  // if takerSelected has a subsequent sibling, set takerSelected to it
+  if (index < siblings.length - 1) {
+    newQuiz.takerSelected = siblings[index + 1];
     return newQuiz;
   }
 
-  for (const sibling of takerSelectedSiblings) {
+  // else, find the first child below current level
+  for (const takerSelectedSibling of siblings) {
+    // if takerSelected's sibling has children, set takerSelected to the first
     if (
-      sibling.locationType === LocationType.Area &&
-      sibling.sublocations.length > 0
+      takerSelectedSibling.locationType === LocationType.Area &&
+      takerSelectedSibling.sublocations.length > 0
     ) {
-      const newTakerSelected = sibling.sublocations[0];
-      newQuiz.takerSelected = newTakerSelected;
+      newQuiz.takerSelected = takerSelectedSibling.sublocations[0];
       return newQuiz;
     }
   }
 
-  const newTakerSelected = newQuiz.sublocations[0];
-  newQuiz.takerSelected = newTakerSelected;
+  // else, search upward
+  newQuiz.takerSelected = searchUpwardForNextSelected(parent);
+
+  console.log("new takerSelected", newQuiz.takerSelected);
+
   return newQuiz;
+}
+
+function searchUpwardForNextSelected(
+  location: Quiz | AreaState | PointState,
+): AreaState | PointState | null {
+  // console.log("searchUpward", location.shortName);
+
+  if (location.locationType === LocationType.Quiz) {
+    return null;
+  }
+
+  const parent = location.parent;
+  // console.log("parent", parent.shortName);
+
+  if (parent.locationType === LocationType.Quiz) {
+    return null;
+  }
+
+  const parentSiblings = parent.parent.sublocations;
+  // console.log(
+  //   "parentSiblings",
+  //   parentSiblings.map((sibling) => sibling.shortName),
+  // );
+
+  const index = parentSiblings.indexOf(parent);
+  // console.log("index", index);
+
+  for (let i = index + 1; i < parentSiblings.length; i++) {
+    const parentSibling = parentSiblings[i];
+    // console.log("parentSibling", parentSibling);
+
+    if (
+      parentSibling.locationType === LocationType.Area &&
+      parentSibling.sublocations.length > 0
+    ) {
+      // console.log("foo");
+      return parentSibling.sublocations[0];
+    }
+  }
+
+  return searchUpwardForNextSelected(parent);
 }
