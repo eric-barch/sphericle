@@ -277,7 +277,11 @@ function incrementTakerLocation(quiz: Quiz): Quiz {
   // else, search upward
   newQuiz.takerSelected = searchUpwardForNextSelected(parent);
 
-  console.log("new takerSelected", newQuiz.takerSelected);
+  console.log("new takerSelected", newQuiz.takerSelected?.shortName);
+
+  if (!newQuiz.takerSelected) {
+    newQuiz.takerSelected = newQuiz.sublocations[0];
+  }
 
   return newQuiz;
 }
@@ -285,38 +289,39 @@ function incrementTakerLocation(quiz: Quiz): Quiz {
 function searchUpwardForNextSelected(
   location: Quiz | AreaState | PointState,
 ): AreaState | PointState | null {
-  // console.log("searchUpward", location.shortName);
+  console.log("searchUpward", location.shortName);
 
   if (location.locationType === LocationType.Quiz) {
     return null;
   }
 
   const parent = location.parent;
-  // console.log("parent", parent.shortName);
+  console.log("parent", parent.shortName);
 
   if (parent.locationType === LocationType.Quiz) {
     return null;
   }
 
-  const parentSiblings = parent.parent.sublocations;
-  // console.log(
-  //   "parentSiblings",
-  //   parentSiblings.map((sibling) => sibling.shortName),
-  // );
+  const siblings = parent.sublocations;
+  console.log(
+    "siblings",
+    siblings.map((sibling) => sibling.shortName),
+  );
 
-  const index = parentSiblings.indexOf(parent);
-  // console.log("index", index);
+  const index = siblings.indexOf(location);
+  console.log("index", index);
 
-  for (let i = index + 1; i < parentSiblings.length; i++) {
-    const parentSibling = parentSiblings[i];
-    // console.log("parentSibling", parentSibling);
+  for (let i = index + 1; i < siblings.length; i++) {
+    const sibling = siblings[i];
+    console.log("checking sibling", sibling);
 
     if (
-      parentSibling.locationType === LocationType.Area &&
-      parentSibling.sublocations.length > 0
+      sibling.locationType === LocationType.Area &&
+      sibling.sublocations.length > 0
     ) {
-      // console.log("foo");
-      return parentSibling.sublocations[0];
+      console.log("sibling has children");
+      console.log("return", sibling.sublocations[0].shortName);
+      return sibling.sublocations[0];
     }
   }
 
