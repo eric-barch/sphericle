@@ -37,8 +37,9 @@ export function useQuizDispatch(): Dispatch<QuizDispatch> {
 
 function quizReducer(quiz: QuizState, action: QuizDispatch): QuizState {
   switch (action.type) {
-    case QuizDispatchType.SelectedLocation: {
+    case QuizDispatchType.SelectedBuilderLocation: {
       const newQuiz = { ...quiz };
+      newQuiz.builderSelected = action.location;
       return newQuiz;
     }
   }

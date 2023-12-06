@@ -1,5 +1,10 @@
-import { useQuiz } from "@/components/QuizProvider";
-import { AreaState, LocationType, ParentLocationDispatchType } from "@/types";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import {
+  AreaState,
+  LocationType,
+  ParentLocationDispatchType,
+  QuizDispatchType,
+} from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
 import { FocusEvent, KeyboardEvent, MouseEvent, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
@@ -13,6 +18,7 @@ import { Sublocations } from "./Sublocations";
 
 export default function Area() {
   const quizState = useQuiz();
+  const quizDispatch = useQuizDispatch();
   const areaState = useParentLocation() as AreaState;
   const areaStateDispatch = useParentLocationDispatch();
 
@@ -32,7 +38,7 @@ export default function Area() {
 
   function setIsAdding(isAdding: boolean) {
     // quizDispatch({
-    //   type: QuizDispatchType.UpdatedLocationIsAdding,
+    //   type: QuizDispatchType.UpdatedIsAdding,
     //   location: areaState,
     //   isAdding,
     // });
@@ -63,10 +69,10 @@ export default function Area() {
   }
 
   function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
-    // quizDispatch({
-    //   type: QuizDispatchType.SelectedBuilderLocation,
-    //   location: areaState,
-    // });
+    quizDispatch({
+      type: QuizDispatchType.SelectedBuilderLocation,
+      location: areaState,
+    });
 
     if (mouseDown) {
       setToggleOnClick(false);
@@ -86,16 +92,11 @@ export default function Area() {
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    areaStateDispatch({
-      type: ParentLocationDispatchType.UpdatedIsOpen,
-      isOpen: !areaState.isOpen,
-    });
-
     if (toggleOnClick && quizState.builderSelected?.id === areaState.id) {
-      // areaStateDispatch({
-      //   type: ParentLocationDispatchType.UpdatedIsOpen,
-      //   isOpen: !areaState.isOpen,
-      // });
+      areaStateDispatch({
+        type: ParentLocationDispatchType.UpdatedIsOpen,
+        isOpen: !areaState.isOpen,
+      });
     } else {
       event.preventDefault();
     }

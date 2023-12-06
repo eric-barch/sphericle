@@ -10,7 +10,7 @@ export enum SearchStatus {
 }
 
 export enum QuizDispatchType {
-  SelectedLocation = "selectedLocation",
+  SelectedBuilderLocation = "selectedBuilderLocation",
 }
 
 export enum ParentLocationDispatchType {

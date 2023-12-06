@@ -96,13 +96,13 @@ interface UpdatedIsOpenDispatch extends BaseParentLocationDispatch {
   isOpen: boolean;
 }
 
-export type QuizDispatch = SelectedLocationDispatch;
+export type QuizDispatch = SelectedBuilderLocationDispatch;
 
 interface BaseQuizDispatch {
   type: QuizDispatchType;
 }
 
-interface SelectedLocationDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.SelectedLocation;
+interface SelectedBuilderLocationDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.SelectedBuilderLocation;
   location: AreaState | PointState | null;
 }
