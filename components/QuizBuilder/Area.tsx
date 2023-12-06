@@ -1,16 +1,20 @@
 import { useQuiz } from "@/components/QuizProvider";
-import { LocationType } from "@/types";
+import { AreaState, LocationType, ParentLocationDispatchType } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
 import { FocusEvent, KeyboardEvent, MouseEvent, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
-import { useParentLocation } from "./ParentLocationProvider";
+import {
+  useParentLocation,
+  useParentLocationDispatch,
+} from "./ParentLocationProvider";
 import { Sublocations } from "./Sublocations";
 
 export default function Area() {
   const quizState = useQuiz();
-  const areaState = useParentLocation();
+  const areaState = useParentLocation() as AreaState;
+  const areaStateDispatch = useParentLocationDispatch();
 
   if (areaState.locationType !== LocationType.Area) {
     throw new Error("areaState must be of type AreaState.");
@@ -82,10 +86,14 @@ export default function Area() {
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
+    areaStateDispatch({
+      type: ParentLocationDispatchType.UpdatedIsOpen,
+      isOpen: !areaState.isOpen,
+    });
+
     if (toggleOnClick && quizState.builderSelected?.id === areaState.id) {
-      // quizDispatch({
-      //   type: QuizDispatchType.UpdatedLocationIsOpen,
-      //   location: areaState,
+      // areaStateDispatch({
+      //   type: ParentLocationDispatchType.UpdatedIsOpen,
       //   isOpen: !areaState.isOpen,
       // });
     } else {

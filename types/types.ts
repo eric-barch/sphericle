@@ -78,15 +78,22 @@ export interface MapItems {
   points: PointState[] | PointState | null;
 }
 
-export type ParentLocationDispatch = AddedSublocationDispatch;
+export type ParentLocationDispatch =
+  | AddedSublocationDispatch
+  | UpdatedIsOpenDispatch;
 
-interface BaseLocationDispatch {
+interface BaseParentLocationDispatch {
   type: ParentLocationDispatchType;
 }
 
-interface AddedSublocationDispatch extends BaseLocationDispatch {
+interface AddedSublocationDispatch extends BaseParentLocationDispatch {
   type: ParentLocationDispatchType.AddedSublocation;
   sublocation: AreaState | PointState;
+}
+
+interface UpdatedIsOpenDispatch extends BaseParentLocationDispatch {
+  type: ParentLocationDispatchType.UpdatedIsOpen;
+  isOpen: boolean;
 }
 
 export type QuizDispatch = SelectedLocationDispatch;
