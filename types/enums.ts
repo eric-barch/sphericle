@@ -16,4 +16,5 @@ export enum QuizDispatchType {
 export enum ParentLocationDispatchType {
   AddedSublocation = "addedSublocation",
   UpdatedIsOpen = "updatedIsOpen",
+  UpdatedIsAdding = "updatedIsAdding",
 }

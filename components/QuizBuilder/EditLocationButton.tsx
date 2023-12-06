@@ -6,16 +6,18 @@ import { useParentLocation } from "./ParentLocationProvider";
 
 interface EditLocationButtonProps {
   className?: string;
+  setIsAdding: (isAdding: boolean) => void;
 }
 
 export default function EditLocationButton({
   className,
+  setIsAdding,
 }: EditLocationButtonProps) {
   const parentLocation = useParentLocation();
 
   function handleAddSublocationClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
-    // setIsAdding(true);
+    setIsAdding(true);
   }
 
   function handleRenameClick(event: MouseEvent<HTMLDivElement>) {

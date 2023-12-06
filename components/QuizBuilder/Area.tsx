@@ -19,10 +19,10 @@ import { Sublocations } from "./Sublocations";
 export default function Area() {
   const quizState = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const areaState = useParentLocation() as AreaState;
-  const areaStateDispatch = useParentLocationDispatch();
+  const parentLocation = useParentLocation() as AreaState;
+  const parentLocationDispatch = useParentLocationDispatch();
 
-  if (areaState.locationType !== LocationType.Area) {
+  if (parentLocation.locationType !== LocationType.Area) {
     throw new Error("areaState must be of type AreaState.");
   }
 
@@ -37,11 +37,10 @@ export default function Area() {
   const locationAdderInputRef = useRef<HTMLInputElement>();
 
   function setIsAdding(isAdding: boolean) {
-    // quizDispatch({
-    //   type: QuizDispatchType.UpdatedIsAdding,
-    //   location: areaState,
-    //   isAdding,
-    // });
+    parentLocationDispatch({
+      type: ParentLocationDispatchType.UpdatedIsAdding,
+      isAdding,
+    });
 
     // force Disclosure to render new open state
     setDisclosureKey(crypto.randomUUID());
@@ -71,7 +70,7 @@ export default function Area() {
   function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
     quizDispatch({
       type: QuizDispatchType.SelectedBuilderLocation,
-      location: areaState,
+      location: parentLocation,
     });
 
     if (mouseDown) {
@@ -92,10 +91,10 @@ export default function Area() {
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (toggleOnClick && quizState.builderSelected?.id === areaState.id) {
-      areaStateDispatch({
+    if (toggleOnClick && quizState.builderSelected?.id === parentLocation.id) {
+      parentLocationDispatch({
         type: ParentLocationDispatchType.UpdatedIsOpen,
-        isOpen: !areaState.isOpen,
+        isOpen: !parentLocation.isOpen,
       });
     } else {
       event.preventDefault();
@@ -133,12 +132,15 @@ export default function Area() {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
     >
-      <Disclosure key={disclosureKey} defaultOpen={areaState.isOpen}>
+      <Disclosure key={disclosureKey} defaultOpen={parentLocation.isOpen}>
         <div className="relative">
-          <EditLocationButton className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5" />
+          <EditLocationButton
+            className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
+            setIsAdding={setIsAdding}
+          />
           <Disclosure.Button
             className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
-              quizState.builderSelected?.id === areaState.id
+              quizState.builderSelected?.id === parentLocation.id
                 ? "outline outline-2 outline-red-600"
                 : ""
             }`}

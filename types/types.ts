@@ -80,7 +80,8 @@ export interface MapItems {
 
 export type ParentLocationDispatch =
   | AddedSublocationDispatch
-  | UpdatedIsOpenDispatch;
+  | UpdatedIsOpenDispatch
+  | UpdatedIsAddingDispatch;
 
 interface BaseParentLocationDispatch {
   type: ParentLocationDispatchType;
@@ -94,6 +95,11 @@ interface AddedSublocationDispatch extends BaseParentLocationDispatch {
 interface UpdatedIsOpenDispatch extends BaseParentLocationDispatch {
   type: ParentLocationDispatchType.UpdatedIsOpen;
   isOpen: boolean;
+}
+
+interface UpdatedIsAddingDispatch extends BaseParentLocationDispatch {
+  type: ParentLocationDispatchType.UpdatedIsAdding;
+  isAdding: boolean;
 }
 
 export type QuizDispatch = SelectedBuilderLocationDispatch;

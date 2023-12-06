@@ -61,8 +61,6 @@ function parentLocationReducer<T extends QuizState | AreaState | PointState>(
         );
       }
 
-      console.log("fired AddedSublocation dispatch");
-
       const newParentLocation = { ...parentLocation };
 
       // TODO: hack to prevent adding location twice when reducer fires twice. would prefer to fix
@@ -79,10 +77,17 @@ function parentLocationReducer<T extends QuizState | AreaState | PointState>(
         throw new Error("parentLocation must be of type AreaState.");
       }
 
-      console.log("fired UpdatedIsOpen dispatch");
+      return { ...parentLocation, isOpen: action.isOpen };
+    }
+    case ParentLocationDispatchType.UpdatedIsAdding: {
+      if (!isArea(parentLocation)) {
+        throw new Error("parentLocation must be of type AreaState.");
+      }
 
-      const newParentLocation = { ...parentLocation, isOpen: action.isOpen };
-      return newParentLocation;
+      return {
+        ...parentLocation,
+        isAdding: action.isAdding,
+      };
     }
   }
 }
