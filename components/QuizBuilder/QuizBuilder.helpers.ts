@@ -1,7 +1,13 @@
-import { AreaState, LocationType, MapItems, PointState, Quiz } from "@/types";
+import {
+  AreaState,
+  LocationType,
+  MapItems,
+  PointState,
+  QuizState,
+} from "@/types";
 
 export function getQuizBuilderLocationMapItems(
-  location: Quiz | AreaState | PointState | null,
+  location: QuizState | AreaState | PointState | null,
 ): MapItems {
   if (!location || location.locationType === LocationType.Quiz) {
     return {

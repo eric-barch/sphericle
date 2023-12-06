@@ -4,7 +4,7 @@ import {
   LocationType,
   OpenStreetMapResponseItem,
   PointState,
-  Quiz,
+  QuizState,
   SearchStatus,
 } from "@/types";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
@@ -19,7 +19,9 @@ export interface AreaSearch {
   reset: () => void;
 }
 
-export default function useAreaSearch(parent: Quiz | AreaState): AreaSearch {
+export default function useAreaSearch(
+  parent: QuizState | AreaState,
+): AreaSearch {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);

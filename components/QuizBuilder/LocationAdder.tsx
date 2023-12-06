@@ -1,18 +1,18 @@
 "use client";
 
-import { useQuizDispatch } from "@/components/QuizProvider";
 import useAreaSearch, {
   AreaSearch,
 } from "@/components/QuizBuilder/use-area-search.hook";
 import usePointSearch, {
   PointSearch,
 } from "@/components/QuizBuilder/use-point-search.hook";
+import { useQuizDispatch } from "@/components/QuizProvider";
 import {
   AreaState,
   LocationType,
+  ParentLocationDispatchType,
   PointState,
-  Quiz,
-  QuizDispatchType,
+  QuizState,
   SearchStatus,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
@@ -27,17 +27,25 @@ import {
   useState,
 } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
+import {
+  useParentLocation,
+  useParentLocationDispatch,
+} from "./ParentLocationProvider";
 
 interface LocationAdderProps {
-  parent: Quiz | AreaState;
   inputRef: RefObject<HTMLInputElement>;
 }
 
-export default function LocationAdder({
-  parent,
-  inputRef,
-}: LocationAdderProps) {
-  const quizDispatch = useQuizDispatch();
+export default function LocationAdder({ inputRef }: LocationAdderProps) {
+  const parentLocation = useParentLocation() as QuizState | AreaState;
+  const parentLocationDispatch = useParentLocationDispatch();
+
+  if (
+    parentLocation.locationType !== LocationType.Quiz &&
+    parentLocation.locationType !== LocationType.Area
+  ) {
+    throw new Error("parentLocation must be of type QuizState or AreaState.");
+  }
 
   const [isFocused, setIsFocused] = useState<boolean>(null);
   const [lastAddedLocation, setLastAddedLocation] = useState<
@@ -47,22 +55,23 @@ export default function LocationAdder({
     LocationType.Area,
   );
   const [input, setInput] = useState<string>("");
-  const areaSearch = useAreaSearch(parent);
-  const pointSearch = usePointSearch(parent);
+  const areaSearch = useAreaSearch(parentLocation);
+  const pointSearch = usePointSearch(parentLocation);
 
-  function handleChange(location: AreaState | PointState) {
-    const newLocation = {
-      ...location,
-      parent,
+  function handleChange(sublocation: AreaState | PointState) {
+    console.log("fire handleChange");
+
+    const newSublocation = {
+      ...sublocation,
+      parent: parentLocation,
     };
 
-    quizDispatch({
-      type: QuizDispatchType.AddedLocation,
-      parent,
-      location: newLocation,
+    parentLocationDispatch({
+      type: ParentLocationDispatchType.AddedSublocation,
+      sublocation: newSublocation,
     });
 
-    setLastAddedLocation(newLocation);
+    setLastAddedLocation(sublocation);
 
     if (inputRef) {
       inputRef.current.value = "";
@@ -92,20 +101,20 @@ export default function LocationAdder({
       if (lastAddedLocation) {
         locationToSelect = lastAddedLocation;
       } else {
-        locationToSelect = parent;
+        locationToSelect = parentLocation;
       }
     } else {
-      if (parent.locationType === LocationType.Area) {
-        locationToSelect = parent;
+      if (parentLocation.locationType === LocationType.Area) {
+        locationToSelect = parentLocation;
       } else {
         locationToSelect = null;
       }
     }
 
-    quizDispatch({
-      type: QuizDispatchType.SelectedBuilderLocation,
-      location: locationToSelect,
-    });
+    // quizDispatch({
+    //   type: QuizDispatchType.SelectedBuilderLocation,
+    //   location: locationToSelect,
+    // });
   }
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
@@ -115,7 +124,7 @@ export default function LocationAdder({
     }
   }
 
-  return parent.isAdding || parent.sublocations.length === 0 ? (
+  return parentLocation.isAdding || parentLocation.sublocations.length === 0 ? (
     <div
       id="location-adder"
       className="relative"
@@ -126,7 +135,6 @@ export default function LocationAdder({
         {({ activeOption }) => (
           <>
             <Input
-              parent={parent}
               input={input}
               locationType={locationType}
               areaSearch={areaSearch}
@@ -136,7 +144,6 @@ export default function LocationAdder({
               setLocationType={setLocationType}
             />
             <Options
-              parent={parent}
               activeOption={activeOption}
               input={input}
               areaSearch={areaSearch}
@@ -152,7 +159,6 @@ export default function LocationAdder({
 }
 
 interface InputProps {
-  parent: Quiz | AreaState;
   input: string;
   locationType: LocationType;
   areaSearch: AreaSearch;
@@ -163,7 +169,6 @@ interface InputProps {
 }
 
 function Input({
-  parent,
   input,
   locationType,
   areaSearch,
@@ -172,11 +177,13 @@ function Input({
   setInput,
   setLocationType,
 }: InputProps) {
+  const parentLocation = useParentLocation();
+
   const placeholder =
-    parent.locationType === LocationType.Quiz
+    parentLocation.locationType === LocationType.Quiz
       ? `Add ${locationType.toLowerCase()} anywhere`
       : `Add ${locationType.toLowerCase()} in ${
-          parent.userDefinedName || parent.shortName
+          parentLocation.userDefinedName || parentLocation.shortName
         }`;
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -292,7 +299,6 @@ function ToggleLocationTypeButton({
 }
 
 interface OptionsProps {
-  parent: Quiz | AreaState;
   input: string;
   locationType: LocationType;
   areaSearch: AreaSearch;

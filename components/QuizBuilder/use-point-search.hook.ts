@@ -2,7 +2,7 @@ import {
   AreaState,
   LocationType,
   PointSearchResult,
-  Quiz,
+  QuizState,
   SearchStatus,
 } from "@/types";
 import debounce from "@/utils/debounce";
@@ -18,7 +18,9 @@ export interface PointSearch {
   reset: () => void;
 }
 
-export default function usePointSearch(parent: Quiz | AreaState): PointSearch {
+export default function usePointSearch(
+  parent: QuizState | AreaState,
+): PointSearch {
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.Searched);

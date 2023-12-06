@@ -1,8 +1,12 @@
 import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Point, Polygon } from "geojson";
-import { LocationType, QuizDispatchType } from "./enums";
+import {
+  ParentLocationDispatchType,
+  LocationType,
+  QuizDispatchType,
+} from "./enums";
 
-export interface Quiz {
+export interface QuizState {
   id: string;
   locationType: LocationType.Quiz;
   isAdding: boolean;
@@ -30,7 +34,7 @@ export interface AreaSearchResult {
 }
 
 export interface AreaState extends AreaSearchResult {
-  parent: Quiz | AreaState;
+  parent: QuizState | AreaState;
 }
 
 export interface PointSearchResult {
@@ -46,7 +50,7 @@ export interface PointSearchResult {
 }
 
 export interface PointState extends PointSearchResult {
-  parent: Quiz | AreaState;
+  parent: QuizState | AreaState;
 }
 
 export interface OpenStreetMapResponseItem {
@@ -74,73 +78,24 @@ export interface MapItems {
   points: PointState[] | PointState | null;
 }
 
-export type QuizDispatch =
-  | AddedLocationDispatch
-  | SelectedBuilderLocationDispatch
-  | SelectedTakerLocationDispatch
-  | UpdatedLocationIsRenamingDispatch
-  | UpdatedLocationIsOpenDispatch
-  | UpdatedLocationIsAddingDispatch
-  | ReorderedSublocationsDispatch
-  | RenamedLocationDispatch
-  | DeletedLocationDispatch
-  | IncrementedTakerLocationDispatch;
+export type ParentLocationDispatch = AddedSublocationDispatch;
+
+interface BaseLocationDispatch {
+  type: ParentLocationDispatchType;
+}
+
+interface AddedSublocationDispatch extends BaseLocationDispatch {
+  type: ParentLocationDispatchType.AddedSublocation;
+  sublocation: AreaState | PointState;
+}
+
+export type QuizDispatch = SelectedLocationDispatch;
 
 interface BaseQuizDispatch {
   type: QuizDispatchType;
 }
 
-interface AddedLocationDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.AddedLocation;
-  parent: Quiz | AreaState;
-  location: AreaState | PointState;
-}
-
-interface SelectedBuilderLocationDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.SelectedBuilderLocation;
+interface SelectedLocationDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.SelectedLocation;
   location: AreaState | PointState | null;
-}
-
-interface SelectedTakerLocationDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.SelectedTakerLocation;
-  location: AreaState | PointState | null;
-}
-
-interface UpdatedLocationIsRenamingDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.UpdatedLocationIsRenaming;
-  location: AreaState | PointState;
-  isRenaming: boolean;
-}
-
-interface UpdatedLocationIsOpenDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.UpdatedLocationIsOpen;
-  location: AreaState;
-  isOpen: boolean;
-}
-
-interface UpdatedLocationIsAddingDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.UpdatedLocationIsAdding;
-  location: AreaState;
-  isAdding: boolean;
-}
-
-interface ReorderedSublocationsDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.ReorderedSublocations;
-  parent: Quiz | AreaState;
-  sublocations: (AreaState | PointState)[];
-}
-
-interface RenamedLocationDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.RenamedLocation;
-  location: AreaState | PointState;
-  name: string;
-}
-
-interface DeletedLocationDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.DeletedLocation;
-  location: AreaState | PointState;
-}
-
-interface IncrementedTakerLocationDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.IncrementedTakerLocation;
 }

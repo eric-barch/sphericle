@@ -10,14 +10,9 @@ export enum SearchStatus {
 }
 
 export enum QuizDispatchType {
-  AddedLocation = "addedLocation",
-  SelectedBuilderLocation = "selectedBuilderLocation",
-  UpdatedLocationIsRenaming = "updatedLocationIsRenaming",
-  UpdatedLocationIsOpen = "updatedLocationIsOpen",
-  UpdatedLocationIsAdding = "updatedLocationIsAdding",
-  ReorderedSublocations = "reorderedSublocations",
-  RenamedLocation = "renamedLocation",
-  DeletedLocation = "deletedLocation",
-  SelectedTakerLocation = "selectedTakerLocation",
-  IncrementedTakerLocation = "incrementedTakerLocation",
+  SelectedLocation = "selectedLocation",
+}
+
+export enum ParentLocationDispatchType {
+  AddedSublocation = "addedSublocation",
 }

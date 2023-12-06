@@ -1,25 +1,26 @@
-import { PointState, QuizDispatchType } from "@/types";
-import { FocusEvent, useRef, useState } from "react";
+import { FocusEvent, useRef } from "react";
+import { useQuiz } from "../QuizProvider";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
-import { useQuiz, useQuizDispatch } from "../QuizProvider";
+import { useParentLocation } from "./ParentLocationProvider";
+import { LocationType } from "@/types";
 
-interface PointProps {
-  pointState: PointState;
-}
+export default function Point() {
+  const quizState = useQuiz();
+  const pointState = useParentLocation();
 
-export default function Point({ pointState }: PointProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
+  if (pointState.locationType !== LocationType.Point) {
+    throw new Error("pointState must be of type PointState.");
+  }
 
   const locationNameInputRef = useRef<HTMLInputElement>();
 
   function setIsRenaming(isRenaming: boolean) {
-    quizDispatch({
-      type: QuizDispatchType.UpdatedLocationIsRenaming,
-      location: pointState,
-      isRenaming,
-    });
+    // quizDispatch({
+    //   type: QuizDispatchType.UpdatedLocationIsRenaming,
+    //   location: pointState,
+    //   isRenaming,
+    // });
 
     if (isRenaming) {
       setTimeout(() => {
@@ -30,32 +31,24 @@ export default function Point({ pointState }: PointProps) {
   }
 
   function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
-    quizDispatch({
-      type: QuizDispatchType.SelectedBuilderLocation,
-      location: pointState,
-    });
+    // quizDispatch({
+    //   type: QuizDispatchType.SelectedBuilderLocation,
+    //   location: pointState,
+    // });
   }
 
   return (
     <div id="point" className="relative" onFocusCapture={handleFocusCapture}>
-      <EditLocationButton
-        className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
-        location={pointState}
-        setIsRenaming={setIsRenaming}
-      />
+      <EditLocationButton className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5" />
       <div
         className={`w-full py-1 px-1 rounded-3xl text-left bg-gray-600 cursor-pointer ${
-          quiz.builderSelected?.id === pointState.id
+          quizState.builderSelected?.id === pointState.id
             ? "outline outline-2 outline-red-600"
             : ""
         }`}
         tabIndex={0}
       >
-        <LocationName
-          location={pointState}
-          inputRef={locationNameInputRef}
-          setIsRenaming={setIsRenaming}
-        />
+        <LocationName inputRef={locationNameInputRef} />
       </div>
     </div>
   );

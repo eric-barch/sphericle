@@ -1,15 +1,12 @@
 import Map from "@/components/Map";
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState, PointState, QuizDispatchType } from "@/types";
+import { useQuiz } from "@/components/QuizProvider";
+import { AreaState, PointState } from "@/types";
 import { KeyboardEvent, useEffect, useState } from "react";
 import AnswerBox from "./AnswerBox";
 import { getQuizTakerLocationMapItems } from "./QuizTaker.helpers";
 
-interface QuizTakerProps {}
-
-export default function QuizTaker({}: QuizTakerProps) {
+export default function QuizTaker() {
   const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
 
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
   const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>(null);
@@ -29,11 +26,6 @@ export default function QuizTaker({}: QuizTakerProps) {
       } else {
         setPlacesLoaded(true);
       }
-
-      quizDispatch({
-        type: QuizDispatchType.SelectedTakerLocation,
-        location: quiz.sublocations[0],
-      });
     })();
   }, []);
 
@@ -60,9 +52,9 @@ export default function QuizTaker({}: QuizTakerProps) {
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === "Enter") {
-      quizDispatch({
-        type: QuizDispatchType.IncrementedTakerLocation,
-      });
+      // quizDispatch({
+      //   type: QuizDispatchType.IncrementedTakerLocation,
+      // });
     }
   }
 

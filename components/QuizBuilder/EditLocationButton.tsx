@@ -1,40 +1,34 @@
-import { useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
+import { LocationType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MouseEvent } from "react";
 import { FaEllipsisVertical } from "react-icons/fa6";
+import { useParentLocation } from "./ParentLocationProvider";
 
 interface EditLocationButtonProps {
   className?: string;
-  location: AreaState | PointState;
-  setIsAdding?: (isAdding: boolean) => void;
-  setIsRenaming: (isRenaming: boolean) => void;
 }
 
 export default function EditLocationButton({
   className,
-  location,
-  setIsAdding = () => {},
-  setIsRenaming,
 }: EditLocationButtonProps) {
-  const quizDispatch = useQuizDispatch();
+  const parentLocation = useParentLocation();
 
   function handleAddSublocationClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
-    setIsAdding(true);
+    // setIsAdding(true);
   }
 
   function handleRenameClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
-    setIsRenaming(true);
+    // setIsRenaming(true);
   }
 
   function handleDeleteClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
-    quizDispatch({
-      type: QuizDispatchType.DeletedLocation,
-      location,
-    });
+    // quizDispatch({
+    //   type: QuizDispatchType.DeletedLocation,
+    //   location,
+    // });
   }
 
   return (
@@ -46,7 +40,7 @@ export default function EditLocationButton({
         className="absolute z-10 top-2 ml-[-1.2rem] bg-gray-500 rounded-custom p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        {location.locationType === LocationType.Area && (
+        {parentLocation.locationType === LocationType.Area && (
           <DropdownMenu.Item
             onClick={handleAddSublocationClick}
             className="rounded-3xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"

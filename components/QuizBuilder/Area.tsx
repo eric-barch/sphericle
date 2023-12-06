@@ -1,19 +1,20 @@
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState, QuizDispatchType } from "@/types";
+import { useQuiz } from "@/components/QuizProvider";
+import { LocationType } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
 import { FocusEvent, KeyboardEvent, MouseEvent, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
+import { useParentLocation } from "./ParentLocationProvider";
 import { Sublocations } from "./Sublocations";
 
-interface AreaProps {
-  areaState: AreaState;
-}
+export default function Area() {
+  const quizState = useQuiz();
+  const areaState = useParentLocation();
 
-export default function Area({ areaState }: AreaProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
+  if (areaState.locationType !== LocationType.Area) {
+    throw new Error("areaState must be of type AreaState.");
+  }
 
   const [disclosureKey, setDisclosureKey] = useState<string>(
     crypto.randomUUID(),
@@ -26,11 +27,11 @@ export default function Area({ areaState }: AreaProps) {
   const locationAdderInputRef = useRef<HTMLInputElement>();
 
   function setIsAdding(isAdding: boolean) {
-    quizDispatch({
-      type: QuizDispatchType.UpdatedLocationIsAdding,
-      location: areaState,
-      isAdding,
-    });
+    // quizDispatch({
+    //   type: QuizDispatchType.UpdatedLocationIsAdding,
+    //   location: areaState,
+    //   isAdding,
+    // });
 
     // force Disclosure to render new open state
     setDisclosureKey(crypto.randomUUID());
@@ -43,11 +44,11 @@ export default function Area({ areaState }: AreaProps) {
   }
 
   function setIsRenaming(isRenaming: boolean) {
-    quizDispatch({
-      type: QuizDispatchType.UpdatedLocationIsRenaming,
-      location: areaState,
-      isRenaming,
-    });
+    // quizDispatch({
+    //   type: QuizDispatchType.UpdatedLocationIsRenaming,
+    //   location: areaState,
+    //   isRenaming,
+    // });
 
     if (isRenaming) {
       setTimeout(() => {
@@ -58,10 +59,10 @@ export default function Area({ areaState }: AreaProps) {
   }
 
   function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
-    quizDispatch({
-      type: QuizDispatchType.SelectedBuilderLocation,
-      location: areaState,
-    });
+    // quizDispatch({
+    //   type: QuizDispatchType.SelectedBuilderLocation,
+    //   location: areaState,
+    // });
 
     if (mouseDown) {
       setToggleOnClick(false);
@@ -81,12 +82,12 @@ export default function Area({ areaState }: AreaProps) {
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (toggleOnClick && quiz.builderSelected?.id === areaState.id) {
-      quizDispatch({
-        type: QuizDispatchType.UpdatedLocationIsOpen,
-        location: areaState,
-        isOpen: !areaState.isOpen,
-      });
+    if (toggleOnClick && quizState.builderSelected?.id === areaState.id) {
+      // quizDispatch({
+      //   type: QuizDispatchType.UpdatedLocationIsOpen,
+      //   location: areaState,
+      //   isOpen: !areaState.isOpen,
+      // });
     } else {
       event.preventDefault();
     }
@@ -125,37 +126,24 @@ export default function Area({ areaState }: AreaProps) {
     >
       <Disclosure key={disclosureKey} defaultOpen={areaState.isOpen}>
         <div className="relative">
-          <EditLocationButton
-            className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
-            location={areaState}
-            setIsAdding={setIsAdding}
-            setIsRenaming={setIsRenaming}
-          />
+          <EditLocationButton className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5" />
           <Disclosure.Button
             className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
-              quiz.builderSelected?.id === areaState.id
+              quizState.builderSelected?.id === areaState.id
                 ? "outline outline-2 outline-red-600"
                 : ""
             }`}
             onClick={handleClick}
             onKeyDown={handleKeyDown}
           >
-            <LocationName
-              location={areaState}
-              inputRef={locationNameInputRef}
-              setIsRenaming={setIsRenaming}
-            />
-            <OpenChevron
-              className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1"
-              open={areaState.isOpen}
-            />
+            <LocationName inputRef={locationNameInputRef} />
+            <OpenChevron className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1" />
           </Disclosure.Button>
         </div>
         <Transition>
           <Disclosure.Panel>
             <Sublocations
               className="ml-10"
-              parent={areaState}
               locationAdderInputRef={locationAdderInputRef}
             />
           </Disclosure.Panel>
@@ -167,13 +155,20 @@ export default function Area({ areaState }: AreaProps) {
 
 interface OpenChevronProps {
   className?: string;
-  open: boolean;
 }
 
-function OpenChevron({ className, open }: OpenChevronProps) {
+function OpenChevron({ className }: OpenChevronProps) {
+  const parentLocation = useParentLocation();
+
+  if (parentLocation.locationType !== LocationType.Area) {
+    throw new Error("parentLocation must be of type AreaState.");
+  }
+
   return (
     <div className={className}>
-      <FaChevronRight className={`${open ? "rotate-90" : ""} w-4 h-4`} />
+      <FaChevronRight
+        className={`${parentLocation.isOpen ? "rotate-90" : ""} w-4 h-4`}
+      />
     </div>
   );
 }

@@ -1,23 +1,28 @@
-import { AreaState, PointState, QuizDispatchType } from "@/types";
+import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
 import { KeyboardEvent, RefObject, useEffect, useState } from "react";
 import { useQuizDispatch } from "../QuizProvider";
+import {
+  useParentLocation,
+  useParentLocationDispatch,
+} from "./ParentLocationProvider";
 
 interface LocationTextProps {
-  location: AreaState | PointState;
   inputRef: RefObject<HTMLInputElement>;
-  setIsRenaming: (isRenaming: boolean) => void;
 }
 
-export default function LocationName({
-  location,
-  inputRef,
-  setIsRenaming,
-}: LocationTextProps) {
-  const quizDispatch = useQuizDispatch();
+export default function LocationName({ inputRef }: LocationTextProps) {
+  const parentLocation = useParentLocation();
 
-  const currentName = location.userDefinedName
-    ? location.userDefinedName
-    : location.shortName;
+  if (
+    parentLocation.locationType !== LocationType.Area &&
+    parentLocation.locationType !== LocationType.Point
+  ) {
+    throw new Error("parentLocation must by of type AreaState or PointState.");
+  }
+
+  const currentName = parentLocation.userDefinedName
+    ? parentLocation.userDefinedName
+    : parentLocation.shortName;
 
   const [newName, setNewName] = useState(currentName);
 
@@ -26,11 +31,11 @@ export default function LocationName({
       event.preventDefault();
       event.stopPropagation();
 
-      quizDispatch({
-        type: QuizDispatchType.RenamedLocation,
-        location,
-        name: newName,
-      });
+      // quizDispatch({
+      //   type: QuizDispatchType.RenamedLocation,
+      //   location,
+      //   name: newName,
+      // });
     }
 
     if (event.key === "Escape") {
@@ -44,12 +49,12 @@ export default function LocationName({
 
   function handleBlur() {
     setNewName(currentName);
-    setIsRenaming(false);
+    // setIsRenaming(false);
   }
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
-      {location.isRenaming ? (
+      {parentLocation.isRenaming ? (
         <input
           ref={inputRef}
           className="bg-transparent w-full focus:outline-none"
