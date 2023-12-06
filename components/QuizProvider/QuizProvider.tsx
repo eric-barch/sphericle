@@ -256,15 +256,12 @@ function incrementTakerLocation(quiz: Quiz): Quiz {
   const siblings = parent.sublocations;
   const index = siblings.indexOf(takerSelected);
 
-  // if takerSelected has a subsequent sibling, set takerSelected to it
   if (index < siblings.length - 1) {
     newQuiz.takerSelected = siblings[index + 1];
     return newQuiz;
   }
 
-  // else, find the first child below current level
   for (const takerSelectedSibling of siblings) {
-    // if takerSelected's sibling has children, set takerSelected to the first
     if (
       takerSelectedSibling.locationType === LocationType.Area &&
       takerSelectedSibling.sublocations.length > 0
@@ -274,11 +271,9 @@ function incrementTakerLocation(quiz: Quiz): Quiz {
     }
   }
 
-  // else, search upward
   newQuiz.takerSelected = searchUpwardForNextSelected(parent);
 
   console.log("new takerSelected", newQuiz.takerSelected?.shortName);
-
   if (!newQuiz.takerSelected) {
     newQuiz.takerSelected = newQuiz.sublocations[0];
   }
@@ -289,38 +284,26 @@ function incrementTakerLocation(quiz: Quiz): Quiz {
 function searchUpwardForNextSelected(
   location: Quiz | AreaState | PointState,
 ): AreaState | PointState | null {
-  console.log("searchUpward", location.shortName);
-
   if (location.locationType === LocationType.Quiz) {
     return null;
   }
 
   const parent = location.parent;
-  console.log("parent", parent.shortName);
 
   if (parent.locationType === LocationType.Quiz) {
     return null;
   }
 
   const siblings = parent.sublocations;
-  console.log(
-    "siblings",
-    siblings.map((sibling) => sibling.shortName),
-  );
-
   const index = siblings.indexOf(location);
-  console.log("index", index);
 
   for (let i = index + 1; i < siblings.length; i++) {
     const sibling = siblings[i];
-    console.log("checking sibling", sibling);
 
     if (
       sibling.locationType === LocationType.Area &&
       sibling.sublocations.length > 0
     ) {
-      console.log("sibling has children");
-      console.log("return", sibling.sublocations[0].shortName);
       return sibling.sublocations[0];
     }
   }
