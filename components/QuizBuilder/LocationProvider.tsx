@@ -10,6 +10,7 @@ import {
   Dispatch,
   ReactNode,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useReducer,
@@ -31,6 +32,68 @@ export default function LocationProvider({
   const parentLocation = useLocation();
   const parentLocationDispatch = useLocationDispatch();
 
+  const locationReducer = useCallback(
+    <T extends QuizState | AreaState | PointState>(
+      location: T,
+      action: LocationDispatch,
+    ): T => {
+      switch (action.type) {
+        case LocationDispatchType.AddedSublocation: {
+          if (!isQuizOrArea(location)) {
+            throw new Error("location must be of type QuizState or AreaState.");
+          }
+
+          const newLocation = { ...location };
+
+          // TODO: would prefer to fix by preventing reducer from firing twice
+          if (!location.sublocations.includes(action.sublocation)) {
+            newLocation.sublocations.push(action.sublocation);
+            action.sublocation.parent = newLocation;
+          }
+
+          return newLocation;
+        }
+        case LocationDispatchType.UpdatedIsOpen: {
+          if (!isArea(location)) {
+            throw new Error("location must be of type AreaState.");
+          }
+
+          const newLocation = { ...location, isOpen: action.isOpen };
+          return newLocation;
+        }
+        case LocationDispatchType.Renamed: {
+          if (!isAreaOrPoint(location)) {
+            throw new Error(
+              "location must be of type AreaState or PointState.",
+            );
+          }
+
+          const newLocation = { ...location, userDefinedName: action.name };
+          return newLocation;
+        }
+        case LocationDispatchType.UpdatedSublocations: {
+          if (!isQuizOrArea(location)) {
+            throw new Error("location must be of type QuizState or AreaState.");
+          }
+
+          return { ...location, sublocations: action.sublocations };
+        }
+        case LocationDispatchType.Deleted: {
+          if (!isAreaOrPoint(location)) {
+            throw new Error(
+              "location must be of type AreaState or PointState.",
+            );
+          }
+
+          console.log("markedForDeletion");
+
+          return { ...location, markedForDeletion: true };
+        }
+      }
+    },
+    [],
+  );
+
   const [location, dispatchlocation] = useReducer(
     locationReducer,
     initialLocation,
@@ -45,9 +108,22 @@ export default function LocationProvider({
       isAreaOrPoint(initialLocation) &&
       isAreaOrPoint(location)
     ) {
-      const newParentSublocations = [...parentLocation.sublocations];
+      let newParentSublocations = [...parentLocation.sublocations];
       const index = parentLocation.sublocations.indexOf(initialLocation);
-      newParentSublocations[index] = location;
+
+      console.log("location", location);
+
+      if (location.markedForDeletion) {
+        console.log("staged for deletion");
+        newParentSublocations = newParentSublocations.filter(
+          (sublocation) => sublocation.id !== location.id,
+        );
+      } else {
+        newParentSublocations[index] = location;
+      }
+
+      console.log("newParentSublocations", newParentSublocations);
+
       parentLocationDispatch({
         type: LocationDispatchType.UpdatedSublocations,
         sublocations: newParentSublocations,
@@ -62,54 +138,6 @@ export default function LocationProvider({
       </LocationDispatchContext.Provider>
     </LocationContext.Provider>
   );
-}
-
-function locationReducer<T extends QuizState | AreaState | PointState>(
-  location: T,
-  action: LocationDispatch,
-): T {
-  console.log("locationReducer", action.type);
-
-  switch (action.type) {
-    case LocationDispatchType.AddedSublocation: {
-      if (!isQuizOrArea(location)) {
-        throw new Error("location must be of type QuizState or AreaState.");
-      }
-
-      const newLocation = { ...location };
-
-      // TODO: would prefer to fix by preventing reducer from firing twice
-      if (!location.sublocations.includes(action.sublocation)) {
-        newLocation.sublocations.push(action.sublocation);
-        action.sublocation.parent = newLocation;
-      }
-
-      return newLocation;
-    }
-    case LocationDispatchType.UpdatedIsOpen: {
-      if (!isArea(location)) {
-        throw new Error("location must be of type AreaState.");
-      }
-
-      const newLocation = { ...location, isOpen: action.isOpen };
-      return newLocation;
-    }
-    case LocationDispatchType.Renamed: {
-      if (!isAreaOrPoint(location)) {
-        throw new Error("location must be of type AreaState or PointState.");
-      }
-
-      const newLocation = { ...location, userDefinedName: action.name };
-      return newLocation;
-    }
-    case LocationDispatchType.UpdatedSublocations: {
-      if (!isQuizOrArea(location)) {
-        throw new Error("location must be of type QuizState or AreaState.");
-      }
-
-      return { ...location, sublocations: action.sublocations };
-    }
-  }
 }
 
 export function useLocation(): QuizState | AreaState | PointState {

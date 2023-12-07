@@ -28,6 +28,7 @@ export interface AreaSearchResult {
 
 export interface AreaState extends AreaSearchResult {
   parent: QuizState | AreaState;
+  markedForDeletion: boolean;
 }
 
 export interface PointSearchResult {
@@ -43,6 +44,7 @@ export interface PointSearchResult {
 
 export interface PointState extends PointSearchResult {
   parent: QuizState | AreaState;
+  markedForDeletion: boolean;
 }
 
 export interface OpenStreetMapResponseItem {

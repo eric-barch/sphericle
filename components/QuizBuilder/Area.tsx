@@ -34,12 +34,15 @@ export default function Area() {
   const locationNameInputRef = useRef<HTMLInputElement>();
   const locationAdderInputRef = useRef<HTMLInputElement>();
 
-  const isOpen = location.isOpen;
-
   function setIsAdding(isAdding: boolean) {
     setIsAddingRaw(isAdding);
 
     if (isAdding) {
+      locationDispatch({
+        type: LocationDispatchType.UpdatedIsOpen,
+        isOpen: true,
+      });
+
       // force Disclosure to render new open state
       setDisclosureKey(crypto.randomUUID());
 
