@@ -30,17 +30,15 @@ export default function Area() {
     crypto.randomUUID(),
   );
   const [mouseDown, setMouseDown] = useState<boolean>(false);
-  const [toggleOnClick, setToggleOnClick] = useState<boolean>(false);
+  const [willToggle, setWillToggle] = useState<boolean>(false);
+  const [isAdding, setIsAddingRaw] = useState<boolean>(false);
+  const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
 
-  const areaRef = useRef<HTMLDivElement>();
   const locationNameInputRef = useRef<HTMLInputElement>();
   const locationAdderInputRef = useRef<HTMLInputElement>();
 
   function setIsAdding(isAdding: boolean) {
-    parentLocationDispatch({
-      type: ParentLocationDispatchType.UpdatedIsAdding,
-      isAdding,
-    });
+    setIsAddingRaw(isAdding);
 
     // force Disclosure to render new open state
     setDisclosureKey(crypto.randomUUID());
@@ -53,11 +51,7 @@ export default function Area() {
   }
 
   function setIsRenaming(isRenaming: boolean) {
-    // quizDispatch({
-    //   type: QuizDispatchType.UpdatedLocationIsRenaming,
-    //   location: areaState,
-    //   isRenaming,
-    // });
+    setIsRenamingRaw(isRenaming);
 
     if (isRenaming) {
       setTimeout(() => {
@@ -67,40 +61,43 @@ export default function Area() {
     }
   }
 
-  function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
-    quizDispatch({
-      type: QuizDispatchType.SelectedBuilderLocation,
-      location: parentLocation,
-    });
-
-    if (mouseDown) {
-      setToggleOnClick(false);
-    } else {
-      setToggleOnClick(true);
+  function handleBlur(event: FocusEvent<HTMLDivElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      console.log(`blur ${parentLocation.shortName}`);
+      setWillToggle(false);
     }
   }
 
-  function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
-    setToggleOnClick(false);
+  function handleFocus(event: FocusEvent<HTMLDivElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      console.log(`focus ${parentLocation.shortName}`);
 
-    const relatedTarget = event.relatedTarget;
+      if (mouseDown) {
+        setWillToggle(false);
+      } else {
+        setWillToggle(true);
+      }
 
-    if (areaRef.current && !areaRef.current.contains(relatedTarget)) {
-      setIsAdding(false);
+      quizDispatch({
+        type: QuizDispatchType.SelectedBuilderLocation,
+        location: parentLocation,
+      });
     }
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (toggleOnClick && quizState.builderSelected?.id === parentLocation.id) {
+    if (parentLocation.id === quizState.builderSelected.id && willToggle) {
       parentLocationDispatch({
         type: ParentLocationDispatchType.UpdatedIsOpen,
         isOpen: !parentLocation.isOpen,
       });
+
+      // TODO: Need to get new location into selected quiz property.
     } else {
       event.preventDefault();
     }
 
-    setToggleOnClick(true);
+    setWillToggle(true);
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
@@ -123,44 +120,47 @@ export default function Area() {
   }
 
   return (
-    <div
-      id="area"
-      ref={areaRef}
-      onFocusCapture={handleFocusCapture}
-      onBlurCapture={handleBlurCapture}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseLeave}
-    >
-      <Disclosure key={disclosureKey} defaultOpen={parentLocation.isOpen}>
-        <div className="relative">
-          <EditLocationButton
-            className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
-            setIsAdding={setIsAdding}
+    <Disclosure key={disclosureKey} defaultOpen={parentLocation.isOpen}>
+      <div
+        className="relative"
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+      >
+        <EditLocationButton
+          className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
+          setIsAdding={setIsAdding}
+          setIsRenaming={setIsRenaming}
+        />
+        <Disclosure.Button
+          className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
+            quizState.builderSelected?.id === parentLocation.id
+              ? "outline outline-2 outline-red-600"
+              : ""
+          }`}
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+        >
+          <LocationName
+            inputRef={locationNameInputRef}
+            isRenaming={isRenaming}
+            setIsRenaming={setIsRenaming}
           />
-          <Disclosure.Button
-            className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
-              quizState.builderSelected?.id === parentLocation.id
-                ? "outline outline-2 outline-red-600"
-                : ""
-            }`}
-            onClick={handleClick}
-            onKeyDown={handleKeyDown}
-          >
-            <LocationName inputRef={locationNameInputRef} />
-            <OpenChevron className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1" />
-          </Disclosure.Button>
-        </div>
-        <Transition>
-          <Disclosure.Panel>
-            <Sublocations
-              className="ml-10"
-              locationAdderInputRef={locationAdderInputRef}
-            />
-          </Disclosure.Panel>
-        </Transition>
-      </Disclosure>
-    </div>
+          <OpenChevron className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1" />
+        </Disclosure.Button>
+      </div>
+      <Transition>
+        <Disclosure.Panel>
+          <Sublocations
+            className="ml-10"
+            locationAdderInputRef={locationAdderInputRef}
+            isAdding={isAdding}
+          />
+        </Disclosure.Panel>
+      </Transition>
+    </Disclosure>
   );
 }
 

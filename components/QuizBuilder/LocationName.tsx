@@ -1,4 +1,10 @@
-import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
+import {
+  AreaState,
+  LocationType,
+  ParentLocationDispatchType,
+  PointState,
+  QuizDispatchType,
+} from "@/types";
 import { KeyboardEvent, RefObject, useEffect, useState } from "react";
 import { useQuizDispatch } from "../QuizProvider";
 import {
@@ -8,10 +14,17 @@ import {
 
 interface LocationTextProps {
   inputRef: RefObject<HTMLInputElement>;
+  isRenaming: boolean;
+  setIsRenaming: (isRenaming: boolean) => void;
 }
 
-export default function LocationName({ inputRef }: LocationTextProps) {
+export default function LocationName({
+  inputRef,
+  isRenaming,
+  setIsRenaming,
+}: LocationTextProps) {
   const parentLocation = useParentLocation();
+  const parentLocationDispatch = useParentLocationDispatch();
 
   if (
     parentLocation.locationType !== LocationType.Area &&
@@ -31,11 +44,12 @@ export default function LocationName({ inputRef }: LocationTextProps) {
       event.preventDefault();
       event.stopPropagation();
 
-      // quizDispatch({
-      //   type: QuizDispatchType.RenamedLocation,
-      //   location,
-      //   name: newName,
-      // });
+      parentLocationDispatch({
+        type: ParentLocationDispatchType.Renamed,
+        name: newName,
+      });
+
+      setIsRenaming(false);
     }
 
     if (event.key === "Escape") {
@@ -49,12 +63,12 @@ export default function LocationName({ inputRef }: LocationTextProps) {
 
   function handleBlur() {
     setNewName(currentName);
-    // setIsRenaming(false);
+    setIsRenaming(false);
   }
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
-      {parentLocation.isRenaming ? (
+      {isRenaming ? (
         <input
           ref={inputRef}
           className="bg-transparent w-full focus:outline-none"

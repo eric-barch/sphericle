@@ -48,7 +48,6 @@ function quizReducer(quiz: QuizState, action: QuizDispatch): QuizState {
 const initialQuiz: QuizState = {
   id: crypto.randomUUID(),
   locationType: LocationType.Quiz,
-  isAdding: true,
   shortName: "quiz",
   sublocations: [],
   builderSelected: null,

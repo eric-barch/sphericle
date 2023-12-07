@@ -6,12 +6,14 @@ import { useParentLocation } from "./ParentLocationProvider";
 
 interface EditLocationButtonProps {
   className?: string;
-  setIsAdding: (isAdding: boolean) => void;
+  setIsAdding?: (isAdding: boolean) => void;
+  setIsRenaming: (isRenaming: boolean) => void;
 }
 
 export default function EditLocationButton({
   className,
   setIsAdding,
+  setIsRenaming,
 }: EditLocationButtonProps) {
   const parentLocation = useParentLocation();
 
@@ -22,7 +24,7 @@ export default function EditLocationButton({
 
   function handleRenameClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
-    // setIsRenaming(true);
+    setIsRenaming(true);
   }
 
   function handleDeleteClick(event: MouseEvent<HTMLDivElement>) {

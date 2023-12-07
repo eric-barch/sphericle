@@ -9,7 +9,6 @@ import {
 export interface QuizState {
   id: string;
   locationType: LocationType.Quiz;
-  isAdding: boolean;
   shortName: string;
   sublocations: (AreaState | PointState)[];
   builderSelected: AreaState | PointState | null;
@@ -23,9 +22,7 @@ export interface AreaSearchResult {
   shortName: string;
   longName: string;
   userDefinedName: string;
-  isRenaming: boolean;
   isOpen: boolean;
-  isAdding: boolean;
   polygon: Polygon | MultiPolygon;
   displayBounds: google.maps.LatLngBoundsLiteral;
   searchBounds: google.maps.LatLngBoundsLiteral;
@@ -44,7 +41,6 @@ export interface PointSearchResult {
   shortName: string;
   longName: string;
   userDefinedName: string;
-  isRenaming: boolean;
   point: Point;
   answeredCorrectly: boolean | null;
 }
@@ -81,7 +77,8 @@ export interface MapItems {
 export type ParentLocationDispatch =
   | AddedSublocationDispatch
   | UpdatedIsOpenDispatch
-  | UpdatedIsAddingDispatch;
+  | RenamedDispatch
+  | DeletedDispatch;
 
 interface BaseParentLocationDispatch {
   type: ParentLocationDispatchType;
@@ -97,9 +94,13 @@ interface UpdatedIsOpenDispatch extends BaseParentLocationDispatch {
   isOpen: boolean;
 }
 
-interface UpdatedIsAddingDispatch extends BaseParentLocationDispatch {
-  type: ParentLocationDispatchType.UpdatedIsAdding;
-  isAdding: boolean;
+interface RenamedDispatch extends BaseParentLocationDispatch {
+  type: ParentLocationDispatchType.Renamed;
+  name: string;
+}
+
+interface DeletedDispatch extends BaseParentLocationDispatch {
+  type: ParentLocationDispatchType.Deleted;
 }
 
 export type QuizDispatch = SelectedBuilderLocationDispatch;

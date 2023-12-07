@@ -64,7 +64,7 @@ function parentLocationReducer<T extends QuizState | AreaState | PointState>(
       const newParentLocation = { ...parentLocation };
 
       // TODO: hack to prevent adding location twice when reducer fires twice. would prefer to fix
-      // by preventing reducer from firing twice.
+      // by preventing reducer from firing twice. tackle later.
       if (!parentLocation.sublocations.includes(action.sublocation)) {
         newParentLocation.sublocations.push(action.sublocation);
         action.sublocation.parent = newParentLocation;
@@ -79,15 +79,14 @@ function parentLocationReducer<T extends QuizState | AreaState | PointState>(
 
       return { ...parentLocation, isOpen: action.isOpen };
     }
-    case ParentLocationDispatchType.UpdatedIsAdding: {
-      if (!isArea(parentLocation)) {
-        throw new Error("parentLocation must be of type AreaState.");
+    case ParentLocationDispatchType.Renamed: {
+      if (!isAreaOrPoint(parentLocation)) {
+        throw new Error(
+          "parentLocation must be of type AreaState or PointState.",
+        );
       }
 
-      return {
-        ...parentLocation,
-        isAdding: action.isAdding,
-      };
+      return { ...parentLocation, userDefinedName: action.name };
     }
   }
 }
@@ -105,4 +104,13 @@ function isArea(
   location: QuizState | AreaState | PointState,
 ): location is AreaState {
   return location.locationType === LocationType.Area;
+}
+
+function isAreaOrPoint(
+  location: QuizState | AreaState | PointState,
+): location is AreaState | PointState {
+  return (
+    location.locationType === LocationType.Area ||
+    location.locationType === LocationType.Point
+  );
 }

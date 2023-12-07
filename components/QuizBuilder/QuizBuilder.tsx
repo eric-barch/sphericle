@@ -54,6 +54,10 @@ export default function QuizBuilder() {
       setEmptyAreas(emptyAreas);
       setFilledAreas(filledAreas);
       setPoints(points);
+    } else {
+      setEmptyAreas(null);
+      setFilledAreas(null);
+      setPoints(null);
     }
   }, [builderSelected]);
 
@@ -81,6 +85,7 @@ export default function QuizBuilder() {
               <Sublocations
                 sublocationsRef={sublocationsRef}
                 className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
+                isAdding={true}
                 onBlurCapture={handleBlurCapture}
               />
             </ParentLocationProvider>

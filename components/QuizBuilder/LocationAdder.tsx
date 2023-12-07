@@ -6,12 +6,13 @@ import useAreaSearch, {
 import usePointSearch, {
   PointSearch,
 } from "@/components/QuizBuilder/use-point-search.hook";
-import { useQuizDispatch } from "@/components/QuizProvider";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import {
   AreaState,
   LocationType,
   ParentLocationDispatchType,
   PointState,
+  QuizDispatchType,
   QuizState,
   SearchStatus,
 } from "@/types";
@@ -34,9 +35,14 @@ import {
 
 interface LocationAdderProps {
   inputRef: RefObject<HTMLInputElement>;
+  isAdding: boolean;
 }
 
-export default function LocationAdder({ inputRef }: LocationAdderProps) {
+export default function LocationAdder({
+  inputRef,
+  isAdding,
+}: LocationAdderProps) {
+  const quizDispatch = useQuizDispatch();
   const parentLocation = useParentLocation() as QuizState | AreaState;
   const parentLocationDispatch = useParentLocationDispatch();
 
@@ -48,9 +54,6 @@ export default function LocationAdder({ inputRef }: LocationAdderProps) {
   }
 
   const [isFocused, setIsFocused] = useState<boolean>(null);
-  const [lastAddedLocation, setLastAddedLocation] = useState<
-    AreaState | PointState | null
-  >(null);
   const [locationType, setLocationType] = useState<LocationType>(
     LocationType.Area,
   );
@@ -59,8 +62,6 @@ export default function LocationAdder({ inputRef }: LocationAdderProps) {
   const pointSearch = usePointSearch(parentLocation);
 
   function handleChange(sublocation: AreaState | PointState) {
-    console.log("fire handleChange");
-
     const newSublocation = {
       ...sublocation,
       parent: parentLocation,
@@ -71,7 +72,10 @@ export default function LocationAdder({ inputRef }: LocationAdderProps) {
       sublocation: newSublocation,
     });
 
-    setLastAddedLocation(sublocation);
+    // quizDispatch({
+    //   type: QuizDispatchType.SelectedBuilderLocation,
+    //   location: newSublocation,
+    // });
 
     if (inputRef) {
       inputRef.current.value = "";
@@ -83,48 +87,29 @@ export default function LocationAdder({ inputRef }: LocationAdderProps) {
   }
 
   function handleFocusCapture(event: FocusEvent) {
-    setIsFocused(true);
-
-    let locationToSelect = null;
-
-    /**TODO: this check for null here is not a robust solution, but is the best way i can figure
-     * without being able to modify Headless UI Combobox. Long term fix is to refactor to Radix
-     * components which give more control over focus. */
-    if (
-      event.currentTarget.contains(event.relatedTarget) ||
-      /**Headless UI sets focus to null after selection is made, so this is the only way to direct
-       * the code into this block. It is not robust because it only works if the LocationAdder
-       * unmounts when its parent loses focus. That is currently the behavior of the component, but
-       * could change and would break this solution. */
-      event.relatedTarget === null
-    ) {
-      if (lastAddedLocation) {
-        locationToSelect = lastAddedLocation;
-      } else {
-        locationToSelect = parentLocation;
-      }
-    } else {
-      if (parentLocation.locationType === LocationType.Area) {
-        locationToSelect = parentLocation;
-      } else {
-        locationToSelect = null;
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setIsFocused(true);
+      if (parentLocation.locationType === LocationType.Quiz) {
+        // quizDispatch({
+        //   type: QuizDispatchType.SelectedBuilderLocation,
+        //   location: null,
+        // });
+      } else if (parentLocation.locationType === LocationType.Area) {
+        // quizDispatch({
+        //   type: QuizDispatchType.SelectedBuilderLocation,
+        //   location: parentLocation,
+        // });
       }
     }
-
-    // quizDispatch({
-    //   type: QuizDispatchType.SelectedBuilderLocation,
-    //   location: locationToSelect,
-    // });
   }
 
   function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
       setIsFocused(false);
-      setLastAddedLocation(null);
     }
   }
 
-  return parentLocation.isAdding || parentLocation.sublocations.length === 0 ? (
+  return isAdding || parentLocation.sublocations.length === 0 ? (
     <div
       id="location-adder"
       className="relative"
@@ -382,22 +367,44 @@ interface OptionProps {
 }
 
 function Option({ activeOption, location }: OptionProps) {
+  const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
+  const parentLocation = useParentLocation();
 
   const active = activeOption?.id === location.id;
 
   function handleFocusCapture(event: FocusEvent) {
+    if (
+      parentLocation.locationType !== LocationType.Quiz &&
+      parentLocation.locationType !== LocationType.Area
+    ) {
+      throw new Error("parentLocaiton must by of type QuizState or AreaState.");
+    }
+
+    const displayedLocation = { ...activeOption, parent: parentLocation };
+
     // quizDispatch({
     //   type: QuizDispatchType.SelectedBuilderLocation,
-    //   location,
+    //   location: displayedLocation,
     // });
   }
 
   useEffect(() => {
     if (active) {
+      if (
+        parentLocation.locationType !== LocationType.Quiz &&
+        parentLocation.locationType !== LocationType.Area
+      ) {
+        throw new Error(
+          "parentLocaiton must by of type QuizState or AreaState.",
+        );
+      }
+
+      const displayedLocation = { ...activeOption, parent: parentLocation };
+
       // quizDispatch({
       //   type: QuizDispatchType.SelectedBuilderLocation,
-      //   location,
+      //   location: displayedLocation,
       // });
     }
   }, [active]);

@@ -12,6 +12,7 @@ interface SublocationsProps {
   sublocationsRef?: RefObject<HTMLDivElement>;
   locationAdderInputRef?: RefObject<HTMLInputElement>;
   className?: string;
+  isAdding: boolean;
   onBlurCapture?: (event: FocusEvent<HTMLDivElement>) => void;
 }
 
@@ -19,6 +20,7 @@ export function Sublocations({
   sublocationsRef,
   className,
   locationAdderInputRef,
+  isAdding,
   onBlurCapture,
 }: SublocationsProps) {
   const parentLocation = useParentLocation();
@@ -63,7 +65,7 @@ export function Sublocations({
           </Reorder.Item>
         ))}
       </Reorder.Group>
-      <LocationAdder inputRef={locationAdderInputRef} />
+      <LocationAdder inputRef={locationAdderInputRef} isAdding={isAdding} />
     </div>
   );
 }
