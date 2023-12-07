@@ -2,13 +2,13 @@ import { FocusEvent, useRef, useState } from "react";
 import { useQuiz, useQuizDispatch } from "../QuizProvider";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
-import { useParentLocation } from "./ParentLocationProvider";
+import { useLocation } from "./ParentLocationProvider";
 import { LocationType, QuizDispatchType } from "@/types";
 
 export default function Point() {
   const quizState = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const parentLocation = useParentLocation();
+  const parentLocation = useLocation();
 
   if (parentLocation.locationType !== LocationType.Point) {
     throw new Error("pointState must be of type PointState.");

@@ -13,7 +13,7 @@ export enum QuizDispatchType {
   SelectedBuilderLocation = "selectedBuilderLocation",
 }
 
-export enum ParentLocationDispatchType {
+export enum LocationDispatchType {
   AddedSublocation = "addedSublocation",
   UpdatedIsOpen = "updatedIsOpen",
   Renamed = "renamed",

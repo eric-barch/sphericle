@@ -1,7 +1,7 @@
 import {
   AreaState,
-  ParentLocationDispatch,
-  ParentLocationDispatchType,
+  LocationDispatch,
+  LocationDispatchType,
   LocationType,
   PointState,
   QuizState,
@@ -10,85 +10,107 @@ import {
   Dispatch,
   ReactNode,
   createContext,
+  useCallback,
   useContext,
   useReducer,
 } from "react";
 
-export const ParentLocationContext = createContext<
+export const LocationContext = createContext<
   QuizState | AreaState | PointState
 >(null);
-export const ParentLocationDispatchContext =
-  createContext<Dispatch<ParentLocationDispatch>>(null);
+export const LocationDispatchContext =
+  createContext<Dispatch<LocationDispatch>>(null);
 
-export default function ParentLocationProvider({
-  initialParentLocation,
+export default function LocationProvider({
+  initialLocation,
   children,
 }: {
-  initialParentLocation: QuizState | AreaState | PointState;
+  initialLocation: QuizState | AreaState | PointState;
   children: ReactNode;
 }) {
-  const [parentLocation, dispatchParentLocation] = useReducer(
-    parentLocationReducer,
-    initialParentLocation,
+  const locationReducer = useCallback(
+    function <T extends QuizState | AreaState | PointState>(
+      location: T,
+      action: LocationDispatch,
+    ): T {
+      console.log("locationReducer", action.type);
+
+      switch (action.type) {
+        case LocationDispatchType.AddedSublocation: {
+          if (!isQuizOrArea(location)) {
+            throw new Error("location must be of type QuizState or AreaState.");
+          }
+
+          const newLocation = { ...location };
+
+          // TODO: hack to prevent adding location twice when reducer fires twice. would prefer to fix
+          // by preventing reducer from firing twice. tackle later.
+          if (!location.sublocations.includes(action.sublocation)) {
+            newLocation.sublocations.push(action.sublocation);
+            action.sublocation.parent = newLocation;
+          }
+
+          return newLocation;
+        }
+        case LocationDispatchType.UpdatedIsOpen: {
+          if (!isArea(location)) {
+            throw new Error("location must be of type AreaState.");
+          }
+
+          const newLocation = { ...location, isOpen: action.isOpen };
+
+          // TODO: this seems hacky and like it mutates state, but seems to work?
+          if (isAreaOrPoint(initialLocation) && isAreaOrPoint(newLocation)) {
+            const parent = initialLocation.parent;
+            const index = parent.sublocations.indexOf(initialLocation);
+            parent.sublocations[index] = newLocation;
+          }
+
+          return newLocation;
+        }
+        case LocationDispatchType.Renamed: {
+          if (!isAreaOrPoint(location)) {
+            throw new Error(
+              "location must be of type AreaState or PointState.",
+            );
+          }
+
+          const newLocation = { ...location, userDefinedName: action.name };
+
+          // TODO: see above
+          if (isAreaOrPoint(initialLocation) && isAreaOrPoint(newLocation)) {
+            const parent = initialLocation.parent;
+            const index = parent.sublocations.indexOf(initialLocation);
+            parent.sublocations[index] = newLocation;
+          }
+
+          return newLocation;
+        }
+      }
+    },
+    [initialLocation],
+  );
+
+  const [location, dispatchlocation] = useReducer(
+    locationReducer,
+    initialLocation,
   );
 
   return (
-    <ParentLocationContext.Provider value={parentLocation}>
-      <ParentLocationDispatchContext.Provider value={dispatchParentLocation}>
+    <LocationContext.Provider value={location}>
+      <LocationDispatchContext.Provider value={dispatchlocation}>
         {children}
-      </ParentLocationDispatchContext.Provider>
-    </ParentLocationContext.Provider>
+      </LocationDispatchContext.Provider>
+    </LocationContext.Provider>
   );
 }
 
-export function useParentLocation(): QuizState | AreaState | PointState {
-  return useContext(ParentLocationContext);
+export function useLocation(): QuizState | AreaState | PointState {
+  return useContext(LocationContext);
 }
 
-export function useParentLocationDispatch() {
-  return useContext(ParentLocationDispatchContext);
-}
-
-function parentLocationReducer<T extends QuizState | AreaState | PointState>(
-  parentLocation: T,
-  action: ParentLocationDispatch,
-): T {
-  switch (action.type) {
-    case ParentLocationDispatchType.AddedSublocation: {
-      if (!isQuizOrArea(parentLocation)) {
-        throw new Error(
-          "parentLocation must be of type QuizState or AreaState.",
-        );
-      }
-
-      const newParentLocation = { ...parentLocation };
-
-      // TODO: hack to prevent adding location twice when reducer fires twice. would prefer to fix
-      // by preventing reducer from firing twice. tackle later.
-      if (!parentLocation.sublocations.includes(action.sublocation)) {
-        newParentLocation.sublocations.push(action.sublocation);
-        action.sublocation.parent = newParentLocation;
-      }
-
-      return newParentLocation;
-    }
-    case ParentLocationDispatchType.UpdatedIsOpen: {
-      if (!isArea(parentLocation)) {
-        throw new Error("parentLocation must be of type AreaState.");
-      }
-
-      return { ...parentLocation, isOpen: action.isOpen };
-    }
-    case ParentLocationDispatchType.Renamed: {
-      if (!isAreaOrPoint(parentLocation)) {
-        throw new Error(
-          "parentLocation must be of type AreaState or PointState.",
-        );
-      }
-
-      return { ...parentLocation, userDefinedName: action.name };
-    }
-  }
+export function useLocationDispatch() {
+  return useContext(LocationDispatchContext);
 }
 
 function isQuizOrArea(

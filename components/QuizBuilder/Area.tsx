@@ -2,25 +2,29 @@ import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import {
   AreaState,
   LocationType,
-  ParentLocationDispatchType,
+  LocationDispatchType,
   QuizDispatchType,
 } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
-import { FocusEvent, KeyboardEvent, MouseEvent, useRef, useState } from "react";
+import {
+  FocusEvent,
+  KeyboardEvent,
+  MouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
-import {
-  useParentLocation,
-  useParentLocationDispatch,
-} from "./ParentLocationProvider";
+import { useLocation, useLocationDispatch } from "./ParentLocationProvider";
 import { Sublocations } from "./Sublocations";
 
 export default function Area() {
   const quizState = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const parentLocation = useParentLocation() as AreaState;
-  const parentLocationDispatch = useParentLocationDispatch();
+  const parentLocation = useLocation() as AreaState;
+  const parentLocationDispatch = useLocationDispatch();
 
   if (parentLocation.locationType !== LocationType.Area) {
     throw new Error("areaState must be of type AreaState.");
@@ -31,19 +35,21 @@ export default function Area() {
   );
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
-  const [isAdding, setIsAddingRaw] = useState<boolean>(false);
+  const [isAdding, setIsAddingRaw] = useState<boolean>(true);
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
 
   const locationNameInputRef = useRef<HTMLInputElement>();
   const locationAdderInputRef = useRef<HTMLInputElement>();
 
+  const isOpen = parentLocation.isOpen;
+
   function setIsAdding(isAdding: boolean) {
     setIsAddingRaw(isAdding);
 
-    // force Disclosure to render new open state
-    setDisclosureKey(crypto.randomUUID());
-
     if (isAdding) {
+      // force Disclosure to render new open state
+      setDisclosureKey(crypto.randomUUID());
+
       setTimeout(() => {
         locationAdderInputRef.current.focus();
       }, 0);
@@ -61,16 +67,22 @@ export default function Area() {
     }
   }
 
+  function handleContainerBlur(event: FocusEvent<HTMLDivElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setIsAdding(false);
+    }
+  }
+
   function handleBlur(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      console.log(`blur ${parentLocation.shortName}`);
+      // console.log(`blur ${parentLocation.shortName}`);
       setWillToggle(false);
     }
   }
 
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      console.log(`focus ${parentLocation.shortName}`);
+      // console.log(`focus ${parentLocation.shortName}`);
 
       if (mouseDown) {
         setWillToggle(false);
@@ -88,7 +100,7 @@ export default function Area() {
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
     if (parentLocation.id === quizState.builderSelected.id && willToggle) {
       parentLocationDispatch({
-        type: ParentLocationDispatchType.UpdatedIsOpen,
+        type: LocationDispatchType.UpdatedIsOpen,
         isOpen: !parentLocation.isOpen,
       });
 
@@ -120,47 +132,49 @@ export default function Area() {
   }
 
   return (
-    <Disclosure key={disclosureKey} defaultOpen={parentLocation.isOpen}>
-      <div
-        className="relative"
-        onBlur={handleBlur}
-        onFocus={handleFocus}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-      >
-        <EditLocationButton
-          className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
-          setIsAdding={setIsAdding}
-          setIsRenaming={setIsRenaming}
-        />
-        <Disclosure.Button
-          className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
-            quizState.builderSelected?.id === parentLocation.id
-              ? "outline outline-2 outline-red-600"
-              : ""
-          }`}
-          onClick={handleClick}
-          onKeyDown={handleKeyDown}
+    <div onBlur={handleContainerBlur}>
+      <Disclosure key={disclosureKey} defaultOpen={parentLocation.isOpen}>
+        <div
+          className="relative"
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
         >
-          <LocationName
-            inputRef={locationNameInputRef}
-            isRenaming={isRenaming}
+          <EditLocationButton
+            className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5"
+            setIsAdding={setIsAdding}
             setIsRenaming={setIsRenaming}
           />
-          <OpenChevron className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1" />
-        </Disclosure.Button>
-      </div>
-      <Transition>
-        <Disclosure.Panel>
-          <Sublocations
-            className="ml-10"
-            locationAdderInputRef={locationAdderInputRef}
-            isAdding={isAdding}
-          />
-        </Disclosure.Panel>
-      </Transition>
-    </Disclosure>
+          <Disclosure.Button
+            className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
+              quizState.builderSelected?.id === parentLocation.id
+                ? "outline outline-2 outline-red-600"
+                : ""
+            }`}
+            onClick={handleClick}
+            onKeyDown={handleKeyDown}
+          >
+            <LocationName
+              inputRef={locationNameInputRef}
+              isRenaming={isRenaming}
+              setIsRenaming={setIsRenaming}
+            />
+            <OpenChevron className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1" />
+          </Disclosure.Button>
+        </div>
+        <Transition>
+          <Disclosure.Panel>
+            <Sublocations
+              className="ml-10"
+              locationAdderInputRef={locationAdderInputRef}
+              isAdding={isAdding}
+            />
+          </Disclosure.Panel>
+        </Transition>
+      </Disclosure>
+    </div>
   );
 }
 
@@ -169,7 +183,7 @@ interface OpenChevronProps {
 }
 
 function OpenChevron({ className }: OpenChevronProps) {
-  const parentLocation = useParentLocation();
+  const parentLocation = useLocation();
 
   if (parentLocation.locationType !== LocationType.Area) {
     throw new Error("parentLocation must be of type AreaState.");

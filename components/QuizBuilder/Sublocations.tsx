@@ -3,9 +3,7 @@ import { Reorder } from "framer-motion";
 import { FocusEvent, RefObject } from "react";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
-import ParentLocationProvider, {
-  useParentLocation,
-} from "./ParentLocationProvider";
+import LocationProvider, { useLocation } from "./ParentLocationProvider";
 import Point from "./Point";
 
 interface SublocationsProps {
@@ -23,7 +21,7 @@ export function Sublocations({
   isAdding,
   onBlurCapture,
 }: SublocationsProps) {
-  const parentLocation = useParentLocation();
+  const parentLocation = useLocation();
 
   if (
     parentLocation.locationType !== LocationType.Quiz &&
@@ -59,9 +57,9 @@ export function Sublocations({
             value={sublocation}
             transition={{ duration: 0 }}
           >
-            <ParentLocationProvider initialParentLocation={sublocation}>
+            <LocationProvider initialLocation={sublocation}>
               <Sublocation />
-            </ParentLocationProvider>
+            </LocationProvider>
           </Reorder.Item>
         ))}
       </Reorder.Group>
@@ -71,7 +69,7 @@ export function Sublocations({
 }
 
 function Sublocation() {
-  const parentLocation = useParentLocation();
+  const parentLocation = useLocation();
 
   if (parentLocation.locationType === LocationType.Area) {
     return <Area />;

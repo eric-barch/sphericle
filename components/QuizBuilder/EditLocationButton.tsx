@@ -2,7 +2,7 @@ import { LocationType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MouseEvent } from "react";
 import { FaEllipsisVertical } from "react-icons/fa6";
-import { useParentLocation } from "./ParentLocationProvider";
+import { useLocation } from "./ParentLocationProvider";
 
 interface EditLocationButtonProps {
   className?: string;
@@ -15,7 +15,7 @@ export default function EditLocationButton({
   setIsAdding,
   setIsRenaming,
 }: EditLocationButtonProps) {
-  const parentLocation = useParentLocation();
+  const parentLocation = useLocation();
 
   function handleAddSublocationClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();

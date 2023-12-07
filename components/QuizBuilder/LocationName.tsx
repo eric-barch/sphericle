@@ -1,16 +1,13 @@
 import {
   AreaState,
   LocationType,
-  ParentLocationDispatchType,
+  LocationDispatchType,
   PointState,
   QuizDispatchType,
 } from "@/types";
 import { KeyboardEvent, RefObject, useEffect, useState } from "react";
 import { useQuizDispatch } from "../QuizProvider";
-import {
-  useParentLocation,
-  useParentLocationDispatch,
-} from "./ParentLocationProvider";
+import { useLocation, useLocationDispatch } from "./ParentLocationProvider";
 
 interface LocationTextProps {
   inputRef: RefObject<HTMLInputElement>;
@@ -23,8 +20,8 @@ export default function LocationName({
   isRenaming,
   setIsRenaming,
 }: LocationTextProps) {
-  const parentLocation = useParentLocation();
-  const parentLocationDispatch = useParentLocationDispatch();
+  const parentLocation = useLocation();
+  const parentLocationDispatch = useLocationDispatch();
 
   if (
     parentLocation.locationType !== LocationType.Area &&
@@ -45,7 +42,7 @@ export default function LocationName({
       event.stopPropagation();
 
       parentLocationDispatch({
-        type: ParentLocationDispatchType.Renamed,
+        type: LocationDispatchType.Renamed,
         name: newName,
       });
 

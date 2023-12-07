@@ -10,7 +10,7 @@ import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import {
   AreaState,
   LocationType,
-  ParentLocationDispatchType,
+  LocationDispatchType,
   PointState,
   QuizDispatchType,
   QuizState,
@@ -28,10 +28,7 @@ import {
   useState,
 } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
-import {
-  useParentLocation,
-  useParentLocationDispatch,
-} from "./ParentLocationProvider";
+import { useLocation, useLocationDispatch } from "./ParentLocationProvider";
 
 interface LocationAdderProps {
   inputRef: RefObject<HTMLInputElement>;
@@ -43,8 +40,8 @@ export default function LocationAdder({
   isAdding,
 }: LocationAdderProps) {
   const quizDispatch = useQuizDispatch();
-  const parentLocation = useParentLocation() as QuizState | AreaState;
-  const parentLocationDispatch = useParentLocationDispatch();
+  const parentLocation = useLocation() as QuizState | AreaState;
+  const parentLocationDispatch = useLocationDispatch();
 
   if (
     parentLocation.locationType !== LocationType.Quiz &&
@@ -68,14 +65,14 @@ export default function LocationAdder({
     };
 
     parentLocationDispatch({
-      type: ParentLocationDispatchType.AddedSublocation,
+      type: LocationDispatchType.AddedSublocation,
       sublocation: newSublocation,
     });
 
-    // quizDispatch({
-    //   type: QuizDispatchType.SelectedBuilderLocation,
-    //   location: newSublocation,
-    // });
+    quizDispatch({
+      type: QuizDispatchType.SelectedBuilderLocation,
+      location: newSublocation,
+    });
 
     if (inputRef) {
       inputRef.current.value = "";
@@ -86,26 +83,28 @@ export default function LocationAdder({
     pointSearch.reset();
   }
 
-  function handleFocusCapture(event: FocusEvent) {
+  function handleBlur(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      setIsFocused(true);
-      if (parentLocation.locationType === LocationType.Quiz) {
-        // quizDispatch({
-        //   type: QuizDispatchType.SelectedBuilderLocation,
-        //   location: null,
-        // });
-      } else if (parentLocation.locationType === LocationType.Area) {
-        // quizDispatch({
-        //   type: QuizDispatchType.SelectedBuilderLocation,
-        //   location: parentLocation,
-        // });
-      }
+      // console.log("blur LocationAdder");
+      setIsFocused(false);
     }
   }
 
-  function handleBlurCapture(event: FocusEvent<HTMLDivElement>) {
+  function handleFocus(event: FocusEvent) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      setIsFocused(false);
+      // console.log("focus LocationAdder");
+      setIsFocused(true);
+      if (parentLocation.locationType === LocationType.Quiz) {
+        quizDispatch({
+          type: QuizDispatchType.SelectedBuilderLocation,
+          location: null,
+        });
+      } else if (parentLocation.locationType === LocationType.Area) {
+        quizDispatch({
+          type: QuizDispatchType.SelectedBuilderLocation,
+          location: parentLocation,
+        });
+      }
     }
   }
 
@@ -113,8 +112,8 @@ export default function LocationAdder({
     <div
       id="location-adder"
       className="relative"
-      onFocusCapture={handleFocusCapture}
-      onBlurCapture={handleBlurCapture}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
     >
       <Combobox onChange={handleChange}>
         {({ activeOption }) => (
@@ -162,7 +161,7 @@ function Input({
   setInput,
   setLocationType,
 }: InputProps) {
-  const parentLocation = useParentLocation();
+  const parentLocation = useLocation();
 
   const placeholder =
     parentLocation.locationType === LocationType.Quiz
@@ -369,7 +368,7 @@ interface OptionProps {
 function Option({ activeOption, location }: OptionProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const parentLocation = useParentLocation();
+  const parentLocation = useLocation();
 
   const active = activeOption?.id === location.id;
 

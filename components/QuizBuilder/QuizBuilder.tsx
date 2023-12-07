@@ -4,7 +4,7 @@ import SplitPane from "@/components/SplitPane";
 import { AreaState, PointState } from "@/types";
 import Link from "next/link";
 import { FocusEvent, useEffect, useRef, useState } from "react";
-import ParentLocationProvider from "./ParentLocationProvider";
+import LocationProvider from "./ParentLocationProvider";
 import { getQuizBuilderLocationMapItems } from "./QuizBuilder.helpers";
 import { Sublocations } from "./Sublocations";
 
@@ -81,14 +81,14 @@ export default function QuizBuilder() {
       {placesLoaded ? (
         <SplitPane>
           <div className="relative h-full">
-            <ParentLocationProvider initialParentLocation={quiz}>
+            <LocationProvider initialLocation={quiz}>
               <Sublocations
                 sublocationsRef={sublocationsRef}
                 className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
                 isAdding={true}
                 onBlurCapture={handleBlurCapture}
               />
-            </ParentLocationProvider>
+            </LocationProvider>
             <Link
               ref={takeQuizButtonRef}
               className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"

@@ -1,10 +1,6 @@
 import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Point, Polygon } from "geojson";
-import {
-  ParentLocationDispatchType,
-  LocationType,
-  QuizDispatchType,
-} from "./enums";
+import { LocationDispatchType, LocationType, QuizDispatchType } from "./enums";
 
 export interface QuizState {
   id: string;
@@ -74,33 +70,33 @@ export interface MapItems {
   points: PointState[] | PointState | null;
 }
 
-export type ParentLocationDispatch =
+export type LocationDispatch =
   | AddedSublocationDispatch
   | UpdatedIsOpenDispatch
   | RenamedDispatch
   | DeletedDispatch;
 
 interface BaseParentLocationDispatch {
-  type: ParentLocationDispatchType;
+  type: LocationDispatchType;
 }
 
 interface AddedSublocationDispatch extends BaseParentLocationDispatch {
-  type: ParentLocationDispatchType.AddedSublocation;
+  type: LocationDispatchType.AddedSublocation;
   sublocation: AreaState | PointState;
 }
 
 interface UpdatedIsOpenDispatch extends BaseParentLocationDispatch {
-  type: ParentLocationDispatchType.UpdatedIsOpen;
+  type: LocationDispatchType.UpdatedIsOpen;
   isOpen: boolean;
 }
 
 interface RenamedDispatch extends BaseParentLocationDispatch {
-  type: ParentLocationDispatchType.Renamed;
+  type: LocationDispatchType.Renamed;
   name: string;
 }
 
 interface DeletedDispatch extends BaseParentLocationDispatch {
-  type: ParentLocationDispatchType.Deleted;
+  type: LocationDispatchType.Deleted;
 }
 
 export type QuizDispatch = SelectedBuilderLocationDispatch;
