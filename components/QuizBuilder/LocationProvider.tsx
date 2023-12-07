@@ -62,6 +62,12 @@ export default function LocationProvider({
           }
 
           const newLocation = { ...location, isOpen: action.isOpen };
+
+          quizDispatch({
+            type: QuizDispatchType.SelectedBuilderLocation,
+            location: newLocation,
+          });
+
           return newLocation;
         }
         case LocationDispatchType.Renamed: {

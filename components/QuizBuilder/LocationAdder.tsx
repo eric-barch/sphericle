@@ -25,6 +25,7 @@ import {
   RefObject,
   SetStateAction,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
@@ -55,6 +56,7 @@ export default function LocationAdder({
     LocationType.Area,
   );
   const [input, setInput] = useState<string>("");
+  const [optionSelected, setOptionSelected] = useState<boolean>(false);
   const areaSearch = useAreaSearch(location);
   const pointSearch = usePointSearch(location);
 
@@ -85,6 +87,7 @@ export default function LocationAdder({
       inputRef.current.value = "";
     }
 
+    setOptionSelected(true);
     setInput("");
     areaSearch.reset();
     pointSearch.reset();
@@ -97,7 +100,7 @@ export default function LocationAdder({
   }
 
   function handleFocus(event: FocusEvent) {
-    if (!event.currentTarget.contains(event.relatedTarget)) {
+    if (!event.currentTarget.contains(event.relatedTarget) && !optionSelected) {
       setIsFocused(true);
       if (location.locationType === LocationType.Quiz) {
         quizDispatch({
@@ -110,6 +113,8 @@ export default function LocationAdder({
           location: location,
         });
       }
+    } else {
+      setOptionSelected(false);
     }
   }
 

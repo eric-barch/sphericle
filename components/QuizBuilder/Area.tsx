@@ -71,15 +71,12 @@ export default function Area() {
 
   function handleBlur(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      // console.log(`blur ${parentLocation.shortName}`);
       setWillToggle(false);
     }
   }
 
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      // console.log(`focus ${parentLocation.shortName}`);
-
       if (mouseDown) {
         setWillToggle(false);
       } else {
