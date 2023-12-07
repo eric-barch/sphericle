@@ -4,6 +4,7 @@ import {
   LocationDispatchType,
   LocationType,
   PointState,
+  QuizDispatchType,
   QuizState,
 } from "@/types";
 import {
@@ -15,6 +16,7 @@ import {
   useEffect,
   useReducer,
 } from "react";
+import { useQuiz, useQuizDispatch } from "../QuizProvider";
 
 export const LocationContext = createContext<
   QuizState | AreaState | PointState
@@ -29,8 +31,9 @@ export default function LocationProvider({
   initialLocation: QuizState | AreaState | PointState;
   children: ReactNode;
 }) {
-  const parentLocation = useLocation();
+  const parentLocation = useLocation() || useQuiz();
   const parentLocationDispatch = useLocationDispatch();
+  const quizDispatch = useQuizDispatch();
 
   const locationReducer = useCallback(
     <T extends QuizState | AreaState | PointState>(
@@ -85,8 +88,6 @@ export default function LocationProvider({
             );
           }
 
-          console.log("markedForDeletion");
-
           return { ...location, markedForDeletion: true };
         }
       }
@@ -111,10 +112,7 @@ export default function LocationProvider({
       let newParentSublocations = [...parentLocation.sublocations];
       const index = parentLocation.sublocations.indexOf(initialLocation);
 
-      console.log("location", location);
-
       if (location.markedForDeletion) {
-        console.log("staged for deletion");
         newParentSublocations = newParentSublocations.filter(
           (sublocation) => sublocation.id !== location.id,
         );
@@ -122,12 +120,17 @@ export default function LocationProvider({
         newParentSublocations[index] = location;
       }
 
-      console.log("newParentSublocations", newParentSublocations);
-
-      parentLocationDispatch({
-        type: LocationDispatchType.UpdatedSublocations,
-        sublocations: newParentSublocations,
-      });
+      if (isQuiz(parentLocation)) {
+        quizDispatch({
+          type: QuizDispatchType.UpdatedSublocations,
+          sublocations: newParentSublocations,
+        });
+      } else if (isArea(parentLocation)) {
+        parentLocationDispatch({
+          type: LocationDispatchType.UpdatedSublocations,
+          sublocations: newParentSublocations,
+        });
+      }
     }
   }, [location]);
 
@@ -148,19 +151,22 @@ export function useLocationDispatch() {
   return useContext(LocationDispatchContext);
 }
 
-function isQuizOrArea(
+function isQuiz(
   location: QuizState | AreaState | PointState,
-): location is QuizState | AreaState {
-  return (
-    location.locationType === LocationType.Quiz ||
-    location.locationType === LocationType.Area
-  );
+): location is QuizState {
+  return location.locationType === LocationType.Quiz;
 }
 
 function isArea(
   location: QuizState | AreaState | PointState,
 ): location is AreaState {
   return location.locationType === LocationType.Area;
+}
+
+function isQuizOrArea(
+  location: QuizState | AreaState | PointState,
+): location is QuizState | AreaState {
+  return isQuiz(location) || isArea(location);
 }
 
 function isAreaOrPoint(

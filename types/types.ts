@@ -107,13 +107,26 @@ interface DeletedDispatch extends BaseParentLocationDispatch {
   type: LocationDispatchType.Deleted;
 }
 
-export type QuizDispatch = SelectedBuilderLocationDispatch;
+export type QuizDispatch =
+  | AddedQuizSublocationDispatch
+  | SelectedBuilderLocationDispatch
+  | UpdatedQuizSublocationsDispatch;
 
 interface BaseQuizDispatch {
   type: QuizDispatchType;
 }
 
+interface AddedQuizSublocationDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.AddedSublocation;
+  sublocation: AreaState | PointState;
+}
+
 interface SelectedBuilderLocationDispatch extends BaseQuizDispatch {
   type: QuizDispatchType.SelectedBuilderLocation;
   location: AreaState | PointState | null;
+}
+
+interface UpdatedQuizSublocationsDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.UpdatedSublocations;
+  sublocations: (AreaState | PointState)[];
 }

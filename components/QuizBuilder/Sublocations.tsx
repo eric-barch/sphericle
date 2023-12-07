@@ -1,13 +1,21 @@
-import { AreaState, LocationType, PointState } from "@/types";
+import {
+  AreaState,
+  LocationDispatchType,
+  LocationType,
+  PointState,
+} from "@/types";
 import { Reorder } from "framer-motion";
 import { FocusEvent, RefObject } from "react";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
-import LocationProvider, { useLocation } from "./LocationProvider";
+import LocationProvider, {
+  useLocation,
+  useLocationDispatch,
+} from "./LocationProvider";
 import Point from "./Point";
+import { useQuiz } from "../QuizProvider";
 
 interface SublocationsProps {
-  sublocationsRef?: RefObject<HTMLDivElement>;
   locationAdderInputRef?: RefObject<HTMLInputElement>;
   className?: string;
   isAdding: boolean;
@@ -15,13 +23,13 @@ interface SublocationsProps {
 }
 
 export function Sublocations({
-  sublocationsRef,
   className,
   locationAdderInputRef,
   isAdding,
   onBlurCapture,
 }: SublocationsProps) {
-  const location = useLocation();
+  const location = useLocation() || useQuiz();
+  const locationDispatch = useLocationDispatch();
 
   if (
     location.locationType !== LocationType.Quiz &&
@@ -31,15 +39,14 @@ export function Sublocations({
   }
 
   function handleReorder(sublocations: (AreaState | PointState)[]) {
-    //   locationDispatch({
-    //     type: LocationDispatchType.ReorderedSublocations,
-    //     sublocations,
-    //   });
+    locationDispatch({
+      type: LocationDispatchType.UpdatedSublocations,
+      sublocations,
+    });
   }
 
   return (
     <div
-      ref={sublocationsRef}
       className={`${className ? className : ""} space-y-1 h-full`}
       onBlurCapture={onBlurCapture}
     >

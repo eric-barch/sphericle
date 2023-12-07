@@ -11,6 +11,8 @@ export enum SearchStatus {
 
 export enum QuizDispatchType {
   SelectedBuilderLocation = "selectedBuilderLocation",
+  AddedSublocation = "addedSublocation",
+  UpdatedSublocations = "updatedSublocations",
 }
 
 export enum LocationDispatchType {

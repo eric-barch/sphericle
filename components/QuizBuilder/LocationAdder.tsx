@@ -9,8 +9,8 @@ import usePointSearch, {
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import {
   AreaState,
-  LocationType,
   LocationDispatchType,
+  LocationType,
   PointState,
   QuizDispatchType,
   QuizState,
@@ -40,7 +40,7 @@ export default function LocationAdder({
   isAdding,
 }: LocationAdderProps) {
   const quizDispatch = useQuizDispatch();
-  const location = useLocation() as QuizState | AreaState;
+  const location = (useLocation() as AreaState) || (useQuiz() as QuizState);
   const locationDispatch = useLocationDispatch();
 
   if (
@@ -64,10 +64,17 @@ export default function LocationAdder({
       parent: location,
     };
 
-    locationDispatch({
-      type: LocationDispatchType.AddedSublocation,
-      sublocation: newSublocation,
-    });
+    if (location.locationType === LocationType.Quiz) {
+      quizDispatch({
+        type: QuizDispatchType.AddedSublocation,
+        sublocation: newSublocation,
+      });
+    } else if (location.locationType === LocationType.Area) {
+      locationDispatch({
+        type: LocationDispatchType.AddedSublocation,
+        sublocation: newSublocation,
+      });
+    }
 
     quizDispatch({
       type: QuizDispatchType.SelectedBuilderLocation,
@@ -85,14 +92,12 @@ export default function LocationAdder({
 
   function handleBlur(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      // console.log("blur LocationAdder");
       setIsFocused(false);
     }
   }
 
   function handleFocus(event: FocusEvent) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      // console.log("focus LocationAdder");
       setIsFocused(true);
       if (location.locationType === LocationType.Quiz) {
         quizDispatch({
@@ -161,7 +166,7 @@ function Input({
   setInput,
   setLocationType,
 }: InputProps) {
-  const parentLocation = useLocation();
+  const parentLocation = useLocation() || useQuiz();
 
   const placeholder =
     parentLocation.locationType === LocationType.Quiz
@@ -366,27 +371,10 @@ interface OptionProps {
 }
 
 function Option({ activeOption, location }: OptionProps) {
-  const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const parentLocation = useLocation();
+  const parentLocation = useLocation() || useQuiz();
 
   const active = activeOption?.id === location.id;
-
-  function handleFocusCapture(event: FocusEvent) {
-    if (
-      parentLocation.locationType !== LocationType.Quiz &&
-      parentLocation.locationType !== LocationType.Area
-    ) {
-      throw new Error("parentLocaiton must by of type QuizState or AreaState.");
-    }
-
-    const displayedLocation = { ...activeOption, parent: parentLocation };
-
-    // quizDispatch({
-    //   type: QuizDispatchType.SelectedBuilderLocation,
-    //   location: displayedLocation,
-    // });
-  }
 
   useEffect(() => {
     if (active) {
@@ -401,15 +389,15 @@ function Option({ activeOption, location }: OptionProps) {
 
       const displayedLocation = { ...activeOption, parent: parentLocation };
 
-      // quizDispatch({
-      //   type: QuizDispatchType.SelectedBuilderLocation,
-      //   location: displayedLocation,
-      // });
+      quizDispatch({
+        type: QuizDispatchType.SelectedBuilderLocation,
+        location: displayedLocation,
+      });
     }
   }, [active]);
 
   return (
-    <Combobox.Option value={location} onFocusCapture={handleFocusCapture}>
+    <Combobox.Option value={location}>
       <div
         className={`p-1 pl-7 rounded-3xl cursor-pointer ${
           active ? "bg-gray-600" : ""

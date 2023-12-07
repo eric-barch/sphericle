@@ -1,7 +1,7 @@
 import Map from "@/components/Map";
-import { useQuiz } from "@/components/QuizProvider";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import SplitPane from "@/components/SplitPane";
-import { AreaState, PointState } from "@/types";
+import { AreaState, PointState, QuizDispatchType } from "@/types";
 import Link from "next/link";
 import { FocusEvent, useEffect, useRef, useState } from "react";
 import LocationProvider from "./LocationProvider";
@@ -10,6 +10,7 @@ import { Sublocations } from "./Sublocations";
 
 export default function QuizBuilder() {
   const quiz = useQuiz();
+  const quizDispatch = useQuizDispatch();
 
   const [placesLoaded, setPlacesLoaded] = useState<boolean>(false);
   const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>(null);
@@ -21,7 +22,6 @@ export default function QuizBuilder() {
   >(null);
   const [points, setPoints] = useState<PointState[] | PointState | null>(null);
 
-  const sublocationsRef = useRef<HTMLDivElement>();
   const takeQuizButtonRef = useRef<HTMLAnchorElement>();
   const mapRef = useRef<HTMLDivElement>();
 
@@ -65,14 +65,14 @@ export default function QuizBuilder() {
     const relatedTarget = event.relatedTarget as Node;
 
     if (
-      !sublocationsRef.current?.contains(relatedTarget) &&
+      !event.currentTarget.contains(relatedTarget) &&
       !takeQuizButtonRef.current?.contains(relatedTarget) &&
       !mapRef.current?.contains(relatedTarget)
     ) {
-      // quizDispatch({
-      //   type: QuizDispatchType.SelectedBuilderLocation,
-      //   location: null,
-      // });
+      quizDispatch({
+        type: QuizDispatchType.SelectedBuilderLocation,
+        location: null,
+      });
     }
   }
 
@@ -81,14 +81,11 @@ export default function QuizBuilder() {
       {placesLoaded ? (
         <SplitPane>
           <div className="relative h-full">
-            <LocationProvider initialLocation={quiz}>
-              <Sublocations
-                sublocationsRef={sublocationsRef}
-                className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
-                isAdding={true}
-                onBlurCapture={handleBlurCapture}
-              />
-            </LocationProvider>
+            <Sublocations
+              className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
+              isAdding={true}
+              onBlurCapture={handleBlurCapture}
+            />
             <Link
               ref={takeQuizButtonRef}
               className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
