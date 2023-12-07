@@ -17,5 +17,6 @@ export enum LocationDispatchType {
   AddedSublocation = "addedSublocation",
   UpdatedIsOpen = "updatedIsOpen",
   Renamed = "renamed",
+  UpdatedSublocations = "updatedSublocations",
   Deleted = "deleted",
 }

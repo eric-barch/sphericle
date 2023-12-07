@@ -1,16 +1,16 @@
+import { LocationType, QuizDispatchType } from "@/types";
 import { FocusEvent, useRef, useState } from "react";
 import { useQuiz, useQuizDispatch } from "../QuizProvider";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
-import { useLocation } from "./ParentLocationProvider";
-import { LocationType, QuizDispatchType } from "@/types";
+import { useLocation } from "./LocationProvider";
 
 export default function Point() {
   const quizState = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const parentLocation = useLocation();
+  const location = useLocation();
 
-  if (parentLocation.locationType !== LocationType.Point) {
+  if (location.locationType !== LocationType.Point) {
     throw new Error("pointState must be of type PointState.");
   }
 
@@ -30,13 +30,13 @@ export default function Point() {
   }
 
   function handleFocusCapture(event: FocusEvent<HTMLDivElement>) {
-    if (parentLocation.locationType !== LocationType.Point) {
+    if (location.locationType !== LocationType.Point) {
       throw new Error("parentLocation must be of type PointState.");
     }
 
     quizDispatch({
       type: QuizDispatchType.SelectedBuilderLocation,
-      location: parentLocation,
+      location: location,
     });
   }
 
@@ -48,7 +48,7 @@ export default function Point() {
       />
       <div
         className={`w-full py-1 px-1 rounded-3xl text-left bg-gray-600 cursor-pointer ${
-          quizState.builderSelected?.id === parentLocation.id
+          quizState.builderSelected?.id === location.id
             ? "outline outline-2 outline-red-600"
             : ""
         }`}

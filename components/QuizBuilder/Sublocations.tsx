@@ -3,7 +3,7 @@ import { Reorder } from "framer-motion";
 import { FocusEvent, RefObject } from "react";
 import Area from "./Area";
 import LocationAdder from "./LocationAdder";
-import LocationProvider, { useLocation } from "./ParentLocationProvider";
+import LocationProvider, { useLocation } from "./LocationProvider";
 import Point from "./Point";
 
 interface SublocationsProps {
@@ -21,11 +21,11 @@ export function Sublocations({
   isAdding,
   onBlurCapture,
 }: SublocationsProps) {
-  const parentLocation = useLocation();
+  const location = useLocation();
 
   if (
-    parentLocation.locationType !== LocationType.Quiz &&
-    parentLocation.locationType !== LocationType.Area
+    location.locationType !== LocationType.Quiz &&
+    location.locationType !== LocationType.Area
   ) {
     throw new Error("parent must be of type QuizState or AreaState.");
   }
@@ -46,10 +46,10 @@ export function Sublocations({
       <Reorder.Group
         className="mt-1 space-y-1"
         axis="y"
-        values={parentLocation.sublocations}
+        values={location.sublocations}
         onReorder={handleReorder}
       >
-        {parentLocation.sublocations.map((sublocation) => (
+        {location.sublocations.map((sublocation) => (
           <Reorder.Item
             key={sublocation.id}
             layout="position"
@@ -69,13 +69,13 @@ export function Sublocations({
 }
 
 function Sublocation() {
-  const parentLocation = useLocation();
+  const location = useLocation();
 
-  if (parentLocation.locationType === LocationType.Area) {
+  if (location.locationType === LocationType.Area) {
     return <Area />;
   }
 
-  if (parentLocation.locationType === LocationType.Point) {
+  if (location.locationType === LocationType.Point) {
     return <Point />;
   }
 

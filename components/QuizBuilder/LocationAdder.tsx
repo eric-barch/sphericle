@@ -28,7 +28,7 @@ import {
   useState,
 } from "react";
 import { FaDrawPolygon, FaLocationDot } from "react-icons/fa6";
-import { useLocation, useLocationDispatch } from "./ParentLocationProvider";
+import { useLocation, useLocationDispatch } from "./LocationProvider";
 
 interface LocationAdderProps {
   inputRef: RefObject<HTMLInputElement>;
@@ -40,12 +40,12 @@ export default function LocationAdder({
   isAdding,
 }: LocationAdderProps) {
   const quizDispatch = useQuizDispatch();
-  const parentLocation = useLocation() as QuizState | AreaState;
-  const parentLocationDispatch = useLocationDispatch();
+  const location = useLocation() as QuizState | AreaState;
+  const locationDispatch = useLocationDispatch();
 
   if (
-    parentLocation.locationType !== LocationType.Quiz &&
-    parentLocation.locationType !== LocationType.Area
+    location.locationType !== LocationType.Quiz &&
+    location.locationType !== LocationType.Area
   ) {
     throw new Error("parentLocation must be of type QuizState or AreaState.");
   }
@@ -55,16 +55,16 @@ export default function LocationAdder({
     LocationType.Area,
   );
   const [input, setInput] = useState<string>("");
-  const areaSearch = useAreaSearch(parentLocation);
-  const pointSearch = usePointSearch(parentLocation);
+  const areaSearch = useAreaSearch(location);
+  const pointSearch = usePointSearch(location);
 
   function handleChange(sublocation: AreaState | PointState) {
     const newSublocation = {
       ...sublocation,
-      parent: parentLocation,
+      parent: location,
     };
 
-    parentLocationDispatch({
+    locationDispatch({
       type: LocationDispatchType.AddedSublocation,
       sublocation: newSublocation,
     });
@@ -94,21 +94,21 @@ export default function LocationAdder({
     if (!event.currentTarget.contains(event.relatedTarget)) {
       // console.log("focus LocationAdder");
       setIsFocused(true);
-      if (parentLocation.locationType === LocationType.Quiz) {
+      if (location.locationType === LocationType.Quiz) {
         quizDispatch({
           type: QuizDispatchType.SelectedBuilderLocation,
           location: null,
         });
-      } else if (parentLocation.locationType === LocationType.Area) {
+      } else if (location.locationType === LocationType.Area) {
         quizDispatch({
           type: QuizDispatchType.SelectedBuilderLocation,
-          location: parentLocation,
+          location: location,
         });
       }
     }
   }
 
-  return isAdding || parentLocation.sublocations.length === 0 ? (
+  return isAdding || location.sublocations.length === 0 ? (
     <div
       id="location-adder"
       className="relative"

@@ -1,8 +1,8 @@
-import { LocationType } from "@/types";
+import { LocationDispatchType, LocationType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MouseEvent } from "react";
 import { FaEllipsisVertical } from "react-icons/fa6";
-import { useLocation } from "./ParentLocationProvider";
+import { useLocation, useLocationDispatch } from "./LocationProvider";
 
 interface EditLocationButtonProps {
   className?: string;
@@ -15,7 +15,8 @@ export default function EditLocationButton({
   setIsAdding,
   setIsRenaming,
 }: EditLocationButtonProps) {
-  const parentLocation = useLocation();
+  const location = useLocation();
+  const locationDispatch = useLocationDispatch();
 
   function handleAddSublocationClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
@@ -29,10 +30,9 @@ export default function EditLocationButton({
 
   function handleDeleteClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
-    // quizDispatch({
-    //   type: QuizDispatchType.DeletedLocation,
-    //   location,
-    // });
+    locationDispatch({
+      type: LocationDispatchType.Deleted,
+    });
   }
 
   return (
@@ -44,7 +44,7 @@ export default function EditLocationButton({
         className="absolute z-10 top-2 ml-[-1.2rem] bg-gray-500 rounded-custom p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        {parentLocation.locationType === LocationType.Area && (
+        {location.locationType === LocationType.Area && (
           <DropdownMenu.Item
             onClick={handleAddSublocationClick}
             className="rounded-3xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"

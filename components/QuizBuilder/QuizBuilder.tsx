@@ -4,7 +4,7 @@ import SplitPane from "@/components/SplitPane";
 import { AreaState, PointState } from "@/types";
 import Link from "next/link";
 import { FocusEvent, useEffect, useRef, useState } from "react";
-import LocationProvider from "./ParentLocationProvider";
+import LocationProvider from "./LocationProvider";
 import { getQuizBuilderLocationMapItems } from "./QuizBuilder.helpers";
 import { Sublocations } from "./Sublocations";
 

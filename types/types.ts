@@ -74,6 +74,7 @@ export type LocationDispatch =
   | AddedSublocationDispatch
   | UpdatedIsOpenDispatch
   | RenamedDispatch
+  | UpdatedSublocationsDispatch
   | DeletedDispatch;
 
 interface BaseParentLocationDispatch {
@@ -93,6 +94,11 @@ interface UpdatedIsOpenDispatch extends BaseParentLocationDispatch {
 interface RenamedDispatch extends BaseParentLocationDispatch {
   type: LocationDispatchType.Renamed;
   name: string;
+}
+
+interface UpdatedSublocationsDispatch extends BaseParentLocationDispatch {
+  type: LocationDispatchType.UpdatedSublocations;
+  sublocations: (AreaState | PointState)[];
 }
 
 interface DeletedDispatch extends BaseParentLocationDispatch {

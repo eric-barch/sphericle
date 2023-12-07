@@ -1,32 +1,25 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import {
   AreaState,
-  LocationType,
   LocationDispatchType,
+  LocationType,
   QuizDispatchType,
 } from "@/types";
 import { Disclosure, Transition } from "@headlessui/react";
-import {
-  FocusEvent,
-  KeyboardEvent,
-  MouseEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FocusEvent, KeyboardEvent, MouseEvent, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
-import { useLocation, useLocationDispatch } from "./ParentLocationProvider";
+import { useLocation, useLocationDispatch } from "./LocationProvider";
 import { Sublocations } from "./Sublocations";
 
 export default function Area() {
   const quizState = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const parentLocation = useLocation() as AreaState;
-  const parentLocationDispatch = useLocationDispatch();
+  const location = useLocation() as AreaState;
+  const locationDispatch = useLocationDispatch();
 
-  if (parentLocation.locationType !== LocationType.Area) {
+  if (location.locationType !== LocationType.Area) {
     throw new Error("areaState must be of type AreaState.");
   }
 
@@ -41,7 +34,7 @@ export default function Area() {
   const locationNameInputRef = useRef<HTMLInputElement>();
   const locationAdderInputRef = useRef<HTMLInputElement>();
 
-  const isOpen = parentLocation.isOpen;
+  const isOpen = location.isOpen;
 
   function setIsAdding(isAdding: boolean) {
     setIsAddingRaw(isAdding);
@@ -92,16 +85,16 @@ export default function Area() {
 
       quizDispatch({
         type: QuizDispatchType.SelectedBuilderLocation,
-        location: parentLocation,
+        location: location,
       });
     }
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (parentLocation.id === quizState.builderSelected.id && willToggle) {
-      parentLocationDispatch({
+    if (location.id === quizState.builderSelected.id && willToggle) {
+      locationDispatch({
         type: LocationDispatchType.UpdatedIsOpen,
-        isOpen: !parentLocation.isOpen,
+        isOpen: !location.isOpen,
       });
 
       // TODO: Need to get new location into selected quiz property.
@@ -133,7 +126,7 @@ export default function Area() {
 
   return (
     <div onBlur={handleContainerBlur}>
-      <Disclosure key={disclosureKey} defaultOpen={parentLocation.isOpen}>
+      <Disclosure key={disclosureKey} defaultOpen={location.isOpen}>
         <div
           className="relative"
           onBlur={handleBlur}
@@ -149,7 +142,7 @@ export default function Area() {
           />
           <Disclosure.Button
             className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600 ${
-              quizState.builderSelected?.id === parentLocation.id
+              quizState.builderSelected?.id === location.id
                 ? "outline outline-2 outline-red-600"
                 : ""
             }`}
