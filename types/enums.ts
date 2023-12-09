@@ -1,10 +1,10 @@
 export enum LocationType {
-  ROOT,
-  AREA,
-  POINT,
+  ROOT = "ROOT",
+  AREA = "AREA",
+  POINT = "POINT",
 }
 
 export enum QuizDispatchType {
-  ADD_SUBLOCATION,
-  DELETE_SUBLOCATION,
+  ADD_SUBLOCATION = "ADD_SUBLOCATION",
+  DELETE_SUBLOCATION = "DELETE_SUBLOCATION",
 }
