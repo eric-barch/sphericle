@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import SplitPane from "@/components/SplitPane";
 import Map from "@/components/Map";
 import { rootId } from "@/components/QuizProvider";
+import SplitPane from "@/components/SplitPane";
+import { navHeight } from "@/constants";
+import Link from "next/link";
 import Sublocations from "./Sublocations";
 
 export default function QuizBuilder() {
@@ -23,7 +24,7 @@ export default function QuizBuilder() {
     <SplitPane>
       <div className="relative h-full">
         <Sublocations
-          className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-48px)]`}
+          className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-${navHeight}rem)]`}
           parentId={rootId}
         />
         <Link

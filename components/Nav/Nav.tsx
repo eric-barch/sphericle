@@ -1,14 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { navHeight } from "@/constants";
+import * as NavigationMenu from "@radix-ui/react-navigation-menu";
+import Link from "next/link";
 
 export default function Nav() {
   return (
     <NavigationMenu.Root
-      className={`sticky top-0 z-50 w-screen p-3 bg-gray-900`}
-      style={{ height: `${navHeight}rem` }}
+      className={`sticky top-0 z-50 w-screen p-3 bg-gray-900 h-[calc(${navHeight}rem)]`}
       orientation="horizontal"
     >
       <NavigationMenu.List className="flex flex-row justify-between">
