@@ -3,6 +3,7 @@
 import { useQuiz } from "@/components/QuizProvider";
 import { AreaState, LocationType, PointState, RootState } from "@/types";
 import { Reorder } from "framer-motion";
+import Area from "./Area";
 
 interface SublocationsProps {
   className?: string;
