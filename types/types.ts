@@ -14,6 +14,7 @@ export interface RootState {
   sublocationIds: string[];
   shortName: string;
   locationType: LocationType.ROOT;
+  isAdding: true;
 }
 
 export interface AreaState {
