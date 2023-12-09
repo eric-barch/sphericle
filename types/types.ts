@@ -1,6 +1,21 @@
 import { MultiPolygon, Point, Polygon } from "geojson";
 import { LocationType } from "./enums";
 
+export interface Quiz {
+  locations: {
+    [key: string]: RootState | AreaState | PointState;
+  };
+  selectedBuilderLocationId: string | null;
+  selectedTakerLocationId: string | null;
+}
+
+export interface RootState {
+  id: string;
+  sublocationIds: string[];
+  shortName: string;
+  locationType: LocationType.ROOT;
+}
+
 export interface AreaState {
   id: string;
   parentId: string;
