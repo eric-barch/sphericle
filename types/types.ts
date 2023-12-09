@@ -1,5 +1,5 @@
 import { MultiPolygon, Point, Polygon } from "geojson";
-import { LocationType } from "./enums";
+import { LocationType, QuizDispatchType } from "./enums";
 
 export interface Quiz {
   locations: {
@@ -44,4 +44,8 @@ export interface PointState {
   bounds: google.maps.LatLngBoundsLiteral;
   point: Point;
   answerCorrectly: boolean | null;
+}
+
+export interface QuizDispatch {
+  type: QuizDispatchType;
 }
