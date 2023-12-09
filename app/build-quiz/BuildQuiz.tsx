@@ -9,5 +9,5 @@ export default function BuildQuiz() {
 
   useGoogleLibraries(() => setGoogleLibrariesLoaded(true));
 
-  return googleLibrariesLoaded ? "quiz builder" : "loading";
+  return googleLibrariesLoaded ? "quiz builder" : "Loading...";
 }
