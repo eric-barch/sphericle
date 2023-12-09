@@ -1,7 +1,19 @@
 import Link from "next/link";
-import SplitPane from "../SplitPane";
+import SplitPane from "@/components/SplitPane";
+import Map from "@/components/Map";
 
 export default function QuizBuilder() {
+  const mapId = "696d0ea42431a75c";
+  const bounds: google.maps.LatLngBoundsLiteral = {
+    east: -73.70018,
+    north: 40.916178,
+    south: 40.495992,
+    west: -74.25909,
+  };
+  const emptyAreas = null;
+  const filledAreas = null;
+  const markedPoints = null;
+
   return (
     <SplitPane>
       <div className="relative h-full">
@@ -13,7 +25,13 @@ export default function QuizBuilder() {
           Take Quiz
         </Link>
       </div>
-      <div className="bg-green-900 h-full" />
+      <Map
+        mapId={mapId}
+        bounds={bounds}
+        emptyAreas={emptyAreas}
+        filledAreas={filledAreas}
+        markedPoints={markedPoints}
+      />
     </SplitPane>
   );
 }
