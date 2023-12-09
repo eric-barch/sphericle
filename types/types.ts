@@ -42,10 +42,9 @@ export interface PointState {
   shortName: string;
   userDefinedName: string | null;
   locationType: LocationType.POINT;
-  isAdding: boolean;
   bounds: google.maps.LatLngBoundsLiteral;
   point: Point;
-  answerCorrectly: boolean | null;
+  answeredCorrectly: boolean | null;
 }
 
 export interface QuizDispatch {

@@ -3,6 +3,7 @@ import {
   AreaState,
   LocationType,
   OpenStreetMapResponseItem,
+  RootState,
   SearchStatus,
 } from "@/types";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
@@ -21,7 +22,14 @@ export interface AreaSearch {
 
 export default function useAreaSearch(parentId: string): AreaSearch {
   const quiz = useQuiz();
-  const parentLocation = quiz.locations[parentId];
+  const parentLocation = quiz.locations[parentId] as RootState | AreaState;
+
+  if (
+    parentLocation.locationType !== LocationType.ROOT &&
+    parentLocation.locationType !== LocationType.AREA
+  ) {
+    throw new Error("parentLocation must be of type ROOT or AREA.");
+  }
 
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
