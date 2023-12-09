@@ -5,6 +5,7 @@ import { AreaState, LocationType, PointState, RootState } from "@/types";
 import { Reorder } from "framer-motion";
 import Area from "./Area";
 import Point from "./Point";
+import LocationAdder from "./LocationAdder";
 
 interface SublocationsProps {
   className?: string;
@@ -47,6 +48,7 @@ export default function Sublocations({
           </Reorder.Item>
         ))}
       </Reorder.Group>
+      <LocationAdder parentId={parentId} isAdding={parentLocation.isAdding} />
     </div>
   );
 }

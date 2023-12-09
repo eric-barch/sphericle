@@ -1,11 +1,19 @@
 "use client";
 
 import { useQuiz } from "@/components/QuizProvider";
-import { AreaState, LocationType, RootState } from "@/types";
+import {
+  AreaState,
+  LocationType,
+  PointState,
+  RootState,
+  SearchStatus,
+} from "@/types";
 import { Combobox } from "@headlessui/react";
-import { useState } from "react";
-import useAreaSearch from "./use-area-search.hook";
-import usePointSearch from "./use-point-search.hook";
+import { ChangeEvent, FocusEvent, KeyboardEvent, useState } from "react";
+import useAreaSearch, { AreaSearch } from "./use-area-search.hook";
+import usePointSearch, { PointSearch } from "./use-point-search.hook";
+import LocationAdderInput from "./LocationAdderInput";
+import { LocationAdderOptions } from "./LocationAdderOptions";
 
 interface LocationAdderProps {
   parentId: string;
@@ -36,36 +44,44 @@ export default function LocationAdder({
   const [input, setInput] = useState<string>("");
   const [optionSelected, setOptionSelected] = useState<boolean>(false);
 
+  function handleBlur(event: FocusEvent<HTMLDivElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setIsFocused(false);
+    }
+  }
+
+  function handleFocus(event: FocusEvent<HTMLDivElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setIsFocused(true);
+    }
+  }
+
+  function handleChange() {}
+
   if (!isAdding && parentLocation.sublocationIds.length > 0) {
     return null;
   }
 
   return (
-    <div className="relative">
+    <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
       <Combobox onChange={handleChange}>
-        {({ activeOption }) => (
-          <>
-            <Input
-              locationId={locationId}
-              input={input}
-              locationType={locationType}
-              areaSearch={areaSearch}
-              pointSearch={pointSearch}
-              inputRef={inputRef}
-              setInput={setInput}
-              setLocationType={setLocationType}
-            />
-            <Options
-              parentLocationId={locationId}
-              activeOption={activeOption}
-              input={input}
-              areaSearch={areaSearch}
-              pointSearch={pointSearch}
-              locationType={locationType}
-              locationAdderFocused={isFocused}
-            />
-          </>
-        )}
+        <LocationAdderInput
+          parentId={parentId}
+          input={input}
+          locationType={locationType}
+          areaSearch={areaSearch}
+          pointSearch={pointSearch}
+          setInput={setInput}
+          setLocationType={setLocationType}
+        />
+        <LocationAdderOptions
+          parentId={parentId}
+          input={input}
+          locationType={locationType}
+          areaSearch={areaSearch}
+          pointSearch={pointSearch}
+          locationAdderFocused={isFocused}
+        />
       </Combobox>
     </div>
   );
