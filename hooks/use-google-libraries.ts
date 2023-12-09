@@ -9,9 +9,28 @@ declare global {
 
 const useGoogleLibraries = (onLoaded?: () => void) => {
   useEffect(() => {
+    let scriptLoaded = false;
+
     if (window.google && window.google.maps) {
       onLoaded?.();
       return;
+    }
+
+    const existingScript = document.querySelector(
+      'script[src^="https://maps.googleapis.com/maps/api/js"]',
+    );
+    if (existingScript) {
+      const handleScriptLoad = () => {
+        if (!scriptLoaded) {
+          scriptLoaded = true;
+          onLoaded?.();
+        }
+      };
+      existingScript.addEventListener("load", handleScriptLoad);
+
+      return () => {
+        existingScript.removeEventListener("load", handleScriptLoad);
+      };
     }
 
     const loadGoogleMaps = async () => {
