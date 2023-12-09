@@ -7,7 +7,7 @@ declare global {
   }
 }
 
-const useGoogleMapsLoader = (onLoaded?: () => void) => {
+const useGoogleLibraries = (onLoaded?: () => void) => {
   useEffect(() => {
     if (window.google && window.google.maps) {
       onLoaded?.();
@@ -20,6 +20,7 @@ const useGoogleMapsLoader = (onLoaded?: () => void) => {
         key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
         v: "weekly",
         callback: "initGoogleMaps",
+        libraries: "places", // Add this line
       });
 
       script.src = `https://maps.googleapis.com/maps/api/js?${params}`;
@@ -41,4 +42,4 @@ const useGoogleMapsLoader = (onLoaded?: () => void) => {
   }, [onLoaded]);
 };
 
-export default useGoogleMapsLoader;
+export default useGoogleLibraries;

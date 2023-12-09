@@ -1,1 +1,1 @@
-export const navHeight = 10;
+export const navHeight = 3;
