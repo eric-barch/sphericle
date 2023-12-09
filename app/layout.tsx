@@ -3,6 +3,7 @@ import { Nunito } from "next/font/google";
 import "@/styles/globals.css";
 import { ReactNode } from "react";
 import Nav from "@/components/Nav";
+import QuizProvider from "@/components/QuizProvider";
 
 const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
@@ -16,7 +17,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body className={font.className}>
         <Nav />
-        <main>{children}</main>
+        <QuizProvider>
+          <main>{children}</main>
+        </QuizProvider>
       </body>
     </html>
   );
