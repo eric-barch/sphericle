@@ -5,6 +5,7 @@ import { AreaState, LocationType, RootState } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { useState } from "react";
 import useAreaSearch from "./use-area-search.hook";
+import usePointSearch from "./use-point-search.hook";
 
 interface LocationAdderProps {
   parentId: string;
