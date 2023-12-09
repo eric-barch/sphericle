@@ -1,3 +1,5 @@
+"use client";
+
 import { useQuiz } from "@/components/QuizProvider";
 
 interface SublocationsProps {
@@ -10,5 +12,7 @@ export default function Sublocations({
   parentId,
 }: SublocationsProps) {
   const quiz = useQuiz();
+  const parentLocation = quiz.locations[parentId];
+
   return <></>;
 }

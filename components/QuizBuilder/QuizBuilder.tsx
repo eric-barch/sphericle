@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import SplitPane from "@/components/SplitPane";
 import Map from "@/components/Map";
