@@ -25,6 +25,7 @@ export default function QuizProvider({ children }: { children: ReactNode }) {
 }
 
 export const rootId = crypto.randomUUID();
+const dummyAreaId = crypto.randomUUID();
 
 export function useQuiz(): Quiz {
   const quiz = useContext(QuizContext);

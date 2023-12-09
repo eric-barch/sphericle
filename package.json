@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.17",
     "@radix-ui/react-navigation-menu": "^1.1.4",
+    "@turf/boolean-point-in-polygon": "^6.5.0",
     "@types/google.maps": "^3.54.10",
     "framer-motion": "^10.16.16",
     "next": "14.0.4",
