@@ -11,12 +11,10 @@ import {
 } from "react";
 
 interface SplitPaneProps {
-  children: ReactNode | ReactNode[];
+  children: ReactNode[];
 }
 
 export default function SplitPane({ children }: SplitPaneProps) {
-  const childrenArray = Array.isArray(children) ? children : [children];
-
   const containerRef = useRef<HTMLDivElement>(null);
   const [prevContainerWidth, setPrevContainerWidth] = useState<number>(0);
   const [paneWidths, setPaneWidths] = useState<number[]>([]);
@@ -28,13 +26,13 @@ export default function SplitPane({ children }: SplitPaneProps) {
       const newContainerWidth = containerRef.current.offsetWidth;
       setPaneWidths(
         Array.from(
-          { length: childrenArray.length },
-          () => newContainerWidth / childrenArray.length,
+          { length: children.length },
+          () => newContainerWidth / children.length,
         ),
       );
       setPrevContainerWidth(newContainerWidth);
     }
-  }, [childrenArray.length]);
+  }, [children.length]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,7 +51,7 @@ export default function SplitPane({ children }: SplitPaneProps) {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [childrenArray.length, prevContainerWidth, paneWidths]);
+  }, [children.length, prevContainerWidth, paneWidths]);
 
   const handleMouseDown = useCallback((index: number) => {
     setIsResizing(true);
@@ -110,10 +108,10 @@ export default function SplitPane({ children }: SplitPaneProps) {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
-      {childrenArray.map((child, index) => (
+      {children.map((child, index) => (
         <Fragment key={index}>
           <div style={{ width: `${paneWidths[index]}px` }}>{child}</div>
-          {index < childrenArray.length - 1 && (
+          {index < children.length - 1 && (
             <div
               className="cursor-ew-resize bg-transparent absolute z-10 h-full w-2"
               style={{

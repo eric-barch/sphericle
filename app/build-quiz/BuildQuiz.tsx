@@ -1,5 +1,6 @@
 "use client";
 
+import QuizBuilder from "@/components/QuizBuilder";
 import useGoogleLibraries from "@/hooks/use-google-libraries";
 import { useState } from "react";
 
@@ -9,5 +10,5 @@ export default function BuildQuiz() {
 
   useGoogleLibraries(() => setGoogleLibrariesLoaded(true));
 
-  return googleLibrariesLoaded ? "quiz builder" : "Loading...";
+  return googleLibrariesLoaded ? <QuizBuilder /> : "Loading...";
 }
