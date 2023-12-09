@@ -1,3 +1,5 @@
+"use client";
+
 import { AreaState, PointState } from "@/types";
 import { RefObject, useEffect, useRef } from "react";
 
