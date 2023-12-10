@@ -38,7 +38,7 @@ export default function EditLocationButton({
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5">
-        <MoreVertical className="w-4 h-4" />
+        <MoreVertical className="w-5 h-5" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
         className="absolute z-10 top-2 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
