@@ -89,7 +89,7 @@ export default function QuizBuilder() {
     <SplitPane>
       <div className="relative h-full">
         <Sublocations
-          className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-${navHeight}rem)]`}
+          className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-3rem)]`}
           parentId={rootId}
         />
         <Link
