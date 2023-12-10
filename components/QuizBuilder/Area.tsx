@@ -5,6 +5,7 @@ import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
 import Sublocations from "./Sublocations";
+import { ChevronRight } from "lucide-react";
 
 interface AreaProps {
   locationId: string;
@@ -143,7 +144,6 @@ export default function Area({ locationId }: AreaProps) {
             setIsAdding={setIsAdding}
           />
           <Accordion.Trigger
-            id="disclosure-button"
             className={`w-full p-1 bg-gray-600 rounded-3xl text-left cursor-pointer ${
               locationId === quiz.selectedBuilderLocationId
                 ? "outline outline-2 outline-red-700"
@@ -152,11 +152,12 @@ export default function Area({ locationId }: AreaProps) {
             onClick={handleClick}
           >
             <LocationName
-              inputRef={locationNameInputRef}
               locationId={locationId}
+              inputRef={locationNameInputRef}
               isRenaming={isRenaming}
               setIsRenaming={setIsRenaming}
             />
+            <OpenChevron isOpen={location.isOpen} />
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content>
@@ -168,5 +169,17 @@ export default function Area({ locationId }: AreaProps) {
         </Accordion.Content>
       </Accordion.Item>
     </Accordion.Root>
+  );
+}
+
+interface OpenChevronProps {
+  isOpen: boolean;
+}
+
+function OpenChevron({ isOpen }: OpenChevronProps) {
+  return (
+    <div className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1">
+      <ChevronRight className={`${isOpen ? "rotate-90" : ""} w-6 h-6`} />
+    </div>
   );
 }
