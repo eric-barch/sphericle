@@ -77,15 +77,24 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
     }
     case QuizDispatchType.RENAME_LOCATION: {
       const newQuiz = { ...quiz };
-      const newLocation = { ...newQuiz.locations[action.locationId] };
+      const newLocation = newQuiz.locations[action.locationId];
 
       if (newLocation.locationType === LocationType.ROOT) {
         throw new Error("newLocation must not be of type ROOT.");
       }
 
       newLocation.userDefinedName = action.name;
-      newQuiz.locations[action.locationId] = newLocation;
+      return newQuiz;
+    }
+    case QuizDispatchType.SET_LOCATION_IS_ADDING: {
+      const newQuiz = { ...quiz };
+      const newLocation = newQuiz.locations[action.locationId];
 
+      if (newLocation.locationType !== LocationType.AREA) {
+        throw new Error("newLocation must be of type AREA.");
+      }
+
+      newLocation.isAdding = action.isAdding;
       return newQuiz;
     }
     default: {
