@@ -54,19 +54,18 @@ export function useQuizDispatch(): Dispatch<QuizDispatch> {
 
 function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
   switch (action.type) {
-    case QuizDispatchType.ADD_SUBLOCATION:
-      const newQuiz = { ...quiz };
-
+    case QuizDispatchType.ADD_SUBLOCATION: {
       const parentId = action.sublocation.parentId;
       const sublocationId = action.sublocation.id;
 
+      const newQuiz = { ...quiz };
       const newParent = { ...quiz.locations[parentId] };
 
       if (newParent.locationType === LocationType.POINT) {
         throw new Error("newParent must not be of type POINT.");
       }
 
-      // Check if the sublocationId is already present to avoid duplicates
+      // avoid duplicate entries
       if (!newParent.sublocationIds.includes(sublocationId)) {
         newParent.sublocationIds = [...newParent.sublocationIds, sublocationId];
         newQuiz.locations[parentId] = newParent;
@@ -75,8 +74,23 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       newQuiz.locations[sublocationId] = action.sublocation;
 
       return newQuiz;
-    default:
+    }
+    case QuizDispatchType.RENAME_LOCATION: {
+      const newQuiz = { ...quiz };
+      const newLocation = { ...newQuiz.locations[action.locationId] };
+
+      if (newLocation.locationType === LocationType.ROOT) {
+        throw new Error("newLocation must not be of type ROOT.");
+      }
+
+      newLocation.userDefinedName = action.name;
+      newQuiz.locations[action.locationId] = newLocation;
+
+      return newQuiz;
+    }
+    default: {
       return quiz;
+    }
   }
 }
 

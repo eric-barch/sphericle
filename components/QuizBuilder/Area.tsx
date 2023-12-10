@@ -2,7 +2,8 @@ import { useQuiz } from "@/components/QuizProvider";
 import { AreaState, LocationType } from "@/types";
 import Sublocations from "./Sublocations";
 import EditLocationButton from "./EditLocationButton";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import LocationName from "./LocationName";
 
 interface AreaProps {
   locationId: string;
@@ -16,7 +17,20 @@ export default function Area({ locationId }: AreaProps) {
     throw new Error("areaState must be of type AREA.");
   }
 
-  const [isRenaming, setIsRenaming] = useState<boolean>(false);
+  const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
+
+  const locationNameInputRef = useRef<HTMLInputElement>();
+
+  function setIsRenaming(isRenaming: boolean) {
+    setIsRenamingRaw(isRenaming);
+
+    if (isRenaming) {
+      setTimeout(() => {
+        locationNameInputRef.current.focus();
+        locationNameInputRef.current.select();
+      }, 0);
+    }
+  }
 
   return (
     <>
@@ -29,9 +43,12 @@ export default function Area({ locationId }: AreaProps) {
           id="disclosure-button"
           className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600`}
         >
-          <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
-            {areaState.shortName}
-          </div>
+          <LocationName
+            inputRef={locationNameInputRef}
+            locationId={locationId}
+            isRenaming={isRenaming}
+            setIsRenaming={setIsRenaming}
+          />
         </div>
       </div>
       <Sublocations className="ml-10" parentId={locationId} />
