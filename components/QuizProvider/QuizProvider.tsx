@@ -86,7 +86,18 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       newLocation.userDefinedName = action.name;
       return newQuiz;
     }
-    case QuizDispatchType.SET_LOCATION_IS_ADDING: {
+    case QuizDispatchType.SET_AREA_IS_OPEN: {
+      const newQuiz = { ...quiz };
+      const newLocation = newQuiz.locations[action.locationId];
+
+      if (newLocation.locationType !== LocationType.AREA) {
+        throw new Error("newLocation must be of type AREA.");
+      }
+
+      newLocation.isOpen = action.isOpen;
+      return newQuiz;
+    }
+    case QuizDispatchType.SET_AREA_IS_ADDING: {
       const newQuiz = { ...quiz };
       const newLocation = newQuiz.locations[action.locationId];
 
@@ -95,6 +106,11 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       }
 
       newLocation.isAdding = action.isAdding;
+      return newQuiz;
+    }
+    case QuizDispatchType.SET_BUILDER_SELECTED: {
+      const newQuiz = { ...quiz };
+      newQuiz.selectedBuilderLocationId = action.locationId;
       return newQuiz;
     }
     default: {
