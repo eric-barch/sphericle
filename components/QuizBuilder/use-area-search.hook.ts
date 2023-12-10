@@ -50,7 +50,7 @@ export default function useAreaSearch(parentId: string): AreaSearch {
         query = `${searchTerm}&viewbox=${west},${south},${east},${north}&bounded=1`;
       }
 
-      const url = `/api/search-areas?query=${query}`;
+      const url = `/api/search-open-street-map?query=${query}`;
       const response = await fetch(url);
 
       const openStreetMapResponse =
