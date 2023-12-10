@@ -20,15 +20,14 @@ interface AreaProps {
 export default function Area({ locationId }: AreaProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
+  const location = quiz.locations[locationId] as AreaState;
 
-  const areaState = quiz.locations[locationId] as AreaState;
-
-  if (areaState.locationType !== LocationType.AREA) {
+  if (location.locationType !== LocationType.AREA) {
     throw new Error("areaState must be of type AREA.");
   }
 
-  const [rootValue, setRootValue] = useState<string[]>(
-    areaState.isOpen ? [areaState.id] : [],
+  const [accordionRootValue, setAccordionRootValue] = useState<string[]>(
+    location.isOpen ? [location.id] : [],
   );
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
@@ -38,8 +37,8 @@ export default function Area({ locationId }: AreaProps) {
   const locationAdderInputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    setRootValue(areaState.isOpen ? [locationId] : []);
-  }, [areaState.isOpen, locationId]);
+    setAccordionRootValue(location.isOpen ? [locationId] : []);
+  }, [location.isOpen, locationId]);
 
   function setIsRenaming(isRenaming: boolean) {
     setIsRenamingRaw(isRenaming);
@@ -101,26 +100,11 @@ export default function Area({ locationId }: AreaProps) {
       } else {
         setWillToggle(true);
       }
+
       quizDispatch({
         type: QuizDispatchType.SET_BUILDER_SELECTED,
         locationId,
       });
-    }
-  }
-
-  function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (locationId !== quiz.selectedBuilderLocationId || !willToggle) {
-      event.preventDefault();
-      console.log("foo");
-    }
-
-    setWillToggle(true);
-  }
-
-  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      event.currentTarget.click();
     }
   }
 
@@ -136,14 +120,22 @@ export default function Area({ locationId }: AreaProps) {
     setMouseDown(false);
   }
 
+  function handleClick(event: MouseEvent<HTMLButtonElement>) {
+    if (locationId !== quiz.selectedBuilderLocationId || !willToggle) {
+      event.preventDefault();
+    }
+
+    setWillToggle(true);
+  }
+
   return (
     <Accordion.Root
       type="multiple"
-      value={rootValue}
+      value={accordionRootValue}
       onValueChange={handleValueChange}
       onBlur={handleContainerBlur}
     >
-      <Accordion.Item value={areaState.id}>
+      <Accordion.Item value={location.id}>
         <Accordion.Header
           className="relative"
           onBlur={handleBlur}
@@ -165,7 +157,6 @@ export default function Area({ locationId }: AreaProps) {
                 : ""
             }`}
             onClick={handleClick}
-            onKeyDown={handleKeyDown}
           >
             <LocationName
               inputRef={locationNameInputRef}

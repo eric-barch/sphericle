@@ -106,12 +106,12 @@ export default function LocationAdderInput({
     <div className="relative">
       <Combobox.Input
         ref={inputRef}
-        className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-400 pl-8 pr-3 text-ellipsis focus:outline-none"
+        className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
         displayValue={() => input}
         placeholder={placeholder}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-      ></Combobox.Input>
+      />
     </div>
   );
 }
