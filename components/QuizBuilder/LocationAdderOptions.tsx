@@ -58,11 +58,18 @@ export function LocationAdderOptions({
   }
 
   function renderOptions() {
-    if (input === "" || !locationAdderFocused) {
+    if (input === "") {
+      console.log('input === ""');
+      return null;
+    }
+
+    if (!locationAdderFocused) {
+      console.log("locationAdder is not focused.");
       return null;
     }
 
     if (locationType === LocationType.POINT && pointSearch.term === "") {
+      console.log('location is a point and search term is ""');
       return null;
     }
 
@@ -71,6 +78,7 @@ export function LocationAdderOptions({
       pointSearch.status === SearchStatus.SEARCHING &&
       pointSearch.results.length < 1
     ) {
+      console.log("location is a point, its searching and has no results yet");
       return null;
     }
 

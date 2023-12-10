@@ -3,6 +3,7 @@ import { MultiPolygon, Point, Polygon } from "geojson";
 import { LocationType, QuizDispatchType } from "./enums";
 
 export interface Quiz {
+  rootId: string;
   locations: {
     [key: string]: RootState | AreaState | PointState;
   };
