@@ -2,7 +2,14 @@ import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, QuizDispatchType } from "@/types";
 import Sublocations from "./Sublocations";
 import EditLocationButton from "./EditLocationButton";
-import { FocusEvent, useRef, useState } from "react";
+import {
+  FocusEvent,
+  KeyboardEvent,
+  MouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import LocationName from "./LocationName";
 import * as Accordion from "@radix-ui/react-accordion";
 
@@ -20,10 +27,19 @@ export default function Area({ locationId }: AreaProps) {
     throw new Error("areaState must be of type AREA.");
   }
 
+  const [rootValue, setRootValue] = useState<string[]>(
+    areaState.isOpen ? [areaState.id] : [],
+  );
+  const [mouseDown, setMouseDown] = useState<boolean>(false);
+  const [willToggle, setWillToggle] = useState<boolean>(false);
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
 
   const locationNameInputRef = useRef<HTMLInputElement>();
   const locationAdderInputRef = useRef<HTMLInputElement>();
+
+  useEffect(() => {
+    setRootValue(areaState.isOpen ? [locationId] : []);
+  }, [areaState.isOpen, locationId]);
 
   function setIsRenaming(isRenaming: boolean) {
     setIsRenamingRaw(isRenaming);
@@ -38,7 +54,7 @@ export default function Area({ locationId }: AreaProps) {
 
   function setIsAdding(isAdding: boolean) {
     quizDispatch({
-      type: QuizDispatchType.SET_LOCATION_IS_ADDING,
+      type: QuizDispatchType.SET_AREA_IS_ADDING,
       locationId,
       isAdding,
     });
@@ -50,16 +66,92 @@ export default function Area({ locationId }: AreaProps) {
     }
   }
 
+  function handleValueChange(value: string[]) {
+    if (value.includes(locationId)) {
+      quizDispatch({
+        type: QuizDispatchType.SET_AREA_IS_OPEN,
+        locationId,
+        isOpen: true,
+      });
+    } else {
+      quizDispatch({
+        type: QuizDispatchType.SET_AREA_IS_OPEN,
+        locationId,
+        isOpen: false,
+      });
+    }
+  }
+
   function handleContainerBlur(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
       setIsAdding(false);
     }
   }
 
+  function handleBlur(event: FocusEvent<HTMLDivElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setWillToggle(false);
+    }
+  }
+
+  function handleFocus(event: FocusEvent<HTMLDivElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      if (mouseDown) {
+        setWillToggle(false);
+      } else {
+        setWillToggle(true);
+      }
+      quizDispatch({
+        type: QuizDispatchType.SET_BUILDER_SELECTED,
+        locationId,
+      });
+    }
+  }
+
+  function handleClick(event: MouseEvent<HTMLButtonElement>) {
+    if (locationId !== quiz.selectedBuilderLocationId || !willToggle) {
+      event.preventDefault();
+      console.log("foo");
+    }
+
+    setWillToggle(true);
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      event.currentTarget.click();
+    }
+  }
+
+  function handleMouseDown(event: MouseEvent<HTMLDivElement>) {
+    setMouseDown(true);
+  }
+
+  function handleMouseUp(event: MouseEvent<HTMLDivElement>) {
+    setMouseDown(false);
+  }
+
+  function handleMouseLeave(event: MouseEvent<HTMLDivElement>) {
+    setMouseDown(false);
+  }
+
   return (
-    <Accordion.Root type="multiple" onBlur={handleContainerBlur}>
+    <Accordion.Root
+      type="multiple"
+      value={rootValue}
+      onValueChange={handleValueChange}
+      onBlur={handleContainerBlur}
+    >
       <Accordion.Item value={areaState.id}>
-        <Accordion.Header className="relative">
+        <Accordion.Header
+          className="relative"
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+        >
           <EditLocationButton
             locationId={locationId}
             setIsRenaming={setIsRenaming}
@@ -68,6 +160,8 @@ export default function Area({ locationId }: AreaProps) {
           <Accordion.Trigger
             id="disclosure-button"
             className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600`}
+            onClick={handleClick}
+            onKeyDown={handleKeyDown}
           >
             <LocationName
               inputRef={locationNameInputRef}

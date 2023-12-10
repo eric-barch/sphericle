@@ -50,7 +50,9 @@ export interface PointState {
 export type QuizDispatch =
   | AddSublocationDispatch
   | RenameLocationDispatch
-  | SetLocationIsAddingDispatch;
+  | SetAreaIsOpenDispatch
+  | SetAreaIsAddingDispatch
+  | SetBuilderSelectedDispatch;
 
 interface BaseQuizDispatch {
   type: QuizDispatchType;
@@ -68,10 +70,21 @@ interface RenameLocationDispatch extends BaseQuizDispatch {
   name: string;
 }
 
-interface SetLocationIsAddingDispatch extends BaseQuizDispatch {
-  type: QuizDispatchType.SET_LOCATION_IS_ADDING;
+interface SetAreaIsOpenDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.SET_AREA_IS_OPEN;
+  locationId: string;
+  isOpen: boolean;
+}
+
+interface SetAreaIsAddingDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.SET_AREA_IS_ADDING;
   locationId: string;
   isAdding: boolean;
+}
+
+interface SetBuilderSelectedDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.SET_BUILDER_SELECTED;
+  locationId: string | null;
 }
 
 export interface OsmItem {
