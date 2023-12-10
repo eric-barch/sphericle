@@ -2,8 +2,9 @@ import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, QuizDispatchType } from "@/types";
 import Sublocations from "./Sublocations";
 import EditLocationButton from "./EditLocationButton";
-import { useRef, useState } from "react";
+import { FocusEvent, useRef, useState } from "react";
 import LocationName from "./LocationName";
+import * as Accordion from "@radix-ui/react-accordion";
 
 interface AreaProps {
   locationId: string;
@@ -45,35 +46,45 @@ export default function Area({ locationId }: AreaProps) {
     if (isAdding) {
       setTimeout(() => {
         locationAdderInputRef.current.focus();
-      });
+      }, 0);
+    }
+  }
+
+  function handleContainerBlur(event: FocusEvent<HTMLDivElement>) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setIsAdding(false);
     }
   }
 
   return (
-    <>
-      <div className="relative">
-        <EditLocationButton
-          locationId={locationId}
-          setIsRenaming={setIsRenaming}
-          setIsAdding={setIsAdding}
-        />
-        <div
-          id="disclosure-button"
-          className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600`}
-        >
-          <LocationName
-            inputRef={locationNameInputRef}
+    <Accordion.Root type="multiple" onBlur={handleContainerBlur}>
+      <Accordion.Item value={areaState.id}>
+        <Accordion.Header className="relative">
+          <EditLocationButton
             locationId={locationId}
-            isRenaming={isRenaming}
             setIsRenaming={setIsRenaming}
+            setIsAdding={setIsAdding}
           />
-        </div>
-      </div>
-      <Sublocations
-        locationAdderInputRef={locationAdderInputRef}
-        className="ml-10"
-        parentId={locationId}
-      />
-    </>
+          <Accordion.Trigger
+            id="disclosure-button"
+            className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600`}
+          >
+            <LocationName
+              inputRef={locationNameInputRef}
+              locationId={locationId}
+              isRenaming={isRenaming}
+              setIsRenaming={setIsRenaming}
+            />
+          </Accordion.Trigger>
+        </Accordion.Header>
+        <Accordion.Content>
+          <Sublocations
+            locationAdderInputRef={locationAdderInputRef}
+            className="ml-10"
+            parentId={locationId}
+          />
+        </Accordion.Content>
+      </Accordion.Item>
+    </Accordion.Root>
   );
 }

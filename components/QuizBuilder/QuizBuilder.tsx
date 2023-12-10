@@ -9,7 +9,7 @@ import Sublocations from "./Sublocations";
 
 export default function QuizBuilder() {
   const mapId = "696d0ea42431a75c";
-  // for now, default to NYC bounds
+  // TODO: for now, default to NYC bounds
   const bounds: google.maps.LatLngBoundsLiteral = {
     east: -73.70018,
     north: 40.916178,
