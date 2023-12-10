@@ -74,6 +74,20 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 
       return newQuiz;
     }
+    case QuizDispatchType.SET_SUBLOCATION_IDS: {
+      const newQuiz = { ...quiz };
+      const newLocation = newQuiz.locations[action.locationId];
+
+      if (
+        newLocation.locationType !== LocationType.ROOT &&
+        newLocation.locationType !== LocationType.AREA
+      ) {
+        throw new Error("newLocation must be of type ROOT or AREA.");
+      }
+
+      newLocation.sublocationIds = action.sublocationIds;
+      return newQuiz;
+    }
     case QuizDispatchType.RENAME_LOCATION: {
       const newQuiz = { ...quiz };
       const newLocation = newQuiz.locations[action.locationId];

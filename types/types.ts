@@ -50,6 +50,7 @@ export interface PointState {
 
 export type QuizDispatch =
   | AddSublocationDispatch
+  | SetSublocationsDispatch
   | RenameLocationDispatch
   | SetAreaIsOpenDispatch
   | SetAreaIsAddingDispatch
@@ -64,6 +65,12 @@ interface AddSublocationDispatch extends BaseQuizDispatch {
   type: QuizDispatchType.ADD_SUBLOCATION;
   parentId: string;
   sublocation: AreaState | PointState;
+}
+
+interface SetSublocationsDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.SET_SUBLOCATION_IDS;
+  locationId: string;
+  sublocationIds: string[];
 }
 
 interface RenameLocationDispatch extends BaseQuizDispatch {

@@ -1,12 +1,18 @@
 "use client";
 
-import { useQuiz } from "@/components/QuizProvider";
-import { AreaState, LocationType, PointState, RootState } from "@/types";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import {
+  AreaState,
+  LocationType,
+  PointState,
+  QuizDispatchType,
+  RootState,
+} from "@/types";
 import { Reorder } from "framer-motion";
 import Area from "./Area";
 import Point from "./Point";
 import LocationAdder from "./LocationAdder";
-import { RefObject } from "react";
+import { RefObject, useState } from "react";
 
 interface SublocationsProps {
   locationAdderInputRef?: RefObject<HTMLInputElement>;
@@ -20,6 +26,7 @@ export default function Sublocations({
   parentId,
 }: SublocationsProps) {
   const quiz = useQuiz();
+  const quizDispatch = useQuizDispatch();
   const parentLocation = quiz.locations[parentId] as RootState | AreaState;
 
   if (
@@ -29,7 +36,17 @@ export default function Sublocations({
     throw new Error("parentLocation must be of type ROOT or AREA.");
   }
 
-  function handleReorder(sublocationIds: string[]) {}
+  const [sublocationIds, setSublocationIds] = useState<string[]>(
+    parentLocation.sublocationIds,
+  );
+
+  function handleReorder(sublocationIds: string[]) {
+    quizDispatch({
+      type: QuizDispatchType.SET_SUBLOCATION_IDS,
+      locationId: parentId,
+      sublocationIds,
+    });
+  }
 
   return (
     <div className={`${className} space-y-1 h-full`}>
