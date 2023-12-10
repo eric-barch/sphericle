@@ -51,7 +51,7 @@ export interface QuizDispatch {
   type: QuizDispatchType;
 }
 
-export interface OpenStreetMapResponseItem {
+export interface OsmItem {
   place_id: number;
   licence: string;
   osm_type: string;
