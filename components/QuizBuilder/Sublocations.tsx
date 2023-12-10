@@ -6,13 +6,16 @@ import { Reorder } from "framer-motion";
 import Area from "./Area";
 import Point from "./Point";
 import LocationAdder from "./LocationAdder";
+import { RefObject } from "react";
 
 interface SublocationsProps {
+  locationAdderInputRef?: RefObject<HTMLInputElement>;
   className?: string;
   parentId: string;
 }
 
 export default function Sublocations({
+  locationAdderInputRef,
   className,
   parentId,
 }: SublocationsProps) {
@@ -48,7 +51,7 @@ export default function Sublocations({
           </Reorder.Item>
         ))}
       </Reorder.Group>
-      <LocationAdder parentId={parentId} isAdding={parentLocation.isAdding} />
+      <LocationAdder inputRef={locationAdderInputRef} parentId={parentId} />
     </div>
   );
 }

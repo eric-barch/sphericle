@@ -3,11 +3,18 @@
 import { useQuiz } from "@/components/QuizProvider";
 import { AreaState, LocationType, RootState } from "@/types";
 import { Combobox } from "@headlessui/react";
-import { ChangeEvent, KeyboardEvent } from "react";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  RefObject,
+  useEffect,
+  useRef,
+} from "react";
 import { AreaSearch } from "./use-area-search.hook";
 import { PointSearch } from "./use-point-search.hook";
 
 interface LocationAdderInputProps {
+  inputRef: RefObject<HTMLInputElement>;
   parentId: string;
   input: string;
   locationType: LocationType;
@@ -18,6 +25,7 @@ interface LocationAdderInputProps {
 }
 
 export default function LocationAdderInput({
+  inputRef,
   parentId,
   input,
   locationType,
@@ -97,6 +105,7 @@ export default function LocationAdderInput({
   return (
     <div className="relative">
       <Combobox.Input
+        ref={inputRef}
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-400 pl-8 pr-3 text-ellipsis focus:outline-none"
         displayValue={() => input}
         placeholder={placeholder}

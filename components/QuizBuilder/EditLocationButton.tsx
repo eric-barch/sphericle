@@ -7,18 +7,20 @@ import { MouseEvent } from "react";
 interface EditLocationButtonProps {
   locationId: string;
   setIsRenaming: (isRenaming: boolean) => void;
+  setIsAdding?: (isAdding: boolean) => void;
 }
 
 export default function EditLocationButton({
   locationId,
   setIsRenaming,
+  setIsAdding,
 }: EditLocationButtonProps) {
   const quiz = useQuiz();
   const location = quiz.locations[locationId];
 
   function handleAddSublocationClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
-    // setIsAdding(true);
+    setIsAdding(true);
   }
 
   function handleRenameClick(event: MouseEvent<HTMLDivElement>) {

@@ -1,5 +1,5 @@
-import { useQuiz } from "@/components/QuizProvider";
-import { AreaState, LocationType } from "@/types";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import { AreaState, LocationType, QuizDispatchType } from "@/types";
 import Sublocations from "./Sublocations";
 import EditLocationButton from "./EditLocationButton";
 import { useRef, useState } from "react";
@@ -11,6 +11,8 @@ interface AreaProps {
 
 export default function Area({ locationId }: AreaProps) {
   const quiz = useQuiz();
+  const quizDispatch = useQuizDispatch();
+
   const areaState = quiz.locations[locationId] as AreaState;
 
   if (areaState.locationType !== LocationType.AREA) {
@@ -20,6 +22,7 @@ export default function Area({ locationId }: AreaProps) {
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
 
   const locationNameInputRef = useRef<HTMLInputElement>();
+  const locationAdderInputRef = useRef<HTMLInputElement>();
 
   function setIsRenaming(isRenaming: boolean) {
     setIsRenamingRaw(isRenaming);
@@ -32,12 +35,27 @@ export default function Area({ locationId }: AreaProps) {
     }
   }
 
+  function setIsAdding(isAdding: boolean) {
+    quizDispatch({
+      type: QuizDispatchType.SET_LOCATION_IS_ADDING,
+      locationId,
+      isAdding,
+    });
+
+    if (isAdding) {
+      setTimeout(() => {
+        locationAdderInputRef.current.focus();
+      });
+    }
+  }
+
   return (
     <>
       <div className="relative">
         <EditLocationButton
           locationId={locationId}
           setIsRenaming={setIsRenaming}
+          setIsAdding={setIsAdding}
         />
         <div
           id="disclosure-button"
@@ -51,7 +69,11 @@ export default function Area({ locationId }: AreaProps) {
           />
         </div>
       </div>
-      <Sublocations className="ml-10" parentId={locationId} />
+      <Sublocations
+        locationAdderInputRef={locationAdderInputRef}
+        className="ml-10"
+        parentId={locationId}
+      />
     </>
   );
 }

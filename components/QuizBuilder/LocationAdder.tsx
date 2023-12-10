@@ -9,17 +9,21 @@ import {
   RootState,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
-import { FocusEvent, useState } from "react";
+import { FocusEvent, RefObject, useState } from "react";
 import LocationAdderInput from "./LocationAdderInput";
 import { LocationAdderOptions } from "./LocationAdderOptions";
 import useAreaSearch from "./use-area-search.hook";
 import usePointSearch from "./use-point-search.hook";
 
 interface LocationAdderProps {
+  inputRef?: RefObject<HTMLInputElement>;
   parentId: string;
 }
 
-export default function LocationAdder({ parentId }: LocationAdderProps) {
+export default function LocationAdder({
+  inputRef,
+  parentId,
+}: LocationAdderProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
@@ -60,6 +64,15 @@ export default function LocationAdder({ parentId }: LocationAdderProps) {
       parentId,
       sublocation,
     });
+
+    if (inputRef) {
+      inputRef.current.value = "";
+    }
+
+    setOptionSelected(true);
+    setInput("");
+    areaSearch.reset();
+    pointSearch.reset();
   }
 
   if (!parentLocation.isAdding && parentLocation.sublocationIds.length > 0) {
@@ -70,6 +83,7 @@ export default function LocationAdder({ parentId }: LocationAdderProps) {
     <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
       <Combobox onChange={handleChange}>
         <LocationAdderInput
+          inputRef={inputRef}
           parentId={parentId}
           input={input}
           locationType={locationType}
