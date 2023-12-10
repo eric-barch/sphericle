@@ -47,8 +47,16 @@ export interface PointState {
   answeredCorrectly: boolean | null;
 }
 
-export interface QuizDispatch {
+export type QuizDispatch = AddSublocationDispatch;
+
+export interface BaseQuizDispatch {
   type: QuizDispatchType;
+}
+
+export interface AddSublocationDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.ADD_SUBLOCATION;
+  parentId: string;
+  sublocation: AreaState | PointState;
 }
 
 export interface OsmItem {

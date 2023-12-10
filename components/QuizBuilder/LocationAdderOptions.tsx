@@ -76,7 +76,7 @@ export function LocationAdderOptions({
 
     return (
       <Combobox.Options
-        className="absolute w-full z-10 left-0 bg-gray-500 p-1 space-y-1"
+        className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-500 p-1 space-y-1"
         static
       >
         {renderOptionsContent()}
