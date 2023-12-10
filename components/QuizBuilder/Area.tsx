@@ -1,17 +1,10 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, QuizDispatchType } from "@/types";
-import Sublocations from "./Sublocations";
-import EditLocationButton from "./EditLocationButton";
-import {
-  FocusEvent,
-  KeyboardEvent,
-  MouseEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import LocationName from "./LocationName";
 import * as Accordion from "@radix-ui/react-accordion";
+import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import EditLocationButton from "./EditLocationButton";
+import LocationName from "./LocationName";
+import Sublocations from "./Sublocations";
 
 interface AreaProps {
   locationId: string;
@@ -39,31 +32,6 @@ export default function Area({ locationId }: AreaProps) {
   useEffect(() => {
     setAccordionRootValue(location.isOpen ? [locationId] : []);
   }, [location.isOpen, locationId]);
-
-  function setIsRenaming(isRenaming: boolean) {
-    setIsRenamingRaw(isRenaming);
-
-    if (isRenaming) {
-      setTimeout(() => {
-        locationNameInputRef.current.focus();
-        locationNameInputRef.current.select();
-      }, 0);
-    }
-  }
-
-  function setIsAdding(isAdding: boolean) {
-    quizDispatch({
-      type: QuizDispatchType.SET_AREA_IS_ADDING,
-      locationId,
-      isAdding,
-    });
-
-    if (isAdding) {
-      setTimeout(() => {
-        locationAdderInputRef.current.focus();
-      }, 0);
-    }
-  }
 
   function handleValueChange(value: string[]) {
     if (value.includes(locationId)) {
@@ -118,6 +86,31 @@ export default function Area({ locationId }: AreaProps) {
 
   function handleMouseLeave(event: MouseEvent<HTMLDivElement>) {
     setMouseDown(false);
+  }
+
+  function setIsRenaming(isRenaming: boolean) {
+    setIsRenamingRaw(isRenaming);
+
+    if (isRenaming) {
+      setTimeout(() => {
+        locationNameInputRef.current.focus();
+        locationNameInputRef.current.select();
+      }, 0);
+    }
+  }
+
+  function setIsAdding(isAdding: boolean) {
+    quizDispatch({
+      type: QuizDispatchType.SET_AREA_IS_ADDING,
+      locationId,
+      isAdding,
+    });
+
+    if (isAdding) {
+      setTimeout(() => {
+        locationAdderInputRef.current.focus();
+      }, 0);
+    }
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
