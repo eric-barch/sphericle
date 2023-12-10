@@ -52,7 +52,6 @@ export default function LocationAdder({
 
   function handleFocus(event: FocusEvent) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      console.log("focus LocationAdder");
       setIsFocused(true);
 
       if (!optionSelected) {
