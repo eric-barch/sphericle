@@ -2,7 +2,7 @@ import { useQuiz } from "@/components/QuizProvider";
 import {
   AreaState,
   LocationType,
-  OpenStreetMapResponseItem,
+  OsmItem,
   RootState,
   SearchStatus,
 } from "@/types";
@@ -43,73 +43,61 @@ export default function useAreaSearch(parentId: string): AreaSearch {
       setInternalSearchTerm(searchTerm);
       setInternalSearchStatus(SearchStatus.SEARCHING);
 
-      let query = searchTerm;
+      let query: string = "";
 
-      if (parentLocation.locationType === LocationType.AREA) {
+      if (parentLocation.locationType === LocationType.ROOT) {
+        query = searchTerm;
+      } else if (parentLocation.locationType === LocationType.AREA) {
         const { south, north, west, east } = parentLocation.bounds;
         query = `${searchTerm}&viewbox=${west},${south},${east},${north}&bounded=1`;
       }
 
-      const url = `/api/search-open-street-map?query=${query}`;
-      const response = await fetch(url);
+      const rawResponse = await fetch(
+        `/api/search-open-street-map?query=${query}`,
+      );
+      const jsonResponse = (await rawResponse.json()) as OsmItem[];
 
-      const openStreetMapResponse =
-        (await response.json()) as OpenStreetMapResponseItem[];
-
-      const searchResults = openStreetMapResponse
-        .map((openStreetMapResponseItem): AreaState | null => {
+      const areaStates = jsonResponse
+        .map((osmItem): AreaState | null => {
           if (
-            openStreetMapResponseItem.geojson.type !== "Polygon" &&
-            openStreetMapResponseItem.geojson.type !== "MultiPolygon"
+            osmItem.geojson.type !== "Polygon" &&
+            osmItem.geojson.type !== "MultiPolygon"
           ) {
             return null;
           }
 
-          const geojson = openStreetMapResponseItem.geojson;
-
           let polygons: Polygon | MultiPolygon;
 
-          // check if within bounds
-          if (geojson.type === "Polygon") {
-            polygons = {
-              type: "Polygon",
-              coordinates: geojson.coordinates as Position[][],
-            };
+          if (parentLocation.locationType === LocationType.ROOT) {
+            polygons = osmItem.geojson as Polygon | MultiPolygon;
+          }
 
-            for (const coordinate of polygons.coordinates) {
-              for (const position of coordinate) {
-                const point: Point = {
-                  type: "Point",
-                  coordinates: position,
-                };
+          if (parentLocation.locationType === LocationType.AREA) {
+            if (osmItem.geojson.type === "Polygon") {
+              polygons = osmItem.geojson as Polygon;
 
-                if (
-                  parentLocation.locationType === LocationType.AREA &&
-                  !booleanPointInPolygon(point, parentLocation.polygons)
-                ) {
-                  return null;
+              for (const linearRing of polygons.coordinates) {
+                for (const position of linearRing) {
+                  if (
+                    !booleanPointInPolygon(position, parentLocation.polygons)
+                  ) {
+                    return null;
+                  }
                 }
               }
             }
-          } else if (geojson.type === "MultiPolygon") {
-            polygons = {
-              type: "MultiPolygon",
-              coordinates: geojson.coordinates as Position[][][],
-            };
 
-            for (const polygonCoordinates of polygons.coordinates) {
-              for (const coordinate of polygonCoordinates) {
-                for (const position of coordinate) {
-                  const point: Point = {
-                    type: "Point",
-                    coordinates: position,
-                  };
+            if (osmItem.geojson.type === "MultiPolygon") {
+              polygons = osmItem.geojson as MultiPolygon;
 
-                  if (
-                    parentLocation.locationType === LocationType.AREA &&
-                    !booleanPointInPolygon(point, parentLocation.polygons)
-                  ) {
-                    return null;
+              for (const polygon of polygons.coordinates) {
+                for (const linearRing of polygon) {
+                  for (const position of linearRing) {
+                    if (
+                      !booleanPointInPolygon(position, parentLocation.polygons)
+                    ) {
+                      return null;
+                    }
                   }
                 }
               }
@@ -117,10 +105,10 @@ export default function useAreaSearch(parentId: string): AreaSearch {
           }
 
           let bounds: google.maps.LatLngBoundsLiteral = {
-            south: Number(openStreetMapResponseItem.boundingbox[0]),
-            north: Number(openStreetMapResponseItem.boundingbox[1]),
-            west: Number(openStreetMapResponseItem.boundingbox[2]),
-            east: Number(openStreetMapResponseItem.boundingbox[3]),
+            south: Number(osmItem.boundingbox[0]),
+            north: Number(osmItem.boundingbox[1]),
+            west: Number(osmItem.boundingbox[2]),
+            east: Number(osmItem.boundingbox[3]),
           };
 
           let longitudes: number[] = [];
@@ -169,10 +157,10 @@ export default function useAreaSearch(parentId: string): AreaSearch {
           return {
             id: crypto.randomUUID(),
             parentId,
-            openStreetMapPlaceId: openStreetMapResponseItem.place_id,
+            openStreetMapPlaceId: osmItem.place_id,
             locationType: LocationType.AREA,
-            shortName: openStreetMapResponseItem.name,
-            longName: openStreetMapResponseItem.display_name,
+            shortName: osmItem.name,
+            longName: osmItem.display_name,
             userDefinedName: "",
             isOpen: false,
             isAdding: true,
@@ -186,7 +174,7 @@ export default function useAreaSearch(parentId: string): AreaSearch {
           (searchResult): searchResult is AreaState => searchResult !== null,
         );
 
-      setInternalSearchResults(searchResults);
+      setInternalSearchResults(areaStates);
       setInternalSearchStatus(SearchStatus.SEARCHED);
     },
     [parentId, parentLocation],

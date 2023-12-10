@@ -1,3 +1,5 @@
+"use client";
+
 import { useQuiz } from "@/components/QuizProvider";
 import { AreaState, LocationType, RootState } from "@/types";
 import { Combobox } from "@headlessui/react";

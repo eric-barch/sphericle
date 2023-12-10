@@ -1,3 +1,5 @@
+"use client";
+
 import { AreaState, LocationType, PointState, SearchStatus } from "@/types";
 import { AreaSearch } from "./use-area-search.hook";
 import { PointSearch } from "./use-point-search.hook";
@@ -59,9 +61,11 @@ export function LocationAdderOptions({
     if (input === "" || !locationAdderFocused) {
       return null;
     }
+
     if (locationType === LocationType.POINT && pointSearch.term === "") {
       return null;
     }
+
     if (
       locationType === LocationType.POINT &&
       pointSearch.status === SearchStatus.SEARCHING &&
@@ -69,6 +73,7 @@ export function LocationAdderOptions({
     ) {
       return null;
     }
+
     return (
       <Combobox.Options
         className="absolute w-full z-10 left-0 bg-gray-500 p-1 space-y-1"
