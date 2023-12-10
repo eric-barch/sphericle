@@ -6,7 +6,8 @@ export enum LocationType {
 
 export enum QuizDispatchType {
   ADD_SUBLOCATION = "ADD_SUBLOCATION",
-  DELETE_SUBLOCATION = "DELETE_SUBLOCATION",
+  RENAME_LOCATION = "RENAME_LOCATION",
+  DELETE_LOCATION = "DELETE_LOCATION",
 }
 
 export enum SearchStatus {

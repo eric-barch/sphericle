@@ -47,16 +47,22 @@ export interface PointState {
   answeredCorrectly: boolean | null;
 }
 
-export type QuizDispatch = AddSublocationDispatch;
+export type QuizDispatch = AddSublocationDispatch | RenameLocationDispatch;
 
-export interface BaseQuizDispatch {
+interface BaseQuizDispatch {
   type: QuizDispatchType;
 }
 
-export interface AddSublocationDispatch extends BaseQuizDispatch {
+interface AddSublocationDispatch extends BaseQuizDispatch {
   type: QuizDispatchType.ADD_SUBLOCATION;
   parentId: string;
   sublocation: AreaState | PointState;
+}
+
+interface RenameLocationDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.RENAME_LOCATION;
+  locationId: string;
+  name: string;
 }
 
 export interface OsmItem {

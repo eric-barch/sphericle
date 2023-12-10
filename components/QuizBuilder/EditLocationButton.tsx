@@ -23,7 +23,7 @@ export default function EditLocationButton({
 
   function handleRenameClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
-    // setIsRenaming(true);
+    setIsRenaming(true);
   }
 
   function handleDeleteClick(event: MouseEvent<HTMLDivElement>) {
