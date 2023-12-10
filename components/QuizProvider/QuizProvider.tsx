@@ -1,11 +1,12 @@
 "use client";
 
-import { LocationType, Quiz, QuizDispatch } from "@/types";
+import { LocationType, Quiz, QuizDispatch, QuizDispatchType } from "@/types";
 import {
   Dispatch,
   ReactNode,
   createContext,
   useContext,
+  useEffect,
   useReducer,
 } from "react";
 
@@ -14,6 +15,10 @@ const QuizDispatchContext = createContext<Dispatch<QuizDispatch> | null>(null);
 
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, quizDispatch] = useReducer(quizReducer, initialQuiz);
+
+  useEffect(() => {
+    console.log("quiz", quiz);
+  }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
@@ -48,7 +53,31 @@ export function useQuizDispatch(): Dispatch<QuizDispatch> {
 }
 
 function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
-  return { ...quiz };
+  switch (action.type) {
+    case QuizDispatchType.ADD_SUBLOCATION:
+      const newQuiz = { ...quiz };
+
+      const parentId = action.sublocation.parentId;
+      const sublocationId = action.sublocation.id;
+
+      const newParent = { ...quiz.locations[parentId] };
+
+      if (newParent.locationType === LocationType.POINT) {
+        throw new Error("newParent must not be of type POINT.");
+      }
+
+      // Check if the sublocationId is already present to avoid duplicates
+      if (!newParent.sublocationIds.includes(sublocationId)) {
+        newParent.sublocationIds = [...newParent.sublocationIds, sublocationId];
+        newQuiz.locations[parentId] = newParent;
+      }
+
+      newQuiz.locations[sublocationId] = action.sublocation;
+
+      return newQuiz;
+    default:
+      return quiz;
+  }
 }
 
 const initialQuiz: Quiz = {

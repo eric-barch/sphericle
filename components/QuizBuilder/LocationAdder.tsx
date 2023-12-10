@@ -1,7 +1,13 @@
 "use client";
 
-import { useQuiz } from "@/components/QuizProvider";
-import { AreaState, LocationType, RootState } from "@/types";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import {
+  AreaState,
+  LocationType,
+  PointState,
+  QuizDispatchType,
+  RootState,
+} from "@/types";
 import { Combobox } from "@headlessui/react";
 import { FocusEvent, useState } from "react";
 import LocationAdderInput from "./LocationAdderInput";
@@ -15,6 +21,8 @@ interface LocationAdderProps {
 
 export default function LocationAdder({ parentId }: LocationAdderProps) {
   const quiz = useQuiz();
+  const quizDispatch = useQuizDispatch();
+
   const parentLocation = quiz.locations[parentId] as RootState | AreaState;
 
   const areaSearch = useAreaSearch(parentId);
@@ -46,7 +54,13 @@ export default function LocationAdder({ parentId }: LocationAdderProps) {
     }
   }
 
-  function handleChange() {}
+  function handleChange(sublocation: AreaState | PointState) {
+    quizDispatch({
+      type: QuizDispatchType.ADD_SUBLOCATION,
+      parentId,
+      sublocation,
+    });
+  }
 
   if (!parentLocation.isAdding && parentLocation.sublocationIds.length > 0) {
     return null;
