@@ -159,7 +159,11 @@ export default function Area({ locationId }: AreaProps) {
           />
           <Accordion.Trigger
             id="disclosure-button"
-            className={`w-full p-1 rounded-3xl text-left cursor-pointer bg-gray-600`}
+            className={`w-full p-1 bg-gray-600 rounded-3xl text-left cursor-pointer ${
+              locationId === quiz.selectedBuilderLocationId
+                ? "outline outline-2 outline-red-700"
+                : ""
+            }`}
             onClick={handleClick}
             onKeyDown={handleKeyDown}
           >

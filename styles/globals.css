@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 *:focus-visible {
-  outline: 2px solid red;
+  outline: 2px solid #b91c1c;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
