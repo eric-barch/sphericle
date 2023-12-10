@@ -52,7 +52,8 @@ export type QuizDispatch =
   | RenameLocationDispatch
   | SetAreaIsOpenDispatch
   | SetAreaIsAddingDispatch
-  | SetBuilderSelectedDispatch;
+  | SetBuilderSelectedDispatch
+  | DeleteLocationDispatch;
 
 interface BaseQuizDispatch {
   type: QuizDispatchType;
@@ -85,6 +86,11 @@ interface SetAreaIsAddingDispatch extends BaseQuizDispatch {
 interface SetBuilderSelectedDispatch extends BaseQuizDispatch {
   type: QuizDispatchType.SET_BUILDER_SELECTED;
   locationId: string | null;
+}
+
+interface DeleteLocationDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.DELETE_LOCATION;
+  locationId: string;
 }
 
 export interface OsmItem {

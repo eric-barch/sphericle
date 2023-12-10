@@ -26,9 +26,7 @@ export default function LocationAdder({
 }: LocationAdderProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-
   const parentLocation = quiz.locations[parentId] as RootState | AreaState;
-
   const areaSearch = useAreaSearch(parentId);
   const pointSearch = usePointSearch(parentId);
 
@@ -56,13 +54,11 @@ export default function LocationAdder({
     if (!event.currentTarget.contains(event.relatedTarget) && !optionSelected) {
       setIsFocused(true);
       if (parentLocation.locationType === LocationType.ROOT) {
-        console.log("set to null");
         quizDispatch({
           type: QuizDispatchType.SET_BUILDER_SELECTED,
           locationId: null,
         });
       } else if (parentLocation.locationType === LocationType.AREA) {
-        console.log("set to parentId");
         quizDispatch({
           type: QuizDispatchType.SET_BUILDER_SELECTED,
           locationId: parentId,

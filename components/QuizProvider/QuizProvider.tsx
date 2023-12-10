@@ -122,6 +122,40 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       newQuiz.selectedBuilderLocationId = action.locationId;
       return newQuiz;
     }
+    case QuizDispatchType.DELETE_LOCATION: {
+      const newQuiz = { ...quiz };
+
+      if (!newQuiz.locations[action.locationId]) {
+        return newQuiz;
+      }
+
+      const newLocation = newQuiz.locations[action.locationId];
+
+      if (
+        newLocation.locationType !== LocationType.AREA &&
+        newLocation.locationType !== LocationType.POINT
+      ) {
+        throw new Error("newLocation must be of type AREA or POINT.");
+      }
+
+      const newParent = newQuiz.locations[newLocation.parentId];
+
+      if (
+        newParent.locationType !== LocationType.ROOT &&
+        newParent.locationType !== LocationType.AREA
+      ) {
+        throw new Error("newParent must be of type ROOT or AREA.");
+      }
+
+      // Safely update the parent's sublocationIds
+      newParent.sublocationIds = newParent.sublocationIds.filter(
+        (sublocationId) => sublocationId !== action.locationId,
+      );
+
+      // Delete the location safely
+      delete newQuiz.locations[action.locationId];
+      return newQuiz;
+    }
     default: {
       return quiz;
     }
