@@ -102,9 +102,9 @@ export default function Map({
       return new google.maps.Polygon({
         paths,
         map: googleMapRef.current,
-        strokeColor: "#d61613",
+        strokeColor: "#b91c1c",
         strokeWeight: 1.5,
-        fillColor: "#d61613",
+        fillColor: "#b91c1c",
         fillOpacity: 0.0,
       });
     });
@@ -151,9 +151,9 @@ export default function Map({
       return new google.maps.Polygon({
         paths,
         map: googleMapRef.current,
-        strokeColor: "#d61613",
+        strokeColor: "#b91c1c",
         strokeWeight: 1.5,
-        fillColor: "#d61613",
+        fillColor: "#b91c1c",
         fillOpacity: 0.2,
       });
     });
