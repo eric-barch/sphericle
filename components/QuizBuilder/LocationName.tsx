@@ -46,9 +46,12 @@ export default function LocationName({
     if (event.key === "Escape") {
       event.currentTarget.blur();
     }
+  }
 
+  function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === " ") {
-      event.stopPropagation();
+      // stop from toggling Radix Accordion
+      event.preventDefault();
     }
   }
 
@@ -67,6 +70,7 @@ export default function LocationName({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
+          onKeyUp={handleKeyUp}
           onBlur={handleBlur}
         />
       ) : (

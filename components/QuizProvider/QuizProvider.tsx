@@ -65,7 +65,6 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
         throw new Error("newParent must not be of type POINT.");
       }
 
-      // avoid duplicate entries
       if (!newParent.sublocationIds.includes(sublocationId)) {
         newParent.sublocationIds = [...newParent.sublocationIds, sublocationId];
         newQuiz.locations[parentId] = newParent;
@@ -95,6 +94,11 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       }
 
       newLocation.isOpen = action.isOpen;
+
+      if (!action.isOpen) {
+        newLocation.isAdding = false;
+      }
+
       return newQuiz;
     }
     case QuizDispatchType.SET_AREA_IS_ADDING: {
@@ -106,6 +110,11 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       }
 
       newLocation.isAdding = action.isAdding;
+
+      if (action.isAdding) {
+        newLocation.isOpen = true;
+      }
+
       return newQuiz;
     }
     case QuizDispatchType.SET_BUILDER_SELECTED: {
