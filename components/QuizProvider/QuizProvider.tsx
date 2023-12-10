@@ -30,7 +30,6 @@ export default function QuizProvider({ children }: { children: ReactNode }) {
 }
 
 export const rootId = crypto.randomUUID();
-const dummyAreaId = crypto.randomUUID();
 
 export function useQuiz(): Quiz {
   const quiz = useContext(QuizContext);
@@ -71,6 +70,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       }
 
       newQuiz.locations[sublocationId] = action.sublocation;
+      newQuiz.selectedBuilderLocationId = action.sublocation.id;
 
       return newQuiz;
     }
@@ -147,13 +147,13 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
         throw new Error("newParent must be of type ROOT or AREA.");
       }
 
-      // Safely update the parent's sublocationIds
       newParent.sublocationIds = newParent.sublocationIds.filter(
         (sublocationId) => sublocationId !== action.locationId,
       );
 
-      // Delete the location safely
       delete newQuiz.locations[action.locationId];
+      newQuiz.selectedBuilderLocationId = null;
+
       return newQuiz;
     }
     default: {
@@ -163,6 +163,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 }
 
 const initialQuiz: Quiz = {
+  rootId,
   locations: {
     [rootId]: {
       id: rootId,

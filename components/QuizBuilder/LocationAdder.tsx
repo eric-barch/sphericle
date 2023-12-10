@@ -51,18 +51,22 @@ export default function LocationAdder({
   }
 
   function handleFocus(event: FocusEvent) {
-    if (!event.currentTarget.contains(event.relatedTarget) && !optionSelected) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      console.log("focus LocationAdder");
       setIsFocused(true);
-      if (parentLocation.locationType === LocationType.ROOT) {
-        quizDispatch({
-          type: QuizDispatchType.SET_BUILDER_SELECTED,
-          locationId: null,
-        });
-      } else if (parentLocation.locationType === LocationType.AREA) {
-        quizDispatch({
-          type: QuizDispatchType.SET_BUILDER_SELECTED,
-          locationId: parentId,
-        });
+
+      if (!optionSelected) {
+        if (parentLocation.locationType === LocationType.ROOT) {
+          quizDispatch({
+            type: QuizDispatchType.SET_BUILDER_SELECTED,
+            locationId: null,
+          });
+        } else if (parentLocation.locationType === LocationType.AREA) {
+          quizDispatch({
+            type: QuizDispatchType.SET_BUILDER_SELECTED,
+            locationId: parentId,
+          });
+        }
       }
     } else {
       setOptionSelected(false);
