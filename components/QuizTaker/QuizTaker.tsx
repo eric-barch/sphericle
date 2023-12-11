@@ -1,16 +1,13 @@
 "use client";
 
 import Map from "@/components/Map";
-import { rootId, useQuiz } from "@/components/QuizProvider";
-import SplitPane from "@/components/SplitPane";
-import { navHeight } from "@/constants";
-import { AreaState, LocationType, PointState } from "@/types";
-import Link from "next/link";
+import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
 import { useEffect, useState } from "react";
-import Sublocations from "./Sublocations";
 
-export default function QuizBuilder() {
+export default function QuizTaker() {
   const quiz = useQuiz();
+  const quizDispatch = useQuizDispatch();
 
   const [mapId, setMapId] = useState<string>("696d0ea42431a75c");
   const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>({
@@ -25,7 +22,13 @@ export default function QuizBuilder() {
   const [markedPoints, setMarkedPoints] = useState<PointState | null>(null);
 
   useEffect(() => {
-    const location = quiz.locations[quiz.selectedBuilderLocationId];
+    quizDispatch({
+      type: QuizDispatchType.RESET_TAKER_SELECTED,
+    });
+  }, [quizDispatch, quiz.rootId]);
+
+  useEffect(() => {
+    const location = quiz.locations[quiz.selectedTakerLocationId];
 
     if (!location) {
       setEmptyAreas(null);
@@ -85,19 +88,7 @@ export default function QuizBuilder() {
   }, [quiz]);
 
   return (
-    <SplitPane>
-      <div className="relative h-full">
-        <Sublocations
-          className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-3rem)]`}
-          parentId={rootId}
-        />
-        <Link
-          className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
-          href="/take-quiz"
-        >
-          Take Quiz
-        </Link>
-      </div>
+    <div className="h-[calc(100vh-3rem)]">
       <Map
         mapId={mapId}
         bounds={bounds}
@@ -105,6 +96,6 @@ export default function QuizBuilder() {
         filledAreas={filledAreas}
         markedPoints={markedPoints}
       />
-    </SplitPane>
+    </div>
   );
 }

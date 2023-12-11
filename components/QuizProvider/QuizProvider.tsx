@@ -136,6 +136,17 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       newQuiz.selectedBuilderLocationId = action.locationId;
       return newQuiz;
     }
+    case QuizDispatchType.RESET_TAKER_SELECTED: {
+      const newQuiz = { ...quiz };
+      const rootLocation = newQuiz.locations[newQuiz.rootId];
+
+      if (rootLocation.locationType !== LocationType.ROOT) {
+        throw new Error("rootLocation must be of type ROOT.");
+      }
+
+      newQuiz.selectedTakerLocationId = rootLocation.sublocationIds[0];
+      return newQuiz;
+    }
     case QuizDispatchType.DELETE_LOCATION: {
       const newQuiz = { ...quiz };
 
