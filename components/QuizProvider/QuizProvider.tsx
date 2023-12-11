@@ -70,7 +70,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       }
 
       newQuiz.locations[sublocationId] = action.sublocation;
-      newQuiz.selectedBuilderLocationId = action.sublocation.id;
+      newQuiz.builderSelectedId = action.sublocation.id;
 
       return newQuiz;
     }
@@ -133,7 +133,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
     }
     case QuizDispatchType.SET_BUILDER_SELECTED: {
       const newQuiz = { ...quiz };
-      newQuiz.selectedBuilderLocationId = action.locationId;
+      newQuiz.builderSelectedId = action.locationId;
       return newQuiz;
     }
     case QuizDispatchType.RESET_TAKER_SELECTED: {
@@ -144,7 +144,46 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
         throw new Error("rootLocation must be of type ROOT.");
       }
 
-      newQuiz.selectedTakerLocationId = rootLocation.sublocationIds[0];
+      newQuiz.takerSelectedId = rootLocation.sublocationIds[0];
+      return newQuiz;
+    }
+    case QuizDispatchType.INCREMENT_TAKER_SELECTED: {
+      const newQuiz = { ...quiz };
+      const currentSelected = newQuiz.locations[newQuiz.takerSelectedId];
+
+      if (
+        currentSelected.locationType !== LocationType.AREA &&
+        currentSelected.locationType !== LocationType.POINT
+      ) {
+        throw new Error("currentSelected must be of type AREA or POINT.");
+      }
+
+      const parentLocation = newQuiz.locations[currentSelected.parentId];
+
+      if (
+        parentLocation.locationType !== LocationType.ROOT &&
+        parentLocation.locationType !== LocationType.AREA
+      ) {
+        throw new Error("parentLocaation must be of type ROOT or AREA.");
+      }
+
+      const siblingIds = parentLocation.sublocationIds;
+      const currentSelectedIndex = siblingIds.indexOf(currentSelected.id);
+
+      if (currentSelectedIndex < siblingIds.length - 1) {
+        newQuiz.takerSelectedId = siblingIds[currentSelectedIndex + 1];
+        return newQuiz;
+      }
+
+      // keep implementing starting here
+
+      const rootLocation = newQuiz.locations[newQuiz.rootId];
+
+      if (rootLocation.locationType !== LocationType.ROOT) {
+        throw new Error("rootLocation must be of type ROOT.");
+      }
+
+      newQuiz.takerSelectedId = rootLocation.sublocationIds[0];
       return newQuiz;
     }
     case QuizDispatchType.DELETE_LOCATION: {
@@ -177,7 +216,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       );
 
       delete newQuiz.locations[action.locationId];
-      newQuiz.selectedBuilderLocationId = null;
+      newQuiz.builderSelectedId = null;
 
       return newQuiz;
     }
@@ -198,6 +237,6 @@ const initialQuiz: Quiz = {
       isAdding: true,
     },
   },
-  selectedBuilderLocationId: null,
-  selectedTakerLocationId: null,
+  builderSelectedId: null,
+  takerSelectedId: null,
 };

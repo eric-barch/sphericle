@@ -3,7 +3,8 @@
 import Map from "@/components/Map";
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
-import { useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
+import AnswerBox from "./AnswerBox";
 
 export default function QuizTaker() {
   const quiz = useQuiz();
@@ -28,7 +29,7 @@ export default function QuizTaker() {
   }, [quizDispatch, quiz.rootId]);
 
   useEffect(() => {
-    const location = quiz.locations[quiz.selectedTakerLocationId];
+    const location = quiz.locations[quiz.takerSelectedId];
 
     if (!location) {
       setEmptyAreas(null);
@@ -88,14 +89,15 @@ export default function QuizTaker() {
   }, [quiz]);
 
   return (
-    <div className="h-[calc(100vh-3rem)]">
+    <div className="h-[calc(100vh-3rem)] relative flex justify-center content-center">
       <Map
-        mapId={mapId}
+        mapId="8777b9e5230900fc"
         bounds={bounds}
         emptyAreas={emptyAreas}
         filledAreas={filledAreas}
         markedPoints={markedPoints}
       />
+      <AnswerBox />
     </div>
   );
 }

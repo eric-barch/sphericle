@@ -25,7 +25,7 @@ export default function QuizBuilder() {
   const [markedPoints, setMarkedPoints] = useState<PointState | null>(null);
 
   useEffect(() => {
-    const location = quiz.locations[quiz.selectedBuilderLocationId];
+    const location = quiz.locations[quiz.builderSelectedId];
 
     if (!location) {
       setEmptyAreas(null);
