@@ -55,6 +55,7 @@ export type QuizDispatch =
   | SetAreaIsOpenDispatch
   | SetAreaIsAddingDispatch
   | SetBuilderSelectedDispatch
+  | ResetTakerSelectedDispatch
   | DeleteLocationDispatch;
 
 interface BaseQuizDispatch {
@@ -94,6 +95,10 @@ interface SetAreaIsAddingDispatch extends BaseQuizDispatch {
 interface SetBuilderSelectedDispatch extends BaseQuizDispatch {
   type: QuizDispatchType.SET_BUILDER_SELECTED;
   locationId: string | null;
+}
+
+interface ResetTakerSelectedDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.RESET_TAKER_SELECTED;
 }
 
 interface DeleteLocationDispatch extends BaseQuizDispatch {
