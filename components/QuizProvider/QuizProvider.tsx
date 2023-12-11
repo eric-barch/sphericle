@@ -241,6 +241,7 @@ function getNewTakerSelectedId(quiz: Quiz): string {
   const takerSelectedIndex = siblingIds.indexOf(takerSelected.id);
 
   if (takerSelectedIndex < siblingIds.length - 1) {
+    console.log(`${takerSelected.shortName} has subsequent sibling.`);
     return siblingIds[takerSelectedIndex + 1];
   }
 
@@ -251,11 +252,12 @@ function getNewTakerSelectedId(quiz: Quiz): string {
       sibling.locationType === LocationType.AREA &&
       sibling.sublocationIds.length > 0
     ) {
+      console.log(`${takerSelected.shortName} has a sibling with children.`);
       return sibling.sublocationIds[0];
     }
   }
 
-  return null;
+  return searchUpward(quiz, parent);
 }
 
 function searchUpward(
