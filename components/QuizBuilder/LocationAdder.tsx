@@ -10,6 +10,7 @@ import {
   SearchStatus,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
+import { Grid2X2, Map, MapPin } from "lucide-react";
 import {
   ChangeEvent,
   FocusEvent,
@@ -216,6 +217,12 @@ function Input({
 
   return (
     <div className="relative">
+      <ToggleAreaPointButton
+        input={input}
+        locationType={locationType}
+        pointSearch={pointSearch}
+        setLocationType={setLocationType}
+      />
       <Combobox.Input
         ref={inputRef}
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
@@ -225,6 +232,46 @@ function Input({
         onKeyDown={handleKeyDown}
       />
     </div>
+  );
+}
+
+interface ToggleAreaPointButtonProps {
+  input: string;
+  locationType: LocationType;
+  pointSearch: PointSearch;
+  setLocationType: (locationType: LocationType) => void;
+}
+
+function ToggleAreaPointButton({
+  input,
+  locationType,
+  pointSearch,
+  setLocationType,
+}: ToggleAreaPointButtonProps) {
+  function handleClick() {
+    const nextLocationType =
+      locationType === LocationType.AREA
+        ? LocationType.POINT
+        : LocationType.AREA;
+
+    setLocationType(nextLocationType);
+
+    if (nextLocationType === LocationType.POINT && input !== pointSearch.term) {
+      pointSearch.setTerm(input);
+    }
+  }
+
+  return (
+    <button
+      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5 bg-gray-600 text-gray-300 "
+      onClick={handleClick}
+    >
+      {locationType === LocationType.AREA ? (
+        <Grid2X2 className="w-4 h-4" />
+      ) : (
+        <MapPin className="w-4 h-4" />
+      )}
+    </button>
   );
 }
 

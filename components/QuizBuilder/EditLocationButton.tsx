@@ -44,7 +44,7 @@ export default function EditLocationButton({
         <MoreVertical className="w-5 h-5" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
-        className="absolute z-10 top-2 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
+        className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
         {location.locationType === LocationType.AREA && (

@@ -103,7 +103,7 @@ export default function Map({
         paths,
         map: googleMapRef.current,
         strokeColor: "#b91c1c",
-        strokeWeight: 1.5,
+        strokeWeight: 2,
         fillColor: "#b91c1c",
         fillOpacity: 0.0,
       });

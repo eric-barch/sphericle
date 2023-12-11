@@ -93,10 +93,10 @@ export default function usePointSearch(parentId: string): PointSearch {
               const point: Point = { type: "Point", coordinates: [lng, lat] };
 
               const bounds = {
-                north: lat + 0.001,
-                south: lat - 0.001,
-                east: lng + 0.001,
-                west: lng - 0.001,
+                north: lat + 0.1,
+                south: lat - 0.1,
+                east: lng + 0.1,
+                west: lng - 0.1,
               };
 
               const pointState = {
