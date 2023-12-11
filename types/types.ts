@@ -30,7 +30,8 @@ export interface AreaState {
   locationType: LocationType.AREA;
   isOpen: boolean;
   isAdding: boolean;
-  bounds: google.maps.LatLngBoundsLiteral;
+  searchBounds: google.maps.LatLngBoundsLiteral;
+  displayBounds: google.maps.LatLngBoundsLiteral;
   polygons: Polygon | MultiPolygon;
   answeredCorrectly: boolean | null;
 }
