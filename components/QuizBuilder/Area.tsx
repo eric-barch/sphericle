@@ -146,7 +146,7 @@ export default function Area({ locationId }: AreaProps) {
             setIsAdding={setIsAdding}
           />
           <Accordion.Trigger
-            className={`w-full p-1 bg-gray-600 rounded-3xl text-left ${
+            className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
               locationId === quiz.builderSelectedId
                 ? "outline outline-2 outline-red-700"
                 : ""
@@ -180,7 +180,7 @@ interface OpenChevronProps {
 
 function OpenChevron({ isOpen }: OpenChevronProps) {
   return (
-    <div className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl right-1">
+    <div className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl right-1">
       <ChevronRight className={`${isOpen ? "rotate-90" : ""} w-6 h-6`} />
     </div>
   );

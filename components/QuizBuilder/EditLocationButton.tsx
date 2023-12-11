@@ -40,7 +40,7 @@ export default function EditLocationButton({
 
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5">
+      <DropdownMenu.Trigger className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl left-1.5">
         <MoreVertical className="w-5 h-5" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
@@ -50,20 +50,20 @@ export default function EditLocationButton({
         {location.locationType === LocationType.AREA && (
           <DropdownMenu.Item
             onClick={handleAddSublocationClick}
-            className="rounded-3xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
+            className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
           >
             Add Sublocation
           </DropdownMenu.Item>
         )}
         <DropdownMenu.Item
           onClick={handleRenameClick}
-          className="rounded-3xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
+          className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
         >
           Rename
         </DropdownMenu.Item>
         <DropdownMenu.Item
           onClick={handleDeleteClick}
-          className="rounded-3xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
+          className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
         >
           Delete
         </DropdownMenu.Item>

@@ -263,7 +263,7 @@ function ToggleAreaPointButton({
 
   return (
     <button
-      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-3xl left-1.5 bg-gray-600 text-gray-300 "
+      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl left-1.5 bg-gray-600 text-gray-300 "
       onClick={handleClick}
     >
       {locationType === LocationType.AREA ? (
@@ -369,11 +369,16 @@ interface OptionProps {
 }
 
 function Option({ location }: OptionProps) {
+  // Use the `active` prop to apply different styles
   return (
-    <Combobox.Option value={location}>
-      <div className="p-1 pl-7 rounded-3xl cursor-pointer bg-gray-600">
-        {location.longName}
-      </div>
+    <Combobox.Option
+      value={location}
+      as="div"
+      className={({ active }) =>
+        `p-1 pl-7 rounded-2xl cursor-pointer ${active ? "bg-gray-600" : ""}`
+      }
+    >
+      {location.longName}
     </Combobox.Option>
   );
 }

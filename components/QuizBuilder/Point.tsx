@@ -50,7 +50,7 @@ export default function Point({ locationId }: PointProps) {
         setIsRenaming={setIsRenaming}
       />
       <button
-        className={`w-full p-1 rounded-3xl text-left bg-gray-600 ${
+        className={`w-full p-1 rounded-2xl text-left bg-gray-600 ${
           locationId === quiz.builderSelectedId
             ? "outline outline-2 outline-red-700"
             : ""
