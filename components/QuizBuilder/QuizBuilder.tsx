@@ -57,7 +57,7 @@ export default function QuizBuilder() {
           setMarkedPoints(null);
         }
       } else if (location.locationType === LocationType.POINT) {
-        setBounds(location.bounds);
+        setBounds(location.displayBounds);
         setEmptyAreas(null);
         setFilledAreas(null);
         setMarkedPoints(location);
