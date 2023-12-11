@@ -267,7 +267,6 @@ const initialQuiz: Quiz = {
   takerSelectedId: null,
 };
 
-// this gets the parent of the one below it
 function searchUpForId(
   quiz: Quiz,
   location: RootState | AreaState,

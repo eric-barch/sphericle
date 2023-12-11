@@ -11,14 +11,14 @@ export default function Nav() {
       orientation="horizontal"
     >
       <NavigationMenu.List className="flex flex-row justify-between">
-        <NavigationMenu.Item className="rounded-3xl">
-          <Link className="p-1.5 rounded-3xl" href="/">
+        <NavigationMenu.Item className="rounded-2xl">
+          <Link className="p-1.5 rounded-2xl" href="/">
             Sphericle
           </Link>
         </NavigationMenu.Item>
         <div className="flex flex-row space-x-3">
           <NavigationMenu.Item>
-            <Link className="p-1.5 rounded-3xl" href="/build-quiz">
+            <Link className="p-1.5 rounded-2xl" href="/build-quiz">
               Build Quiz
             </Link>
           </NavigationMenu.Item>

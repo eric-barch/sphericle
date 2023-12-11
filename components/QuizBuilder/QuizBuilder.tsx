@@ -92,7 +92,7 @@ export default function QuizBuilder() {
           parentId={rootId}
         />
         <Link
-          className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
+          className="absolute bottom-0 right-0 rounded-2xl px-3 py-2 bg-green-700 m-3"
           href="/take-quiz"
         >
           Take Quiz
