@@ -175,8 +175,23 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
         return newQuiz;
       }
 
-      // keep implementing starting here
+      for (const siblingId of siblingIds) {
+        const sibling = quiz.locations[siblingId];
 
+        if (
+          sibling.locationType !== LocationType.ROOT &&
+          sibling.locationType !== LocationType.AREA
+        ) {
+          continue;
+        }
+
+        if (sibling.sublocationIds.length > 0) {
+          newQuiz.takerSelectedId = sibling.sublocationIds[0];
+          return newQuiz;
+        }
+      }
+
+      // cycle back to first
       const rootLocation = newQuiz.locations[newQuiz.rootId];
 
       if (rootLocation.locationType !== LocationType.ROOT) {
