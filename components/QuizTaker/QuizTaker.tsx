@@ -3,7 +3,7 @@
 import Map from "@/components/Map";
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
-import { KeyboardEvent, useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import AnswerBox from "./AnswerBox";
 
 export default function QuizTaker() {
@@ -22,10 +22,16 @@ export default function QuizTaker() {
   const [filledAreas, setFilledAreas] = useState<AreaState | null>(null);
   const [markedPoints, setMarkedPoints] = useState<PointState | null>(null);
 
+  const answerBoxInputRef = useRef<HTMLInputElement>();
+
   useEffect(() => {
     quizDispatch({
       type: QuizDispatchType.RESET_TAKER_SELECTED,
     });
+
+    if (answerBoxInputRef?.current) {
+      answerBoxInputRef.current.focus();
+    }
   }, [quizDispatch, quiz.rootId]);
 
   useEffect(() => {
@@ -83,7 +89,7 @@ export default function QuizTaker() {
         filledAreas={filledAreas}
         markedPoints={markedPoints}
       />
-      <AnswerBox />
+      <AnswerBox inputRef={answerBoxInputRef} />
     </div>
   );
 }

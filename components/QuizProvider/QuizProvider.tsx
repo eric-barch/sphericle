@@ -170,16 +170,16 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       if (takerSelectedIndex < siblingIds.length - 1) {
         const newTakerSelectedId = siblingIds[takerSelectedIndex + 1];
         const newTakerSelected = newQuiz.locations[newTakerSelectedId];
-        console.log(
-          `${takerSelected.shortName} has subsequent sibling: ${newTakerSelected.shortName}`,
-        );
+        // console.log(
+        //   `${takerSelected.shortName} has subsequent sibling: ${newTakerSelected.shortName}`,
+        // );
         newQuiz.takerSelectedId = newTakerSelectedId;
         return newQuiz;
       }
 
-      console.log(
-        `${takerSelected.shortName} does not have subsequent sibling.`,
-      );
+      // console.log(
+      //   `${takerSelected.shortName} does not have subsequent sibling.`,
+      // );
 
       for (const siblingId of siblingIds) {
         const sibling = newQuiz.locations[siblingId];
@@ -190,17 +190,17 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
         ) {
           const newTakerSelectedId = sibling.sublocationIds[0];
           const newTakerSelected = newQuiz.locations[newTakerSelectedId];
-          console.log(
-            `${takerSelected.shortName} has sibling (${sibling.shortName}) with child: ${newTakerSelected.shortName}`,
-          );
+          // console.log(
+          //   `${takerSelected.shortName} has sibling (${sibling.shortName}) with child: ${newTakerSelected.shortName}`,
+          // );
           newQuiz.takerSelectedId = newTakerSelectedId;
           return newQuiz;
         }
       }
 
-      console.log(
-        `${takerSelected.shortName} does not have siblings with children.`,
-      );
+      // console.log(
+      //   `${takerSelected.shortName} does not have siblings with children.`,
+      // );
 
       newQuiz.takerSelectedId = searchUpForId(newQuiz, parent);
 
@@ -271,7 +271,7 @@ function searchUpForId(
   quiz: Quiz,
   location: RootState | AreaState,
 ): string | null {
-  console.log("searchUpForId", location.shortName);
+  // console.log("searchUpForId", location.shortName);
 
   if (location.locationType === LocationType.ROOT) {
     return null;
