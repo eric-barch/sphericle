@@ -5,6 +5,7 @@ import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import AnswerBox from "./AnswerBox";
+import ScoreBox from "./ScoreBox";
 
 export default function QuizTaker() {
   const quiz = useQuiz();
@@ -82,6 +83,7 @@ export default function QuizTaker() {
 
   return (
     <div className="h-[calc(100vh-3rem)] relative flex justify-center content-center">
+      <ScoreBox />
       <Map
         mapId="8777b9e5230900fc"
         bounds={bounds}

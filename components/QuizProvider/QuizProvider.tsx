@@ -24,9 +24,9 @@ const QuizDispatchContext = createContext<Dispatch<QuizDispatch> | null>(null);
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, quizDispatch] = useReducer(quizReducer, initialQuiz);
 
-  // useEffect(() => {
-  //   console.log("quiz", quiz);
-  // }, [quiz]);
+  useEffect(() => {
+    console.log("quiz", quiz);
+  }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
@@ -79,6 +79,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 
       newQuiz.locations[sublocationId] = action.sublocation;
       newQuiz.builderSelectedId = action.sublocation.id;
+      newQuiz.totalLocations++;
 
       return newQuiz;
     }
@@ -155,59 +156,19 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       newQuiz.takerSelectedId = rootLocation.sublocationIds[0];
       return newQuiz;
     }
-    case QuizDispatchType.INCREMENT_TAKER_SELECTED: {
+    case QuizDispatchType.MARK_TAKER_SELECTED: {
       const newQuiz = { ...quiz };
 
-      const takerSelected = newQuiz.locations[newQuiz.takerSelectedId] as
+      const newLocation = newQuiz.locations[quiz.takerSelectedId] as
         | AreaState
         | PointState;
 
-      const parent = newQuiz.locations[takerSelected.parentId] as AreaState; // | RootState
+      newLocation.answeredCorrectly = action.answeredCorrectly;
 
-      const siblingIds = parent.sublocationIds;
-      const takerSelectedIndex = siblingIds.indexOf(takerSelected.id);
+      newQuiz.takerSelectedId = getNewTakerSelectedId(newQuiz);
 
-      if (takerSelectedIndex < siblingIds.length - 1) {
-        const newTakerSelectedId = siblingIds[takerSelectedIndex + 1];
-        const newTakerSelected = newQuiz.locations[newTakerSelectedId];
-        // console.log(
-        //   `${takerSelected.shortName} has subsequent sibling: ${newTakerSelected.shortName}`,
-        // );
-        newQuiz.takerSelectedId = newTakerSelectedId;
-        return newQuiz;
-      }
-
-      // console.log(
-      //   `${takerSelected.shortName} does not have subsequent sibling.`,
-      // );
-
-      for (const siblingId of siblingIds) {
-        const sibling = newQuiz.locations[siblingId];
-
-        if (
-          sibling.locationType === LocationType.AREA &&
-          sibling.sublocationIds.length > 0
-        ) {
-          const newTakerSelectedId = sibling.sublocationIds[0];
-          const newTakerSelected = newQuiz.locations[newTakerSelectedId];
-          // console.log(
-          //   `${takerSelected.shortName} has sibling (${sibling.shortName}) with child: ${newTakerSelected.shortName}`,
-          // );
-          newQuiz.takerSelectedId = newTakerSelectedId;
-          return newQuiz;
-        }
-      }
-
-      // console.log(
-      //   `${takerSelected.shortName} does not have siblings with children.`,
-      // );
-
-      newQuiz.takerSelectedId = searchUpForId(newQuiz, parent);
-
-      if (!newQuiz.takerSelectedId) {
-        const root = newQuiz.locations[newQuiz.rootId] as RootState;
-        const firstChildId = root.sublocationIds[0];
-        newQuiz.takerSelectedId = firstChildId;
+      if (action.answeredCorrectly) {
+        newQuiz.correctLocations++;
       }
 
       return newQuiz;
@@ -265,14 +226,42 @@ const initialQuiz: Quiz = {
   },
   builderSelectedId: null,
   takerSelectedId: null,
+  correctLocations: 0,
+  totalLocations: 0,
 };
 
-function searchUpForId(
+function getNewTakerSelectedId(quiz: Quiz): string {
+  const takerSelected = quiz.locations[quiz.takerSelectedId] as
+    | AreaState
+    | PointState;
+
+  const parent = quiz.locations[takerSelected.parentId] as AreaState;
+
+  const siblingIds = parent.sublocationIds;
+  const takerSelectedIndex = siblingIds.indexOf(takerSelected.id);
+
+  if (takerSelectedIndex < siblingIds.length - 1) {
+    return siblingIds[takerSelectedIndex + 1];
+  }
+
+  for (const siblingId of siblingIds) {
+    const sibling = quiz.locations[siblingId];
+
+    if (
+      sibling.locationType === LocationType.AREA &&
+      sibling.sublocationIds.length > 0
+    ) {
+      return sibling.sublocationIds[0];
+    }
+  }
+
+  return null;
+}
+
+function searchUpward(
   quiz: Quiz,
   location: RootState | AreaState,
 ): string | null {
-  // console.log("searchUpForId", location.shortName);
-
   if (location.locationType === LocationType.ROOT) {
     return null;
   }
@@ -292,5 +281,5 @@ function searchUpForId(
     }
   }
 
-  return searchUpForId(quiz, parent);
+  return searchUpward(quiz, parent);
 }
