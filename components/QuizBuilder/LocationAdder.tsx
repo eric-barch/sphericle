@@ -7,13 +7,19 @@ import {
   PointState,
   QuizDispatchType,
   RootState,
+  SearchStatus,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
-import { FocusEvent, RefObject, useState } from "react";
-import LocationAdderInput from "./LocationAdderInput";
-import { LocationAdderOptions } from "./LocationAdderOptions";
-import useAreaSearch from "./use-area-search.hook";
-import usePointSearch from "./use-point-search.hook";
+import {
+  ChangeEvent,
+  FocusEvent,
+  KeyboardEvent,
+  ReactNode,
+  RefObject,
+  useState,
+} from "react";
+import useAreaSearch, { AreaSearch } from "./use-area-search.hook";
+import usePointSearch, { PointSearch } from "./use-point-search.hook";
 
 interface LocationAdderProps {
   inputRef?: RefObject<HTMLInputElement>;
@@ -96,7 +102,7 @@ export default function LocationAdder({
   return (
     <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
       <Combobox onChange={handleChange}>
-        <LocationAdderInput
+        <Input
           inputRef={inputRef}
           parentId={parentId}
           input={input}
@@ -106,7 +112,7 @@ export default function LocationAdder({
           setInput={setInput}
           setLocationType={setLocationType}
         />
-        <LocationAdderOptions
+        <Options
           parentId={parentId}
           input={input}
           locationType={locationType}
@@ -116,5 +122,211 @@ export default function LocationAdder({
         />
       </Combobox>
     </div>
+  );
+}
+
+interface InputProps {
+  inputRef: RefObject<HTMLInputElement>;
+  parentId: string;
+  input: string;
+  locationType: LocationType;
+  areaSearch: AreaSearch;
+  pointSearch: PointSearch;
+  setInput: (input: string) => void;
+  setLocationType: (locationType: LocationType) => void;
+}
+
+function Input({
+  inputRef,
+  parentId,
+  input,
+  locationType,
+  areaSearch,
+  pointSearch,
+  setInput,
+  setLocationType,
+}: InputProps) {
+  const quiz = useQuiz();
+  const parentLocation = quiz.locations[parentId] as RootState | AreaState;
+
+  if (
+    parentLocation.locationType !== LocationType.ROOT &&
+    parentLocation.locationType !== LocationType.AREA
+  ) {
+    throw new Error("parentLocation must be of type ROOT or AREA.");
+  }
+
+  const placeholder =
+    parentLocation.locationType === LocationType.ROOT
+      ? `Add ${locationType.toLowerCase()} anywhere`
+      : `Add ${locationType.toLowerCase()} in ${
+          parentLocation.userDefinedName || parentLocation.shortName
+        }`;
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    setInput(event.target.value);
+
+    if (event.target.value === "") {
+      pointSearch.reset();
+    } else if (locationType === LocationType.POINT) {
+      pointSearch.setTerm(event.target.value);
+    }
+  }
+
+  function handleEnter(event: KeyboardEvent<HTMLInputElement>) {
+    if (locationType === LocationType.AREA && input !== areaSearch.term) {
+      event.preventDefault();
+      areaSearch.setTerm(input);
+    }
+  }
+
+  // override HeadlessUI Combobox Tab behavior
+  function handleTab(event: KeyboardEvent<HTMLInputElement>) {
+    event.preventDefault();
+
+    const focusableElements = Array.from(
+      document.querySelectorAll(
+        'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    const currentIndex = focusableElements.indexOf(event.currentTarget);
+
+    if (event.shiftKey) {
+      const previousElement =
+        focusableElements[currentIndex - 1] ||
+        focusableElements[focusableElements.length - 1];
+      (previousElement as HTMLElement).focus();
+    } else {
+      const nextElement =
+        focusableElements[currentIndex + 1] || focusableElements[0];
+      (nextElement as HTMLElement).focus();
+    }
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      handleEnter(event);
+    }
+
+    // override HeadlessUI Combobox Tab behavior
+    if (event.key === "Tab") {
+      handleTab(event);
+    }
+  }
+
+  return (
+    <div className="relative">
+      <Combobox.Input
+        ref={inputRef}
+        className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
+        displayValue={() => input}
+        placeholder={placeholder}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+      />
+    </div>
+  );
+}
+
+interface OptionsProps {
+  parentId: string;
+  input: string;
+  locationType: LocationType;
+  areaSearch: AreaSearch;
+  pointSearch: PointSearch;
+  locationAdderFocused: boolean;
+}
+
+function Options({
+  parentId,
+  input,
+  locationType,
+  areaSearch,
+  pointSearch,
+  locationAdderFocused,
+}: OptionsProps) {
+  const quiz = useQuiz();
+  const parentLocation = quiz.locations[parentId];
+
+  if (
+    parentLocation.locationType !== LocationType.ROOT &&
+    parentLocation.locationType !== LocationType.AREA
+  ) {
+    throw new Error("parentLocation must be of type ROOT or AREA.");
+  }
+
+  function renderOptionsContent() {
+    if (locationType === LocationType.AREA) {
+      if (input !== areaSearch.term) {
+        return <OptionsSubstitute>Press Enter to Search</OptionsSubstitute>;
+      }
+      if (areaSearch.status === SearchStatus.SEARCHING) {
+        return <OptionsSubstitute>Searching...</OptionsSubstitute>;
+      }
+      if (areaSearch.results.length === 0) {
+        return <OptionsSubstitute>No results found.</OptionsSubstitute>;
+      }
+      return areaSearch.results.map((result: AreaState) => (
+        <Option key={result.id} location={result} />
+      ));
+    } else if (locationType === LocationType.POINT) {
+      if (pointSearch.results.length === 0) {
+        return <OptionsSubstitute>No results found.</OptionsSubstitute>;
+      }
+      return pointSearch.results.map((result: PointState) => (
+        <Option key={result.id} location={result} />
+      ));
+    }
+  }
+
+  function renderOptions() {
+    if (input === "") {
+      return null;
+    }
+
+    if (!locationAdderFocused) {
+      return null;
+    }
+
+    if (locationType === LocationType.POINT && pointSearch.term === "") {
+      return null;
+    }
+
+    if (
+      locationType === LocationType.POINT &&
+      pointSearch.status === SearchStatus.SEARCHING &&
+      pointSearch.results.length < 1
+    ) {
+      return null;
+    }
+
+    return (
+      <Combobox.Options
+        className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-500 p-1 space-y-1"
+        static
+      >
+        {renderOptionsContent()}
+      </Combobox.Options>
+    );
+  }
+
+  return <>{renderOptions()}</>;
+}
+
+function OptionsSubstitute({ children }: { children: ReactNode }) {
+  return <div className="pl-7 p-1">{children}</div>;
+}
+
+interface OptionProps {
+  location: AreaState | PointState;
+}
+
+function Option({ location }: OptionProps) {
+  return (
+    <Combobox.Option value={location}>
+      <div className="p-1 pl-7 rounded-3xl cursor-pointer bg-gray-600">
+        {location.longName}
+      </div>
+    </Combobox.Option>
   );
 }
