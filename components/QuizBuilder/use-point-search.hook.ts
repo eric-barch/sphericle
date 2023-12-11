@@ -8,6 +8,7 @@ import {
 } from "@/types";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { Point } from "geojson";
+import { debounce } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface PointSearch {
@@ -40,16 +41,6 @@ export default function usePointSearch(parentId: string): PointSearch {
     useRef<google.maps.places.AutocompleteService>();
   const geocoderRef = useRef<google.maps.Geocoder>();
 
-  const debounce = (func: Function, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return (...args: any[]) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        func(...args);
-      }, delay);
-    };
-  };
-
   const fetchSearchResults = useCallback(
     async (searchTerm: string) => {
       setInternalSearchTerm(searchTerm);
@@ -57,6 +48,10 @@ export default function usePointSearch(parentId: string): PointSearch {
 
       if (!autocompleteServiceRef.current) {
         throw new Error("Did not find autocompleteServiceRef.");
+      }
+
+      if (!geocoderRef.current) {
+        throw new Error("Did not find geocoderRef.");
       }
 
       let request: {
@@ -67,21 +62,17 @@ export default function usePointSearch(parentId: string): PointSearch {
       };
 
       if (parentLocation.locationType === LocationType.AREA) {
-        request.locationRestriction = parentLocation.displayBounds;
+        request.locationRestriction = parentLocation.searchBounds;
       }
 
       const autocompletePredictions = (
         await autocompleteServiceRef.current.getPlacePredictions(request)
       ).predictions;
 
-      const searchResults = (
+      const pointStates = (
         await Promise.all(
           autocompletePredictions.map(
             async (autocompletePrediction): Promise<PointState | null> => {
-              if (!geocoderRef.current) {
-                return null;
-              }
-
               const geocoderResult = (
                 await geocoderRef.current.geocode({
                   placeId: autocompletePrediction.place_id,
@@ -103,13 +94,13 @@ export default function usePointSearch(parentId: string): PointSearch {
                 id: crypto.randomUUID(),
                 parentId,
                 googlePlacesId: autocompletePrediction.place_id,
-                locationType: LocationType.POINT as LocationType.POINT,
                 longName: autocompletePrediction.description,
                 shortName: autocompletePrediction.description,
-                isRenaming: false,
-                userDefinedName: "",
+                userDefinedName: null,
+                locationType: LocationType.POINT as LocationType.POINT,
+                searchBounds: bounds,
+                displayBounds: bounds,
                 point,
-                bounds,
                 answeredCorrectly: null,
               };
 
@@ -129,24 +120,30 @@ export default function usePointSearch(parentId: string): PointSearch {
         )
       ).filter((result): result is PointState => result !== null);
 
-      setInternalSearchResults(searchResults);
+      setInternalSearchResults(pointStates);
       setInternalSearchStatus(SearchStatus.SEARCHED);
     },
     [parentId, parentLocation],
   );
 
+  const debouncedFetchSearchResults = useRef(
+    debounce((searchTerm: string) => {
+      fetchSearchResults(searchTerm);
+    }, 300),
+  ).current;
+
   const setSearchTerm = useCallback(
     (searchTerm: string) => {
-      const debouncedSearch = debounce(() => {
-        setInternalSearchTerm(searchTerm);
-        if (searchTerm !== "") {
-          fetchSearchResults(searchTerm);
-        }
-      }, 300);
-      debouncedSearch();
+      if (searchTerm !== "") {
+        debouncedFetchSearchResults(searchTerm);
+      } else {
+        setInternalSearchTerm("");
+        setInternalSearchResults([]);
+        setInternalSearchStatus(SearchStatus.SEARCHED);
+      }
     },
-    [fetchSearchResults],
-  ); // Add any other dependencies if needed
+    [debouncedFetchSearchResults],
+  );
 
   const reset = useCallback(() => {
     setInternalSearchTerm("");

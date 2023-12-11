@@ -157,17 +157,17 @@ export default function useAreaSearch(parentId: string): AreaSearch {
           return {
             id: crypto.randomUUID(),
             parentId,
+            sublocationIds: [],
             openStreetMapPlaceId: osmItem.place_id,
-            locationType: LocationType.AREA,
-            shortName: osmItem.name,
             longName: osmItem.display_name,
-            userDefinedName: "",
+            shortName: osmItem.name,
+            userDefinedName: null,
+            locationType: LocationType.AREA,
             isOpen: false,
             isAdding: true,
-            polygons,
             searchBounds,
             displayBounds,
-            sublocationIds: [],
+            polygons,
             answeredCorrectly: null,
           };
         })
