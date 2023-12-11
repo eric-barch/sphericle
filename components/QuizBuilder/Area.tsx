@@ -1,3 +1,5 @@
+"use client";
+
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, QuizDispatchType } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
@@ -94,8 +96,8 @@ export default function Area({ locationId }: AreaProps) {
 
     if (isRenaming) {
       setTimeout(() => {
-        locationNameInputRef.current.focus();
-        locationNameInputRef.current.select();
+        locationNameInputRef?.current.focus();
+        locationNameInputRef?.current.select();
       }, 0);
     }
   }
@@ -109,7 +111,7 @@ export default function Area({ locationId }: AreaProps) {
 
     if (isAdding) {
       setTimeout(() => {
-        locationAdderInputRef.current.focus();
+        locationAdderInputRef?.current.focus();
       }, 0);
     }
   }
@@ -144,7 +146,7 @@ export default function Area({ locationId }: AreaProps) {
             setIsAdding={setIsAdding}
           />
           <Accordion.Trigger
-            className={`w-full p-1 bg-gray-600 rounded-3xl text-left cursor-pointer ${
+            className={`w-full p-1 bg-gray-600 rounded-3xl text-left ${
               locationId === quiz.selectedBuilderLocationId
                 ? "outline outline-2 outline-red-700"
                 : ""
