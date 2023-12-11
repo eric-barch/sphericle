@@ -50,16 +50,9 @@ export default function QuizTaker() {
     if (parentLocation.locationType === LocationType.ROOT) {
       if (location.locationType === LocationType.AREA) {
         setBounds(location.bounds);
-
-        if (location.isOpen) {
-          setEmptyAreas(location);
-          setFilledAreas(null);
-          setMarkedPoints(null);
-        } else if (!location.isOpen) {
-          setEmptyAreas(null);
-          setFilledAreas(location);
-          setMarkedPoints(null);
-        }
+        setEmptyAreas(null);
+        setFilledAreas(location);
+        setMarkedPoints(null);
       } else if (location.locationType === LocationType.POINT) {
         setBounds(location.bounds);
         setEmptyAreas(null);
@@ -68,17 +61,10 @@ export default function QuizTaker() {
       }
     } else if (parentLocation.locationType === LocationType.AREA) {
       if (location.locationType === LocationType.AREA) {
-        if (location.isOpen) {
-          setBounds(location.bounds);
-          setEmptyAreas(location);
-          setFilledAreas(null);
-          setMarkedPoints(null);
-        } else if (!location.isOpen) {
-          setBounds(parentLocation.bounds);
-          setEmptyAreas(parentLocation);
-          setFilledAreas(location);
-          setMarkedPoints(null);
-        }
+        setBounds(parentLocation.bounds);
+        setEmptyAreas(parentLocation);
+        setFilledAreas(location);
+        setMarkedPoints(null);
       } else if (location.locationType === LocationType.POINT) {
         setBounds(parentLocation.bounds);
         setEmptyAreas(parentLocation);

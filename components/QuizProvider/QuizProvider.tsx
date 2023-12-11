@@ -1,6 +1,14 @@
 "use client";
 
-import { LocationType, Quiz, QuizDispatch, QuizDispatchType } from "@/types";
+import {
+  AreaState,
+  LocationType,
+  PointState,
+  Quiz,
+  QuizDispatch,
+  QuizDispatchType,
+  RootState,
+} from "@/types";
 import {
   Dispatch,
   ReactNode,
@@ -16,9 +24,9 @@ const QuizDispatchContext = createContext<Dispatch<QuizDispatch> | null>(null);
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, quizDispatch] = useReducer(quizReducer, initialQuiz);
 
-  useEffect(() => {
-    console.log("quiz", quiz);
-  }, [quiz]);
+  // useEffect(() => {
+  //   console.log("quiz", quiz);
+  // }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
@@ -149,56 +157,59 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
     }
     case QuizDispatchType.INCREMENT_TAKER_SELECTED: {
       const newQuiz = { ...quiz };
-      const currentSelected = newQuiz.locations[newQuiz.takerSelectedId];
 
-      if (
-        currentSelected.locationType !== LocationType.AREA &&
-        currentSelected.locationType !== LocationType.POINT
-      ) {
-        throw new Error("currentSelected must be of type AREA or POINT.");
-      }
+      const takerSelected = newQuiz.locations[newQuiz.takerSelectedId] as
+        | AreaState
+        | PointState;
 
-      const parentLocation = newQuiz.locations[currentSelected.parentId];
+      const parent = newQuiz.locations[takerSelected.parentId] as AreaState; // | RootState
 
-      if (
-        parentLocation.locationType !== LocationType.ROOT &&
-        parentLocation.locationType !== LocationType.AREA
-      ) {
-        throw new Error("parentLocaation must be of type ROOT or AREA.");
-      }
+      const siblingIds = parent.sublocationIds;
+      const takerSelectedIndex = siblingIds.indexOf(takerSelected.id);
 
-      const siblingIds = parentLocation.sublocationIds;
-      const currentSelectedIndex = siblingIds.indexOf(currentSelected.id);
-
-      if (currentSelectedIndex < siblingIds.length - 1) {
-        newQuiz.takerSelectedId = siblingIds[currentSelectedIndex + 1];
+      if (takerSelectedIndex < siblingIds.length - 1) {
+        const newTakerSelectedId = siblingIds[takerSelectedIndex + 1];
+        const newTakerSelected = newQuiz.locations[newTakerSelectedId];
+        console.log(
+          `${takerSelected.shortName} has subsequent sibling: ${newTakerSelected.shortName}`,
+        );
+        newQuiz.takerSelectedId = newTakerSelectedId;
         return newQuiz;
       }
 
+      console.log(
+        `${takerSelected.shortName} does not have subsequent sibling.`,
+      );
+
       for (const siblingId of siblingIds) {
-        const sibling = quiz.locations[siblingId];
+        const sibling = newQuiz.locations[siblingId];
 
         if (
-          sibling.locationType !== LocationType.ROOT &&
-          sibling.locationType !== LocationType.AREA
+          sibling.locationType === LocationType.AREA &&
+          sibling.sublocationIds.length > 0
         ) {
-          continue;
-        }
-
-        if (sibling.sublocationIds.length > 0) {
-          newQuiz.takerSelectedId = sibling.sublocationIds[0];
+          const newTakerSelectedId = sibling.sublocationIds[0];
+          const newTakerSelected = newQuiz.locations[newTakerSelectedId];
+          console.log(
+            `${takerSelected.shortName} has sibling (${sibling.shortName}) with child: ${newTakerSelected.shortName}`,
+          );
+          newQuiz.takerSelectedId = newTakerSelectedId;
           return newQuiz;
         }
       }
 
-      // cycle back to first
-      const rootLocation = newQuiz.locations[newQuiz.rootId];
+      console.log(
+        `${takerSelected.shortName} does not have siblings with children.`,
+      );
 
-      if (rootLocation.locationType !== LocationType.ROOT) {
-        throw new Error("rootLocation must be of type ROOT.");
+      newQuiz.takerSelectedId = searchUpForId(newQuiz, parent);
+
+      if (!newQuiz.takerSelectedId) {
+        const root = newQuiz.locations[newQuiz.rootId] as RootState;
+        const firstChildId = root.sublocationIds[0];
+        newQuiz.takerSelectedId = firstChildId;
       }
 
-      newQuiz.takerSelectedId = rootLocation.sublocationIds[0];
       return newQuiz;
     }
     case QuizDispatchType.DELETE_LOCATION: {
@@ -255,3 +266,32 @@ const initialQuiz: Quiz = {
   builderSelectedId: null,
   takerSelectedId: null,
 };
+
+// this gets the parent of the one below it
+function searchUpForId(
+  quiz: Quiz,
+  location: RootState | AreaState,
+): string | null {
+  console.log("searchUpForId", location.shortName);
+
+  if (location.locationType === LocationType.ROOT) {
+    return null;
+  }
+
+  const parent = quiz.locations[location.parentId] as RootState | AreaState;
+  const siblingIds = parent.sublocationIds;
+  const index = siblingIds.indexOf(location.id);
+
+  for (let i = index + 1; i < siblingIds.length; i++) {
+    const location = quiz.locations[siblingIds[i]];
+
+    if (
+      location.locationType === LocationType.AREA &&
+      location.sublocationIds.length > 0
+    ) {
+      return location.sublocationIds[0];
+    }
+  }
+
+  return searchUpForId(quiz, parent);
+}
