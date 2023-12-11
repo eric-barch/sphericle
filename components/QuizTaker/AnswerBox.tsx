@@ -1,5 +1,5 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
+import { AreaState, PointState, QuizDispatchType } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 
 interface AnswerBoxProps {
@@ -24,16 +24,18 @@ export default function AnswerBox({ inputRef }: AnswerBoxProps) {
     const normalizedInput = input.trim().toLowerCase();
 
     if (normalizedAnswer === normalizedInput) {
-      console.log("Correct!");
+      quizDispatch({
+        type: QuizDispatchType.MARK_TAKER_SELECTED,
+        answeredCorrectly: true,
+      });
     } else {
-      console.log("WRONG!!!!");
+      quizDispatch({
+        type: QuizDispatchType.MARK_TAKER_SELECTED,
+        answeredCorrectly: false,
+      });
     }
 
     inputRef.current.value = "";
-
-    quizDispatch({
-      type: QuizDispatchType.INCREMENT_TAKER_SELECTED,
-    });
   }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
