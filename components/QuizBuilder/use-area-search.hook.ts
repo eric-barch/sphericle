@@ -10,8 +10,6 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { MultiPolygon, Point, Polygon, Position } from "geojson";
 import { useCallback, useState } from "react";
 
-// TODO: refactor
-
 export interface AreaSearch {
   term: string;
   status: SearchStatus;
@@ -48,7 +46,7 @@ export default function useAreaSearch(parentId: string): AreaSearch {
       if (parentLocation.locationType === LocationType.ROOT) {
         query = searchTerm;
       } else if (parentLocation.locationType === LocationType.AREA) {
-        const { south, north, west, east } = parentLocation.bounds;
+        const { south, north, west, east } = parentLocation.searchBounds;
         query = `${searchTerm}&viewbox=${west},${south},${east},${north}&bounded=1`;
       }
 
@@ -104,12 +102,14 @@ export default function useAreaSearch(parentId: string): AreaSearch {
             }
           }
 
-          let bounds: google.maps.LatLngBoundsLiteral = {
+          const searchBounds: google.maps.LatLngBoundsLiteral = {
             south: Number(osmItem.boundingbox[0]),
             north: Number(osmItem.boundingbox[1]),
             west: Number(osmItem.boundingbox[2]),
             east: Number(osmItem.boundingbox[3]),
           };
+
+          let displayBounds = searchBounds;
 
           let longitudes: number[] = [];
 
@@ -144,12 +144,12 @@ export default function useAreaSearch(parentId: string): AreaSearch {
           const antiMeridianGap = westAntimeridianGap + eastAntimeridianGap;
 
           if (antiMeridianGap > maxGap) {
-            bounds = bounds;
+            displayBounds = displayBounds;
           } else {
-            bounds = {
-              north: bounds.north,
+            displayBounds = {
+              north: displayBounds.north,
               east: maxGapWest,
-              south: bounds.south,
+              south: displayBounds.south,
               west: maxGapEast,
             };
           }
@@ -165,7 +165,8 @@ export default function useAreaSearch(parentId: string): AreaSearch {
             isOpen: false,
             isAdding: true,
             polygons,
-            bounds,
+            searchBounds,
+            displayBounds,
             sublocationIds: [],
             answeredCorrectly: null,
           };

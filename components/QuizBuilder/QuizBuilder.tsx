@@ -45,7 +45,7 @@ export default function QuizBuilder() {
 
     if (parentLocation.locationType === LocationType.ROOT) {
       if (location.locationType === LocationType.AREA) {
-        setBounds(location.bounds);
+        setBounds(location.displayBounds);
 
         if (location.isOpen) {
           setEmptyAreas(location);
@@ -65,18 +65,18 @@ export default function QuizBuilder() {
     } else if (parentLocation.locationType === LocationType.AREA) {
       if (location.locationType === LocationType.AREA) {
         if (location.isOpen) {
-          setBounds(location.bounds);
+          setBounds(location.displayBounds);
           setEmptyAreas(location);
           setFilledAreas(null);
           setMarkedPoints(null);
         } else if (!location.isOpen) {
-          setBounds(parentLocation.bounds);
+          setBounds(parentLocation.displayBounds);
           setEmptyAreas(parentLocation);
           setFilledAreas(location);
           setMarkedPoints(null);
         }
       } else if (location.locationType === LocationType.POINT) {
-        setBounds(parentLocation.bounds);
+        setBounds(parentLocation.displayBounds);
         setEmptyAreas(parentLocation);
         setFilledAreas(null);
         setMarkedPoints(location);

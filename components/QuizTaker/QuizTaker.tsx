@@ -49,7 +49,7 @@ export default function QuizTaker() {
 
     if (parentLocation.locationType === LocationType.ROOT) {
       if (location.locationType === LocationType.AREA) {
-        setBounds(location.bounds);
+        setBounds(location.displayBounds);
         setEmptyAreas(null);
         setFilledAreas(location);
         setMarkedPoints(null);
@@ -61,12 +61,12 @@ export default function QuizTaker() {
       }
     } else if (parentLocation.locationType === LocationType.AREA) {
       if (location.locationType === LocationType.AREA) {
-        setBounds(parentLocation.bounds);
+        setBounds(parentLocation.displayBounds);
         setEmptyAreas(parentLocation);
         setFilledAreas(location);
         setMarkedPoints(null);
       } else if (location.locationType === LocationType.POINT) {
-        setBounds(parentLocation.bounds);
+        setBounds(parentLocation.displayBounds);
         setEmptyAreas(parentLocation);
         setFilledAreas(null);
         setMarkedPoints(location);
