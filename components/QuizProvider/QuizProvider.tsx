@@ -24,9 +24,9 @@ const QuizDispatchContext = createContext<Dispatch<QuizDispatch> | null>(null);
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, quizDispatch] = useReducer(quizReducer, initialQuiz);
 
-  useEffect(() => {
-    console.log("quiz", quiz);
-  }, [quiz]);
+  // useEffect(() => {
+  //   console.log("quiz", quiz);
+  // }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
@@ -173,6 +173,11 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 
       return newQuiz;
     }
+    case QuizDispatchType.SELECT_OPTION: {
+      const newQuiz = { ...quiz };
+      newQuiz.activeOption = action.location;
+      return newQuiz;
+    }
     case QuizDispatchType.DELETE_LOCATION: {
       const newQuiz = { ...quiz };
 
@@ -224,6 +229,7 @@ const initialQuiz: Quiz = {
       isAdding: true,
     },
   },
+  activeOption: null,
   builderSelectedId: null,
   takerSelectedId: null,
   correctLocations: 0,

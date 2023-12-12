@@ -7,6 +7,7 @@ export interface Quiz {
   locations: {
     [key: string]: RootState | AreaState | PointState;
   };
+  activeOption: AreaState | PointState | null;
   builderSelectedId: string | null;
   takerSelectedId: string | null;
   correctLocations: number;
@@ -60,7 +61,8 @@ export type QuizDispatch =
   | SetAreaIsAddingDispatch
   | SetBuilderSelectedDispatch
   | ResetTakerSelectedDispatch
-  | MarkLocationCorrectDispatch
+  | MarkTakerSelectedDispatch
+  | SelectOptionDispatch
   | DeleteLocationDispatch;
 
 interface BaseQuizDispatch {
@@ -106,9 +108,14 @@ interface ResetTakerSelectedDispatch extends BaseQuizDispatch {
   type: QuizDispatchType.RESET_TAKER_SELECTED;
 }
 
-interface MarkLocationCorrectDispatch extends BaseQuizDispatch {
+interface MarkTakerSelectedDispatch extends BaseQuizDispatch {
   type: QuizDispatchType.MARK_TAKER_SELECTED;
   answeredCorrectly: boolean;
+}
+
+interface SelectOptionDispatch extends BaseQuizDispatch {
+  type: QuizDispatchType.SELECT_OPTION;
+  location: AreaState | PointState;
 }
 
 interface DeleteLocationDispatch extends BaseQuizDispatch {
