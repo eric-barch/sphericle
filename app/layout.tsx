@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import { ReactNode } from "react";
 import Nav from "@/components/Nav";
 import QuizProvider from "@/components/QuizProvider";
+import { Toaster } from "react-hot-toast";
 
 const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
@@ -17,9 +18,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body className={font.className}>
         <Nav />
-        <QuizProvider>
-          <main>{children}</main>
-        </QuizProvider>
+        <main>
+          <QuizProvider>{children}</QuizProvider>
+          <Toaster containerStyle={{ marginTop: "3rem" }} />
+        </main>
       </body>
     </html>
   );

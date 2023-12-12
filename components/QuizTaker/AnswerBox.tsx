@@ -1,6 +1,7 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, PointState, QuizDispatchType } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
+import toast from "react-hot-toast";
 
 interface AnswerBoxProps {
   inputRef: RefObject<HTMLInputElement>;
@@ -24,11 +25,18 @@ export default function AnswerBox({ inputRef }: AnswerBoxProps) {
     const normalizedInput = input.trim().toLowerCase();
 
     if (normalizedAnswer === normalizedInput) {
+      toast.success("Correct!");
+
       quizDispatch({
         type: QuizDispatchType.MARK_TAKER_SELECTED,
         answeredCorrectly: true,
       });
     } else {
+      toast.error(
+        `Correct answer: ${
+          takerSelected.userDefinedName || takerSelected.shortName
+        }`,
+      );
       quizDispatch({
         type: QuizDispatchType.MARK_TAKER_SELECTED,
         answeredCorrectly: false,
