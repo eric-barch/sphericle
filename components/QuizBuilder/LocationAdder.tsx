@@ -17,6 +17,7 @@ import {
   KeyboardEvent,
   ReactNode,
   RefObject,
+  useEffect,
   useState,
 } from "react";
 import useAreaSearch, { AreaSearch } from "./use-area-search.hook";
@@ -103,24 +104,29 @@ export default function LocationAdder({
   return (
     <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
       <Combobox onChange={handleChange}>
-        <Input
-          inputRef={inputRef}
-          parentId={parentId}
-          input={input}
-          locationType={locationType}
-          areaSearch={areaSearch}
-          pointSearch={pointSearch}
-          setInput={setInput}
-          setLocationType={setLocationType}
-        />
-        <Options
-          parentId={parentId}
-          input={input}
-          locationType={locationType}
-          areaSearch={areaSearch}
-          pointSearch={pointSearch}
-          locationAdderFocused={isFocused}
-        />
+        {({ activeOption }) => (
+          <>
+            <Input
+              inputRef={inputRef}
+              parentId={parentId}
+              input={input}
+              locationType={locationType}
+              areaSearch={areaSearch}
+              pointSearch={pointSearch}
+              setInput={setInput}
+              setLocationType={setLocationType}
+            />
+            <Options
+              parentId={parentId}
+              activeOption={activeOption}
+              input={input}
+              locationType={locationType}
+              areaSearch={areaSearch}
+              pointSearch={pointSearch}
+              locationAdderFocused={isFocused}
+            />
+          </>
+        )}
       </Combobox>
     </div>
   );
@@ -277,6 +283,7 @@ function ToggleAreaPointButton({
 
 interface OptionsProps {
   parentId: string;
+  activeOption: AreaState | PointState;
   input: string;
   locationType: LocationType;
   areaSearch: AreaSearch;
@@ -286,6 +293,7 @@ interface OptionsProps {
 
 function Options({
   parentId,
+  activeOption,
   input,
   locationType,
   areaSearch,
@@ -293,6 +301,7 @@ function Options({
   locationAdderFocused,
 }: OptionsProps) {
   const quiz = useQuiz();
+  const quizDispatch = useQuizDispatch();
   const parentLocation = quiz.locations[parentId];
 
   if (
@@ -301,6 +310,13 @@ function Options({
   ) {
     throw new Error("parentLocation must be of type ROOT or AREA.");
   }
+
+  useEffect(() => {
+    quizDispatch({
+      type: QuizDispatchType.SELECT_OPTION,
+      location: activeOption,
+    });
+  }, [quizDispatch, activeOption]);
 
   function renderOptionsContent() {
     if (locationType === LocationType.AREA) {
@@ -369,7 +385,6 @@ interface OptionProps {
 }
 
 function Option({ location }: OptionProps) {
-  // Use the `active` prop to apply different styles
   return (
     <Combobox.Option
       value={location}
