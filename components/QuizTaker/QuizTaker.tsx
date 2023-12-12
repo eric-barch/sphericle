@@ -27,7 +27,7 @@ export default function QuizTaker() {
 
   useEffect(() => {
     quizDispatch({
-      type: QuizDispatchType.RESET_TAKER_SELECTED,
+      type: QuizDispatchType.RESET_TAKER,
     });
 
     if (answerBoxInputRef?.current) {

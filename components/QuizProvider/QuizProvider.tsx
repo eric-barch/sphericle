@@ -145,8 +145,20 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       newQuiz.builderSelectedId = action.locationId;
       return newQuiz;
     }
-    case QuizDispatchType.RESET_TAKER_SELECTED: {
+    case QuizDispatchType.RESET_TAKER: {
       const newQuiz = { ...quiz };
+
+      newQuiz.correctLocations = 0;
+
+      for (const location of Object.values(newQuiz.locations)) {
+        if (
+          location.locationType === LocationType.AREA ||
+          location.locationType === LocationType.POINT
+        ) {
+          location.answeredCorrectly = null;
+        }
+      }
+
       const rootLocation = newQuiz.locations[newQuiz.rootId];
 
       if (rootLocation.locationType !== LocationType.ROOT) {
