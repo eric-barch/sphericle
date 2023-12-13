@@ -3,7 +3,6 @@
 import Map from "@/components/Map";
 import { rootId, useQuiz } from "@/components/QuizProvider";
 import SplitPane from "@/components/SplitPane";
-import { navHeight } from "@/constants";
 import { AreaState, LocationType, PointState } from "@/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -11,23 +10,15 @@ import Sublocations from "./Sublocations";
 
 export default function QuizBuilder() {
   const quiz = useQuiz();
+  const location = quiz.activeOption || quiz.locations[quiz.builderSelectedId];
 
   const [mapId, setMapId] = useState<string>("696d0ea42431a75c");
-  const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>({
-    // TODO: for now, default to NYC bounds
-    east: -73.70018,
-    north: 40.916178,
-    south: 40.495992,
-    west: -74.25909,
-  });
+  const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>(null);
   const [emptyAreas, setEmptyAreas] = useState<AreaState | null>(null);
   const [filledAreas, setFilledAreas] = useState<AreaState | null>(null);
   const [markedPoints, setMarkedPoints] = useState<PointState | null>(null);
 
   useEffect(() => {
-    const location =
-      quiz.activeOption || quiz.locations[quiz.builderSelectedId];
-
     if (!location) {
       setEmptyAreas(null);
       setFilledAreas(null);
@@ -83,7 +74,7 @@ export default function QuizBuilder() {
         setMarkedPoints(location);
       }
     }
-  }, [quiz]);
+  }, [quiz, location, setBounds]);
 
   return (
     <SplitPane>
