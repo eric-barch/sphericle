@@ -25,7 +25,7 @@ export default function AnswerBox({ inputRef }: AnswerBoxProps) {
     const normalizedInput = input.trim().toLowerCase();
 
     if (normalizedAnswer === normalizedInput) {
-      toast.success("Correct!");
+      toast.success(takerSelected.userDefinedName || takerSelected.shortName);
 
       quizDispatch({
         type: QuizDispatchType.MARK_TAKER_SELECTED,
@@ -33,7 +33,7 @@ export default function AnswerBox({ inputRef }: AnswerBoxProps) {
       });
     } else {
       toast.error(
-        `Correct answer: ${
+        `You said: ${input}\nCorrect answer: ${
           takerSelected.userDefinedName || takerSelected.shortName
         }`,
       );
