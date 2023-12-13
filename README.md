@@ -20,7 +20,7 @@ Whatever your background, geography apps with staff-curated quizzes will never h
 
 At this point, you can continue adding locations at the global level, or you can add sublocations to your Area. Let's do the latter.
 
-4. Click on the Area to expand it. You'll notice that it has its own location adder search box nested inside. Search for and add any sublocations that you want nested inside. Areas can be nested as deep as you want, which is useful for organizing locations by administrative level, e.g. `Country -> States -> Counties -> Cities`.
+4. Click on the Area to expand it. You'll notice that it has its own location adder search box. Search for and add any sublocations that you want nested inside. Areas can be nested as deep as you want, which is useful for organizing locations by administrative level, e.g. `Country -> States -> Counties -> Cities`.
 5. Your quiz is saved every time you make a change. Once you're satisfied with it, click `Take Quiz`.
 6. As you take the quiz, it will advance through your locations and "descend" through the tree automatically. Using the administrative level example from step 4, you would first be asked to identify all the countries, then each state within each country, then each county within each state, and finally each city within each county.
 7. Your score is in the top right corner of the screen. Good luck!
