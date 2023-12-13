@@ -3,7 +3,7 @@
 import Map from "@/components/Map";
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AnswerBox from "./AnswerBox";
 import ScoreBox from "./ScoreBox";
 
@@ -11,14 +11,8 @@ export default function QuizTaker() {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
-  const [mapId, setMapId] = useState<string>("696d0ea42431a75c");
-  const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>({
-    // TODO: for now, default to NYC bounds
-    east: -73.70018,
-    north: 40.916178,
-    south: 40.495992,
-    west: -74.25909,
-  });
+  const [mapId, setMapId] = useState<string>("8777b9e5230900fc");
+  const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>(null);
   const [emptyAreas, setEmptyAreas] = useState<AreaState | null>(null);
   const [filledAreas, setFilledAreas] = useState<AreaState | null>(null);
   const [markedPoints, setMarkedPoints] = useState<PointState | null>(null);
@@ -85,8 +79,9 @@ export default function QuizTaker() {
     <div className="h-[calc(100vh-3rem)] relative flex justify-center content-center">
       <ScoreBox />
       <Map
-        mapId="8777b9e5230900fc"
+        mapId={mapId}
         bounds={bounds}
+        padding={{ top: 50, right: 50, bottom: 100, left: 50 }}
         emptyAreas={emptyAreas}
         filledAreas={filledAreas}
         markedPoints={markedPoints}

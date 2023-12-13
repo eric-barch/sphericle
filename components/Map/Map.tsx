@@ -1,12 +1,13 @@
 "use client";
 
 import { AreaState, PointState } from "@/types";
-import { RefObject, useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 
 interface MapProps {
   mapRef?: RefObject<HTMLDivElement>;
   mapId: string;
   bounds: google.maps.LatLngBoundsLiteral;
+  padding?: google.maps.Padding;
   emptyAreas: AreaState[] | AreaState | null;
   filledAreas: AreaState[] | AreaState | null;
   markedPoints: PointState[] | PointState | null;
@@ -16,12 +17,14 @@ export default function Map({
   mapRef: propMapRef,
   mapId,
   bounds,
+  padding = { top: 50, right: 50, bottom: 50, left: 50 },
   emptyAreas,
   filledAreas,
   markedPoints,
 }: MapProps) {
-  const defaultMapRef = useRef<HTMLDivElement>(null);
+  const [tilesLoaded, setTilesLoaded] = useState<boolean>(false);
 
+  const defaultMapRef = useRef<HTMLDivElement>(null);
   const mapRef = propMapRef || defaultMapRef;
   const googleMapRef = useRef<google.maps.Map | null>(null);
   const filledAreasRef = useRef<google.maps.Polygon[] | null>(null);
@@ -29,40 +32,49 @@ export default function Map({
   const markedPointsRef = useRef<google.maps.Marker[] | null>(null);
 
   useEffect(() => {
-    const center = new google.maps.LatLngBounds(bounds).getCenter();
-
-    const allowedBounds = new google.maps.LatLngBounds(
-      new google.maps.LatLng(-85, -180),
-      new google.maps.LatLng(85, 180),
-    );
-
     if (googleMapRef?.current || !mapRef?.current) {
       return;
     }
 
+    /** TODO: this drives me crazy, but initializing map with zoom < 2.5 causes issues on first
+     *  setBounds. */
     googleMapRef.current = new google.maps.Map(mapRef.current, {
       mapId,
-      center,
-      zoom: 12,
+      center: { lat: 0, lng: 0 },
+      zoom: 2.5,
       disableDefaultUI: true,
       restriction: {
-        latLngBounds: allowedBounds,
+        latLngBounds: {
+          east: 180,
+          west: -180,
+          north: 85,
+          south: -85,
+        },
         strictBounds: true,
       },
     });
-  }, [mapRef, mapId, bounds]);
+
+    google.maps.event.addListenerOnce(
+      googleMapRef.current,
+      "tilesloaded",
+      () => {
+        setTilesLoaded(true);
+      },
+    );
+  }, [mapRef, mapId]);
 
   useEffect(() => {
-    if (!googleMapRef?.current) {
+    if (!googleMapRef?.current || !bounds || !tilesLoaded) {
       return;
     }
 
-    googleMapRef.current.panToBounds(bounds);
-    googleMapRef.current.fitBounds(bounds);
-  }, [bounds]);
+    console.log("bounds", bounds);
+
+    googleMapRef.current.fitBounds(bounds, padding);
+  }, [bounds, padding, tilesLoaded]);
 
   useEffect(() => {
-    if (!googleMapRef?.current) {
+    if (!googleMapRef?.current || !tilesLoaded) {
       return;
     }
 
@@ -108,10 +120,10 @@ export default function Map({
         fillOpacity: 0.0,
       });
     });
-  }, [emptyAreas]);
+  }, [emptyAreas, tilesLoaded]);
 
   useEffect(() => {
-    if (!googleMapRef?.current) {
+    if (!googleMapRef?.current || !tilesLoaded) {
       return;
     }
 
@@ -157,10 +169,10 @@ export default function Map({
         fillOpacity: 0.2,
       });
     });
-  }, [filledAreas]);
+  }, [filledAreas, tilesLoaded]);
 
   useEffect(() => {
-    if (!googleMapRef?.current) {
+    if (!googleMapRef?.current || !tilesLoaded) {
       return;
     }
 
@@ -186,7 +198,7 @@ export default function Map({
           map: googleMapRef.current,
         }),
     );
-  }, [markedPoints]);
+  }, [markedPoints, tilesLoaded]);
 
   return <div className="h-full w-full" ref={mapRef} />;
 }
