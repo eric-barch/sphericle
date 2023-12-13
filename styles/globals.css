@@ -27,8 +27,8 @@
   body {
     @apply min-h-screen
     flex flex-col
-    text-black dark:text-white
-    bg-white dark:bg-gray-700;
+    text-white
+    bg-gray-700;
   }
 
   main {
