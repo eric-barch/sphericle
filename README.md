@@ -4,7 +4,7 @@ Make a custom geography quiz for any place you want to learn.
 
 [Live Site](https://sphericle.app/)
 
-## Use Case
+## When to Use
 
 Online geography quizzes like [Seterra](https://www.geoguessr.com/vgp/3355), [playGeography](https://www.playgeography.com/games/countries-of-the-world/), and [Geography.Games](https://geography.games/europe-quiz) are a great way to learn geography! But you're limited to studying _their_ quizzes.
 
@@ -24,3 +24,10 @@ At this point, you can continue adding locations at the global level, or you can
 5. Your quiz is saved every time you make a change. Once you're satisfied with it, click `Take Quiz`.
 6. As you take the quiz, it will advance through your locations and "descend" through the tree automatically. Using the administrative level example from step 4, you would first be asked to identify all the countries, then each state within each country, then each county within each state, and finally each city within each county.
 7. Your score is in the top right corner of the screen. Good luck!
+
+## Product Roadmap
+
+- **GeoJSON Upload Support**: [GeoJSON](https://datatracker.ietf.org/doc/html/rfc7946) files for various geographic features are available from all sorts of different sources, not just OpenStreetMap and Google. Users should be able to upload GeoJSON from their local machine so they are not constrained by the limitations of those two APIs.
+- **[Polyline](https://developers.google.com/maps/documentation/javascript/examples/polyline-simple)/[LineString](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.4) Support**: In addition to **Area**s and **Point**s, users should be able to quiz themselves on lines and routes. This could be useful for memorizing highway systems or learning the public transit system of a particular city.
+- **Flag Support**: Being a geography nerd is highly correlated with being a flag nerd. When applicable, geographic locations should automatically be associated with their official flag.
+- Have an idea? [Start a discussion](https://github.com/eric-barch/sphericle/discussions/new/choose) or [email me](mailto:eric.michael.barch@gmail.com)!
