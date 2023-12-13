@@ -8,14 +8,14 @@ Make a custom geography quiz for any place you want to learn.
 
 Online geography quizzes like [Seterra](https://www.geoguessr.com/vgp/3355), [playGeography](https://www.playgeography.com/games/countries-of-the-world/), and [Geography.Games](https://geography.games/europe-quiz) are a great way to learn geography! But you're limited to studying _their_ quizzes.
 
-What if you're an intrepid mountaineer, whose very survival depends on knowing every peak and pass in a particular mountain range? Or a budding sommelier, whose career rests on the ability to distinguish between the wine regions of Bordeaux and Burgundy? Maybe you're just an average person with a not-so-average enthusiasm for geographic trivia.
+What if you're an intrepid mountaineer, whose very survival depends on knowing every peak and pass in a particular mountain range? Or a budding sommelier, whose career rests on the ability to distinguish between the wine regions of Bordeaux and Burgundy? Maybe you're just an average person with an above-average enthusiasm for geographic trivia.
 
 Whatever your background, geography apps with staff-curated quizzes will never have exactly what you need to study a niche part of the world. Sphericle lets you make your own quiz out of [OpenStreetMap](https://nominatim.openstreetmap.org/ui/search.html) and [Google Places](https://developers.google.com/maps/documentation/places/web-service/overview) locations, then save it, share it, and study it whenever you want.
 
 ## How to Use
 
 1. Go to the [Quiz Builder](https://sphericle.app/build-quiz) page. You'll start at the global level, where you can add locations anywhere in the world.
-2. Decide whether your first location will be an **Area** or a **Point**. **Area**s are two-dimensional shapes that can contain sublocations. **Point**s correspond to a single latitude longitude coordinate and cannot have sublocations. Use the button on the left side of the input box to toggle location types. For this tutorial, let's assume that you choose to add an Area.
+2. Decide whether your first location will be an **Area** or a **Point**. **Area**s are two-dimensional shapes that can contain sublocations. **Point**s correspond to a single latitude longitude coordinate and cannot contain sublocations. Use the button on the left side of the input box to toggle location types. For this tutorial, let's assume that you choose to add an Area.
 3. Search for and select your Area to add it to the quiz.
 
 At this point, you can continue adding locations at the global level, or you can add sublocations to your Area. Let's do the latter.
@@ -27,7 +27,11 @@ At this point, you can continue adding locations at the global level, or you can
 
 ## Product Roadmap
 
-- **GeoJSON Upload Support**: [GeoJSON](https://datatracker.ietf.org/doc/html/rfc7946) files for various geographic features are available from all sorts of different sources, not just OpenStreetMap and Google. Users should be able to upload GeoJSON from their local machine so they are not constrained by the limitations of those two APIs.
-- **[Polyline](https://developers.google.com/maps/documentation/javascript/examples/polyline-simple)/[LineString](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.4) Support**: In addition to **Area**s and **Point**s, users should be able to quiz themselves on lines and routes. This could be useful for memorizing highway systems or learning the public transit system of a particular city.
-- **Flag Support**: Being a geography nerd is highly correlated with being a flag nerd. When applicable, geographic locations should automatically be associated with their official flag.
-- Have an idea? [Start a discussion](https://github.com/eric-barch/sphericle/discussions/new/choose) or [email me](mailto:eric.michael.barch@gmail.com)!
+- **GeoJSON Upload Support**: [GeoJSON](https://datatracker.ietf.org/doc/html/rfc7946) files for various geographic features are available from a variety of sources, not just OpenStreetMap and Google. Users should be able to upload GeoJSON from their local machine so as not to be constrained by those APIs.
+- **[Polyline](https://developers.google.com/maps/documentation/javascript/examples/polyline-simple)/[LineString](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.4) Support**: In addition to **Area**s and **Point**s, users should be able to quiz themselves on lines and routes. This would be useful for memorizing highway systems or learning the public transit system of a particular city.
+- **Flag Support**: Being a geography nerd is highly correlated with being a flag nerd. When applicable, geographic locations should be automatically associated with their official flag.
+- **Quiz Modes**: There should be more ways to take a quiz than simply typing in the name of the highlighted location. Examples:
+  - Users receive the name of the location and have to click on it on the map.
+  - Users have to identify an Area based solely on its shape, rather than its position on the map.
+  - Users have to identify the border Areas of a particular Area.
+- Have a question or feature idea? [Start a discussion](https://github.com/eric-barch/sphericle/discussions/new/choose) or [email me](mailto:eric.michael.barch@gmail.com)!
