@@ -37,6 +37,7 @@ export default function AnswerBox({ inputRef }: AnswerBoxProps) {
           takerSelected.userDefinedName || takerSelected.shortName
         }`,
       );
+
       quizDispatch({
         type: QuizDispatchType.MARK_TAKER_SELECTED,
         answeredCorrectly: false,

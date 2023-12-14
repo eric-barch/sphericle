@@ -182,6 +182,8 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 
       if (action.answeredCorrectly) {
         newQuiz.correctLocations++;
+      } else if (!action.answeredCorrectly) {
+        newQuiz.incorrectLocations++;
       }
 
       return newQuiz;
@@ -246,6 +248,7 @@ const initialQuiz: Quiz = {
   activeOption: null,
   builderSelectedId: null,
   takerSelectedId: null,
+  incorrectLocations: 0,
   correctLocations: 0,
   totalLocations: 0,
 };
