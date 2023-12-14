@@ -10,6 +10,7 @@ export interface Quiz {
   activeOption: AreaState | PointState | null;
   builderSelectedId: string | null;
   takerSelectedId: string | null;
+  incorrectLocations: number;
   correctLocations: number;
   totalLocations: number;
 }
