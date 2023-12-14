@@ -4,7 +4,7 @@ Make a custom geography quiz for any place you want to learn.
 
 [Live Site](https://sphericle.app/)
 
-[![Sphericle Demo](https://img.youtube.com/vi/PlWm2r0FBMI/0.jpg)](https://www.youtube.com/watch?v=PlWm2r0FBMI)
+[Demo Video](https://www.youtube.com/watch?v=PlWm2r0FBMI)
 
 ## When to Use
 
