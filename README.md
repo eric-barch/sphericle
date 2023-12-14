@@ -2,7 +2,7 @@
 
 Make a custom geography quiz for any place you want to learn.
 
-[Live Site](https://sphericle.app/)
+[Live Site](https://sphericle.app/build-quiz)
 
 [Demo Video](https://www.youtube.com/watch?v=PlWm2r0FBMI)
 
