@@ -7,7 +7,7 @@ export default function ScoreBox() {
   const totalLocations = quiz.totalLocations;
 
   return (
-    <div className="absolute top-5 right-5 z-40 rounded-3xl bg-gray-500 bg-opacity-80 p-3">
+    <div className="absolute top-5 right-5 rounded-3xl z-10 bg-gray-500 bg-opacity-80 p-3">
       <table>
         <tbody>
           <tr>

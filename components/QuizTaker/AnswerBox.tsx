@@ -5,9 +5,10 @@ import toast from "react-hot-toast";
 
 interface AnswerBoxProps {
   inputRef: RefObject<HTMLInputElement>;
+  disabled: boolean;
 }
 
-export default function AnswerBox({ inputRef }: AnswerBoxProps) {
+export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
   const takerSelected = quiz.locations[quiz.takerSelectedId] as
@@ -60,7 +61,8 @@ export default function AnswerBox({ inputRef }: AnswerBoxProps) {
   return (
     <input
       ref={inputRef}
-      className="w-1/2 p-1 rounded-3xl text-left bg-gray-300 text-black border-2 border-gray-600 px-5 focus:outline-none absolute bottom-9"
+      disabled={disabled}
+      className="w-1/2 p-1 rounded-3xl text-left bg-white text-black border-2 border-gray-600 px-5 focus:outline-none absolute bottom-9"
       onChange={handleChange}
       onKeyDown={handleKeyDown}
     />

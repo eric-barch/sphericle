@@ -68,8 +68,6 @@ export default function Map({
       return;
     }
 
-    console.log("bounds", bounds);
-
     googleMapRef.current.fitBounds(bounds, padding);
   }, [bounds, padding, tilesLoaded]);
 
