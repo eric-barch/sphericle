@@ -13,6 +13,7 @@ export interface Quiz {
   incorrectLocations: number;
   correctLocations: number;
   totalLocations: number;
+  isComplete: boolean;
 }
 
 export interface RootState {

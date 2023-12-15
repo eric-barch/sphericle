@@ -3,6 +3,7 @@
 import Map from "@/components/Map";
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
 import AnswerBox from "./AnswerBox";
 import ScoreBox from "./ScoreBox";
@@ -11,6 +12,7 @@ export default function QuizTaker() {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
 
+  const [quizComplete, setQuizComplete] = useState<boolean>(false);
   const [mapId, setMapId] = useState<string>("8777b9e5230900fc");
   const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>(null);
   const [emptyAreas, setEmptyAreas] = useState<AreaState | null>(null);
@@ -20,17 +22,26 @@ export default function QuizTaker() {
   const answerBoxInputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    quizDispatch({
-      type: QuizDispatchType.RESET_TAKER,
-    });
-
-    if (answerBoxInputRef?.current) {
-      answerBoxInputRef.current.focus();
+    if (!quiz.isComplete) {
+      quizDispatch({
+        type: QuizDispatchType.RESET_TAKER,
+      });
     }
-  }, [quizDispatch, quiz.rootId]);
+
+    answerBoxInputRef?.current.focus();
+  }, []);
 
   useEffect(() => {
     const location = quiz.locations[quiz.takerSelectedId];
+
+    if (
+      quiz.correctLocations + quiz.incorrectLocations >=
+      quiz.totalLocations
+    ) {
+      setQuizComplete(true);
+    } else {
+      setQuizComplete(false);
+    }
 
     if (!location) {
       setEmptyAreas(null);
@@ -76,7 +87,14 @@ export default function QuizTaker() {
   }, [quiz]);
 
   return (
-    <div className="h-[calc(100vh-3rem)] relative flex justify-center content-center">
+    <div className="h-[calc(100vh-3rem)] relative flex justify-center align-middle content-center">
+      <Dialog.Root open={quizComplete} modal={false}>
+        <Dialog.Content className="fixed flex flex-col items-center p-4 bg-white text-black rounded-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40">
+          <Dialog.Title>Quiz Complete!</Dialog.Title>
+          <Dialog.Description className="m-4">{`Your score: ${quiz.correctLocations} / ${quiz.totalLocations}`}</Dialog.Description>
+          <Dialog.Close className="p-2 rounded-3xl">Close</Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Root>
       <ScoreBox />
       <Map
         mapId={mapId}
@@ -86,7 +104,7 @@ export default function QuizTaker() {
         filledAreas={filledAreas}
         markedPoints={markedPoints}
       />
-      <AnswerBox inputRef={answerBoxInputRef} />
+      <AnswerBox inputRef={answerBoxInputRef} disabled={quizComplete} />
     </div>
   );
 }

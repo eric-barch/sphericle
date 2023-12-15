@@ -24,9 +24,9 @@ const QuizDispatchContext = createContext<Dispatch<QuizDispatch> | null>(null);
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, quizDispatch] = useReducer(quizReducer, initialQuiz);
 
-  // useEffect(() => {
-  //   console.log("quiz", quiz);
-  // }, [quiz]);
+  useEffect(() => {
+    console.log("quiz", quiz);
+  }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
@@ -82,7 +82,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       newQuiz.totalLocations++;
       newQuiz.activeOption = null;
 
-      return newQuiz;
+      return getResetQuiz(newQuiz);
     }
     case QuizDispatchType.SET_SUBLOCATION_IDS: {
       const newQuiz = { ...quiz };
@@ -96,7 +96,8 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       }
 
       newLocation.sublocationIds = action.sublocationIds;
-      return newQuiz;
+
+      return getResetQuiz(newQuiz);
     }
     case QuizDispatchType.RENAME_LOCATION: {
       const newQuiz = { ...quiz };
@@ -107,7 +108,8 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       }
 
       newLocation.userDefinedName = action.name;
-      return newQuiz;
+
+      return getResetQuiz(newQuiz);
     }
     case QuizDispatchType.SET_AREA_IS_OPEN: {
       const newQuiz = { ...quiz };
@@ -147,27 +149,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       return newQuiz;
     }
     case QuizDispatchType.RESET_TAKER: {
-      const newQuiz = { ...quiz };
-
-      newQuiz.correctLocations = 0;
-
-      for (const location of Object.values(newQuiz.locations)) {
-        if (
-          location.locationType === LocationType.AREA ||
-          location.locationType === LocationType.POINT
-        ) {
-          location.answeredCorrectly = null;
-        }
-      }
-
-      const rootLocation = newQuiz.locations[newQuiz.rootId];
-
-      if (rootLocation.locationType !== LocationType.ROOT) {
-        throw new Error("rootLocation must be of type ROOT.");
-      }
-
-      newQuiz.takerSelectedId = rootLocation.sublocationIds[0];
-      return newQuiz;
+      return getResetQuiz(quiz);
     }
     case QuizDispatchType.MARK_TAKER_SELECTED: {
       const newQuiz = { ...quiz };
@@ -184,6 +166,13 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
         newQuiz.correctLocations++;
       } else if (!action.answeredCorrectly) {
         newQuiz.incorrectLocations++;
+      }
+
+      if (
+        newQuiz.correctLocations + newQuiz.incorrectLocations ===
+        newQuiz.totalLocations
+      ) {
+        newQuiz.isComplete = true;
       }
 
       return newQuiz;
@@ -226,7 +215,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       newQuiz.builderSelectedId = null;
       newQuiz.totalLocations--;
 
-      return newQuiz;
+      return getResetQuiz(newQuiz);
     }
     default: {
       return quiz;
@@ -251,7 +240,35 @@ const initialQuiz: Quiz = {
   incorrectLocations: 0,
   correctLocations: 0,
   totalLocations: 0,
+  isComplete: false,
 };
+
+function getResetQuiz(quiz: Quiz): Quiz {
+  const newQuiz = { ...quiz };
+
+  newQuiz.correctLocations = 0;
+  newQuiz.incorrectLocations = 0;
+
+  for (const location of Object.values(newQuiz.locations)) {
+    if (
+      location.locationType === LocationType.AREA ||
+      location.locationType === LocationType.POINT
+    ) {
+      location.answeredCorrectly = null;
+    }
+  }
+
+  const rootLocation = newQuiz.locations[newQuiz.rootId];
+
+  if (rootLocation.locationType !== LocationType.ROOT) {
+    throw new Error("rootLocation must be of type ROOT.");
+  }
+
+  newQuiz.takerSelectedId = rootLocation.sublocationIds[0];
+  newQuiz.isComplete = false;
+
+  return newQuiz;
+}
 
 function getNewTakerSelectedId(quiz: Quiz): string {
   const takerSelected = quiz.locations[quiz.takerSelectedId] as
