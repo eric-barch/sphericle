@@ -185,6 +185,9 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
     case QuizDispatchType.DELETE_LOCATION: {
       const newQuiz = { ...quiz };
 
+      newQuiz.builderSelectedId = null;
+      newQuiz.totalLocations--;
+
       if (!newQuiz.locations[action.locationId]) {
         return newQuiz;
       }
@@ -212,8 +215,6 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       );
 
       delete newQuiz.locations[action.locationId];
-      newQuiz.builderSelectedId = null;
-      newQuiz.totalLocations--;
 
       return getResetQuiz(newQuiz);
     }

@@ -54,6 +54,8 @@ export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === "Enter") {
+      event.preventDefault();
+      event.stopPropagation();
       checkAnswer();
     }
   }
