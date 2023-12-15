@@ -4,7 +4,7 @@ import Map from "@/components/Map";
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useRef, useState } from "react";
+import { FocusEvent, useEffect, useRef, useState } from "react";
 import AnswerBox from "./AnswerBox";
 import ScoreBox from "./ScoreBox";
 
@@ -86,13 +86,31 @@ export default function QuizTaker() {
     }
   }, [quiz]);
 
+  function handleOpenAutoFocus(event: Event) {
+    event.preventDefault();
+  }
+
+  function handleClick() {
+    quizDispatch({
+      type: QuizDispatchType.RESET_TAKER,
+    });
+  }
+
   return (
     <div className="h-[calc(100vh-3rem)] relative flex justify-center align-middle content-center">
       <Dialog.Root open={quizComplete} modal={false}>
-        <Dialog.Content className="fixed flex flex-col items-center p-4 bg-white text-black rounded-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40">
+        <Dialog.Content
+          className="fixed flex flex-col items-center p-4 bg-white text-black rounded-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40"
+          onOpenAutoFocus={handleOpenAutoFocus}
+        >
           <Dialog.Title>Quiz Complete!</Dialog.Title>
           <Dialog.Description className="m-4">{`Your score: ${quiz.correctLocations} / ${quiz.totalLocations}`}</Dialog.Description>
-          <Dialog.Close className="p-2 rounded-3xl">Close</Dialog.Close>
+          <Dialog.Close
+            className="p-2 rounded-3xl bg-gray-500 text-white"
+            onClick={handleClick}
+          >
+            Take Again
+          </Dialog.Close>
         </Dialog.Content>
       </Dialog.Root>
       <ScoreBox />
