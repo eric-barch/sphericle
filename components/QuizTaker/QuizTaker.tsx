@@ -29,7 +29,7 @@ export default function QuizTaker() {
     }
 
     answerBoxInputRef?.current.focus();
-  }, []);
+  }, [quiz.isComplete, quizDispatch]);
 
   useEffect(() => {
     const location = quiz.locations[quiz.takerSelectedId];

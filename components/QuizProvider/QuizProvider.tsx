@@ -14,7 +14,6 @@ import {
   ReactNode,
   createContext,
   useContext,
-  useEffect,
   useReducer,
 } from "react";
 
@@ -23,10 +22,6 @@ const QuizDispatchContext = createContext<Dispatch<QuizDispatch> | null>(null);
 
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, quizDispatch] = useReducer(quizReducer, initialQuiz);
-
-  useEffect(() => {
-    console.log("quiz", quiz);
-  }, [quiz]);
 
   return (
     <QuizContext.Provider value={quiz}>
