@@ -1,6 +1,6 @@
 # Sphericle
 
-Make a custom geography quiz for any place you want to learn.
+Make custom geography quizzes to study niche locations.
 
 [Live Site](https://sphericle.app/build-quiz)
 
