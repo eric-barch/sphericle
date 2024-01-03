@@ -6,10 +6,10 @@ import {
   RootState,
   SearchStatus,
 } from "@/types";
-import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+import booleanIntersects from "@turf/boolean-intersects";
 import { Point } from "geojson";
 import { debounce } from "lodash";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 
 export interface PointSearch {
   term: string;
@@ -23,13 +23,6 @@ export default function usePointSearch(parentId: string): PointSearch {
   const quiz = useQuiz();
   const parentLocation = quiz.locations[parentId] as RootState | AreaState;
 
-  if (
-    parentLocation.locationType !== LocationType.ROOT &&
-    parentLocation.locationType !== LocationType.AREA
-  ) {
-    throw new Error("parentLocation must be of type ROOT or AREA.");
-  }
-
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.SEARCHED);
@@ -41,8 +34,8 @@ export default function usePointSearch(parentId: string): PointSearch {
     useRef<google.maps.places.AutocompleteService>();
   const geocoderRef = useRef<google.maps.Geocoder>();
 
-  const fetchSearchResults = useCallback(
-    async (searchTerm: string) => {
+  const fetchSearchResults = useRef(
+    debounce(async (searchTerm: string) => {
       setInternalSearchTerm(searchTerm);
       setInternalSearchStatus(SearchStatus.SEARCHING);
 
@@ -65,84 +58,39 @@ export default function usePointSearch(parentId: string): PointSearch {
         request.locationRestriction = parentLocation.searchBounds;
       }
 
-      const autocompletePredictions = (
+      const response = (
         await autocompleteServiceRef.current.getPlacePredictions(request)
       ).predictions;
 
-      const pointStates = (
+      const searchResults = (
         await Promise.all(
-          autocompletePredictions.map(
-            async (autocompletePrediction): Promise<PointState | null> => {
-              const geocoderResult = (
-                await geocoderRef.current.geocode({
-                  placeId: autocompletePrediction.place_id,
-                })
-              ).results[0];
-
-              const lat = geocoderResult.geometry.location.lat();
-              const lng = geocoderResult.geometry.location.lng();
-              const point: Point = { type: "Point", coordinates: [lng, lat] };
-
-              const bounds = {
-                north: lat + 0.1,
-                south: lat - 0.1,
-                east: lng + 0.1,
-                west: lng - 0.1,
-              };
-
-              const pointState = {
-                id: crypto.randomUUID(),
-                parentId,
-                googlePlacesId: autocompletePrediction.place_id,
-                longName: autocompletePrediction.description,
-                shortName: autocompletePrediction.description,
-                userDefinedName: null,
-                locationType: LocationType.POINT as LocationType.POINT,
-                searchBounds: bounds,
-                displayBounds: bounds,
-                point,
-                answeredCorrectly: null,
-              };
-
-              if (
-                parentLocation.locationType === LocationType.AREA &&
-                !booleanPointInPolygon(
-                  pointState.point,
-                  parentLocation.polygons,
-                )
-              ) {
-                return null;
-              }
-
-              return pointState;
-            },
+          response.map(
+            async (autocompletePrediction) =>
+              await getPointState(
+                parentLocation,
+                autocompletePrediction,
+                geocoderRef,
+              ),
           ),
         )
       ).filter((result): result is PointState => result !== null);
 
-      setInternalSearchResults(pointStates);
+      setInternalSearchResults(searchResults);
       setInternalSearchStatus(SearchStatus.SEARCHED);
-    },
-    [parentId, parentLocation],
-  );
-
-  const debouncedFetchSearchResults = useRef(
-    debounce((searchTerm: string) => {
-      fetchSearchResults(searchTerm);
     }, 300),
   ).current;
 
   const setSearchTerm = useCallback(
     (searchTerm: string) => {
       if (searchTerm !== "") {
-        debouncedFetchSearchResults(searchTerm);
+        fetchSearchResults(searchTerm);
       } else {
         setInternalSearchTerm("");
         setInternalSearchResults([]);
         setInternalSearchStatus(SearchStatus.SEARCHED);
       }
     },
-    [debouncedFetchSearchResults],
+    [fetchSearchResults],
   );
 
   const reset = useCallback(() => {
@@ -151,12 +99,12 @@ export default function usePointSearch(parentId: string): PointSearch {
     setInternalSearchResults([]);
   }, []);
 
-  // initialize Google libraries
+  // TODO: Feel like this should maybe be loaded at the app level
   useEffect(() => {
     const mapsLibrary = window.google.maps;
 
     if (!mapsLibrary) {
-      console.error("Did not find Google Maps library");
+      console.error("Did not find Google Maps library.");
       return;
     }
 
@@ -164,7 +112,7 @@ export default function usePointSearch(parentId: string): PointSearch {
       const placesLibrary = mapsLibrary.places;
 
       if (!placesLibrary) {
-        console.error("Did not find Google Places library");
+        console.error("Did not find Google Places library.");
         return;
       }
 
@@ -182,5 +130,74 @@ export default function usePointSearch(parentId: string): PointSearch {
     results: internalSearchResults,
     setTerm: setSearchTerm,
     reset,
+  };
+}
+
+async function getPointState(
+  parentLocation: RootState | AreaState,
+  autocompletePrediction: google.maps.places.AutocompletePrediction,
+  geocoderRef: RefObject<google.maps.Geocoder>,
+): Promise<PointState | null> {
+  const point = await getPoint(
+    parentLocation,
+    autocompletePrediction,
+    geocoderRef,
+  );
+
+  if (!point) {
+    return null;
+  }
+
+  const displayBounds = getDisplayBounds(point);
+
+  return {
+    id: crypto.randomUUID(),
+    parentId: parentLocation.id,
+    googlePlacesId: autocompletePrediction.place_id,
+    longName: autocompletePrediction.description,
+    shortName: autocompletePrediction.description,
+    userDefinedName: null,
+    locationType: LocationType.POINT as LocationType.POINT,
+    displayBounds,
+    point,
+    answeredCorrectly: null,
+  };
+}
+
+async function getPoint(
+  parentLocation: RootState | AreaState,
+  autocompletePrediction: google.maps.places.AutocompletePrediction,
+  geocoderRef: RefObject<google.maps.Geocoder>,
+): Promise<Point | null> {
+  const geocoderResult = (
+    await geocoderRef.current.geocode({
+      placeId: autocompletePrediction.place_id,
+    })
+  ).results[0];
+
+  const lat = geocoderResult.geometry.location.lat();
+  const lng = geocoderResult.geometry.location.lng();
+
+  const point: Point = { type: "Point", coordinates: [lng, lat] };
+
+  if (parentLocation.locationType === LocationType.ROOT) {
+    return point;
+  }
+
+  const parentPolygons = parentLocation.polygons;
+
+  if (booleanIntersects(point, parentPolygons)) {
+    return point;
+  }
+
+  return null;
+}
+
+function getDisplayBounds(point: Point) {
+  return {
+    north: point.coordinates[1] + 0.1,
+    south: point.coordinates[1] - 0.1,
+    east: point.coordinates[0] + 0.1,
+    west: point.coordinates[0] - 0.1,
   };
 }

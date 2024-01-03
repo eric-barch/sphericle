@@ -86,11 +86,6 @@ function getAreaState(
   osmItem: OsmItem,
 ): AreaState | null {
   const polygons = getPolygons(parentLocation, osmItem);
-
-  if (!polygons) {
-    return null;
-  }
-
   const searchBounds = getSearchBounds(osmItem);
   const displayBounds = getDisplayBounds(polygons, searchBounds);
 
