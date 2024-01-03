@@ -49,7 +49,6 @@ export interface PointState {
   shortName: string;
   userDefinedName: string | null;
   locationType: LocationType.POINT;
-  searchBounds: google.maps.LatLngBoundsLiteral;
   displayBounds: google.maps.LatLngBoundsLiteral;
   point: Point;
   answeredCorrectly: boolean | null;
