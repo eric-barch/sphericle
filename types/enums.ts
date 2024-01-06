@@ -21,3 +21,8 @@ export enum SearchStatus {
   SEARCHING = "SEARCHING",
   SEARCHED = "SEARCHED",
 }
+
+export enum DisplayMode {
+  WITH_SIBLINGS = "WITH_SIBLINGS",
+  WITHOUT_SIBLINGS = "WITHOUT_SIBLINGS",
+}

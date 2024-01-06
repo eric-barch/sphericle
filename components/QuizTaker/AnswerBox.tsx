@@ -11,7 +11,7 @@ interface AnswerBoxProps {
 export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const takerSelected = quiz.locations[quiz.takerSelectedId] as
+  const takerSelected = quiz.locations[quiz.takerSelected] as
     | AreaState
     | PointState;
 

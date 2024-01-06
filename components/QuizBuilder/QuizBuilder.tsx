@@ -3,78 +3,21 @@
 import Map from "@/components/Map";
 import { rootId, useQuiz } from "@/components/QuizProvider";
 import SplitPane from "@/components/SplitPane";
-import { AreaState, LocationType, PointState } from "@/types";
+import { AreaState, DisplayMode, PointState, RootState } from "@/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Sublocations from "./Sublocations";
 
 export default function QuizBuilder() {
   const quiz = useQuiz();
-  const location = quiz.activeOption || quiz.locations[quiz.builderSelectedId];
 
-  const [mapId, setMapId] = useState<string>("696d0ea42431a75c");
-  const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>(null);
-  const [emptyAreas, setEmptyAreas] = useState<AreaState | null>(null);
-  const [filledAreas, setFilledAreas] = useState<AreaState | null>(null);
-  const [markedPoints, setMarkedPoints] = useState<PointState | null>(null);
+  const [displayedLocation, setDisplayedLocation] = useState<
+    RootState | AreaState | PointState | null
+  >(quiz.locations[quiz.selected] || null);
 
   useEffect(() => {
-    if (!location) {
-      setEmptyAreas(null);
-      setFilledAreas(null);
-      setMarkedPoints(null);
-      return;
-    }
-
-    if (
-      location.locationType !== LocationType.AREA &&
-      location.locationType !== LocationType.POINT
-    ) {
-      throw new Error("location must be of type AREA or POINT.");
-    }
-
-    const parentLocation = quiz.locations[location.parentId];
-
-    if (parentLocation.locationType === LocationType.ROOT) {
-      if (location.locationType === LocationType.AREA) {
-        setBounds(location.displayBounds);
-
-        if (location.isOpen) {
-          setEmptyAreas(location);
-          setFilledAreas(null);
-          setMarkedPoints(null);
-        } else if (!location.isOpen) {
-          setEmptyAreas(null);
-          setFilledAreas(location);
-          setMarkedPoints(null);
-        }
-      } else if (location.locationType === LocationType.POINT) {
-        setBounds(location.displayBounds);
-        setEmptyAreas(null);
-        setFilledAreas(null);
-        setMarkedPoints(location);
-      }
-    } else if (parentLocation.locationType === LocationType.AREA) {
-      if (location.locationType === LocationType.AREA) {
-        if (location.isOpen) {
-          setBounds(location.displayBounds);
-          setEmptyAreas(location);
-          setFilledAreas(null);
-          setMarkedPoints(null);
-        } else if (!location.isOpen) {
-          setBounds(parentLocation.displayBounds);
-          setEmptyAreas(parentLocation);
-          setFilledAreas(location);
-          setMarkedPoints(null);
-        }
-      } else if (location.locationType === LocationType.POINT) {
-        setBounds(parentLocation.displayBounds);
-        setEmptyAreas(parentLocation);
-        setFilledAreas(null);
-        setMarkedPoints(location);
-      }
-    }
-  }, [quiz, location, setBounds]);
+    setDisplayedLocation(quiz.locations[quiz.selected]);
+  }, [quiz]);
 
   return (
     <SplitPane>
@@ -91,11 +34,9 @@ export default function QuizBuilder() {
         </Link>
       </div>
       <Map
-        mapId={mapId}
-        bounds={bounds}
-        emptyAreas={emptyAreas}
-        filledAreas={filledAreas}
-        markedPoints={markedPoints}
+        mapId="696d0ea42431a75c"
+        displayedLocation={displayedLocation}
+        displayMode={DisplayMode.WITHOUT_SIBLINGS}
       />
     </SplitPane>
   );

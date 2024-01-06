@@ -73,8 +73,8 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
       }
 
       newQuiz.locations[sublocationId] = action.sublocation;
-      newQuiz.builderSelectedId = action.sublocation.id;
-      newQuiz.totalLocations++;
+      newQuiz.selected = action.sublocation.id;
+      newQuiz.size++;
       newQuiz.activeOption = null;
 
       return getResetQuiz(newQuiz);
@@ -140,7 +140,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
     }
     case QuizDispatchType.SET_BUILDER_SELECTED: {
       const newQuiz = { ...quiz };
-      newQuiz.builderSelectedId = action.locationId;
+      newQuiz.selected = action.locationId;
       return newQuiz;
     }
     case QuizDispatchType.RESET_TAKER: {
@@ -149,24 +149,21 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
     case QuizDispatchType.MARK_TAKER_SELECTED: {
       const newQuiz = { ...quiz };
 
-      const newLocation = newQuiz.locations[quiz.takerSelectedId] as
+      const newLocation = newQuiz.locations[quiz.takerSelected] as
         | AreaState
         | PointState;
 
       newLocation.answeredCorrectly = action.answeredCorrectly;
 
-      newQuiz.takerSelectedId = getNewTakerSelectedId(newQuiz);
+      newQuiz.takerSelected = getNewTakerSelectedId(newQuiz);
 
       if (action.answeredCorrectly) {
-        newQuiz.correctLocations++;
+        newQuiz.correct++;
       } else if (!action.answeredCorrectly) {
-        newQuiz.incorrectLocations++;
+        newQuiz.incorrect++;
       }
 
-      if (
-        newQuiz.correctLocations + newQuiz.incorrectLocations ===
-        newQuiz.totalLocations
-      ) {
+      if (newQuiz.correct + newQuiz.incorrect === newQuiz.size) {
         newQuiz.isComplete = true;
       }
 
@@ -180,8 +177,8 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
     case QuizDispatchType.DELETE_LOCATION: {
       const newQuiz = { ...quiz };
 
-      newQuiz.builderSelectedId = null;
-      newQuiz.totalLocations--;
+      newQuiz.selected = null;
+      newQuiz.size--;
 
       if (!newQuiz.locations[action.locationId]) {
         return newQuiz;
@@ -220,7 +217,7 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 }
 
 const initialQuiz: Quiz = {
-  rootId,
+  root: rootId,
   locations: {
     [rootId]: {
       id: rootId,
@@ -231,19 +228,19 @@ const initialQuiz: Quiz = {
     },
   },
   activeOption: null,
-  builderSelectedId: null,
-  takerSelectedId: null,
-  incorrectLocations: 0,
-  correctLocations: 0,
-  totalLocations: 0,
+  selected: null,
+  takerSelected: null,
+  incorrect: 0,
+  correct: 0,
+  size: 0,
   isComplete: false,
 };
 
 function getResetQuiz(quiz: Quiz): Quiz {
   const newQuiz = { ...quiz };
 
-  newQuiz.correctLocations = 0;
-  newQuiz.incorrectLocations = 0;
+  newQuiz.correct = 0;
+  newQuiz.incorrect = 0;
 
   for (const location of Object.values(newQuiz.locations)) {
     if (
@@ -254,20 +251,20 @@ function getResetQuiz(quiz: Quiz): Quiz {
     }
   }
 
-  const rootLocation = newQuiz.locations[newQuiz.rootId];
+  const rootLocation = newQuiz.locations[newQuiz.root];
 
   if (rootLocation.locationType !== LocationType.ROOT) {
     throw new Error("rootLocation must be of type ROOT.");
   }
 
-  newQuiz.takerSelectedId = rootLocation.sublocationIds[0];
+  newQuiz.takerSelected = rootLocation.sublocationIds[0];
   newQuiz.isComplete = false;
 
   return newQuiz;
 }
 
 function getNewTakerSelectedId(quiz: Quiz): string {
-  const takerSelected = quiz.locations[quiz.takerSelectedId] as
+  const takerSelected = quiz.locations[quiz.takerSelected] as
     | AreaState
     | PointState;
 
