@@ -51,7 +51,7 @@ export default function Point({ locationId }: PointProps) {
       />
       <button
         className={`w-full p-1 rounded-2xl text-left bg-gray-600 ${
-          locationId === quiz.builderSelectedId
+          locationId === quiz.selected
             ? "outline outline-2 outline-red-700"
             : ""
         }`}

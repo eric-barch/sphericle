@@ -117,7 +117,7 @@ export default function Area({ locationId }: AreaProps) {
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (locationId !== quiz.builderSelectedId || !willToggle) {
+    if (locationId !== quiz.selected || !willToggle) {
       event.preventDefault();
     }
 
@@ -147,7 +147,7 @@ export default function Area({ locationId }: AreaProps) {
           />
           <Accordion.Trigger
             className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
-              locationId === quiz.builderSelectedId
+              locationId === quiz.selected
                 ? "outline outline-2 outline-red-700"
                 : ""
             }`}

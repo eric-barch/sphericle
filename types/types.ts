@@ -3,17 +3,14 @@ import { MultiPolygon, Point, Polygon } from "geojson";
 import { LocationType, QuizDispatchType } from "./enums";
 
 export interface Quiz {
-  rootId: string;
+  root: string;
   locations: {
     [key: string]: RootState | AreaState | PointState;
   };
-  activeOption: AreaState | PointState | null;
-  builderSelectedId: string | null;
-  takerSelectedId: string | null;
-  incorrectLocations: number;
-  correctLocations: number;
-  totalLocations: number;
-  isComplete: boolean;
+  selected: string;
+  correct: string[];
+  incorrect: string[];
+  remaining: string[];
 }
 
 export interface RootState {
