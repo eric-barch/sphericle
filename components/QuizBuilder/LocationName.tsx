@@ -1,4 +1,4 @@
-import { LocationType, QuizDispatchType } from "@/types";
+import { FeatureType, AllFeaturesDispatchType } from "@/types";
 import { useQuiz, useQuizDispatch } from "../QuizProvider";
 import { KeyboardEvent, RefObject, useState } from "react";
 
@@ -17,11 +17,11 @@ export default function LocationName({
 }: LocationNameProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const location = quiz.locations[locationId];
+  const location = quiz[locationId];
 
   if (
-    location.locationType !== LocationType.AREA &&
-    location.locationType !== LocationType.POINT
+    location.featureType !== FeatureType.AREA &&
+    location.featureType !== FeatureType.POINT
   ) {
     throw new Error("location must be of type AREA or POINT.");
   }
@@ -37,8 +37,8 @@ export default function LocationName({
       setIsRenaming(false);
 
       quizDispatch({
-        type: QuizDispatchType.RENAME_LOCATION,
-        locationId,
+        type: AllFeaturesDispatchType.RENAME_FEATURE,
+        featureId: locationId,
         name: input,
       });
     }

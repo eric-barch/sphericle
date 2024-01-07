@@ -3,14 +3,15 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import {
   AreaState,
-  LocationType,
+  FeatureType,
   PointState,
-  QuizDispatchType,
+  QuizBuilderDispatchType,
+  AllFeaturesDispatchType,
   RootState,
   SearchStatus,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
-import { Grid2X2, Map, MapPin } from "lucide-react";
+import { Grid2X2, MapPin } from "lucide-react";
 import {
   ChangeEvent,
   FocusEvent,
@@ -22,6 +23,7 @@ import {
 } from "react";
 import useAreaSearch, { AreaSearch } from "./use-area-search.hook";
 import usePointSearch, { PointSearch } from "./use-point-search.hook";
+import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
 
 interface LocationAdderProps {
   inputRef?: RefObject<HTMLInputElement>;
@@ -34,20 +36,25 @@ export default function LocationAdder({
 }: LocationAdderProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const parentLocation = quiz.locations[parentId] as RootState | AreaState;
+
+  const quizBuilder = useQuizBuilder();
+  const quizBuilderDispatch = useQuizBuilderDispatch();
+
   const areaSearch = useAreaSearch(parentId);
   const pointSearch = usePointSearch(parentId);
 
+  const parentLocation = quiz[parentId];
+
   if (
-    parentLocation.locationType !== LocationType.ROOT &&
-    parentLocation.locationType !== LocationType.AREA
+    parentLocation.featureType !== FeatureType.ROOT &&
+    parentLocation.featureType !== FeatureType.AREA
   ) {
     throw new Error("parentLocation must be of type ROOT or AREA.");
   }
 
   const [isFocused, setIsFocused] = useState<boolean>(true);
-  const [locationType, setLocationType] = useState<LocationType>(
-    LocationType.AREA,
+  const [locationType, setLocationType] = useState<FeatureType>(
+    FeatureType.AREA,
   );
   const [input, setInput] = useState<string>("");
   const [optionSelected, setOptionSelected] = useState<boolean>(false);
@@ -63,15 +70,15 @@ export default function LocationAdder({
       setIsFocused(true);
 
       if (!optionSelected) {
-        if (parentLocation.locationType === LocationType.ROOT) {
-          quizDispatch({
-            type: QuizDispatchType.SET_BUILDER_SELECTED,
-            locationId: null,
+        if (parentLocation.featureType === FeatureType.ROOT) {
+          quizBuilderDispatch({
+            type: QuizBuilderDispatchType.SET_SELECTED_FEATURE,
+            featureId: null,
           });
-        } else if (parentLocation.locationType === LocationType.AREA) {
-          quizDispatch({
-            type: QuizDispatchType.SET_BUILDER_SELECTED,
-            locationId: parentId,
+        } else if (parentLocation.featureType === FeatureType.AREA) {
+          quizBuilderDispatch({
+            type: QuizBuilderDispatchType.SET_SELECTED_FEATURE,
+            featureId: parentId,
           });
         }
       }
@@ -82,9 +89,9 @@ export default function LocationAdder({
 
   function handleChange(sublocation: AreaState | PointState) {
     quizDispatch({
-      type: QuizDispatchType.ADD_SUBLOCATION,
+      type: AllFeaturesDispatchType.ADD_SUBFEATURE,
       parentId,
-      sublocation,
+      subfeature: sublocation,
     });
 
     if (inputRef) {
@@ -97,7 +104,11 @@ export default function LocationAdder({
     pointSearch.reset();
   }
 
-  if (!parentLocation.isAdding && parentLocation.sublocationIds.length > 0) {
+  if (
+    parentLocation.featureType !== FeatureType.ROOT &&
+    !parentLocation.isAdding &&
+    parentLocation.subfeatureIds.length > 0
+  ) {
     return null;
   }
 
@@ -136,11 +147,11 @@ interface InputProps {
   inputRef: RefObject<HTMLInputElement>;
   parentId: string;
   input: string;
-  locationType: LocationType;
+  locationType: FeatureType;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
   setInput: (input: string) => void;
-  setLocationType: (locationType: LocationType) => void;
+  setLocationType: (locationType: FeatureType) => void;
 }
 
 function Input({
@@ -154,17 +165,17 @@ function Input({
   setLocationType,
 }: InputProps) {
   const quiz = useQuiz();
-  const parentLocation = quiz.locations[parentId] as RootState | AreaState;
+  const parentLocation = quiz[parentId] as RootState | AreaState;
 
   if (
-    parentLocation.locationType !== LocationType.ROOT &&
-    parentLocation.locationType !== LocationType.AREA
+    parentLocation.featureType !== FeatureType.ROOT &&
+    parentLocation.featureType !== FeatureType.AREA
   ) {
     throw new Error("parentLocation must be of type ROOT or AREA.");
   }
 
   const placeholder =
-    parentLocation.locationType === LocationType.ROOT
+    parentLocation.featureType === FeatureType.ROOT
       ? `Add ${locationType.toLowerCase()} anywhere`
       : `Add ${locationType.toLowerCase()} in ${
           parentLocation.userDefinedName || parentLocation.shortName
@@ -175,13 +186,13 @@ function Input({
 
     if (event.target.value === "") {
       pointSearch.reset();
-    } else if (locationType === LocationType.POINT) {
+    } else if (locationType === FeatureType.POINT) {
       pointSearch.setTerm(event.target.value);
     }
   }
 
   function handleEnter(event: KeyboardEvent<HTMLInputElement>) {
-    if (locationType === LocationType.AREA && input !== areaSearch.term) {
+    if (locationType === FeatureType.AREA && input !== areaSearch.term) {
       event.preventDefault();
       areaSearch.setTerm(input);
     }
@@ -243,9 +254,9 @@ function Input({
 
 interface ToggleAreaPointButtonProps {
   input: string;
-  locationType: LocationType;
+  locationType: FeatureType;
   pointSearch: PointSearch;
-  setLocationType: (locationType: LocationType) => void;
+  setLocationType: (locationType: FeatureType) => void;
 }
 
 function ToggleAreaPointButton({
@@ -256,13 +267,11 @@ function ToggleAreaPointButton({
 }: ToggleAreaPointButtonProps) {
   function handleClick() {
     const nextLocationType =
-      locationType === LocationType.AREA
-        ? LocationType.POINT
-        : LocationType.AREA;
+      locationType === FeatureType.AREA ? FeatureType.POINT : FeatureType.AREA;
 
     setLocationType(nextLocationType);
 
-    if (nextLocationType === LocationType.POINT && input !== pointSearch.term) {
+    if (nextLocationType === FeatureType.POINT && input !== pointSearch.term) {
       pointSearch.setTerm(input);
     }
   }
@@ -272,7 +281,7 @@ function ToggleAreaPointButton({
       className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl left-1.5 bg-gray-600 text-gray-300 "
       onClick={handleClick}
     >
-      {locationType === LocationType.AREA ? (
+      {locationType === FeatureType.AREA ? (
         <Grid2X2 className="w-4 h-4" />
       ) : (
         <MapPin className="w-4 h-4" />
@@ -285,7 +294,7 @@ interface OptionsProps {
   parentId: string;
   activeOption: AreaState | PointState;
   input: string;
-  locationType: LocationType;
+  locationType: FeatureType;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
   locationAdderFocused: boolean;
@@ -301,25 +310,27 @@ function Options({
   locationAdderFocused,
 }: OptionsProps) {
   const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
-  const parentLocation = quiz.locations[parentId];
+
+  const quizBuilderDispatch = useQuizBuilderDispatch();
+
+  const parentLocation = quiz[parentId];
 
   if (
-    parentLocation.locationType !== LocationType.ROOT &&
-    parentLocation.locationType !== LocationType.AREA
+    parentLocation.featureType !== FeatureType.ROOT &&
+    parentLocation.featureType !== FeatureType.AREA
   ) {
     throw new Error("parentLocation must be of type ROOT or AREA.");
   }
 
   useEffect(() => {
-    quizDispatch({
-      type: QuizDispatchType.SELECT_OPTION,
-      location: activeOption,
+    quizBuilderDispatch({
+      type: QuizBuilderDispatchType.SET_ACTIVE_OPTION,
+      activeOption,
     });
-  }, [quizDispatch, activeOption]);
+  }, [quizBuilderDispatch, activeOption]);
 
   function renderOptionsContent() {
-    if (locationType === LocationType.AREA) {
+    if (locationType === FeatureType.AREA) {
       if (input !== areaSearch.term) {
         return <OptionsSubstitute>Press Enter to Search</OptionsSubstitute>;
       }
@@ -332,7 +343,7 @@ function Options({
       return areaSearch.results.map((result: AreaState) => (
         <Option key={result.id} location={result} />
       ));
-    } else if (locationType === LocationType.POINT) {
+    } else if (locationType === FeatureType.POINT) {
       if (pointSearch.results.length === 0) {
         return <OptionsSubstitute>No results found.</OptionsSubstitute>;
       }
@@ -351,12 +362,12 @@ function Options({
       return null;
     }
 
-    if (locationType === LocationType.POINT && pointSearch.term === "") {
+    if (locationType === FeatureType.POINT && pointSearch.term === "") {
       return null;
     }
 
     if (
-      locationType === LocationType.POINT &&
+      locationType === FeatureType.POINT &&
       pointSearch.status === SearchStatus.SEARCHING &&
       pointSearch.results.length < 1
     ) {

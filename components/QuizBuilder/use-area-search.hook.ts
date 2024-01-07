@@ -1,7 +1,7 @@
 import { useQuiz } from "@/components/QuizProvider";
 import {
   AreaState,
-  LocationType,
+  FeatureType,
   OsmItem,
   RootState,
   SearchStatus,
@@ -21,7 +21,7 @@ export interface AreaSearch {
 
 export default function useAreaSearch(parentId: string): AreaSearch {
   const quiz = useQuiz();
-  const parentLocation = quiz.locations[parentId] as RootState | AreaState;
+  const parentLocation = quiz[parentId] as RootState | AreaState;
 
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
@@ -37,7 +37,7 @@ export default function useAreaSearch(parentId: string): AreaSearch {
 
       let query: string = searchTerm;
 
-      if (parentLocation.locationType === LocationType.AREA) {
+      if (parentLocation.featureType === FeatureType.AREA) {
         const { south, north, west, east } = parentLocation.searchBounds;
         query = query + `&viewbox=${west},${south},${east},${north}&bounded=1`;
       }
@@ -92,18 +92,17 @@ function getAreaState(
   return {
     id: crypto.randomUUID(),
     parentId: parentLocation.id,
-    sublocationIds: [],
+    subfeatureIds: [],
     openStreetMapPlaceId: osmItem.place_id,
     longName: osmItem.display_name,
     shortName: osmItem.name,
     userDefinedName: "",
-    locationType: LocationType.AREA,
+    featureType: FeatureType.AREA,
     isOpen: false,
     isAdding: true,
     searchBounds,
     displayBounds,
     polygons,
-    answeredCorrectly: null,
   };
 }
 
@@ -117,7 +116,7 @@ function getPolygons(
     return null;
   }
 
-  if (parentLocation.locationType === LocationType.ROOT) {
+  if (parentLocation.featureType === FeatureType.ROOT) {
     return polygons;
   }
 

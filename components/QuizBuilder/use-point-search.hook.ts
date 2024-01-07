@@ -1,7 +1,7 @@
 import { useQuiz } from "@/components/QuizProvider";
 import {
   AreaState,
-  LocationType,
+  FeatureType,
   PointState,
   RootState,
   SearchStatus,
@@ -21,7 +21,7 @@ export interface PointSearch {
 
 export default function usePointSearch(parentId: string): PointSearch {
   const quiz = useQuiz();
-  const parentLocation = quiz.locations[parentId] as RootState | AreaState;
+  const parentLocation = quiz[parentId] as RootState | AreaState;
 
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
@@ -54,7 +54,7 @@ export default function usePointSearch(parentId: string): PointSearch {
         input: searchTerm,
       };
 
-      if (parentLocation.locationType === LocationType.AREA) {
+      if (parentLocation.featureType === FeatureType.AREA) {
         request.locationRestriction = parentLocation.searchBounds;
       }
 
@@ -157,7 +157,7 @@ async function getPointState(
     longName: autocompletePrediction.description,
     shortName: autocompletePrediction.description,
     userDefinedName: null,
-    locationType: LocationType.POINT as LocationType.POINT,
+    featureType: FeatureType.POINT as FeatureType.POINT,
     displayBounds,
     point,
     answeredCorrectly: null,
@@ -180,7 +180,7 @@ async function getPoint(
 
   const point: Point = { type: "Point", coordinates: [lng, lat] };
 
-  if (parentLocation.locationType === LocationType.ROOT) {
+  if (parentLocation.featureType === FeatureType.ROOT) {
     return point;
   }
 

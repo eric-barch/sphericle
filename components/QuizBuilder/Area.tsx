@@ -1,13 +1,19 @@
 "use client";
 
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState, LocationType, QuizDispatchType } from "@/types";
+import {
+  AreaState,
+  FeatureType,
+  QuizBuilderDispatchType,
+  AllFeaturesDispatchType,
+} from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import EditLocationButton from "./EditLocationButton";
 import LocationName from "./LocationName";
 import Sublocations from "./Sublocations";
 import { ChevronRight } from "lucide-react";
+import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
 
 interface AreaProps {
   locationId: string;
@@ -16,9 +22,13 @@ interface AreaProps {
 export default function Area({ locationId }: AreaProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const location = quiz.locations[locationId] as AreaState;
 
-  if (location.locationType !== LocationType.AREA) {
+  const quizBuilder = useQuizBuilder();
+  const quizBuilderDispatch = useQuizBuilderDispatch();
+
+  const location = quiz[locationId] as AreaState;
+
+  if (location.featureType !== FeatureType.AREA) {
     throw new Error("areaState must be of type AREA.");
   }
 
@@ -39,14 +49,14 @@ export default function Area({ locationId }: AreaProps) {
   function handleValueChange(value: string[]) {
     if (value.includes(locationId)) {
       quizDispatch({
-        type: QuizDispatchType.SET_AREA_IS_OPEN,
-        locationId,
+        type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
+        featureId: locationId,
         isOpen: true,
       });
     } else {
       quizDispatch({
-        type: QuizDispatchType.SET_AREA_IS_OPEN,
-        locationId,
+        type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
+        featureId: locationId,
         isOpen: false,
       });
     }
@@ -72,9 +82,9 @@ export default function Area({ locationId }: AreaProps) {
         setWillToggle(true);
       }
 
-      quizDispatch({
-        type: QuizDispatchType.SET_BUILDER_SELECTED,
-        locationId,
+      quizBuilderDispatch({
+        type: QuizBuilderDispatchType.SET_SELECTED_FEATURE,
+        featureId: locationId,
       });
     }
   }
@@ -104,8 +114,8 @@ export default function Area({ locationId }: AreaProps) {
 
   function setIsAdding(isAdding: boolean) {
     quizDispatch({
-      type: QuizDispatchType.SET_AREA_IS_ADDING,
-      locationId,
+      type: AllFeaturesDispatchType.SET_AREA_IS_ADDING,
+      featureId: locationId,
       isAdding,
     });
 
@@ -117,7 +127,7 @@ export default function Area({ locationId }: AreaProps) {
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (locationId !== quiz.selected || !willToggle) {
+    if (locationId !== quizBuilder.selectedId || !willToggle) {
       event.preventDefault();
     }
 
@@ -147,7 +157,7 @@ export default function Area({ locationId }: AreaProps) {
           />
           <Accordion.Trigger
             className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
-              locationId === quiz.selected
+              locationId === quizBuilder.selectedId
                 ? "outline outline-2 outline-red-700"
                 : ""
             }`}

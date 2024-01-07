@@ -4,7 +4,7 @@ import { useQuiz } from "@/components/QuizProvider";
 import {
   AreaState,
   DisplayMode,
-  LocationType,
+  FeatureType,
   PointState,
   RootState,
 } from "@/types";
@@ -199,7 +199,7 @@ export default function Map({
   useEffect(() => {
     if (
       !displayedLocation ||
-      displayedLocation.locationType === LocationType.ROOT
+      displayedLocation.featureType === FeatureType.ROOT
     ) {
       setEmptyAreas(null);
       setFilledAreas(null);
@@ -207,10 +207,10 @@ export default function Map({
       return;
     }
 
-    const parentLocation = quiz.locations[displayedLocation.parentId];
+    const parentLocation = quiz[displayedLocation.parentId];
 
-    if (parentLocation.locationType === LocationType.ROOT) {
-      if (displayedLocation.locationType === LocationType.AREA) {
+    if (parentLocation.featureType === FeatureType.ROOT) {
+      if (displayedLocation.featureType === FeatureType.AREA) {
         setBounds(displayedLocation.displayBounds);
 
         if (displayedLocation.isOpen) {
@@ -222,14 +222,14 @@ export default function Map({
           setFilledAreas(displayedLocation);
           setMarkedPoints(null);
         }
-      } else if (displayedLocation.locationType === LocationType.POINT) {
+      } else if (displayedLocation.featureType === FeatureType.POINT) {
         setBounds(displayedLocation.displayBounds);
         setEmptyAreas(null);
         setFilledAreas(null);
         setMarkedPoints(displayedLocation);
       }
-    } else if (parentLocation.locationType === LocationType.AREA) {
-      if (displayedLocation.locationType === LocationType.AREA) {
+    } else if (parentLocation.featureType === FeatureType.AREA) {
+      if (displayedLocation.featureType === FeatureType.AREA) {
         if (displayedLocation.isOpen) {
           setBounds(displayedLocation.displayBounds);
           setEmptyAreas(displayedLocation);
@@ -241,7 +241,7 @@ export default function Map({
           setFilledAreas(displayedLocation);
           setMarkedPoints(null);
         }
-      } else if (displayedLocation.locationType === LocationType.POINT) {
+      } else if (displayedLocation.featureType === FeatureType.POINT) {
         setBounds(parentLocation.displayBounds);
         setEmptyAreas(parentLocation);
         setFilledAreas(null);

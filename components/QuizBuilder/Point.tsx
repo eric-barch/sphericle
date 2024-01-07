@@ -1,10 +1,16 @@
 "use client";
 
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { LocationType, PointState, QuizDispatchType } from "@/types";
+import {
+  FeatureType,
+  PointState,
+  QuizBuilderDispatchType,
+  AllFeaturesDispatchType,
+} from "@/types";
 import { FocusEvent, useRef, useState } from "react";
 import LocationName from "./LocationName";
 import EditLocationButton from "./EditLocationButton";
+import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
 
 interface PointProps {
   locationId: string;
@@ -13,9 +19,13 @@ interface PointProps {
 export default function Point({ locationId }: PointProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const location = quiz.locations[locationId] as PointState;
 
-  if (location.locationType !== LocationType.POINT) {
+  const quizBuilder = useQuizBuilder();
+  const quizBuilderDispatch = useQuizBuilderDispatch();
+
+  const location = quiz[locationId] as PointState;
+
+  if (location.featureType !== FeatureType.POINT) {
     throw new Error("pointState must be of type POINT.");
   }
 
@@ -25,9 +35,9 @@ export default function Point({ locationId }: PointProps) {
 
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      quizDispatch({
-        type: QuizDispatchType.SET_BUILDER_SELECTED,
-        locationId,
+      quizBuilderDispatch({
+        type: QuizBuilderDispatchType.SET_SELECTED_FEATURE,
+        featureId: locationId,
       });
     }
   }
@@ -51,7 +61,7 @@ export default function Point({ locationId }: PointProps) {
       />
       <button
         className={`w-full p-1 rounded-2xl text-left bg-gray-600 ${
-          locationId === quiz.selected
+          locationId === quizBuilder.selectedId
             ? "outline outline-2 outline-red-700"
             : ""
         }`}

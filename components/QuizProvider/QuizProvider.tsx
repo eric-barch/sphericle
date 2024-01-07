@@ -1,13 +1,10 @@
 "use client";
 
 import {
-  AreaState,
-  LocationType,
-  PointState,
-  Quiz,
-  QuizDispatch,
-  QuizDispatchType,
-  RootState,
+  FeatureType,
+  AllFeatures,
+  AllFeaturesDispatch,
+  AllFeaturesDispatchType,
 } from "@/types";
 import {
   Dispatch,
@@ -17,8 +14,10 @@ import {
   useReducer,
 } from "react";
 
-const QuizContext = createContext<Quiz | null>(null);
-const QuizDispatchContext = createContext<Dispatch<QuizDispatch> | null>(null);
+const QuizContext = createContext<AllFeatures | null>(null);
+const QuizDispatchContext = createContext<Dispatch<AllFeaturesDispatch> | null>(
+  null,
+);
 
 export default function QuizProvider({ children }: { children: ReactNode }) {
   const [quiz, quizDispatch] = useReducer(quizReducer, initialQuiz);
@@ -34,71 +33,59 @@ export default function QuizProvider({ children }: { children: ReactNode }) {
 
 export const rootId = crypto.randomUUID();
 
-export function useQuiz(): Quiz {
-  const quiz = useContext(QuizContext);
-
-  if (!quiz) {
-    throw new Error("quiz is falsy.");
-  }
-
-  return quiz;
+export function useQuiz(): AllFeatures {
+  return useContext(QuizContext);
 }
 
-export function useQuizDispatch(): Dispatch<QuizDispatch> {
-  const quizDispatch = useContext(QuizDispatchContext);
-
-  if (!quizDispatch) {
-    throw new Error("quizDispatch is falsy.");
-  }
-
-  return quizDispatch;
+export function useQuizDispatch(): Dispatch<AllFeaturesDispatch> {
+  return useContext(QuizDispatchContext);
 }
 
-function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
+function quizReducer(
+  quiz: AllFeatures,
+  action: AllFeaturesDispatch,
+): AllFeatures {
   switch (action.type) {
-    case QuizDispatchType.ADD_SUBLOCATION: {
-      const parentId = action.sublocation.parentId;
-      const sublocationId = action.sublocation.id;
+    case AllFeaturesDispatchType.ADD_SUBFEATURE: {
+      const parentId = action.subfeature.parentId;
+      const sublocationId = action.subfeature.id;
 
       const newQuiz = { ...quiz };
-      const newParent = { ...quiz.locations[parentId] };
+      const newParent = { ...quiz[parentId] };
 
-      if (newParent.locationType === LocationType.POINT) {
+      if (newParent.featureType === FeatureType.POINT) {
         throw new Error("newParent must not be of type POINT.");
       }
 
-      if (!newParent.sublocationIds.includes(sublocationId)) {
-        newParent.sublocationIds = [...newParent.sublocationIds, sublocationId];
-        newQuiz.locations[parentId] = newParent;
+      if (!newParent.subfeatureIds.includes(sublocationId)) {
+        newParent.subfeatureIds = [...newParent.subfeatureIds, sublocationId];
+        newQuiz[parentId] = newParent;
       }
 
-      newQuiz.locations[sublocationId] = action.sublocation;
-      newQuiz.selected = action.sublocation.id;
-      newQuiz.size++;
-      newQuiz.activeOption = null;
+      newQuiz[sublocationId] = action.subfeature;
 
       return getResetQuiz(newQuiz);
     }
-    case QuizDispatchType.SET_SUBLOCATION_IDS: {
+    case AllFeaturesDispatchType.SET_SUBFEATURES: {
       const newQuiz = { ...quiz };
-      const newLocation = newQuiz.locations[action.locationId];
+      const newLocation = newQuiz[action.featureId];
 
       if (
-        newLocation.locationType !== LocationType.ROOT &&
-        newLocation.locationType !== LocationType.AREA
+        newLocation.featureType !== FeatureType.ROOT &&
+        newLocation.featureType !== FeatureType.AREA
       ) {
         throw new Error("newLocation must be of type ROOT or AREA.");
       }
 
-      newLocation.sublocationIds = action.sublocationIds;
+      newLocation.subfeatureIds = action.subfeatureIds;
 
       return getResetQuiz(newQuiz);
     }
-    case QuizDispatchType.RENAME_LOCATION: {
+    case AllFeaturesDispatchType.RENAME_FEATURE: {
       const newQuiz = { ...quiz };
-      const newLocation = newQuiz.locations[action.locationId];
+      const newLocation = newQuiz[action.featureId];
 
-      if (newLocation.locationType === LocationType.ROOT) {
+      if (newLocation.featureType === FeatureType.ROOT) {
         throw new Error("newLocation must not be of type ROOT.");
       }
 
@@ -106,11 +93,11 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 
       return getResetQuiz(newQuiz);
     }
-    case QuizDispatchType.SET_AREA_IS_OPEN: {
+    case AllFeaturesDispatchType.SET_AREA_IS_OPEN: {
       const newQuiz = { ...quiz };
-      const newLocation = newQuiz.locations[action.locationId];
+      const newLocation = newQuiz[action.featureId];
 
-      if (newLocation.locationType !== LocationType.AREA) {
+      if (newLocation.featureType !== FeatureType.AREA) {
         throw new Error("newLocation must be of type AREA.");
       }
 
@@ -122,11 +109,11 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 
       return newQuiz;
     }
-    case QuizDispatchType.SET_AREA_IS_ADDING: {
+    case AllFeaturesDispatchType.SET_AREA_IS_ADDING: {
       const newQuiz = { ...quiz };
-      const newLocation = newQuiz.locations[action.locationId];
+      const newLocation = newQuiz[action.featureId];
 
-      if (newLocation.locationType !== LocationType.AREA) {
+      if (newLocation.featureType !== FeatureType.AREA) {
         throw new Error("newLocation must be of type AREA.");
       }
 
@@ -138,181 +125,75 @@ function quizReducer(quiz: Quiz, action: QuizDispatch): Quiz {
 
       return newQuiz;
     }
-    case QuizDispatchType.SET_BUILDER_SELECTED: {
-      const newQuiz = { ...quiz };
-      newQuiz.selected = action.locationId;
-      return newQuiz;
-    }
-    case QuizDispatchType.RESET_TAKER: {
-      return getResetQuiz(quiz);
-    }
-    case QuizDispatchType.MARK_TAKER_SELECTED: {
+    case AllFeaturesDispatchType.DELETE_FEATURE: {
       const newQuiz = { ...quiz };
 
-      const newLocation = newQuiz.locations[quiz.takerSelected] as
-        | AreaState
-        | PointState;
-
-      newLocation.answeredCorrectly = action.answeredCorrectly;
-
-      newQuiz.takerSelected = getNewTakerSelectedId(newQuiz);
-
-      if (action.answeredCorrectly) {
-        newQuiz.correct++;
-      } else if (!action.answeredCorrectly) {
-        newQuiz.incorrect++;
-      }
-
-      if (newQuiz.correct + newQuiz.incorrect === newQuiz.size) {
-        newQuiz.isComplete = true;
-      }
-
-      return newQuiz;
-    }
-    case QuizDispatchType.SELECT_OPTION: {
-      const newQuiz = { ...quiz };
-      newQuiz.activeOption = action.location;
-      return newQuiz;
-    }
-    case QuizDispatchType.DELETE_LOCATION: {
-      const newQuiz = { ...quiz };
-
-      newQuiz.selected = null;
-      newQuiz.size--;
-
-      if (!newQuiz.locations[action.locationId]) {
+      if (!newQuiz[action.featureId]) {
         return newQuiz;
       }
 
-      const newLocation = newQuiz.locations[action.locationId];
+      const newLocation = newQuiz[action.featureId];
 
       if (
-        newLocation.locationType !== LocationType.AREA &&
-        newLocation.locationType !== LocationType.POINT
+        newLocation.featureType !== FeatureType.AREA &&
+        newLocation.featureType !== FeatureType.POINT
       ) {
         throw new Error("newLocation must be of type AREA or POINT.");
       }
 
-      const newParent = newQuiz.locations[newLocation.parentId];
+      const newParent = newQuiz[newLocation.parentId];
 
       if (
-        newParent.locationType !== LocationType.ROOT &&
-        newParent.locationType !== LocationType.AREA
+        newParent.featureType !== FeatureType.ROOT &&
+        newParent.featureType !== FeatureType.AREA
       ) {
         throw new Error("newParent must be of type ROOT or AREA.");
       }
 
-      newParent.sublocationIds = newParent.sublocationIds.filter(
-        (sublocationId) => sublocationId !== action.locationId,
+      newParent.subfeatureIds = newParent.subfeatureIds.filter(
+        (sublocationId) => sublocationId !== action.featureId,
       );
 
-      delete newQuiz.locations[action.locationId];
+      delete newQuiz[action.featureId];
 
       return getResetQuiz(newQuiz);
     }
     default: {
-      return quiz;
+      return { ...quiz };
     }
   }
 }
 
-const initialQuiz: Quiz = {
-  root: rootId,
-  locations: {
-    [rootId]: {
-      id: rootId,
-      sublocationIds: [],
-      shortName: "Root",
-      locationType: LocationType.ROOT,
-      isAdding: true,
-    },
+const initialQuiz: AllFeatures = {
+  [rootId]: {
+    id: rootId,
+    subfeatureIds: [],
+    featureType: FeatureType.ROOT,
   },
-  activeOption: null,
-  selected: null,
-  takerSelected: null,
-  incorrect: 0,
-  correct: 0,
-  size: 0,
-  isComplete: false,
 };
 
-function getResetQuiz(quiz: Quiz): Quiz {
+function getResetQuiz(quiz: AllFeatures): AllFeatures {
   const newQuiz = { ...quiz };
 
-  newQuiz.correct = 0;
-  newQuiz.incorrect = 0;
+  // newQuiz.correct = 0;
+  // newQuiz.incorrect = 0;
 
-  for (const location of Object.values(newQuiz.locations)) {
-    if (
-      location.locationType === LocationType.AREA ||
-      location.locationType === LocationType.POINT
-    ) {
-      location.answeredCorrectly = null;
-    }
-  }
+  // for (const location of Object.values(newQuiz)) {
+  //   if (
+  //     location.featureType === FeatureType.AREA ||
+  //     location.featureType === FeatureType.POINT {
+  //     location.answeredCorrectly = null;
+  //   }
+  // }
 
-  const rootLocation = newQuiz.locations[newQuiz.root];
+  // const rootLocation = newQuiz[newQuiz.root];
 
-  if (rootLocation.locationType !== LocationType.ROOT) {
-    throw new Error("rootLocation must be of type ROOT.");
-  }
+  // if (rootLocation.featureType !== LocationType.ROOT) {
+  //   throw new Error("rootLocation must be of type ROOT.");
+  // }
 
-  newQuiz.takerSelected = rootLocation.sublocationIds[0];
-  newQuiz.isComplete = false;
+  // newQuiz.takerSelected = rootLocation.subfeatureIds[0];
+  // newQuiz.isComplete = false;
 
   return newQuiz;
-}
-
-function getNewTakerSelectedId(quiz: Quiz): string {
-  const takerSelected = quiz.locations[quiz.takerSelected] as
-    | AreaState
-    | PointState;
-
-  const parent = quiz.locations[takerSelected.parentId] as AreaState;
-
-  const siblingIds = parent.sublocationIds;
-  const takerSelectedIndex = siblingIds.indexOf(takerSelected.id);
-
-  if (takerSelectedIndex < siblingIds.length - 1) {
-    return siblingIds[takerSelectedIndex + 1];
-  }
-
-  for (const siblingId of siblingIds) {
-    const sibling = quiz.locations[siblingId];
-
-    if (
-      sibling.locationType === LocationType.AREA &&
-      sibling.sublocationIds.length > 0
-    ) {
-      return sibling.sublocationIds[0];
-    }
-  }
-
-  return searchUpward(quiz, parent);
-}
-
-function searchUpward(
-  quiz: Quiz,
-  location: RootState | AreaState,
-): string | null {
-  if (location.locationType === LocationType.ROOT) {
-    return null;
-  }
-
-  const parent = quiz.locations[location.parentId] as RootState | AreaState;
-  const siblingIds = parent.sublocationIds;
-  const index = siblingIds.indexOf(location.id);
-
-  for (let i = index + 1; i < siblingIds.length; i++) {
-    const location = quiz.locations[siblingIds[i]];
-
-    if (
-      location.locationType === LocationType.AREA &&
-      location.sublocationIds.length > 0
-    ) {
-      return location.sublocationIds[0];
-    }
-  }
-
-  return searchUpward(quiz, parent);
 }
