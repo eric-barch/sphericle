@@ -4,6 +4,7 @@ import {
   FeatureType,
   QuizBuilderDispatchType,
   AllFeaturesDispatchType,
+  QuizTakerDispatchType,
 } from "./enums";
 
 export interface AllFeatures {
@@ -137,4 +138,25 @@ interface SetActiveOptionDispatch extends BaseQuizBuilderDispatch {
 interface SetSelectedFeatureDispatch extends BaseQuizBuilderDispatch {
   type: QuizBuilderDispatchType.SET_SELECTED_FEATURE;
   featureId: string;
+}
+
+export type QuizTakerDispatch =
+  | ResetDispatch
+  | MarkCorrectDispatch
+  | MarkIncorrectDispatch;
+
+interface BaseQuizTakerDispatch {
+  type: QuizTakerDispatchType;
+}
+
+interface ResetDispatch extends BaseQuizTakerDispatch {
+  type: QuizTakerDispatchType.RESET;
+}
+
+interface MarkCorrectDispatch extends BaseQuizTakerDispatch {
+  type: QuizTakerDispatchType.MARK_CORRECT;
+}
+
+interface MarkIncorrectDispatch extends BaseQuizTakerDispatch {
+  type: QuizTakerDispatchType.MARK_INCORRECT;
 }
