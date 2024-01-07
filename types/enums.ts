@@ -22,6 +22,12 @@ export enum QuizBuilderDispatchType {
   SET_SELECTED_FEATURE = "SET_SELECTED_FEATURE",
 }
 
+export enum QuizTakerDispatchType {
+  RESET = "RESET",
+  MARK_CORRECT = "MARK_CORRECT",
+  MARK_INCORRECT = "MARK_INCORRECT",
+}
+
 export enum SearchStatus {
   SEARCHING = "SEARCHING",
   SEARCHED = "SEARCHED",
