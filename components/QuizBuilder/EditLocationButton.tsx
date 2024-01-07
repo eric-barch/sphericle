@@ -1,5 +1,5 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { LocationType, QuizDispatchType } from "@/types";
+import { FeatureType, AllFeaturesDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { MouseEvent } from "react";
@@ -17,7 +17,7 @@ export default function EditLocationButton({
 }: EditLocationButtonProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const location = quiz.locations[locationId];
+  const location = quiz[locationId];
 
   function handleAddSublocationClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
@@ -33,8 +33,8 @@ export default function EditLocationButton({
     event.stopPropagation();
 
     quizDispatch({
-      type: QuizDispatchType.DELETE_LOCATION,
-      locationId,
+      type: AllFeaturesDispatchType.DELETE_FEATURE,
+      featureId: locationId,
     });
   }
 
@@ -47,7 +47,7 @@ export default function EditLocationButton({
         className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        {location.locationType === LocationType.AREA && (
+        {location.featureType === FeatureType.AREA && (
           <DropdownMenu.Item
             onClick={handleAddSublocationClick}
             className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"

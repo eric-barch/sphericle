@@ -3,16 +3,15 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import {
   AreaState,
-  LocationType,
+  FeatureType,
   PointState,
-  QuizDispatchType,
-  RootState,
+  AllFeaturesDispatchType,
 } from "@/types";
 import { Reorder } from "framer-motion";
+import { RefObject } from "react";
 import Area from "./Area";
-import Point from "./Point";
 import LocationAdder from "./LocationAdder";
-import { RefObject, useState } from "react";
+import Point from "./Point";
 
 interface SublocationsProps {
   locationAdderInputRef?: RefObject<HTMLInputElement>;
@@ -27,24 +26,21 @@ export default function Sublocations({
 }: SublocationsProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const parentLocation = quiz.locations[parentId] as RootState | AreaState;
+
+  const parentLocation = quiz[parentId];
 
   if (
-    parentLocation.locationType !== LocationType.ROOT &&
-    parentLocation.locationType !== LocationType.AREA
+    parentLocation.featureType !== FeatureType.ROOT &&
+    parentLocation.featureType !== FeatureType.AREA
   ) {
     throw new Error("parentLocation must be of type ROOT or AREA.");
   }
 
-  const [sublocationIds, setSublocationIds] = useState<string[]>(
-    parentLocation.sublocationIds,
-  );
-
   function handleReorder(sublocationIds: string[]) {
     quizDispatch({
-      type: QuizDispatchType.SET_SUBLOCATION_IDS,
-      locationId: parentId,
-      sublocationIds,
+      type: AllFeaturesDispatchType.SET_SUBFEATURES,
+      featureId: parentId,
+      subfeatureIds: sublocationIds,
     });
   }
 
@@ -53,10 +49,10 @@ export default function Sublocations({
       <Reorder.Group
         className="mt-1 space-y-1"
         axis="y"
-        values={parentLocation.sublocationIds}
+        values={parentLocation.subfeatureIds}
         onReorder={handleReorder}
       >
-        {parentLocation.sublocationIds.map((sublocationId) => (
+        {parentLocation.subfeatureIds.map((sublocationId) => (
           <Reorder.Item
             key={sublocationId}
             layout="position"
@@ -79,20 +75,20 @@ interface SublocationProps {
 
 function Sublocation({ sublocationId }: SublocationProps) {
   const quiz = useQuiz();
-  const sublocation = quiz.locations[sublocationId] as AreaState | PointState;
+  const sublocation = quiz[sublocationId] as AreaState | PointState;
 
   if (
-    sublocation.locationType !== LocationType.AREA &&
-    sublocation.locationType !== LocationType.POINT
+    sublocation.featureType !== FeatureType.AREA &&
+    sublocation.featureType !== FeatureType.POINT
   ) {
     throw new Error("sublocation must be of type AREA or POINT.");
   }
 
-  if (sublocation.locationType === LocationType.AREA) {
+  if (sublocation.featureType === FeatureType.AREA) {
     return <Area locationId={sublocationId} />;
   }
 
-  if (sublocation.locationType === LocationType.POINT) {
+  if (sublocation.featureType === FeatureType.POINT) {
     return <Point locationId={sublocationId} />;
   }
 }

@@ -2,15 +2,27 @@
 
 import Map from "@/components/Map";
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState, LocationType, PointState, QuizDispatchType } from "@/types";
+import {
+  AreaState,
+  FeatureType,
+  PointState,
+  AllFeaturesDispatchType,
+} from "@/types";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
 import AnswerBox from "./AnswerBox";
 import ScoreBox from "./ScoreBox";
+import {
+  useQuizBuilder,
+  useQuizBuilderDispatch,
+} from "../QuizBuilder/QuizBuilderProvider";
 
 export default function QuizTaker() {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
+
+  const quizBuilder = useQuizBuilder();
+  const quizBuilderDispatch = useQuizBuilderDispatch();
 
   const [quizComplete, setQuizComplete] = useState<boolean>(false);
   const [mapId, setMapId] = useState<string>("8777b9e5230900fc");
@@ -24,7 +36,7 @@ export default function QuizTaker() {
   useEffect(() => {
     if (!quizComplete) {
       quizDispatch({
-        type: QuizDispatchType.RESET_TAKER,
+        type: AllFeaturesDispatchType.RESET_TAKER,
       });
     }
 
@@ -32,7 +44,7 @@ export default function QuizTaker() {
   }, [quizComplete, quizDispatch]);
 
   useEffect(() => {
-    const location = quiz.locations[quiz.takerSelected];
+    const location = quiz[quizBuilder.selectedId];
 
     if (quiz.remaining.length <= 0) {
       setQuizComplete(true);
@@ -48,33 +60,33 @@ export default function QuizTaker() {
     }
 
     if (
-      location.locationType !== LocationType.AREA &&
-      location.locationType !== LocationType.POINT
+      location.featureType !== FeatureType.AREA &&
+      location.featureType !== FeatureType.POINT
     ) {
       throw new Error("location must be of type AREA or POINT.");
     }
 
-    const parentLocation = quiz.locations[location.parentId];
+    const parentLocation = quiz[location.parentId];
 
-    if (parentLocation.locationType === LocationType.ROOT) {
-      if (location.locationType === LocationType.AREA) {
+    if (parentLocation.featureType === FeatureType.ROOT) {
+      if (location.featureType === FeatureType.AREA) {
         setBounds(location.displayBounds);
         setEmptyAreas(null);
         setFilledAreas(location);
         setMarkedPoints(null);
-      } else if (location.locationType === LocationType.POINT) {
+      } else if (location.featureType === FeatureType.POINT) {
         setBounds(location.displayBounds);
         setEmptyAreas(null);
         setFilledAreas(null);
         setMarkedPoints(location);
       }
-    } else if (parentLocation.locationType === LocationType.AREA) {
-      if (location.locationType === LocationType.AREA) {
+    } else if (parentLocation.featureType === FeatureType.AREA) {
+      if (location.featureType === FeatureType.AREA) {
         setBounds(parentLocation.displayBounds);
         setEmptyAreas(parentLocation);
         setFilledAreas(location);
         setMarkedPoints(null);
-      } else if (location.locationType === LocationType.POINT) {
+      } else if (location.featureType === FeatureType.POINT) {
         setBounds(parentLocation.displayBounds);
         setEmptyAreas(parentLocation);
         setFilledAreas(null);
@@ -89,7 +101,7 @@ export default function QuizTaker() {
 
   function handleClick() {
     quizDispatch({
-      type: QuizDispatchType.RESET_TAKER,
+      type: AllFeaturesDispatchType.RESET_TAKER,
     });
   }
 

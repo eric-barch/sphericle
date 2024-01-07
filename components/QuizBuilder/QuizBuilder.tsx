@@ -7,17 +7,21 @@ import { AreaState, DisplayMode, PointState, RootState } from "@/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Sublocations from "./Sublocations";
+import { useQuizBuilder } from "./QuizBuilderProvider";
 
 export default function QuizBuilder() {
   const quiz = useQuiz();
+  const quizBuilder = useQuizBuilder();
 
   const [displayedLocation, setDisplayedLocation] = useState<
     RootState | AreaState | PointState | null
-  >(quiz.locations[quiz.selected] || null);
+  >(quiz[quizBuilder.selectedId] || null);
 
   useEffect(() => {
-    setDisplayedLocation(quiz.locations[quiz.selected]);
-  }, [quiz]);
+    const activeOption = quizBuilder.activeOption;
+    const selectedLocation = quiz[quizBuilder.selectedId];
+    setDisplayedLocation(activeOption || selectedLocation);
+  }, [quiz, quizBuilder]);
 
   return (
     <SplitPane>

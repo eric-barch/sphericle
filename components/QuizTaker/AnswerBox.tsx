@@ -1,7 +1,16 @@
 import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState, PointState, QuizDispatchType } from "@/types";
+import {
+  AreaState,
+  PointState,
+  QuizBuilderDispatchType,
+  AllFeaturesDispatchType,
+} from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";
+import {
+  useQuizBuilder,
+  useQuizBuilderDispatch,
+} from "@/components/QuizBuilder/QuizBuilderProvider";
 
 interface AnswerBoxProps {
   inputRef: RefObject<HTMLInputElement>;
@@ -11,7 +20,11 @@ interface AnswerBoxProps {
 export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
   const quiz = useQuiz();
   const quizDispatch = useQuizDispatch();
-  const takerSelected = quiz.locations[quiz.takerSelected] as
+
+  const quizBuilder = useQuizBuilder();
+  const quizBuilderDispatch = useQuizBuilderDispatch();
+
+  const takerSelected = quiz.locations[quizBuilder.selectedId] as
     | AreaState
     | PointState;
 
@@ -29,7 +42,7 @@ export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
       toast.success(takerSelected.userDefinedName || takerSelected.shortName);
 
       quizDispatch({
-        type: QuizDispatchType.MARK_TAKER_SELECTED,
+        type: AllFeaturesDispatchType.MARK_TAKER_SELECTED,
         answeredCorrectly: true,
       });
     } else {
@@ -40,7 +53,7 @@ export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
       );
 
       quizDispatch({
-        type: QuizDispatchType.MARK_TAKER_SELECTED,
+        type: AllFeaturesDispatchType.MARK_TAKER_SELECTED,
         answeredCorrectly: false,
       });
     }
