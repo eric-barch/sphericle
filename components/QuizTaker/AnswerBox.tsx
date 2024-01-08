@@ -1,16 +1,11 @@
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
 import {
-  AreaState,
-  PointState,
-  QuizBuilderDispatchType,
-  AllFeaturesDispatchType,
-} from "@/types";
+  useAllFeatures,
+  useAllFeaturesDispatch,
+} from "@/components/AllFeaturesProvider";
+import { AreaState, PointState, QuizTakerDispatchType } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";
-import {
-  useQuizBuilder,
-  useQuizBuilderDispatch,
-} from "@/components/QuizBuilder/QuizBuilderProvider";
+import { useQuizTaker, useQuizTakerDispatch } from "./QuizTakerProvider";
 
 interface AnswerBoxProps {
   inputRef: RefObject<HTMLInputElement>;
@@ -18,15 +13,15 @@ interface AnswerBoxProps {
 }
 
 export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
+  const allFeatures = useAllFeatures();
+  const allFeaturesDispatch = useAllFeaturesDispatch();
 
-  const quizBuilder = useQuizBuilder();
-  const quizBuilderDispatch = useQuizBuilderDispatch();
+  const quizTaker = useQuizTaker();
+  const quizTakerDispatch = useQuizTakerDispatch();
 
-  const takerSelected = quiz.locations[quizBuilder.selectedId] as
-    | AreaState
-    | PointState;
+  const takerSelected = allFeatures.features[
+    quizTaker.orderedIds[quizTaker.orderedIds.length]
+  ] as AreaState | PointState;
 
   const [input, setInput] = useState<string>("");
 
@@ -41,9 +36,8 @@ export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
     if (normalizedAnswer === normalizedInput) {
       toast.success(takerSelected.userDefinedName || takerSelected.shortName);
 
-      quizDispatch({
-        type: AllFeaturesDispatchType.MARK_TAKER_SELECTED,
-        answeredCorrectly: true,
+      quizTakerDispatch({
+        type: QuizTakerDispatchType.MARK_CORRECT,
       });
     } else {
       toast.error(
@@ -52,9 +46,8 @@ export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
         }`,
       );
 
-      quizDispatch({
-        type: AllFeaturesDispatchType.MARK_TAKER_SELECTED,
-        answeredCorrectly: false,
+      quizTakerDispatch({
+        type: QuizTakerDispatchType.MARK_INCORRECT,
       });
     }
 

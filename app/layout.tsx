@@ -3,7 +3,7 @@ import { Nunito } from "next/font/google";
 import "@/styles/globals.css";
 import { ReactNode } from "react";
 import Nav from "@/components/Nav";
-import QuizProvider from "@/components/QuizProvider";
+import AllFeaturesProvider from "@/components/AllFeaturesProvider";
 import { Toaster } from "react-hot-toast";
 import QuizBuilderProvider from "@/components/QuizBuilder/QuizBuilderProvider";
 
@@ -20,9 +20,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={font.className}>
         <Nav />
         <main>
-          <QuizProvider>
+          <AllFeaturesProvider>
             <QuizBuilderProvider>{children}</QuizBuilderProvider>
-          </QuizProvider>
+          </AllFeaturesProvider>
           <Toaster containerStyle={{ marginTop: "3rem" }} />
         </main>
       </body>

@@ -8,7 +8,8 @@ import {
 } from "./enums";
 
 export interface AllFeatures {
-  [key: string]: RootState | AreaState | PointState;
+  rootId: string;
+  features: { [key: string]: RootState | AreaState | PointState };
 }
 
 export interface RootState {
@@ -52,9 +53,10 @@ export interface QuizBuilderState {
 }
 
 export interface QuizTakerState {
-  correctIds: string[];
-  incorrectIds: string[];
-  remainingIds: string[];
+  orderedIds: string[];
+  current: number;
+  correctIds: Set<string>;
+  incorrectIds: Set<string>;
 }
 
 export interface OsmItem {
@@ -151,6 +153,7 @@ interface BaseQuizTakerDispatch {
 
 interface ResetDispatch extends BaseQuizTakerDispatch {
   type: QuizTakerDispatchType.RESET;
+  allFeatures: AllFeatures;
 }
 
 interface MarkCorrectDispatch extends BaseQuizTakerDispatch {

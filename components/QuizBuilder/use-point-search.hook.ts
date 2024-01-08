@@ -1,4 +1,4 @@
-import { useQuiz } from "@/components/QuizProvider";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
   AreaState,
   FeatureType,
@@ -20,8 +20,10 @@ export interface PointSearch {
 }
 
 export default function usePointSearch(parentId: string): PointSearch {
-  const quiz = useQuiz();
-  const parentLocation = quiz[parentId] as RootState | AreaState;
+  const allFeatures = useAllFeatures();
+  const parentLocation = allFeatures.features[parentId] as
+    | RootState
+    | AreaState;
 
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
