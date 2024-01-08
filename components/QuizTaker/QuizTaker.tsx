@@ -7,30 +7,30 @@ import {
   DisplayMode,
   PointState,
   QuizTakerDispatchType,
-  RootState,
 } from "@/types";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
 import AnswerBox from "./AnswerBox";
-import QuizTakerProvider, {
-  useQuizTaker,
-  useQuizTakerDispatch,
-} from "./QuizTakerProvider";
+import { useQuizTakerDispatch, useQuizTakerState } from "./QuizTakerProvider";
 import ScoreBox from "./ScoreBox";
 
 export default function QuizTaker() {
   const allFeatures = useAllFeatures();
 
-  const quizTaker = useQuizTaker();
+  const quizTakerState = useQuizTakerState();
   const quizTakerDispatch = useQuizTakerDispatch();
 
-  const [displayedLocation, setDisplayedLocation] = useState<
-    RootState | AreaState | PointState | null
-  >(null);
-  const [isComplete, setIsComplete] = useState<boolean>(false);
+  const [displayedFeature, setDisplayedFeature] = useState<
+    AreaState | PointState | null
+  >(
+    allFeatures.features[
+      quizTakerState.orderedIds[quizTakerState.currentIndex]
+    ] as AreaState | PointState,
+  );
 
   const answerBoxInputRef = useRef<HTMLInputElement>();
 
+  // reset quiz on component mount
   useEffect(() => {
     quizTakerDispatch({
       type: QuizTakerDispatchType.RESET,
@@ -38,15 +38,16 @@ export default function QuizTaker() {
     });
   }, [allFeatures, quizTakerDispatch]);
 
+  // set displayed location when orderedIdsIndex changes
   useEffect(() => {
-    setIsComplete(quizTaker.current === quizTaker.orderedIds.length);
-  }, [quizTaker]);
+    const displayedFeature = allFeatures.features[
+      quizTakerState.orderedIds[quizTakerState.currentIndex]
+    ] as AreaState | PointState;
 
-  useEffect(() => {
-    setDisplayedLocation(
-      allFeatures.features[quizTaker.orderedIds[quizTaker.orderedIds.length]],
-    );
-  }, [allFeatures, quizTaker]);
+    console.log("displayedFeature", displayedFeature);
+
+    setDisplayedFeature(displayedFeature);
+  }, [allFeatures, quizTakerState]);
 
   function handleOpenAutoFocus(event: Event) {
     event.preventDefault();
@@ -61,15 +62,18 @@ export default function QuizTaker() {
 
   return (
     <div className="h-[calc(100vh-3rem)] relative flex justify-center align-middle content-center">
-      <Dialog.Root open={isComplete} modal={false}>
+      <Dialog.Root
+        open={quizTakerState.currentIndex === quizTakerState.orderedIds.length}
+        modal={false}
+      >
         <Dialog.Content
           className="fixed flex flex-col items-center p-4 bg-white text-black rounded-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40"
           onOpenAutoFocus={handleOpenAutoFocus}
         >
           <Dialog.Title>Quiz Complete!</Dialog.Title>
-          <Dialog.Description className="m-4">{`Your score: ${quizTaker
+          <Dialog.Description className="m-4">{`Your score: ${quizTakerState
             ?.correctIds.size} / ${
-            quizTaker.correctIds.size + quizTaker.incorrectIds.size
+            quizTakerState.correctIds.size + quizTakerState.incorrectIds.size
           }`}</Dialog.Description>
           <Dialog.Close
             className="p-2 rounded-3xl bg-gray-500 text-white"
@@ -82,10 +86,16 @@ export default function QuizTaker() {
       <ScoreBox />
       <Map
         mapId="8777b9e5230900fc"
-        displayedLocation={displayedLocation}
+        displayedFeature={displayedFeature}
         displayMode={DisplayMode.QUIZ_TAKER}
       />
-      <AnswerBox inputRef={answerBoxInputRef} disabled={isComplete} />
+      <AnswerBox
+        displayedFeature={displayedFeature}
+        inputRef={answerBoxInputRef}
+        disabled={
+          quizTakerState.currentIndex === quizTakerState.orderedIds.length
+        }
+      />
     </div>
   );
 }

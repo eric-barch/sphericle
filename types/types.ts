@@ -54,7 +54,7 @@ export interface QuizBuilderState {
 
 export interface QuizTakerState {
   orderedIds: string[];
-  current: number;
+  currentIndex: number;
   correctIds: Set<string>;
   incorrectIds: Set<string>;
 }

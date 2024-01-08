@@ -40,7 +40,7 @@ export default function QuizTakerProvider({
   );
 }
 
-export function useQuizTaker(): QuizTakerState {
+export function useQuizTakerState(): QuizTakerState {
   return useContext(QuizTakerContext);
 }
 
@@ -60,8 +60,14 @@ function quizTakerReducer(
       return newQuizTaker;
     }
     case QuizTakerDispatchType.MARK_CORRECT: {
+      const newQuizTaker = { ...quizTaker };
+      newQuizTaker.currentIndex++;
+      return newQuizTaker;
     }
     case QuizTakerDispatchType.MARK_INCORRECT: {
+      const newQuizTaker = { ...quizTaker };
+      newQuizTaker.currentIndex++;
+      return newQuizTaker;
     }
     default: {
       return { ...quizTaker };
@@ -79,7 +85,9 @@ function orderFeatureIds(allFeatures: AllFeatures): string[] {
 
     if (!feature) continue;
 
-    result.push(feature.id);
+    if (feature.id !== allFeatures.rootId) {
+      result.push(feature.id);
+    }
 
     if ("subfeatureIds" in feature && feature.subfeatureIds.length > 0) {
       queue.push(...feature.subfeatureIds);
@@ -91,7 +99,7 @@ function orderFeatureIds(allFeatures: AllFeatures): string[] {
 
 const initialQuizTaker: QuizTakerState = {
   orderedIds: [],
-  current: 0,
+  currentIndex: 0,
   correctIds: new Set<string>(),
   incorrectIds: new Set<string>(),
 };
