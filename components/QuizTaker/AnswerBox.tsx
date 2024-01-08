@@ -1,40 +1,39 @@
-import {
-  useAllFeatures,
-  useAllFeaturesDispatch,
-} from "@/components/AllFeaturesProvider";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import { AreaState, PointState, QuizTakerDispatchType } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";
-import { useQuizTaker, useQuizTakerDispatch } from "./QuizTakerProvider";
+import { useQuizTakerDispatch, useQuizTakerState } from "./QuizTakerProvider";
 
 interface AnswerBoxProps {
+  displayedFeature: AreaState | PointState;
   inputRef: RefObject<HTMLInputElement>;
   disabled: boolean;
 }
 
-export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
+export default function AnswerBox({
+  displayedFeature,
+  inputRef,
+  disabled,
+}: AnswerBoxProps) {
   const allFeatures = useAllFeatures();
-  const allFeaturesDispatch = useAllFeaturesDispatch();
 
-  const quizTaker = useQuizTaker();
+  const quizTakerState = useQuizTakerState();
   const quizTakerDispatch = useQuizTakerDispatch();
-
-  const takerSelected = allFeatures.features[
-    quizTaker.orderedIds[quizTaker.orderedIds.length]
-  ] as AreaState | PointState;
 
   const [input, setInput] = useState<string>("");
 
   function checkAnswer() {
     const normalizedAnswer = (
-      takerSelected.userDefinedName || takerSelected.shortName
+      displayedFeature.userDefinedName || displayedFeature.shortName
     )
       .trim()
       .toLowerCase();
     const normalizedInput = input.trim().toLowerCase();
 
     if (normalizedAnswer === normalizedInput) {
-      toast.success(takerSelected.userDefinedName || takerSelected.shortName);
+      toast.success(
+        displayedFeature.userDefinedName || displayedFeature.shortName,
+      );
 
       quizTakerDispatch({
         type: QuizTakerDispatchType.MARK_CORRECT,
@@ -42,7 +41,7 @@ export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
     } else {
       toast.error(
         `You said: ${input}\nCorrect answer: ${
-          takerSelected.userDefinedName || takerSelected.shortName
+          displayedFeature.userDefinedName || displayedFeature.shortName
         }`,
       );
 

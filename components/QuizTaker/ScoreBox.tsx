@@ -1,7 +1,7 @@
-import { useQuizTaker } from "./QuizTakerProvider";
+import { useQuizTakerState } from "./QuizTakerProvider";
 
 export default function ScoreBox() {
-  const quizTaker = useQuizTaker();
+  const quizTaker = useQuizTakerState();
 
   return (
     <div className="absolute top-5 right-5 rounded-3xl z-10 bg-gray-500 bg-opacity-80 p-3">

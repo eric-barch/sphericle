@@ -14,7 +14,7 @@ interface MapProps {
   mapRef?: RefObject<HTMLDivElement>;
   padding?: google.maps.Padding;
   mapId: string;
-  displayedLocation: RootState | AreaState | PointState | null;
+  displayedFeature: RootState | AreaState | PointState | null;
   displayMode: DisplayMode;
 }
 
@@ -22,7 +22,7 @@ export default function Map({
   mapRef: propMapRef,
   padding = { top: 50, right: 50, bottom: 50, left: 50 },
   mapId,
-  displayedLocation,
+  displayedFeature: displayedLocation,
   displayMode,
 }: MapProps) {
   const allFeatures = useAllFeatures();

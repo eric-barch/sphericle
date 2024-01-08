@@ -13,14 +13,14 @@ export default function QuizBuilder() {
   const allFeatures = useAllFeatures();
   const quizBuilder = useQuizBuilder();
 
-  const [displayedLocation, setDisplayedLocation] = useState<
+  const [displayedFeature, setDisplayedFeature] = useState<
     RootState | AreaState | PointState | null
   >(allFeatures.features[quizBuilder.selectedId] || null);
 
   useEffect(() => {
     const activeOption = quizBuilder.activeOption;
     const selectedLocation = allFeatures.features[quizBuilder.selectedId];
-    setDisplayedLocation(activeOption || selectedLocation);
+    setDisplayedFeature(activeOption || selectedLocation);
   }, [allFeatures, quizBuilder]);
 
   return (
@@ -39,7 +39,7 @@ export default function QuizBuilder() {
       </div>
       <Map
         mapId="696d0ea42431a75c"
-        displayedLocation={displayedLocation}
+        displayedFeature={displayedFeature}
         displayMode={DisplayMode.QUIZ_BUILDER}
       />
     </SplitPane>
