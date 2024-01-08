@@ -34,6 +34,6 @@ export enum SearchStatus {
 }
 
 export enum DisplayMode {
-  WITH_SIBLINGS = "WITH_SIBLINGS",
-  WITHOUT_SIBLINGS = "WITHOUT_SIBLINGS",
+  QUIZ_BUILDER = "QUIZ_BUILDER",
+  QUIZ_TAKER = "QUIZ_TAKER",
 }

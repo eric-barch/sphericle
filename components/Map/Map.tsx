@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuiz } from "@/components/QuizProvider";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
   AreaState,
   DisplayMode,
@@ -25,7 +25,7 @@ export default function Map({
   displayedLocation,
   displayMode,
 }: MapProps) {
-  const quiz = useQuiz();
+  const allFeatures = useAllFeatures();
 
   const defaultMapRef = useRef<HTMLDivElement>(null);
   const mapRef = propMapRef || defaultMapRef;
@@ -207,7 +207,7 @@ export default function Map({
       return;
     }
 
-    const parentLocation = quiz[displayedLocation.parentId];
+    const parentLocation = allFeatures.features[displayedLocation.parentId];
 
     if (parentLocation.featureType === FeatureType.ROOT) {
       if (displayedLocation.featureType === FeatureType.AREA) {
@@ -249,7 +249,7 @@ export default function Map({
       }
     }
   }, [
-    quiz,
+    allFeatures,
     displayedLocation,
     setBounds,
     setEmptyAreas,

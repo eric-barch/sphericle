@@ -1,9 +1,13 @@
 "use client";
 
 import {
+  AllFeatures,
+  AreaState,
+  PointState,
   QuizTakerDispatch,
   QuizTakerDispatchType,
   QuizTakerState,
+  RootState,
 } from "@/types";
 import {
   Dispatch,
@@ -13,7 +17,7 @@ import {
   useReducer,
 } from "react";
 
-const QuizTakerContext = createContext<QuizTakerState | null>(null);
+const QuizTakerContext = createContext<QuizTakerState>(null);
 const QuizTakerDispatchContext =
   createContext<Dispatch<QuizTakerDispatch> | null>(null);
 
@@ -50,6 +54,10 @@ function quizTakerReducer(
 ): QuizTakerState {
   switch (action.type) {
     case QuizTakerDispatchType.RESET: {
+      const newQuizTaker = { ...quizTaker };
+      newQuizTaker.orderedIds = orderFeatureIds(action.allFeatures);
+      console.log("newQuizTaker", newQuizTaker);
+      return newQuizTaker;
     }
     case QuizTakerDispatchType.MARK_CORRECT: {
     }
@@ -61,8 +69,29 @@ function quizTakerReducer(
   }
 }
 
+function orderFeatureIds(allFeatures: AllFeatures): string[] {
+  const result: string[] = [];
+  const queue: string[] = [allFeatures.rootId];
+
+  while (queue.length > 0) {
+    const currentId = queue.shift();
+    const feature = allFeatures.features[currentId];
+
+    if (!feature) continue;
+
+    result.push(feature.id);
+
+    if ("subfeatureIds" in feature && feature.subfeatureIds.length > 0) {
+      queue.push(...feature.subfeatureIds);
+    }
+  }
+
+  return result;
+}
+
 const initialQuizTaker: QuizTakerState = {
-  correctIds: [],
-  incorrectIds: [],
-  remainingIds: [],
+  orderedIds: [],
+  current: 0,
+  correctIds: new Set<string>(),
+  incorrectIds: new Set<string>(),
 };

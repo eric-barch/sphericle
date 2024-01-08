@@ -1,7 +1,7 @@
 "use client";
 
 import Map from "@/components/Map";
-import { rootId, useQuiz } from "@/components/QuizProvider";
+import { rootId, useAllFeatures } from "@/components/AllFeaturesProvider";
 import SplitPane from "@/components/SplitPane";
 import { AreaState, DisplayMode, PointState, RootState } from "@/types";
 import Link from "next/link";
@@ -10,18 +10,18 @@ import Sublocations from "./Sublocations";
 import { useQuizBuilder } from "./QuizBuilderProvider";
 
 export default function QuizBuilder() {
-  const quiz = useQuiz();
+  const allFeatures = useAllFeatures();
   const quizBuilder = useQuizBuilder();
 
   const [displayedLocation, setDisplayedLocation] = useState<
     RootState | AreaState | PointState | null
-  >(quiz[quizBuilder.selectedId] || null);
+  >(allFeatures.features[quizBuilder.selectedId] || null);
 
   useEffect(() => {
     const activeOption = quizBuilder.activeOption;
-    const selectedLocation = quiz[quizBuilder.selectedId];
+    const selectedLocation = allFeatures.features[quizBuilder.selectedId];
     setDisplayedLocation(activeOption || selectedLocation);
-  }, [quiz, quizBuilder]);
+  }, [allFeatures, quizBuilder]);
 
   return (
     <SplitPane>
@@ -40,7 +40,7 @@ export default function QuizBuilder() {
       <Map
         mapId="696d0ea42431a75c"
         displayedLocation={displayedLocation}
-        displayMode={DisplayMode.WITHOUT_SIBLINGS}
+        displayMode={DisplayMode.QUIZ_BUILDER}
       />
     </SplitPane>
   );

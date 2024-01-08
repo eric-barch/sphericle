@@ -1,4 +1,7 @@
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import {
+  useAllFeatures,
+  useAllFeaturesDispatch,
+} from "@/components/AllFeaturesProvider";
 import { FeatureType, AllFeaturesDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
@@ -15,9 +18,10 @@ export default function EditLocationButton({
   setIsRenaming,
   setIsAdding,
 }: EditLocationButtonProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
-  const location = quiz[locationId];
+  const allFeatures = useAllFeatures();
+  const allFeaturesDispatch = useAllFeaturesDispatch();
+
+  const location = allFeatures.features[locationId];
 
   function handleAddSublocationClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
@@ -32,7 +36,7 @@ export default function EditLocationButton({
   function handleDeleteClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
 
-    quizDispatch({
+    allFeaturesDispatch({
       type: AllFeaturesDispatchType.DELETE_FEATURE,
       featureId: locationId,
     });

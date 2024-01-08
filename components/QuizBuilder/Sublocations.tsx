@@ -1,6 +1,9 @@
 "use client";
 
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import {
+  useAllFeatures,
+  useAllFeaturesDispatch,
+} from "@/components/AllFeaturesProvider";
 import {
   AreaState,
   FeatureType,
@@ -24,10 +27,10 @@ export default function Sublocations({
   className,
   parentId,
 }: SublocationsProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
+  const allFeatures = useAllFeatures();
+  const allFeaturesDispatch = useAllFeaturesDispatch();
 
-  const parentLocation = quiz[parentId];
+  const parentLocation = allFeatures.features[parentId];
 
   if (
     parentLocation.featureType !== FeatureType.ROOT &&
@@ -37,7 +40,7 @@ export default function Sublocations({
   }
 
   function handleReorder(sublocationIds: string[]) {
-    quizDispatch({
+    allFeaturesDispatch({
       type: AllFeaturesDispatchType.SET_SUBFEATURES,
       featureId: parentId,
       subfeatureIds: sublocationIds,
@@ -74,8 +77,10 @@ interface SublocationProps {
 }
 
 function Sublocation({ sublocationId }: SublocationProps) {
-  const quiz = useQuiz();
-  const sublocation = quiz[sublocationId] as AreaState | PointState;
+  const allFeatures = useAllFeatures();
+  const sublocation = allFeatures.features[sublocationId] as
+    | AreaState
+    | PointState;
 
   if (
     sublocation.featureType !== FeatureType.AREA &&

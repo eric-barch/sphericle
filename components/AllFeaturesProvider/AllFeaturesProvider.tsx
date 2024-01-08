@@ -14,35 +14,41 @@ import {
   useReducer,
 } from "react";
 
-const QuizContext = createContext<AllFeatures | null>(null);
-const QuizDispatchContext = createContext<Dispatch<AllFeaturesDispatch> | null>(
-  null,
-);
+const AllFeaturesContext = createContext<AllFeatures | null>(null);
+const AllFeaturesDispatchContext =
+  createContext<Dispatch<AllFeaturesDispatch> | null>(null);
 
-export default function QuizProvider({ children }: { children: ReactNode }) {
-  const [quiz, quizDispatch] = useReducer(quizReducer, initialQuiz);
+export default function AllFeaturesProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [allFeatures, allFeaturesDispatch] = useReducer(
+    allFeaturesReducer,
+    initialAllFeatures,
+  );
 
   return (
-    <QuizContext.Provider value={quiz}>
-      <QuizDispatchContext.Provider value={quizDispatch}>
+    <AllFeaturesContext.Provider value={allFeatures}>
+      <AllFeaturesDispatchContext.Provider value={allFeaturesDispatch}>
         {children}
-      </QuizDispatchContext.Provider>
-    </QuizContext.Provider>
+      </AllFeaturesDispatchContext.Provider>
+    </AllFeaturesContext.Provider>
   );
 }
 
 export const rootId = crypto.randomUUID();
 
-export function useQuiz(): AllFeatures {
-  return useContext(QuizContext);
+export function useAllFeatures(): AllFeatures {
+  return useContext(AllFeaturesContext);
 }
 
-export function useQuizDispatch(): Dispatch<AllFeaturesDispatch> {
-  return useContext(QuizDispatchContext);
+export function useAllFeaturesDispatch(): Dispatch<AllFeaturesDispatch> {
+  return useContext(AllFeaturesDispatchContext);
 }
 
-function quizReducer(
-  quiz: AllFeatures,
+function allFeaturesReducer(
+  allFeatures: AllFeatures,
   action: AllFeaturesDispatch,
 ): AllFeatures {
   switch (action.type) {
@@ -50,8 +56,8 @@ function quizReducer(
       const parentId = action.subfeature.parentId;
       const sublocationId = action.subfeature.id;
 
-      const newQuiz = { ...quiz };
-      const newParent = { ...quiz[parentId] };
+      const newAllFeatures = { ...allFeatures };
+      const newParent = { ...allFeatures.features[parentId] };
 
       if (newParent.featureType === FeatureType.POINT) {
         throw new Error("newParent must not be of type POINT.");
@@ -59,16 +65,16 @@ function quizReducer(
 
       if (!newParent.subfeatureIds.includes(sublocationId)) {
         newParent.subfeatureIds = [...newParent.subfeatureIds, sublocationId];
-        newQuiz[parentId] = newParent;
+        newAllFeatures.features[parentId] = newParent;
       }
 
-      newQuiz[sublocationId] = action.subfeature;
+      newAllFeatures.features[sublocationId] = action.subfeature;
 
-      return getResetQuiz(newQuiz);
+      return getResetAllFeatures(newAllFeatures);
     }
     case AllFeaturesDispatchType.SET_SUBFEATURES: {
-      const newQuiz = { ...quiz };
-      const newLocation = newQuiz[action.featureId];
+      const newAllFeatures = { ...allFeatures };
+      const newLocation = newAllFeatures.features[action.featureId];
 
       if (
         newLocation.featureType !== FeatureType.ROOT &&
@@ -79,11 +85,11 @@ function quizReducer(
 
       newLocation.subfeatureIds = action.subfeatureIds;
 
-      return getResetQuiz(newQuiz);
+      return getResetAllFeatures(newAllFeatures);
     }
     case AllFeaturesDispatchType.RENAME_FEATURE: {
-      const newQuiz = { ...quiz };
-      const newLocation = newQuiz[action.featureId];
+      const newAllFeatures = { ...allFeatures };
+      const newLocation = newAllFeatures.features[action.featureId];
 
       if (newLocation.featureType === FeatureType.ROOT) {
         throw new Error("newLocation must not be of type ROOT.");
@@ -91,11 +97,11 @@ function quizReducer(
 
       newLocation.userDefinedName = action.name;
 
-      return getResetQuiz(newQuiz);
+      return getResetAllFeatures(newAllFeatures);
     }
     case AllFeaturesDispatchType.SET_AREA_IS_OPEN: {
-      const newQuiz = { ...quiz };
-      const newLocation = newQuiz[action.featureId];
+      const newAllFeatures = { ...allFeatures };
+      const newLocation = newAllFeatures.features[action.featureId];
 
       if (newLocation.featureType !== FeatureType.AREA) {
         throw new Error("newLocation must be of type AREA.");
@@ -107,11 +113,11 @@ function quizReducer(
         newLocation.isAdding = false;
       }
 
-      return newQuiz;
+      return newAllFeatures;
     }
     case AllFeaturesDispatchType.SET_AREA_IS_ADDING: {
-      const newQuiz = { ...quiz };
-      const newLocation = newQuiz[action.featureId];
+      const newAllFeatures = { ...allFeatures };
+      const newLocation = newAllFeatures.features[action.featureId];
 
       if (newLocation.featureType !== FeatureType.AREA) {
         throw new Error("newLocation must be of type AREA.");
@@ -123,16 +129,16 @@ function quizReducer(
         newLocation.isOpen = true;
       }
 
-      return newQuiz;
+      return newAllFeatures;
     }
     case AllFeaturesDispatchType.DELETE_FEATURE: {
-      const newQuiz = { ...quiz };
+      const newAllFeatures = { ...allFeatures };
 
-      if (!newQuiz[action.featureId]) {
-        return newQuiz;
+      if (!newAllFeatures.features[action.featureId]) {
+        return newAllFeatures;
       }
 
-      const newLocation = newQuiz[action.featureId];
+      const newLocation = newAllFeatures.features[action.featureId];
 
       if (
         newLocation.featureType !== FeatureType.AREA &&
@@ -141,7 +147,7 @@ function quizReducer(
         throw new Error("newLocation must be of type AREA or POINT.");
       }
 
-      const newParent = newQuiz[newLocation.parentId];
+      const newParent = newAllFeatures.features[newLocation.parentId];
 
       if (
         newParent.featureType !== FeatureType.ROOT &&
@@ -154,31 +160,34 @@ function quizReducer(
         (sublocationId) => sublocationId !== action.featureId,
       );
 
-      delete newQuiz[action.featureId];
+      delete newAllFeatures.features[action.featureId];
 
-      return getResetQuiz(newQuiz);
+      return getResetAllFeatures(newAllFeatures);
     }
     default: {
-      return { ...quiz };
+      return { ...allFeatures };
     }
   }
 }
 
-const initialQuiz: AllFeatures = {
-  [rootId]: {
-    id: rootId,
-    subfeatureIds: [],
-    featureType: FeatureType.ROOT,
+const initialAllFeatures: AllFeatures = {
+  rootId,
+  features: {
+    [rootId]: {
+      id: rootId,
+      subfeatureIds: [],
+      featureType: FeatureType.ROOT,
+    },
   },
 };
 
-function getResetQuiz(quiz: AllFeatures): AllFeatures {
-  const newQuiz = { ...quiz };
+function getResetAllFeatures(allfeatures: AllFeatures): AllFeatures {
+  const newAllFeatures = { ...allfeatures };
 
-  // newQuiz.correct = 0;
-  // newQuiz.incorrect = 0;
+  // newAllFeatures.correct = 0;
+  // newAllFeatures.incorrect = 0;
 
-  // for (const location of Object.values(newQuiz)) {
+  // for (const location of Object.values(newAllFeatures)) {
   //   if (
   //     location.featureType === FeatureType.AREA ||
   //     location.featureType === FeatureType.POINT {
@@ -186,14 +195,14 @@ function getResetQuiz(quiz: AllFeatures): AllFeatures {
   //   }
   // }
 
-  // const rootLocation = newQuiz[newQuiz.root];
+  // const rootLocation = newallFeatures.features[newAllFeatures.root];
 
   // if (rootLocation.featureType !== LocationType.ROOT) {
   //   throw new Error("rootLocation must be of type ROOT.");
   // }
 
-  // newQuiz.takerSelected = rootLocation.subfeatureIds[0];
-  // newQuiz.isComplete = false;
+  // newAllFeatures.takerSelected = rootLocation.subfeatureIds[0];
+  // newAllFeatures.isComplete = false;
 
-  return newQuiz;
+  return newAllFeatures;
 }

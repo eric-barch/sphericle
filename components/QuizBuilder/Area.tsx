@@ -1,6 +1,9 @@
 "use client";
 
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import {
+  useAllFeatures,
+  useAllFeaturesDispatch,
+} from "@/components/AllFeaturesProvider";
 import {
   AreaState,
   FeatureType,
@@ -20,13 +23,13 @@ interface AreaProps {
 }
 
 export default function Area({ locationId }: AreaProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
+  const allFeatures = useAllFeatures();
+  const allFeaturesDispatch = useAllFeaturesDispatch();
 
   const quizBuilder = useQuizBuilder();
   const quizBuilderDispatch = useQuizBuilderDispatch();
 
-  const location = quiz[locationId] as AreaState;
+  const location = allFeatures.features[locationId] as AreaState;
 
   if (location.featureType !== FeatureType.AREA) {
     throw new Error("areaState must be of type AREA.");
@@ -48,13 +51,13 @@ export default function Area({ locationId }: AreaProps) {
 
   function handleValueChange(value: string[]) {
     if (value.includes(locationId)) {
-      quizDispatch({
+      allFeaturesDispatch({
         type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
         featureId: locationId,
         isOpen: true,
       });
     } else {
-      quizDispatch({
+      allFeaturesDispatch({
         type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
         featureId: locationId,
         isOpen: false,
@@ -113,7 +116,7 @@ export default function Area({ locationId }: AreaProps) {
   }
 
   function setIsAdding(isAdding: boolean) {
-    quizDispatch({
+    allFeaturesDispatch({
       type: AllFeaturesDispatchType.SET_AREA_IS_ADDING,
       featureId: locationId,
       isAdding,

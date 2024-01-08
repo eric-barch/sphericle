@@ -1,6 +1,6 @@
-import { FeatureType, AllFeaturesDispatchType } from "@/types";
-import { useQuiz, useQuizDispatch } from "../QuizProvider";
+import { AllFeaturesDispatchType, FeatureType } from "@/types";
 import { KeyboardEvent, RefObject, useState } from "react";
+import { useAllFeatures, useAllFeaturesDispatch } from "../AllFeaturesProvider";
 
 interface LocationNameProps {
   inputRef: RefObject<HTMLInputElement>;
@@ -15,9 +15,10 @@ export default function LocationName({
   isRenaming,
   setIsRenaming,
 }: LocationNameProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
-  const location = quiz[locationId];
+  const allFeatures = useAllFeatures();
+  const allFeaturesDispatch = useAllFeaturesDispatch();
+
+  const location = allFeatures.features[locationId];
 
   if (
     location.featureType !== FeatureType.AREA &&
@@ -36,7 +37,7 @@ export default function LocationName({
       event.stopPropagation();
       setIsRenaming(false);
 
-      quizDispatch({
+      allFeaturesDispatch({
         type: AllFeaturesDispatchType.RENAME_FEATURE,
         featureId: locationId,
         name: input,

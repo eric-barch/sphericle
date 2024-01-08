@@ -1,6 +1,9 @@
 "use client";
 
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import {
+  useAllFeatures,
+  useAllFeaturesDispatch,
+} from "@/components/AllFeaturesProvider";
 import {
   FeatureType,
   PointState,
@@ -17,13 +20,13 @@ interface PointProps {
 }
 
 export default function Point({ locationId }: PointProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
+  const allFeatures = useAllFeatures();
+  const allFeaturesDispatch = useAllFeaturesDispatch();
 
   const quizBuilder = useQuizBuilder();
   const quizBuilderDispatch = useQuizBuilderDispatch();
 
-  const location = quiz[locationId] as PointState;
+  const location = allFeatures.features[locationId] as PointState;
 
   if (location.featureType !== FeatureType.POINT) {
     throw new Error("pointState must be of type POINT.");

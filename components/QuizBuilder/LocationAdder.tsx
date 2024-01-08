@@ -1,6 +1,9 @@
 "use client";
 
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
+import {
+  useAllFeatures,
+  useAllFeaturesDispatch,
+} from "@/components/AllFeaturesProvider";
 import {
   AreaState,
   FeatureType,
@@ -34,8 +37,8 @@ export default function LocationAdder({
   inputRef,
   parentId,
 }: LocationAdderProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
+  const allFeatures = useAllFeatures();
+  const allFeaturesDispatch = useAllFeaturesDispatch();
 
   const quizBuilder = useQuizBuilder();
   const quizBuilderDispatch = useQuizBuilderDispatch();
@@ -43,7 +46,7 @@ export default function LocationAdder({
   const areaSearch = useAreaSearch(parentId);
   const pointSearch = usePointSearch(parentId);
 
-  const parentLocation = quiz[parentId];
+  const parentLocation = allFeatures.features[parentId];
 
   if (
     parentLocation.featureType !== FeatureType.ROOT &&
@@ -88,7 +91,7 @@ export default function LocationAdder({
   }
 
   function handleChange(sublocation: AreaState | PointState) {
-    quizDispatch({
+    allFeaturesDispatch({
       type: AllFeaturesDispatchType.ADD_SUBFEATURE,
       parentId,
       subfeature: sublocation,
@@ -164,8 +167,10 @@ function Input({
   setInput,
   setLocationType,
 }: InputProps) {
-  const quiz = useQuiz();
-  const parentLocation = quiz[parentId] as RootState | AreaState;
+  const allFeatures = useAllFeatures();
+  const parentLocation = allFeatures.features[parentId] as
+    | RootState
+    | AreaState;
 
   if (
     parentLocation.featureType !== FeatureType.ROOT &&
@@ -309,11 +314,11 @@ function Options({
   pointSearch,
   locationAdderFocused,
 }: OptionsProps) {
-  const quiz = useQuiz();
+  const allFeatures = useAllFeatures();
 
   const quizBuilderDispatch = useQuizBuilderDispatch();
 
-  const parentLocation = quiz[parentId];
+  const parentLocation = allFeatures.features[parentId];
 
   if (
     parentLocation.featureType !== FeatureType.ROOT &&
