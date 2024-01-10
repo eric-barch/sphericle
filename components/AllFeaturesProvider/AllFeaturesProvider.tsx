@@ -111,33 +111,37 @@ function allFeaturesReducer(
       return newAllFeatures;
     }
     case AllFeaturesDispatchType.SET_AREA_IS_OPEN: {
-      const newAllFeatures = { ...allFeatures };
-      const newLocation = newAllFeatures.features[action.featureId];
+      const { featureId, isOpen } = action;
 
-      if (newLocation.featureType !== FeatureType.AREA) {
-        throw new Error("newLocation must be of type AREA.");
+      const newAllFeatures = { ...allFeatures };
+      const newFeature = newAllFeatures.get(featureId);
+
+      if (newFeature.featureType !== FeatureType.AREA) {
+        throw new Error("newFeature must be of type AREA.");
       }
 
-      newLocation.isOpen = action.isOpen;
+      newFeature.isOpen = isOpen;
 
-      if (!action.isOpen) {
-        newLocation.isAdding = false;
+      if (isOpen) {
+        newFeature.isAdding = false;
       }
 
       return newAllFeatures;
     }
     case AllFeaturesDispatchType.SET_AREA_IS_ADDING: {
-      const newAllFeatures = { ...allFeatures };
-      const newLocation = newAllFeatures.features[action.featureId];
+      const { featureId, isAdding } = action;
 
-      if (newLocation.featureType !== FeatureType.AREA) {
-        throw new Error("newLocation must be of type AREA.");
+      const newAllFeatures = { ...allFeatures };
+      const newFeature = newAllFeatures.get(featureId);
+
+      if (newFeature.featureType !== FeatureType.AREA) {
+        throw new Error("newFeature must be of type AREA.");
       }
 
-      newLocation.isAdding = action.isAdding;
+      newFeature.isAdding = isAdding;
 
       if (action.isAdding) {
-        newLocation.isOpen = true;
+        newFeature.isOpen = true;
       }
 
       return newAllFeatures;
