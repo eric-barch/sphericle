@@ -1,7 +1,4 @@
-import {
-  useAllFeatures,
-  useAllFeaturesDispatch,
-} from "@/components/AllFeaturesProvider";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import { FeatureType, AllFeaturesDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
@@ -14,16 +11,15 @@ interface EditLocationButtonProps {
 }
 
 export default function EditLocationButton({
-  featureId: locationId,
+  featureId,
   setIsRenaming,
   setIsAdding,
 }: EditLocationButtonProps) {
-  const allFeatures = useAllFeatures();
-  const allFeaturesDispatch = useAllFeaturesDispatch();
+  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
 
-  const location = allFeatures.features[locationId];
+  const feature = allFeatures.get(featureId);
 
-  function handleAddSublocationClick(event: MouseEvent<HTMLDivElement>) {
+  function handleAddSubfeatureClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
     setIsAdding(true);
   }
@@ -38,7 +34,7 @@ export default function EditLocationButton({
 
     allFeaturesDispatch({
       type: AllFeaturesDispatchType.DELETE_FEATURE,
-      featureId: locationId,
+      featureId: featureId,
     });
   }
 
@@ -51,12 +47,12 @@ export default function EditLocationButton({
         className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        {location.featureType === FeatureType.AREA && (
+        {feature.featureType === FeatureType.AREA && (
           <DropdownMenu.Item
-            onClick={handleAddSublocationClick}
+            onClick={handleAddSubfeatureClick}
             className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
           >
-            Add Sublocation
+            Add Subfeature
           </DropdownMenu.Item>
         )}
         <DropdownMenu.Item
