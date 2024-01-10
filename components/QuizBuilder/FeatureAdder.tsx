@@ -22,8 +22,9 @@ import {
   useState,
 } from "react";
 import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
-import useAreaSearch, { AreaSearch } from "./use-area-search.hook";
-import usePointSearch, { PointSearch } from "./use-point-search.hook";
+import { AreaSearch } from "./use-area-search.hook";
+import { PointSearch } from "./use-point-search.hook";
+import useFeatureSearches from "./use-feature-searches.hook";
 
 interface FeatureAdderProps {
   inputRef?: RefObject<HTMLInputElement>;
@@ -35,12 +36,9 @@ export default function FeatureAdder({
   parentFeatureId,
 }: FeatureAdderProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
-
   const quizBuilder = useQuizBuilder();
   const quizBuilderDispatch = useQuizBuilderDispatch();
-
-  const areaSearch = useAreaSearch(parentFeatureId);
-  const pointSearch = usePointSearch(parentFeatureId);
+  const { areaSearch, pointSearch } = useFeatureSearches(parentFeatureId);
 
   const parentFeature = allFeatures.get(parentFeatureId);
 
