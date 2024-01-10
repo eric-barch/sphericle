@@ -8,13 +8,13 @@ import { MoreVertical } from "lucide-react";
 import { MouseEvent } from "react";
 
 interface EditLocationButtonProps {
-  locationId: string;
+  featureId: string;
   setIsRenaming: (isRenaming: boolean) => void;
   setIsAdding?: (isAdding: boolean) => void;
 }
 
 export default function EditLocationButton({
-  locationId,
+  featureId: locationId,
   setIsRenaming,
   setIsAdding,
 }: EditLocationButtonProps) {

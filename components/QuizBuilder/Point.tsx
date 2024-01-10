@@ -59,7 +59,7 @@ export default function Point({ featureId: locationId }: PointProps) {
   return (
     <div className="relative" onFocus={handleFocus}>
       <EditLocationButton
-        locationId={locationId}
+        featureId={locationId}
         setIsRenaming={setIsRenaming}
       />
       <button
@@ -70,7 +70,7 @@ export default function Point({ featureId: locationId }: PointProps) {
         }`}
       >
         <LocationName
-          locationId={locationId}
+          featureId={locationId}
           inputRef={locationNameInputRef}
           isRenaming={isRenaming}
           setIsRenaming={setIsRenaming}

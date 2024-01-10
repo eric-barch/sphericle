@@ -4,14 +4,14 @@ import { useAllFeatures, useAllFeaturesDispatch } from "../AllFeaturesProvider";
 
 interface LocationNameProps {
   inputRef: RefObject<HTMLInputElement>;
-  locationId: string;
+  featureId: string;
   isRenaming: boolean;
   setIsRenaming: (isRenaming: boolean) => void;
 }
 
 export default function LocationName({
   inputRef,
-  locationId,
+  featureId: locationId,
   isRenaming,
   setIsRenaming,
 }: LocationNameProps) {

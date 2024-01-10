@@ -1,65 +1,60 @@
 "use client";
 
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
-  useAllFeatures,
-  useAllFeaturesDispatch,
-} from "@/components/AllFeaturesProvider";
-import {
-  AreaState,
+  AllFeaturesDispatchType,
   FeatureType,
   QuizBuilderDispatchType,
-  AllFeaturesDispatchType,
 } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
+import { ChevronRight } from "lucide-react";
 import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import EditLocationButton from "./EditFeatureButton";
 import LocationName from "./FeatureName";
-import Subfeatures from "./Subfeatures";
-import { ChevronRight } from "lucide-react";
 import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
+import Subfeatures from "./Subfeatures";
 
 interface AreaProps {
   featureId: string;
 }
 
-export default function Area({ featureId: locationId }: AreaProps) {
-  const allFeatures = useAllFeatures();
-  const allFeaturesDispatch = useAllFeaturesDispatch();
+export default function Area({ featureId }: AreaProps) {
+  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
 
   const quizBuilder = useQuizBuilder();
   const quizBuilderDispatch = useQuizBuilderDispatch();
 
-  const location = allFeatures.features[locationId] as AreaState;
+  const areaState = allFeatures.get(featureId);
 
-  if (location.featureType !== FeatureType.AREA) {
+  if (areaState.featureType !== FeatureType.AREA) {
     throw new Error("areaState must be of type AREA.");
   }
 
   const [accordionRootValue, setAccordionRootValue] = useState<string[]>(
-    location.isOpen ? [location.id] : [],
+    areaState.isOpen ? [areaState.id] : [],
   );
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
 
-  const locationNameInputRef = useRef<HTMLInputElement>();
-  const locationAdderInputRef = useRef<HTMLInputElement>();
+  const featureNameInputRef = useRef<HTMLInputElement>();
+  const featureAdderInputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    setAccordionRootValue(location.isOpen ? [locationId] : []);
-  }, [location.isOpen, locationId]);
+    setAccordionRootValue(areaState.isOpen ? [featureId] : []);
+  }, [areaState.isOpen, featureId]);
 
   function handleValueChange(value: string[]) {
-    if (value.includes(locationId)) {
+    if (value.includes(featureId)) {
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
-        featureId: locationId,
+        featureId: featureId,
         isOpen: true,
       });
     } else {
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
-        featureId: locationId,
+        featureId: featureId,
         isOpen: false,
       });
     }
@@ -87,7 +82,7 @@ export default function Area({ featureId: locationId }: AreaProps) {
 
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_SELECTED,
-        featureId: locationId,
+        featureId: featureId,
       });
     }
   }
@@ -109,8 +104,8 @@ export default function Area({ featureId: locationId }: AreaProps) {
 
     if (isRenaming) {
       setTimeout(() => {
-        locationNameInputRef?.current.focus();
-        locationNameInputRef?.current.select();
+        featureNameInputRef?.current.focus();
+        featureNameInputRef?.current.select();
       }, 0);
     }
   }
@@ -118,19 +113,19 @@ export default function Area({ featureId: locationId }: AreaProps) {
   function setIsAdding(isAdding: boolean) {
     allFeaturesDispatch({
       type: AllFeaturesDispatchType.SET_AREA_IS_ADDING,
-      featureId: locationId,
+      featureId: featureId,
       isAdding,
     });
 
     if (isAdding) {
       setTimeout(() => {
-        locationAdderInputRef?.current.focus();
+        featureAdderInputRef?.current.focus();
       }, 0);
     }
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (locationId !== quizBuilder.selectedId || !willToggle) {
+    if (featureId !== quizBuilder.selectedId || !willToggle) {
       event.preventDefault();
     }
 
@@ -144,7 +139,7 @@ export default function Area({ featureId: locationId }: AreaProps) {
       onValueChange={handleValueChange}
       onBlur={handleContainerBlur}
     >
-      <Accordion.Item value={location.id}>
+      <Accordion.Item value={areaState.id}>
         <Accordion.Header
           className="relative"
           onBlur={handleBlur}
@@ -154,32 +149,32 @@ export default function Area({ featureId: locationId }: AreaProps) {
           onMouseLeave={handleMouseLeave}
         >
           <EditLocationButton
-            locationId={locationId}
+            featureId={featureId}
             setIsRenaming={setIsRenaming}
             setIsAdding={setIsAdding}
           />
           <Accordion.Trigger
             className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
-              locationId === quizBuilder.selectedId
+              featureId === quizBuilder.selectedId
                 ? "outline outline-2 outline-red-700"
                 : ""
             }`}
             onClick={handleClick}
           >
             <LocationName
-              locationId={locationId}
-              inputRef={locationNameInputRef}
+              featureId={featureId}
+              inputRef={featureNameInputRef}
               isRenaming={isRenaming}
               setIsRenaming={setIsRenaming}
             />
-            <OpenChevron isOpen={location.isOpen} />
+            <OpenChevron isOpen={areaState.isOpen} />
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content>
           <Subfeatures
-            featureAdderInputRef={locationAdderInputRef}
+            featureAdderInputRef={featureAdderInputRef}
             className="ml-10"
-            parentId={locationId}
+            parentFeatureId={featureId}
           />
         </Accordion.Content>
       </Accordion.Item>
