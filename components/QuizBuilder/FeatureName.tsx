@@ -38,7 +38,7 @@ export default function LocationName({
 
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.RENAME_FEATURE,
-        featureId: featureId,
+        featureId,
         name: input,
       });
     }

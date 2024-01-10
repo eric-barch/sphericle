@@ -34,7 +34,7 @@ export default function EditLocationButton({
 
     allFeaturesDispatch({
       type: AllFeaturesDispatchType.DELETE_FEATURE,
-      featureId: featureId,
+      featureId,
     });
   }
 

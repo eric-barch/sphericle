@@ -48,13 +48,13 @@ export default function Area({ featureId }: AreaProps) {
     if (value.includes(featureId)) {
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
-        featureId: featureId,
+        featureId,
         isOpen: true,
       });
     } else {
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
-        featureId: featureId,
+        featureId,
         isOpen: false,
       });
     }
@@ -82,7 +82,7 @@ export default function Area({ featureId }: AreaProps) {
 
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_SELECTED,
-        featureId: featureId,
+        featureId,
       });
     }
   }
@@ -113,7 +113,7 @@ export default function Area({ featureId }: AreaProps) {
   function setIsAdding(isAdding: boolean) {
     allFeaturesDispatch({
       type: AllFeaturesDispatchType.SET_AREA_IS_ADDING,
-      featureId: featureId,
+      featureId,
       isAdding,
     });
 
