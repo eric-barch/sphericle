@@ -1,15 +1,12 @@
 "use client";
 
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
-  useAllFeatures,
-  useAllFeaturesDispatch,
-} from "@/components/AllFeaturesProvider";
-import {
+  AllFeaturesDispatchType,
   AreaState,
   FeatureType,
   PointState,
   QuizBuilderDispatchType,
-  AllFeaturesDispatchType,
   RootState,
   SearchStatus,
 } from "@/types";
@@ -24,41 +21,38 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
 import useAreaSearch, { AreaSearch } from "./use-area-search.hook";
 import usePointSearch, { PointSearch } from "./use-point-search.hook";
-import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
 
-interface LocationAdderProps {
+interface FeatureAdderProps {
   inputRef?: RefObject<HTMLInputElement>;
   parentFeatureId: string;
 }
 
-export default function LocationAdder({
+export default function FeatureAdder({
   inputRef,
-  parentFeatureId: parentId,
-}: LocationAdderProps) {
-  const allFeatures = useAllFeatures();
-  const allFeaturesDispatch = useAllFeaturesDispatch();
+  parentFeatureId,
+}: FeatureAdderProps) {
+  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
 
   const quizBuilder = useQuizBuilder();
   const quizBuilderDispatch = useQuizBuilderDispatch();
 
-  const areaSearch = useAreaSearch(parentId);
-  const pointSearch = usePointSearch(parentId);
+  const areaSearch = useAreaSearch(parentFeatureId);
+  const pointSearch = usePointSearch(parentFeatureId);
 
-  const parentLocation = allFeatures.features[parentId];
+  const parentFeature = allFeatures.get(parentFeatureId);
 
   if (
-    parentLocation.featureType !== FeatureType.ROOT &&
-    parentLocation.featureType !== FeatureType.AREA
+    parentFeature.featureType !== FeatureType.ROOT &&
+    parentFeature.featureType !== FeatureType.AREA
   ) {
-    throw new Error("parentLocation must be of type ROOT or AREA.");
+    throw new Error("parentFeature must be of type ROOT or AREA.");
   }
 
   const [isFocused, setIsFocused] = useState<boolean>(true);
-  const [locationType, setLocationType] = useState<FeatureType>(
-    FeatureType.AREA,
-  );
+  const [featureType, setFeatureType] = useState<FeatureType>(FeatureType.AREA);
   const [input, setInput] = useState<string>("");
   const [optionSelected, setOptionSelected] = useState<boolean>(false);
 
@@ -73,15 +67,15 @@ export default function LocationAdder({
       setIsFocused(true);
 
       if (!optionSelected) {
-        if (parentLocation.featureType === FeatureType.ROOT) {
+        if (parentFeature.featureType === FeatureType.ROOT) {
           quizBuilderDispatch({
             type: QuizBuilderDispatchType.SET_SELECTED,
             featureId: null,
           });
-        } else if (parentLocation.featureType === FeatureType.AREA) {
+        } else if (parentFeature.featureType === FeatureType.AREA) {
           quizBuilderDispatch({
             type: QuizBuilderDispatchType.SET_SELECTED,
-            featureId: parentId,
+            featureId: parentFeatureId,
           });
         }
       }
@@ -90,11 +84,11 @@ export default function LocationAdder({
     }
   }
 
-  function handleChange(sublocation: AreaState | PointState) {
+  function handleChange(subfeature: AreaState | PointState) {
     allFeaturesDispatch({
       type: AllFeaturesDispatchType.ADD_SUBFEATURE,
-      featureId: parentId,
-      subfeature: sublocation,
+      parentFeatureId,
+      subfeature: subfeature,
     });
 
     if (inputRef) {
@@ -108,9 +102,9 @@ export default function LocationAdder({
   }
 
   if (
-    parentLocation.featureType !== FeatureType.ROOT &&
-    !parentLocation.isAdding &&
-    parentLocation.subfeatureIds.length > 0
+    parentFeature.featureType !== FeatureType.ROOT &&
+    !parentFeature.isAdding &&
+    parentFeature.subfeatureIds.size > 0
   ) {
     return null;
   }
@@ -122,22 +116,22 @@ export default function LocationAdder({
           <>
             <Input
               inputRef={inputRef}
-              parentId={parentId}
+              parentId={parentFeatureId}
               input={input}
-              locationType={locationType}
+              featureType={featureType}
               areaSearch={areaSearch}
               pointSearch={pointSearch}
               setInput={setInput}
-              setLocationType={setLocationType}
+              setFeatureType={setFeatureType}
             />
             <Options
-              parentId={parentId}
+              parentId={parentFeatureId}
               activeOption={activeOption}
               input={input}
-              locationType={locationType}
+              featureType={featureType}
               areaSearch={areaSearch}
               pointSearch={pointSearch}
-              locationAdderFocused={isFocused}
+              featureAdderFocused={isFocused}
             />
           </>
         )}
@@ -150,27 +144,26 @@ interface InputProps {
   inputRef: RefObject<HTMLInputElement>;
   parentId: string;
   input: string;
-  locationType: FeatureType;
+  featureType: FeatureType;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
   setInput: (input: string) => void;
-  setLocationType: (locationType: FeatureType) => void;
+  setFeatureType: (featureType: FeatureType) => void;
 }
 
 function Input({
   inputRef,
   parentId,
   input,
-  locationType,
+  featureType,
   areaSearch,
   pointSearch,
   setInput,
-  setLocationType,
+  setFeatureType,
 }: InputProps) {
-  const allFeatures = useAllFeatures();
-  const parentLocation = allFeatures.features[parentId] as
-    | RootState
-    | AreaState;
+  const { allFeatures } = useAllFeatures();
+
+  const parentLocation = allFeatures.get(parentId) as RootState | AreaState;
 
   if (
     parentLocation.featureType !== FeatureType.ROOT &&
@@ -181,8 +174,8 @@ function Input({
 
   const placeholder =
     parentLocation.featureType === FeatureType.ROOT
-      ? `Add ${locationType.toLowerCase()} anywhere`
-      : `Add ${locationType.toLowerCase()} in ${
+      ? `Add ${featureType.toLowerCase()} anywhere`
+      : `Add ${featureType.toLowerCase()} in ${
           parentLocation.userDefinedName || parentLocation.shortName
         }`;
 
@@ -191,13 +184,13 @@ function Input({
 
     if (event.target.value === "") {
       pointSearch.reset();
-    } else if (locationType === FeatureType.POINT) {
+    } else if (featureType === FeatureType.POINT) {
       pointSearch.setTerm(event.target.value);
     }
   }
 
   function handleEnter(event: KeyboardEvent<HTMLInputElement>) {
-    if (locationType === FeatureType.AREA && input !== areaSearch.term) {
+    if (featureType === FeatureType.AREA && input !== areaSearch.term) {
       event.preventDefault();
       areaSearch.setTerm(input);
     }
@@ -241,9 +234,9 @@ function Input({
     <div className="relative">
       <ToggleAreaPointButton
         input={input}
-        locationType={locationType}
+        featureType={featureType}
         pointSearch={pointSearch}
-        setLocationType={setLocationType}
+        setFeatureType={setFeatureType}
       />
       <Combobox.Input
         ref={inputRef}
@@ -259,24 +252,24 @@ function Input({
 
 interface ToggleAreaPointButtonProps {
   input: string;
-  locationType: FeatureType;
+  featureType: FeatureType;
   pointSearch: PointSearch;
-  setLocationType: (locationType: FeatureType) => void;
+  setFeatureType: (featureType: FeatureType) => void;
 }
 
 function ToggleAreaPointButton({
   input,
-  locationType,
+  featureType,
   pointSearch,
-  setLocationType,
+  setFeatureType,
 }: ToggleAreaPointButtonProps) {
   function handleClick() {
-    const nextLocationType =
-      locationType === FeatureType.AREA ? FeatureType.POINT : FeatureType.AREA;
+    const nextFeatureType =
+      featureType === FeatureType.AREA ? FeatureType.POINT : FeatureType.AREA;
 
-    setLocationType(nextLocationType);
+    setFeatureType(nextFeatureType);
 
-    if (nextLocationType === FeatureType.POINT && input !== pointSearch.term) {
+    if (nextFeatureType === FeatureType.POINT && input !== pointSearch.term) {
       pointSearch.setTerm(input);
     }
   }
@@ -286,7 +279,7 @@ function ToggleAreaPointButton({
       className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl left-1.5 bg-gray-600 text-gray-300 "
       onClick={handleClick}
     >
-      {locationType === FeatureType.AREA ? (
+      {featureType === FeatureType.AREA ? (
         <Grid2X2 className="w-4 h-4" />
       ) : (
         <MapPin className="w-4 h-4" />
@@ -299,26 +292,26 @@ interface OptionsProps {
   parentId: string;
   activeOption: AreaState | PointState;
   input: string;
-  locationType: FeatureType;
+  featureType: FeatureType;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
-  locationAdderFocused: boolean;
+  featureAdderFocused: boolean;
 }
 
 function Options({
   parentId,
   activeOption,
   input,
-  locationType,
+  featureType,
   areaSearch,
   pointSearch,
-  locationAdderFocused,
+  featureAdderFocused,
 }: OptionsProps) {
-  const allFeatures = useAllFeatures();
+  const { allFeatures } = useAllFeatures();
 
   const quizBuilderDispatch = useQuizBuilderDispatch();
 
-  const parentLocation = allFeatures.features[parentId];
+  const parentLocation = allFeatures.get(parentId);
 
   if (
     parentLocation.featureType !== FeatureType.ROOT &&
@@ -335,7 +328,7 @@ function Options({
   }, [quizBuilderDispatch, activeOption]);
 
   function renderOptionsContent() {
-    if (locationType === FeatureType.AREA) {
+    if (featureType === FeatureType.AREA) {
       if (input !== areaSearch.term) {
         return <OptionsSubstitute>Press Enter to Search</OptionsSubstitute>;
       }
@@ -346,14 +339,14 @@ function Options({
         return <OptionsSubstitute>No results found.</OptionsSubstitute>;
       }
       return areaSearch.results.map((result: AreaState) => (
-        <Option key={result.id} location={result} />
+        <Option key={result.id} feature={result} />
       ));
-    } else if (locationType === FeatureType.POINT) {
+    } else if (featureType === FeatureType.POINT) {
       if (pointSearch.results.length === 0) {
         return <OptionsSubstitute>No results found.</OptionsSubstitute>;
       }
       return pointSearch.results.map((result: PointState) => (
-        <Option key={result.id} location={result} />
+        <Option key={result.id} feature={result} />
       ));
     }
   }
@@ -363,16 +356,16 @@ function Options({
       return null;
     }
 
-    if (!locationAdderFocused) {
+    if (!featureAdderFocused) {
       return null;
     }
 
-    if (locationType === FeatureType.POINT && pointSearch.term === "") {
+    if (featureType === FeatureType.POINT && pointSearch.term === "") {
       return null;
     }
 
     if (
-      locationType === FeatureType.POINT &&
+      featureType === FeatureType.POINT &&
       pointSearch.status === SearchStatus.SEARCHING &&
       pointSearch.results.length < 1
     ) {
@@ -397,19 +390,19 @@ function OptionsSubstitute({ children }: { children: ReactNode }) {
 }
 
 interface OptionProps {
-  location: AreaState | PointState;
+  feature: AreaState | PointState;
 }
 
-function Option({ location }: OptionProps) {
+function Option({ feature }: OptionProps) {
   return (
     <Combobox.Option
-      value={location}
+      value={feature}
       as="div"
       className={({ active }) =>
         `p-1 pl-7 rounded-2xl cursor-pointer ${active ? "bg-gray-600" : ""}`
       }
     >
-      {location.longName}
+      {feature.longName}
     </Combobox.Option>
   );
 }
