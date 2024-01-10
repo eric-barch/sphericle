@@ -12,17 +12,17 @@ import {
 } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
-import EditLocationButton from "./EditLocationButton";
-import LocationName from "./LocationName";
-import Sublocations from "./Sublocations";
+import EditLocationButton from "./EditFeatureButton";
+import LocationName from "./FeatureName";
+import Subfeatures from "./Subfeatures";
 import { ChevronRight } from "lucide-react";
 import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
 
 interface AreaProps {
-  locationId: string;
+  featureId: string;
 }
 
-export default function Area({ locationId }: AreaProps) {
+export default function Area({ featureId: locationId }: AreaProps) {
   const allFeatures = useAllFeatures();
   const allFeaturesDispatch = useAllFeaturesDispatch();
 
@@ -176,8 +176,8 @@ export default function Area({ locationId }: AreaProps) {
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content>
-          <Sublocations
-            locationAdderInputRef={locationAdderInputRef}
+          <Subfeatures
+            featureAdderInputRef={locationAdderInputRef}
             className="ml-10"
             parentId={locationId}
           />

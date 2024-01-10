@@ -5,6 +5,9 @@ import {
   AllFeatures,
   AllFeaturesDispatch,
   AllFeaturesDispatchType,
+  RootState,
+  AreaState,
+  PointState,
 } from "@/types";
 import {
   Dispatch,
@@ -37,7 +40,7 @@ export default function AllFeaturesProvider({
   );
 }
 
-export const rootId = crypto.randomUUID();
+const rootId = crypto.randomUUID();
 
 export function useAllFeatures(): {
   rootId: string;
@@ -179,13 +182,13 @@ function allFeaturesReducer(
   }
 }
 
-const initialAllFeatures: AllFeatures = {
-  rootId,
-  features: {
-    [rootId]: {
+const initialAllFeatures = new Map<string, RootState | AreaState | PointState>([
+  [
+    rootId,
+    {
       id: rootId,
-      subfeatureIds: [],
+      subfeatureIds: new Set<string>(),
       featureType: FeatureType.ROOT,
     },
-  },
-};
+  ],
+]);
