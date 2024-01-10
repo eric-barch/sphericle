@@ -6,7 +6,7 @@ import {
   AreaState,
   FeatureType,
   PointState,
-  QuizBuilderDispatchType,
+  QuizBuilderStateDispatchType,
   RootState,
   SearchStatus,
 } from "@/types";
@@ -21,7 +21,10 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
+import {
+  useQuizBuilder,
+  useQuizBuilderDispatch,
+} from "./QuizBuilderStateProvider";
 import { AreaSearch } from "./use-area-search.hook";
 import { PointSearch } from "./use-point-search.hook";
 import useFeatureSearches from "./use-feature-searches.hook";
@@ -67,12 +70,12 @@ export default function FeatureAdder({
       if (!optionSelected) {
         if (parentFeature.featureType === FeatureType.ROOT) {
           quizBuilderDispatch({
-            type: QuizBuilderDispatchType.SET_SELECTED,
+            type: QuizBuilderStateDispatchType.SET_SELECTED,
             featureId: null,
           });
         } else if (parentFeature.featureType === FeatureType.AREA) {
           quizBuilderDispatch({
-            type: QuizBuilderDispatchType.SET_SELECTED,
+            type: QuizBuilderStateDispatchType.SET_SELECTED,
             featureId: parentFeatureId,
           });
         }
@@ -320,7 +323,7 @@ function Options({
 
   useEffect(() => {
     quizBuilderDispatch({
-      type: QuizBuilderDispatchType.SET_ACTIVE_OPTION,
+      type: QuizBuilderStateDispatchType.SET_ACTIVE_OPTION,
       activeOption,
     });
   }, [quizBuilderDispatch, activeOption]);

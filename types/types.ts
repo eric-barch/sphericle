@@ -2,7 +2,7 @@ import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Point, Polygon } from "geojson";
 import {
   FeatureType,
-  QuizBuilderDispatchType,
+  QuizBuilderStateDispatchType,
   AllFeaturesDispatchType,
   QuizTakerDispatchType,
 } from "./enums";
@@ -120,19 +120,21 @@ interface DeleteFeatureDispatch extends BaseAllFeaturesDispatch {
   featureId: string;
 }
 
-export type QuizBuilderDispatch = SetActiveOptionDispatch | SetSelectedDispatch;
+export type QuizBuilderStateDispatch =
+  | SetActiveOptionDispatch
+  | SetSelectedDispatch;
 
 interface BaseQuizBuilderDispatch {
-  type: QuizBuilderDispatchType;
+  type: QuizBuilderStateDispatchType;
 }
 
 interface SetActiveOptionDispatch extends BaseQuizBuilderDispatch {
-  type: QuizBuilderDispatchType.SET_ACTIVE_OPTION;
+  type: QuizBuilderStateDispatchType.SET_ACTIVE_OPTION;
   activeOption: AreaState | PointState | null;
 }
 
 interface SetSelectedDispatch extends BaseQuizBuilderDispatch {
-  type: QuizBuilderDispatchType.SET_SELECTED;
+  type: QuizBuilderStateDispatchType.SET_SELECTED;
   featureId: string;
 }
 

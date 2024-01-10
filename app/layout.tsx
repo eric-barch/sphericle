@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 import Nav from "@/components/Nav";
 import AllFeaturesProvider from "@/components/AllFeaturesProvider";
 import { Toaster } from "react-hot-toast";
-import QuizBuilderProvider from "@/components/QuizBuilder/QuizBuilderProvider";
+import QuizBuilderStateProvider from "@/components/QuizBuilder/QuizBuilderStateProvider";
 
 const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Nav />
         <main>
           <AllFeaturesProvider>
-            <QuizBuilderProvider>{children}</QuizBuilderProvider>
+            <QuizBuilderStateProvider>{children}</QuizBuilderStateProvider>
           </AllFeaturesProvider>
           <Toaster containerStyle={{ marginTop: "3rem" }} />
         </main>

@@ -17,7 +17,7 @@ export enum AllFeaturesDispatchType {
   DELETE_FEATURE = "DELETE_FEATURE",
 }
 
-export enum QuizBuilderDispatchType {
+export enum QuizBuilderStateDispatchType {
   SET_ACTIVE_OPTION = "SET_ACTIVE_OPTION",
   SET_SELECTED = "SET_SELECTED_FEATURE",
 }
