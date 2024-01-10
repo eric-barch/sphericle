@@ -60,7 +60,7 @@ function allFeaturesReducer(
     case AllFeaturesDispatchType.ADD_SUBFEATURE: {
       const { parentFeatureId, subfeature } = action;
 
-      const newAllFeatures = { ...allFeatures };
+      const newAllFeatures = new Map(allFeatures);
       const newParentFeature = { ...allFeatures.get(parentFeatureId) };
 
       if (
@@ -80,7 +80,7 @@ function allFeaturesReducer(
     case AllFeaturesDispatchType.SET_SUBFEATURES: {
       const { parentFeatureId, subfeatureIds } = action;
 
-      const newAllFeatures = { ...allFeatures };
+      const newAllFeatures = new Map(allFeatures);
       const newParentFeature = newAllFeatures.get(parentFeatureId);
 
       if (
@@ -99,7 +99,7 @@ function allFeaturesReducer(
     case AllFeaturesDispatchType.RENAME_FEATURE: {
       const { featureId, name } = action;
 
-      const newAllFeatures = { ...allFeatures };
+      const newAllFeatures = new Map(allFeatures);
       const newFeature = newAllFeatures.get(featureId);
 
       if (
@@ -116,7 +116,7 @@ function allFeaturesReducer(
     case AllFeaturesDispatchType.SET_AREA_IS_OPEN: {
       const { featureId, isOpen } = action;
 
-      const newAllFeatures = { ...allFeatures };
+      const newAllFeatures = new Map(allFeatures);
       const newFeature = newAllFeatures.get(featureId);
 
       if (newFeature.featureType !== FeatureType.AREA) {
@@ -134,7 +134,7 @@ function allFeaturesReducer(
     case AllFeaturesDispatchType.SET_AREA_IS_ADDING: {
       const { featureId, isAdding } = action;
 
-      const newAllFeatures = { ...allFeatures };
+      const newAllFeatures = new Map(allFeatures);
       const newFeature = newAllFeatures.get(featureId);
 
       if (newFeature.featureType !== FeatureType.AREA) {
@@ -152,7 +152,7 @@ function allFeaturesReducer(
     case AllFeaturesDispatchType.DELETE_FEATURE: {
       const { featureId } = action;
 
-      const newAllFeatures = { ...allFeatures };
+      const newAllFeatures = new Map(allFeatures);
       const newFeature = newAllFeatures.get(featureId);
 
       if (

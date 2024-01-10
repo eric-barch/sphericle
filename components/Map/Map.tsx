@@ -8,7 +8,7 @@ import {
   PointState,
   RootState,
 } from "@/types";
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { RefObject, useCallback, useEffect, useRef } from "react";
 
 interface MapProps {
   mapRef?: RefObject<HTMLDivElement>;
@@ -25,7 +25,7 @@ export default function Map({
   displayedFeature: displayedLocation,
   displayMode,
 }: MapProps) {
-  const allFeatures = useAllFeatures();
+  const { allFeatures } = useAllFeatures();
 
   const defaultMapRef = useRef<HTMLDivElement>(null);
   const mapRef = propMapRef || defaultMapRef;
@@ -207,7 +207,7 @@ export default function Map({
       return;
     }
 
-    const parentLocation = allFeatures.features[displayedLocation.parentId];
+    const parentLocation = allFeatures.get(displayedLocation.parentId);
 
     if (parentLocation.featureType === FeatureType.ROOT) {
       if (displayedLocation.featureType === FeatureType.AREA) {
