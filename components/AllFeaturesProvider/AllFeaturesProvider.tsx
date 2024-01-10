@@ -39,12 +39,14 @@ export default function AllFeaturesProvider({
 
 export const rootId = crypto.randomUUID();
 
-export function useAllFeatures(): AllFeatures {
-  return useContext(AllFeaturesContext);
-}
-
-export function useAllFeaturesDispatch(): Dispatch<AllFeaturesDispatch> {
-  return useContext(AllFeaturesDispatchContext);
+export function useAllFeatures(): {
+  rootId: string;
+  allFeatures: AllFeatures;
+  allFeaturesDispatch: Dispatch<AllFeaturesDispatch>;
+} {
+  const allFeatures = useContext(AllFeaturesContext);
+  const allFeaturesDispatch = useContext(AllFeaturesDispatchContext);
+  return { rootId, allFeatures, allFeaturesDispatch };
 }
 
 function allFeaturesReducer(
@@ -53,28 +55,29 @@ function allFeaturesReducer(
 ): AllFeatures {
   switch (action.type) {
     case AllFeaturesDispatchType.ADD_SUBFEATURE: {
-      const parentId = action.subfeature.parentId;
-      const sublocationId = action.subfeature.id;
+      const parentFeatureId = action.parentFeatureId;
+      const subfeatureId = action.subfeature.id;
 
       const newAllFeatures = { ...allFeatures };
-      const newParent = { ...allFeatures.features[parentId] };
+      const newParentFeature = { ...allFeatures.get(parentFeatureId) };
 
-      if (newParent.featureType === FeatureType.POINT) {
-        throw new Error("newParent must not be of type POINT.");
+      if (
+        newParentFeature.featureType !== FeatureType.ROOT &&
+        newParentFeature.featureType !== FeatureType.AREA
+      ) {
+        throw new Error("newParent must be of type ROOT or AREA.");
       }
 
-      if (!newParent.subfeatureIds.includes(sublocationId)) {
-        newParent.subfeatureIds = [...newParent.subfeatureIds, sublocationId];
-        newAllFeatures.features[parentId] = newParent;
-      }
+      newParentFeature.subfeatureIds.add(subfeatureId);
 
-      newAllFeatures.features[sublocationId] = action.subfeature;
+      newAllFeatures.set(parentFeatureId, newParentFeature);
+      newAllFeatures.set(subfeatureId, action.subfeature);
 
-      return getResetAllFeatures(newAllFeatures);
+      return newAllFeatures;
     }
     case AllFeaturesDispatchType.SET_SUBFEATURES: {
       const newAllFeatures = { ...allFeatures };
-      const newLocation = newAllFeatures.features[action.featureId];
+      const newLocation = newAllFeatures.features[action.parentFeatureId];
 
       if (
         newLocation.featureType !== FeatureType.ROOT &&
@@ -180,29 +183,3 @@ const initialAllFeatures: AllFeatures = {
     },
   },
 };
-
-function getResetAllFeatures(allfeatures: AllFeatures): AllFeatures {
-  const newAllFeatures = { ...allfeatures };
-
-  // newAllFeatures.correct = 0;
-  // newAllFeatures.incorrect = 0;
-
-  // for (const location of Object.values(newAllFeatures)) {
-  //   if (
-  //     location.featureType === FeatureType.AREA ||
-  //     location.featureType === FeatureType.POINT {
-  //     location.answeredCorrectly = null;
-  //   }
-  // }
-
-  // const rootLocation = newallFeatures.features[newAllFeatures.root];
-
-  // if (rootLocation.featureType !== LocationType.ROOT) {
-  //   throw new Error("rootLocation must be of type ROOT.");
-  // }
-
-  // newAllFeatures.takerSelected = rootLocation.subfeatureIds[0];
-  // newAllFeatures.isComplete = false;
-
-  return newAllFeatures;
-}

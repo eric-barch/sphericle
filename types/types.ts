@@ -11,14 +11,14 @@ export type AllFeatures = Map<string, RootState | AreaState | PointState>;
 
 export interface RootState {
   id: string;
-  subfeatureIds: string[];
+  subfeatureIds: Set<string>;
   featureType: FeatureType.ROOT;
 }
 
 export interface AreaState {
   id: string;
   parentId: string;
-  subfeatureIds: string[];
+  subfeatureIds: Set<string>;
   featureType: FeatureType.AREA;
   openStreetMapPlaceId: number;
   longName: string;
@@ -87,13 +87,13 @@ interface BaseAllFeaturesDispatch {
 
 interface AddSubfeatureDispatch extends BaseAllFeaturesDispatch {
   type: AllFeaturesDispatchType.ADD_SUBFEATURE;
-  featureId: string;
+  parentFeatureId: string;
   subfeature: AreaState | PointState;
 }
 
 interface SetSubfeaturesDispatch extends BaseAllFeaturesDispatch {
   type: AllFeaturesDispatchType.SET_SUBFEATURES;
-  featureId: string;
+  parentFeatureId: string;
   subfeatureIds: string[];
 }
 
