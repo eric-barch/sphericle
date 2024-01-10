@@ -9,12 +9,9 @@ import {
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
 import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
-import EditLocationButton from "./EditFeatureButton";
-import LocationName from "./FeatureName";
-import {
-  useQuizBuilder,
-  useQuizBuilderDispatch,
-} from "./QuizBuilderStateProvider";
+import EditFeatureButton from "./EditFeatureButton";
+import FeatureName from "./FeatureName";
+import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import Subfeatures from "./Subfeatures";
 
 interface AreaProps {
@@ -23,9 +20,7 @@ interface AreaProps {
 
 export default function Area({ featureId }: AreaProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
-
-  const quizBuilder = useQuizBuilder();
-  const quizBuilderDispatch = useQuizBuilderDispatch();
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const areaState = allFeatures.get(featureId);
 
@@ -83,7 +78,7 @@ export default function Area({ featureId }: AreaProps) {
         setWillToggle(true);
       }
 
-      quizBuilderDispatch({
+      quizBuilderStateDispatch({
         type: QuizBuilderStateDispatchType.SET_SELECTED,
         featureId,
       });
@@ -128,7 +123,7 @@ export default function Area({ featureId }: AreaProps) {
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (featureId !== quizBuilder.selectedId || !willToggle) {
+    if (featureId !== quizBuilderState.selectedFeatureId || !willToggle) {
       event.preventDefault();
     }
 
@@ -151,20 +146,20 @@ export default function Area({ featureId }: AreaProps) {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
         >
-          <EditLocationButton
+          <EditFeatureButton
             featureId={featureId}
             setIsRenaming={setIsRenaming}
             setIsAdding={setIsAdding}
           />
           <Accordion.Trigger
             className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
-              featureId === quizBuilder.selectedId
+              featureId === quizBuilderState.selectedFeatureId
                 ? "outline outline-2 outline-red-700"
                 : ""
             }`}
             onClick={handleClick}
           >
-            <LocationName
+            <FeatureName
               featureId={featureId}
               inputRef={featureNameInputRef}
               isRenaming={isRenaming}

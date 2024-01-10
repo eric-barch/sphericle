@@ -9,11 +9,11 @@ export default function ScoreBox() {
         <tbody>
           <tr>
             <td className="pr-4">Correct:</td>
-            <td className="text-right">{quizTaker.correctIds.size}</td>
+            <td className="text-right">{quizTaker.correctFeatureIds.size}</td>
           </tr>
           <tr>
             <td className="pr-4">Incorrect:</td>
-            <td className="text-right">{quizTaker.incorrectIds.size}</td>
+            <td className="text-right">{quizTaker.incorrectFeatureIds.size}</td>
           </tr>
           <tr>
             <td className="pr-4">Remaining:</td>

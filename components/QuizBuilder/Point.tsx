@@ -3,12 +3,9 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import { FeatureType, QuizBuilderStateDispatchType } from "@/types";
 import { FocusEvent, useRef, useState } from "react";
-import EditLocationButton from "./EditFeatureButton";
-import LocationName from "./FeatureName";
-import {
-  useQuizBuilder,
-  useQuizBuilderDispatch,
-} from "./QuizBuilderStateProvider";
+import EditFeatureButton from "./EditFeatureButton";
+import FeatureName from "./FeatureName";
+import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 
 interface PointProps {
   featureId: string;
@@ -16,8 +13,7 @@ interface PointProps {
 
 export default function Point({ featureId }: PointProps) {
   const { allFeatures } = useAllFeatures();
-  const quizBuilder = useQuizBuilder();
-  const quizBuilderDispatch = useQuizBuilderDispatch();
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const pointState = allFeatures.get(featureId);
 
@@ -31,7 +27,7 @@ export default function Point({ featureId }: PointProps) {
 
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      quizBuilderDispatch({
+      quizBuilderStateDispatch({
         type: QuizBuilderStateDispatchType.SET_SELECTED,
         featureId,
       });
@@ -51,15 +47,15 @@ export default function Point({ featureId }: PointProps) {
 
   return (
     <div className="relative" onFocus={handleFocus}>
-      <EditLocationButton featureId={featureId} setIsRenaming={setIsRenaming} />
+      <EditFeatureButton featureId={featureId} setIsRenaming={setIsRenaming} />
       <button
         className={`w-full p-1 rounded-2xl text-left bg-gray-600 ${
-          featureId === quizBuilder.selectedId
+          featureId === quizBuilderState.selectedFeatureId
             ? "outline outline-2 outline-red-700"
             : ""
         }`}
       >
-        <LocationName
+        <FeatureName
           featureId={featureId}
           inputRef={featureNameInputRef}
           isRenaming={isRenaming}

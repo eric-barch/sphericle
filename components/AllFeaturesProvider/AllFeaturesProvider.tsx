@@ -162,7 +162,7 @@ function allFeaturesReducer(
         throw new Error("newFeature must be of type AREA or POINT.");
       }
 
-      const newParentFeature = newAllFeatures.get(newFeature.parentId);
+      const newParentFeature = newAllFeatures.get(newFeature.parentFeatureId);
 
       if (
         newParentFeature.featureType !== FeatureType.ROOT &&

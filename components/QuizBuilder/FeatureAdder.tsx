@@ -7,7 +7,6 @@ import {
   FeatureType,
   PointState,
   QuizBuilderStateDispatchType,
-  RootState,
   SearchStatus,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
@@ -21,13 +20,10 @@ import {
   useEffect,
   useState,
 } from "react";
-import {
-  useQuizBuilder,
-  useQuizBuilderDispatch,
-} from "./QuizBuilderStateProvider";
+import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import { AreaSearch } from "./use-area-search.hook";
-import { PointSearch } from "./use-point-search.hook";
 import useFeatureSearches from "./use-feature-searches.hook";
+import { PointSearch } from "./use-point-search.hook";
 
 interface FeatureAdderProps {
   inputRef?: RefObject<HTMLInputElement>;
@@ -39,8 +35,7 @@ export default function FeatureAdder({
   parentFeatureId,
 }: FeatureAdderProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
-  const quizBuilder = useQuizBuilder();
-  const quizBuilderDispatch = useQuizBuilderDispatch();
+  const { quizBuilderStateDispatch } = useQuizBuilderState();
   const { areaSearch, pointSearch } = useFeatureSearches(parentFeatureId);
 
   const parentFeature = allFeatures.get(parentFeatureId);
@@ -69,12 +64,12 @@ export default function FeatureAdder({
 
       if (!optionSelected) {
         if (parentFeature.featureType === FeatureType.ROOT) {
-          quizBuilderDispatch({
+          quizBuilderStateDispatch({
             type: QuizBuilderStateDispatchType.SET_SELECTED,
             featureId: null,
           });
         } else if (parentFeature.featureType === FeatureType.AREA) {
-          quizBuilderDispatch({
+          quizBuilderStateDispatch({
             type: QuizBuilderStateDispatchType.SET_SELECTED,
             featureId: parentFeatureId,
           });
@@ -117,7 +112,7 @@ export default function FeatureAdder({
           <>
             <Input
               inputRef={inputRef}
-              parentId={parentFeatureId}
+              parentFeatureId={parentFeatureId}
               input={input}
               featureType={featureType}
               areaSearch={areaSearch}
@@ -126,7 +121,7 @@ export default function FeatureAdder({
               setFeatureType={setFeatureType}
             />
             <Options
-              parentId={parentFeatureId}
+              parentFeatureId={parentFeatureId}
               activeOption={activeOption}
               input={input}
               featureType={featureType}
@@ -143,7 +138,7 @@ export default function FeatureAdder({
 
 interface InputProps {
   inputRef: RefObject<HTMLInputElement>;
-  parentId: string;
+  parentFeatureId: string;
   input: string;
   featureType: FeatureType;
   areaSearch: AreaSearch;
@@ -154,7 +149,7 @@ interface InputProps {
 
 function Input({
   inputRef,
-  parentId,
+  parentFeatureId,
   input,
   featureType,
   areaSearch,
@@ -164,20 +159,20 @@ function Input({
 }: InputProps) {
   const { allFeatures } = useAllFeatures();
 
-  const parentLocation = allFeatures.get(parentId) as RootState | AreaState;
+  const parentFeature = allFeatures.get(parentFeatureId);
 
   if (
-    parentLocation.featureType !== FeatureType.ROOT &&
-    parentLocation.featureType !== FeatureType.AREA
+    parentFeature.featureType !== FeatureType.ROOT &&
+    parentFeature.featureType !== FeatureType.AREA
   ) {
-    throw new Error("parentLocation must be of type ROOT or AREA.");
+    throw new Error("parentFeature must be of type ROOT or AREA.");
   }
 
   const placeholder =
-    parentLocation.featureType === FeatureType.ROOT
+    parentFeature.featureType === FeatureType.ROOT
       ? `Add ${featureType.toLowerCase()} anywhere`
       : `Add ${featureType.toLowerCase()} in ${
-          parentLocation.userDefinedName || parentLocation.shortName
+          parentFeature.userDefinedName || parentFeature.shortName
         }`;
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -290,7 +285,7 @@ function ToggleAreaPointButton({
 }
 
 interface OptionsProps {
-  parentId: string;
+  parentFeatureId: string;
   activeOption: AreaState | PointState;
   input: string;
   featureType: FeatureType;
@@ -300,7 +295,7 @@ interface OptionsProps {
 }
 
 function Options({
-  parentId,
+  parentFeatureId,
   activeOption,
   input,
   featureType,
@@ -309,24 +304,23 @@ function Options({
   featureAdderFocused,
 }: OptionsProps) {
   const { allFeatures } = useAllFeatures();
+  const { quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const quizBuilderDispatch = useQuizBuilderDispatch();
-
-  const parentLocation = allFeatures.get(parentId);
+  const parentFeature = allFeatures.get(parentFeatureId);
 
   if (
-    parentLocation.featureType !== FeatureType.ROOT &&
-    parentLocation.featureType !== FeatureType.AREA
+    parentFeature.featureType !== FeatureType.ROOT &&
+    parentFeature.featureType !== FeatureType.AREA
   ) {
-    throw new Error("parentLocation must be of type ROOT or AREA.");
+    throw new Error("parentFeature must be of type ROOT or AREA.");
   }
 
   useEffect(() => {
-    quizBuilderDispatch({
+    quizBuilderStateDispatch({
       type: QuizBuilderStateDispatchType.SET_ACTIVE_OPTION,
       activeOption,
     });
-  }, [quizBuilderDispatch, activeOption]);
+  }, [quizBuilderStateDispatch, activeOption]);
 
   function renderOptionsContent() {
     if (featureType === FeatureType.AREA) {

@@ -74,8 +74,9 @@ export default function QuizTaker() {
         >
           <Dialog.Title>Quiz Complete!</Dialog.Title>
           <Dialog.Description className="m-4">{`Your score: ${quizTakerState
-            ?.correctIds.size} / ${
-            quizTakerState.correctIds.size + quizTakerState.incorrectIds.size
+            ?.correctFeatureIds.size} / ${
+            quizTakerState.correctFeatureIds.size +
+            quizTakerState.incorrectFeatureIds.size
           }`}</Dialog.Description>
           <Dialog.Close
             className="p-2 rounded-3xl bg-gray-500 text-white"

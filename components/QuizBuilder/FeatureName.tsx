@@ -2,19 +2,19 @@ import { AllFeaturesDispatchType, FeatureType } from "@/types";
 import { KeyboardEvent, RefObject, useState } from "react";
 import { useAllFeatures } from "../AllFeaturesProvider";
 
-interface LocationNameProps {
+interface FeatureNameProps {
   inputRef: RefObject<HTMLInputElement>;
   featureId: string;
   isRenaming: boolean;
   setIsRenaming: (isRenaming: boolean) => void;
 }
 
-export default function LocationName({
+export default function FeatureName({
   inputRef,
   featureId,
   isRenaming,
   setIsRenaming,
-}: LocationNameProps) {
+}: FeatureNameProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
 
   const feature = allFeatures.get(featureId);
