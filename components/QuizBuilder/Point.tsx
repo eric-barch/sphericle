@@ -11,15 +11,15 @@ import {
   AllFeaturesDispatchType,
 } from "@/types";
 import { FocusEvent, useRef, useState } from "react";
-import LocationName from "./LocationName";
-import EditLocationButton from "./EditLocationButton";
+import LocationName from "./FeatureName";
+import EditLocationButton from "./EditFeatureButton";
 import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
 
 interface PointProps {
-  locationId: string;
+  featureId: string;
 }
 
-export default function Point({ locationId }: PointProps) {
+export default function Point({ featureId: locationId }: PointProps) {
   const allFeatures = useAllFeatures();
   const allFeaturesDispatch = useAllFeaturesDispatch();
 

@@ -30,12 +30,12 @@ import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
 
 interface LocationAdderProps {
   inputRef?: RefObject<HTMLInputElement>;
-  parentId: string;
+  parentFeatureId: string;
 }
 
 export default function LocationAdder({
   inputRef,
-  parentId,
+  parentFeatureId: parentId,
 }: LocationAdderProps) {
   const allFeatures = useAllFeatures();
   const allFeaturesDispatch = useAllFeaturesDispatch();
