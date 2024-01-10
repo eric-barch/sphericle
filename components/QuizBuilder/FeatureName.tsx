@@ -1,6 +1,6 @@
 import { AllFeaturesDispatchType, FeatureType } from "@/types";
 import { KeyboardEvent, RefObject, useState } from "react";
-import { useAllFeatures, useAllFeaturesDispatch } from "../AllFeaturesProvider";
+import { useAllFeatures } from "../AllFeaturesProvider";
 
 interface LocationNameProps {
   inputRef: RefObject<HTMLInputElement>;
@@ -11,23 +11,22 @@ interface LocationNameProps {
 
 export default function LocationName({
   inputRef,
-  featureId: locationId,
+  featureId,
   isRenaming,
   setIsRenaming,
 }: LocationNameProps) {
-  const allFeatures = useAllFeatures();
-  const allFeaturesDispatch = useAllFeaturesDispatch();
+  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
 
-  const location = allFeatures.features[locationId];
+  const feature = allFeatures.get(featureId);
 
   if (
-    location.featureType !== FeatureType.AREA &&
-    location.featureType !== FeatureType.POINT
+    feature.featureType !== FeatureType.AREA &&
+    feature.featureType !== FeatureType.POINT
   ) {
-    throw new Error("location must be of type AREA or POINT.");
+    throw new Error("feature must be of type AREA or POINT.");
   }
 
-  const displayName = location.userDefinedName || location.shortName;
+  const displayName = feature.userDefinedName || feature.shortName;
 
   const [input, setInput] = useState<string>(displayName);
 
@@ -39,7 +38,7 @@ export default function LocationName({
 
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.RENAME_FEATURE,
-        featureId: locationId,
+        featureId: featureId,
         name: input,
       });
     }
