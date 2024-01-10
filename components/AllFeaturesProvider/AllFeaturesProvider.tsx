@@ -55,8 +55,7 @@ function allFeaturesReducer(
 ): AllFeatures {
   switch (action.type) {
     case AllFeaturesDispatchType.ADD_SUBFEATURE: {
-      const parentFeatureId = action.parentFeatureId;
-      const subfeatureId = action.subfeature.id;
+      const { parentFeatureId, subfeature } = action;
 
       const newAllFeatures = { ...allFeatures };
       const newParentFeature = { ...allFeatures.get(parentFeatureId) };
@@ -65,42 +64,51 @@ function allFeaturesReducer(
         newParentFeature.featureType !== FeatureType.ROOT &&
         newParentFeature.featureType !== FeatureType.AREA
       ) {
-        throw new Error("newParent must be of type ROOT or AREA.");
+        throw new Error("newParentFeature must be of type ROOT or AREA.");
       }
 
-      newParentFeature.subfeatureIds.add(subfeatureId);
+      newParentFeature.subfeatureIds.add(subfeature.id);
 
       newAllFeatures.set(parentFeatureId, newParentFeature);
-      newAllFeatures.set(subfeatureId, action.subfeature);
+      newAllFeatures.set(subfeature.id, subfeature);
 
       return newAllFeatures;
     }
     case AllFeaturesDispatchType.SET_SUBFEATURES: {
+      const { parentFeatureId, subfeatureIds } = action;
+
       const newAllFeatures = { ...allFeatures };
-      const newLocation = newAllFeatures.features[action.parentFeatureId];
+      const newParentFeature = newAllFeatures.get(parentFeatureId);
 
       if (
-        newLocation.featureType !== FeatureType.ROOT &&
-        newLocation.featureType !== FeatureType.AREA
+        newParentFeature.featureType !== FeatureType.ROOT &&
+        newParentFeature.featureType !== FeatureType.AREA
       ) {
-        throw new Error("newLocation must be of type ROOT or AREA.");
+        throw new Error("newParentFeature must be of type ROOT or AREA.");
       }
 
-      newLocation.subfeatureIds = action.subfeatureIds;
+      subfeatureIds.forEach((element) => {
+        newParentFeature.subfeatureIds.add(element);
+      });
 
-      return getResetAllFeatures(newAllFeatures);
+      return newAllFeatures;
     }
     case AllFeaturesDispatchType.RENAME_FEATURE: {
-      const newAllFeatures = { ...allFeatures };
-      const newLocation = newAllFeatures.features[action.featureId];
+      const { featureId, name } = action;
 
-      if (newLocation.featureType === FeatureType.ROOT) {
-        throw new Error("newLocation must not be of type ROOT.");
+      const newAllFeatures = { ...allFeatures };
+      const newFeature = newAllFeatures.get(featureId);
+
+      if (
+        newFeature.featureType !== FeatureType.AREA &&
+        newFeature.featureType !== FeatureType.POINT
+      ) {
+        throw new Error("newFeature must be of type ROOT or AREA.");
       }
 
-      newLocation.userDefinedName = action.name;
+      newFeature.userDefinedName = name;
 
-      return getResetAllFeatures(newAllFeatures);
+      return newAllFeatures;
     }
     case AllFeaturesDispatchType.SET_AREA_IS_OPEN: {
       const newAllFeatures = { ...allFeatures };
