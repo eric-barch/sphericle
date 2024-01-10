@@ -39,7 +39,7 @@ export default function Point({ locationId }: PointProps) {
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
       quizBuilderDispatch({
-        type: QuizBuilderDispatchType.SET_SELECTED_FEATURE,
+        type: QuizBuilderDispatchType.SET_SELECTED,
         featureId: locationId,
       });
     }

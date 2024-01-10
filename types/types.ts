@@ -7,10 +7,7 @@ import {
   QuizTakerDispatchType,
 } from "./enums";
 
-export interface AllFeatures {
-  rootId: string;
-  features: { [key: string]: RootState | AreaState | PointState };
-}
+export type AllFeatures = Map<string, RootState | AreaState | PointState>;
 
 export interface RootState {
   id: string;
@@ -53,10 +50,9 @@ export interface QuizBuilderState {
 }
 
 export interface QuizTakerState {
-  orderedIds: string[];
-  currentIndex: number;
   correctIds: Set<string>;
   incorrectIds: Set<string>;
+  remainingIds: Set<string>;
 }
 
 export interface OsmItem {
@@ -91,7 +87,7 @@ interface BaseAllFeaturesDispatch {
 
 interface AddSubfeatureDispatch extends BaseAllFeaturesDispatch {
   type: AllFeaturesDispatchType.ADD_SUBFEATURE;
-  parentId: string;
+  featureId: string;
   subfeature: AreaState | PointState;
 }
 
@@ -124,9 +120,7 @@ interface DeleteFeatureDispatch extends BaseAllFeaturesDispatch {
   featureId: string;
 }
 
-export type QuizBuilderDispatch =
-  | SetActiveOptionDispatch
-  | SetSelectedFeatureDispatch;
+export type QuizBuilderDispatch = SetActiveOptionDispatch | SetSelectedDispatch;
 
 interface BaseQuizBuilderDispatch {
   type: QuizBuilderDispatchType;
@@ -137,8 +131,8 @@ interface SetActiveOptionDispatch extends BaseQuizBuilderDispatch {
   activeOption: AreaState | PointState | null;
 }
 
-interface SetSelectedFeatureDispatch extends BaseQuizBuilderDispatch {
-  type: QuizBuilderDispatchType.SET_SELECTED_FEATURE;
+interface SetSelectedDispatch extends BaseQuizBuilderDispatch {
+  type: QuizBuilderDispatchType.SET_SELECTED;
   featureId: string;
 }
 
@@ -153,7 +147,6 @@ interface BaseQuizTakerDispatch {
 
 interface ResetDispatch extends BaseQuizTakerDispatch {
   type: QuizTakerDispatchType.RESET;
-  allFeatures: AllFeatures;
 }
 
 interface MarkCorrectDispatch extends BaseQuizTakerDispatch {

@@ -52,7 +52,7 @@ function quizBuilderReducer(
     case QuizBuilderDispatchType.SET_ACTIVE_OPTION: {
       return { ...quizBuilder, activeOption: action.activeOption };
     }
-    case QuizBuilderDispatchType.SET_SELECTED_FEATURE: {
+    case QuizBuilderDispatchType.SET_SELECTED: {
       return { ...quizBuilder, selectedId: action.featureId };
     }
     default: {

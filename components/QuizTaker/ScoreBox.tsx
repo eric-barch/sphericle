@@ -17,7 +17,7 @@ export default function ScoreBox() {
           </tr>
           <tr>
             <td className="pr-4">Remaining:</td>
-            <td className="text-right">{quizTaker.orderedIds.length}</td>
+            <td className="text-right">{quizTaker.remainingIds.length}</td>
           </tr>
         </tbody>
       </table>
