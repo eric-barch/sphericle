@@ -86,7 +86,7 @@ export default function Area({ locationId }: AreaProps) {
       }
 
       quizBuilderDispatch({
-        type: QuizBuilderDispatchType.SET_SELECTED_FEATURE,
+        type: QuizBuilderDispatchType.SET_SELECTED,
         featureId: locationId,
       });
     }

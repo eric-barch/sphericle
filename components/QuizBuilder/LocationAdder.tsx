@@ -75,12 +75,12 @@ export default function LocationAdder({
       if (!optionSelected) {
         if (parentLocation.featureType === FeatureType.ROOT) {
           quizBuilderDispatch({
-            type: QuizBuilderDispatchType.SET_SELECTED_FEATURE,
+            type: QuizBuilderDispatchType.SET_SELECTED,
             featureId: null,
           });
         } else if (parentLocation.featureType === FeatureType.AREA) {
           quizBuilderDispatch({
-            type: QuizBuilderDispatchType.SET_SELECTED_FEATURE,
+            type: QuizBuilderDispatchType.SET_SELECTED,
             featureId: parentId,
           });
         }
@@ -93,7 +93,7 @@ export default function LocationAdder({
   function handleChange(sublocation: AreaState | PointState) {
     allFeaturesDispatch({
       type: AllFeaturesDispatchType.ADD_SUBFEATURE,
-      parentId,
+      featureId: parentId,
       subfeature: sublocation,
     });
 

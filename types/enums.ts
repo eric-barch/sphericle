@@ -19,7 +19,7 @@ export enum AllFeaturesDispatchType {
 
 export enum QuizBuilderDispatchType {
   SET_ACTIVE_OPTION = "SET_ACTIVE_OPTION",
-  SET_SELECTED_FEATURE = "SET_SELECTED_FEATURE",
+  SET_SELECTED = "SET_SELECTED_FEATURE",
 }
 
 export enum QuizTakerDispatchType {

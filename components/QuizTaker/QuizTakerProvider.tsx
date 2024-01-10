@@ -55,7 +55,7 @@ function quizTakerReducer(
   switch (action.type) {
     case QuizTakerDispatchType.RESET: {
       const newQuizTaker = { ...quizTaker };
-      newQuizTaker.orderedIds = orderFeatureIds(action.allFeatures);
+      newQuizTaker.remainingIds = orderFeatureIds(action.allFeatures);
       console.log("newQuizTaker", newQuizTaker);
       return newQuizTaker;
     }
@@ -98,7 +98,7 @@ function orderFeatureIds(allFeatures: AllFeatures): string[] {
 }
 
 const initialQuizTaker: QuizTakerState = {
-  orderedIds: [],
+  remainingIds: [],
   currentIndex: 0,
   correctIds: new Set<string>(),
   incorrectIds: new Set<string>(),

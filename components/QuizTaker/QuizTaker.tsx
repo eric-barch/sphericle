@@ -24,7 +24,7 @@ export default function QuizTaker() {
     AreaState | PointState | null
   >(
     allFeatures.features[
-      quizTakerState.orderedIds[quizTakerState.currentIndex]
+      quizTakerState.remainingIds[quizTakerState.currentIndex]
     ] as AreaState | PointState,
   );
 
@@ -41,7 +41,7 @@ export default function QuizTaker() {
   // set displayed location when orderedIdsIndex changes
   useEffect(() => {
     const displayedFeature = allFeatures.features[
-      quizTakerState.orderedIds[quizTakerState.currentIndex]
+      quizTakerState.remainingIds[quizTakerState.currentIndex]
     ] as AreaState | PointState;
 
     console.log("displayedFeature", displayedFeature);
@@ -63,7 +63,9 @@ export default function QuizTaker() {
   return (
     <div className="h-[calc(100vh-3rem)] relative flex justify-center align-middle content-center">
       <Dialog.Root
-        open={quizTakerState.currentIndex === quizTakerState.orderedIds.length}
+        open={
+          quizTakerState.currentIndex === quizTakerState.remainingIds.length
+        }
         modal={false}
       >
         <Dialog.Content
@@ -93,7 +95,7 @@ export default function QuizTaker() {
         displayedFeature={displayedFeature}
         inputRef={answerBoxInputRef}
         disabled={
-          quizTakerState.currentIndex === quizTakerState.orderedIds.length
+          quizTakerState.currentIndex === quizTakerState.remainingIds.length
         }
       />
     </div>
