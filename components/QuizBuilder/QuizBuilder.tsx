@@ -7,7 +7,7 @@ import { AreaState, DisplayMode, PointState, RootState } from "@/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Subfeatures from "./Subfeatures";
-import { useQuizBuilder } from "./QuizBuilderProvider";
+import { useQuizBuilder } from "./QuizBuilderStateProvider";
 
 export default function QuizBuilder() {
   const { rootId, allFeatures } = useAllFeatures();

@@ -1,11 +1,14 @@
 "use client";
 
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { FeatureType, QuizBuilderDispatchType } from "@/types";
+import { FeatureType, QuizBuilderStateDispatchType } from "@/types";
 import { FocusEvent, useRef, useState } from "react";
 import EditLocationButton from "./EditFeatureButton";
 import LocationName from "./FeatureName";
-import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
+import {
+  useQuizBuilder,
+  useQuizBuilderDispatch,
+} from "./QuizBuilderStateProvider";
 
 interface PointProps {
   featureId: string;
@@ -29,7 +32,7 @@ export default function Point({ featureId }: PointProps) {
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
       quizBuilderDispatch({
-        type: QuizBuilderDispatchType.SET_SELECTED,
+        type: QuizBuilderStateDispatchType.SET_SELECTED,
         featureId,
       });
     }

@@ -4,14 +4,17 @@ import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
   AllFeaturesDispatchType,
   FeatureType,
-  QuizBuilderDispatchType,
+  QuizBuilderStateDispatchType,
 } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
 import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import EditLocationButton from "./EditFeatureButton";
 import LocationName from "./FeatureName";
-import { useQuizBuilder, useQuizBuilderDispatch } from "./QuizBuilderProvider";
+import {
+  useQuizBuilder,
+  useQuizBuilderDispatch,
+} from "./QuizBuilderStateProvider";
 import Subfeatures from "./Subfeatures";
 
 interface AreaProps {
@@ -81,7 +84,7 @@ export default function Area({ featureId }: AreaProps) {
       }
 
       quizBuilderDispatch({
-        type: QuizBuilderDispatchType.SET_SELECTED,
+        type: QuizBuilderStateDispatchType.SET_SELECTED,
         featureId,
       });
     }
