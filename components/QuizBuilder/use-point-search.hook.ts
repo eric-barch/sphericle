@@ -19,9 +19,10 @@ export interface PointSearch {
   reset: () => void;
 }
 
-export default function usePointSearch(parentId: string): PointSearch {
-  const allFeatures = useAllFeatures();
-  const parentLocation = allFeatures.features[parentId] as
+export default function usePointSearch(parentFeatureId: string): PointSearch {
+  const { allFeatures } = useAllFeatures();
+
+  const parentLocation = allFeatures.get(parentFeatureId) as
     | RootState
     | AreaState;
 

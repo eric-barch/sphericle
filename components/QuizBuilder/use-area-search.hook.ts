@@ -19,9 +19,10 @@ export interface AreaSearch {
   reset: () => void;
 }
 
-export default function useAreaSearch(parentId: string): AreaSearch {
-  const allFeatures = useAllFeatures();
-  const parentLocation = allFeatures.features[parentId] as
+export default function useAreaSearch(parentFeatureId: string): AreaSearch {
+  const { allFeatures } = useAllFeatures();
+
+  const parentLocation = allFeatures.get(parentFeatureId) as
     | RootState
     | AreaState;
 
@@ -94,7 +95,7 @@ function getAreaState(
   return {
     id: crypto.randomUUID(),
     parentId: parentLocation.id,
-    subfeatureIds: [],
+    subfeatureIds: new Set<string>(),
     openStreetMapPlaceId: osmItem.place_id,
     longName: osmItem.display_name,
     shortName: osmItem.name,
