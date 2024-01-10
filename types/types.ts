@@ -17,7 +17,7 @@ export interface RootState {
 
 export interface AreaState {
   id: string;
-  parentId: string;
+  parentFeatureId: string;
   subfeatureIds: Set<string>;
   featureType: FeatureType.AREA;
   openStreetMapPlaceId: number;
@@ -33,7 +33,7 @@ export interface AreaState {
 
 export interface PointState {
   id: string;
-  parentId: string;
+  parentFeatureId: string;
   featureType: FeatureType.POINT;
   googlePlacesId: string;
   longName: string;
@@ -45,14 +45,14 @@ export interface PointState {
 }
 
 export interface QuizBuilderState {
-  activeOption: AreaState | PointState | null;
-  selectedId: string | null;
+  activeSearchOption: AreaState | PointState | null;
+  selectedFeatureId: string | null;
 }
 
 export interface QuizTakerState {
-  correctIds: Set<string>;
-  incorrectIds: Set<string>;
-  remainingIds: Set<string>;
+  correctFeatureIds: Set<string>;
+  incorrectFeatureIds: Set<string>;
+  remainingFeatureIds: Set<string>;
 }
 
 export interface OsmItem {

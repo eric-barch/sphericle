@@ -100,6 +100,6 @@ function orderFeatureIds(allFeatures: AllFeatures): string[] {
 const initialQuizTaker: QuizTakerState = {
   remainingIds: [],
   currentIndex: 0,
-  correctIds: new Set<string>(),
-  incorrectIds: new Set<string>(),
+  correctFeatureIds: new Set<string>(),
+  incorrectFeatureIds: new Set<string>(),
 };

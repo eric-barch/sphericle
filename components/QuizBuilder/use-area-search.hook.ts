@@ -22,9 +22,14 @@ export interface AreaSearch {
 export default function useAreaSearch(parentFeatureId: string): AreaSearch {
   const { allFeatures } = useAllFeatures();
 
-  const parentLocation = allFeatures.get(parentFeatureId) as
-    | RootState
-    | AreaState;
+  const parentFeature = allFeatures.get(parentFeatureId);
+
+  if (
+    parentFeature.featureType !== FeatureType.ROOT &&
+    parentFeature.featureType !== FeatureType.AREA
+  ) {
+    throw new Error("parentFeature must be of type ROOT or AREA.");
+  }
 
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
@@ -40,8 +45,8 @@ export default function useAreaSearch(parentFeatureId: string): AreaSearch {
 
       let query: string = searchTerm;
 
-      if (parentLocation.featureType === FeatureType.AREA) {
-        const { south, north, west, east } = parentLocation.searchBounds;
+      if (parentFeature.featureType === FeatureType.AREA) {
+        const { south, north, west, east } = parentFeature.searchBounds;
         query = query + `&viewbox=${west},${south},${east},${north}&bounded=1`;
       }
 
@@ -50,13 +55,13 @@ export default function useAreaSearch(parentFeatureId: string): AreaSearch {
       ).json()) as OsmItem[];
 
       const searchResults = response
-        .map((osmItem) => getAreaState(parentLocation, osmItem))
+        .map((osmItem) => getAreaState(parentFeature, osmItem))
         .filter((searchResult) => searchResult !== null);
 
       setInternalSearchResults(searchResults);
       setInternalSearchStatus(SearchStatus.SEARCHED);
     },
-    [parentLocation],
+    [parentFeature],
   );
 
   const setSearchTerm = useCallback(
@@ -85,16 +90,16 @@ export default function useAreaSearch(parentFeatureId: string): AreaSearch {
 }
 
 function getAreaState(
-  parentLocation: RootState | AreaState,
+  parentFeature: RootState | AreaState,
   osmItem: OsmItem,
 ): AreaState | null {
-  const polygons = getPolygons(parentLocation, osmItem);
+  const polygons = getPolygons(parentFeature, osmItem);
   const searchBounds = getSearchBounds(osmItem);
   const displayBounds = getDisplayBounds(polygons, searchBounds);
 
   return {
     id: crypto.randomUUID(),
-    parentId: parentLocation.id,
+    parentFeatureId: parentFeature.id,
     subfeatureIds: new Set<string>(),
     openStreetMapPlaceId: osmItem.place_id,
     longName: osmItem.display_name,
@@ -110,7 +115,7 @@ function getAreaState(
 }
 
 function getPolygons(
-  parentLocation: RootState | AreaState,
+  parentFeature: RootState | AreaState,
   osmItem: OsmItem,
 ): Polygon | MultiPolygon | null {
   const polygons = osmItem.geojson;
@@ -119,11 +124,11 @@ function getPolygons(
     return null;
   }
 
-  if (parentLocation.featureType === FeatureType.ROOT) {
+  if (parentFeature.featureType === FeatureType.ROOT) {
     return polygons;
   }
 
-  const parentPolygons = parentLocation.polygons;
+  const parentPolygons = parentFeature.polygons;
 
   if (booleanIntersects(polygons, parentPolygons)) {
     return polygons;

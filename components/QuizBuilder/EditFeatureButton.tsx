@@ -4,17 +4,17 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { MouseEvent } from "react";
 
-interface EditLocationButtonProps {
+interface EditFeatureButtonProps {
   featureId: string;
   setIsRenaming: (isRenaming: boolean) => void;
   setIsAdding?: (isAdding: boolean) => void;
 }
 
-export default function EditLocationButton({
+export default function EditFeatureButton({
   featureId,
   setIsRenaming,
   setIsAdding,
-}: EditLocationButtonProps) {
+}: EditFeatureButtonProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
 
   const feature = allFeatures.get(featureId);

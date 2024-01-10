@@ -207,7 +207,7 @@ export default function Map({
       return;
     }
 
-    const parentLocation = allFeatures.get(displayedLocation.parentId);
+    const parentLocation = allFeatures.get(displayedLocation.parentFeatureId);
 
     if (parentLocation.featureType === FeatureType.ROOT) {
       if (displayedLocation.featureType === FeatureType.AREA) {

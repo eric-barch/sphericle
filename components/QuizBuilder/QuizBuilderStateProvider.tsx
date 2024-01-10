@@ -53,10 +53,10 @@ function quizBuilderStateReducer(
 ): QuizBuilderState {
   switch (action.type) {
     case QuizBuilderStateDispatchType.SET_ACTIVE_OPTION: {
-      return { ...quizBuilderState, activeOption: action.activeOption };
+      return { ...quizBuilderState, activeSearchOption: action.activeOption };
     }
     case QuizBuilderStateDispatchType.SET_SELECTED: {
-      return { ...quizBuilderState, selectedId: action.featureId };
+      return { ...quizBuilderState, selectedFeatureId: action.featureId };
     }
     default: {
       return { ...quizBuilderState };
@@ -65,6 +65,6 @@ function quizBuilderStateReducer(
 }
 
 const initialQuizBuilderState: QuizBuilderState = {
-  activeOption: null,
-  selectedId: null,
+  activeSearchOption: null,
+  selectedFeatureId: null,
 };
