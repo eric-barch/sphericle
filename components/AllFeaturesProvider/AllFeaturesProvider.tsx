@@ -140,44 +140,38 @@ function allFeaturesReducer(
 
       newFeature.isAdding = isAdding;
 
-      if (action.isAdding) {
+      if (isAdding) {
         newFeature.isOpen = true;
       }
 
       return newAllFeatures;
     }
     case AllFeaturesDispatchType.DELETE_FEATURE: {
+      const { featureId } = action;
+
       const newAllFeatures = { ...allFeatures };
-
-      if (!newAllFeatures.features[action.featureId]) {
-        return newAllFeatures;
-      }
-
-      const newLocation = newAllFeatures.features[action.featureId];
+      const newFeature = newAllFeatures.get(featureId);
 
       if (
-        newLocation.featureType !== FeatureType.AREA &&
-        newLocation.featureType !== FeatureType.POINT
+        newFeature.featureType !== FeatureType.AREA &&
+        newFeature.featureType !== FeatureType.POINT
       ) {
-        throw new Error("newLocation must be of type AREA or POINT.");
+        throw new Error("newFeature must be of type AREA or POINT.");
       }
 
-      const newParent = newAllFeatures.features[newLocation.parentId];
+      const newParentFeature = newAllFeatures.get(newFeature.parentId);
 
       if (
-        newParent.featureType !== FeatureType.ROOT &&
-        newParent.featureType !== FeatureType.AREA
+        newParentFeature.featureType !== FeatureType.ROOT &&
+        newParentFeature.featureType !== FeatureType.AREA
       ) {
-        throw new Error("newParent must be of type ROOT or AREA.");
+        throw new Error("newParentFeature must be of type ROOT or AREA.");
       }
 
-      newParent.subfeatureIds = newParent.subfeatureIds.filter(
-        (sublocationId) => sublocationId !== action.featureId,
-      );
+      newParentFeature.subfeatureIds.delete(featureId);
+      newAllFeatures.delete(featureId);
 
-      delete newAllFeatures.features[action.featureId];
-
-      return getResetAllFeatures(newAllFeatures);
+      return newAllFeatures;
     }
     default: {
       return { ...allFeatures };
