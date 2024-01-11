@@ -100,12 +100,23 @@ function resetRemainingFeatureIds(
   function addDirectChildren(featureId: string) {
     const feature = allFeatures.get(featureId);
 
-    if ("subfeatureIds" in feature) {
-      feature.subfeatureIds.forEach((subfeatureId) => {
+    if (feature && "subfeatureIds" in feature) {
+      const shuffledSubfeatureIds = [...feature.subfeatureIds];
+
+      // Fisher-Yates shuffle
+      for (let i = shuffledSubfeatureIds.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledSubfeatureIds[i], shuffledSubfeatureIds[j]] = [
+          shuffledSubfeatureIds[j],
+          shuffledSubfeatureIds[i],
+        ];
+      }
+
+      shuffledSubfeatureIds.forEach((subfeatureId) => {
         remainingFeatureIds.add(subfeatureId);
       });
 
-      feature.subfeatureIds.forEach((subfeatureId) => {
+      shuffledSubfeatureIds.forEach((subfeatureId) => {
         addDirectChildren(subfeatureId);
       });
     }
