@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="h-[calc(100vh-3rem)] flex flex-col overflow-auto items-center px-32 py-16 space-y-7">
+    <div className="h-[calc(100vh-4rem)] flex flex-col overflow-auto items-center px-32 py-16 space-y-7">
       <p className="text-left w-full">
         Welcome to <strong>Sphericle</strong>, a customizable way to learn the
         geography of the world. Watch the demo video below, or click Build a
