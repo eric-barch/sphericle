@@ -6,6 +6,7 @@ import Nav from "@/components/Nav";
 import AllFeaturesProvider from "@/components/AllFeaturesProvider";
 import { Toaster } from "react-hot-toast";
 import QuizBuilderStateProvider from "@/components/QuizBuilder/QuizBuilderStateProvider";
+import Head from "next/head"; // Importing the Head component
 
 const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
