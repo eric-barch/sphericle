@@ -1,8 +1,8 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { AreaState, PointState, QuizTakerDispatchType } from "@/types";
+import { AreaState, PointState, QuizTakerStateDispatchType } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";
-import { useQuizTakerDispatch, useQuizTakerState } from "./QuizTakerProvider";
+import { useQuizTakerState } from "./QuizTakerStateProvider";
 
 interface AnswerBoxProps {
   displayedFeature: AreaState | PointState;
@@ -16,9 +16,7 @@ export default function AnswerBox({
   disabled,
 }: AnswerBoxProps) {
   const allFeatures = useAllFeatures();
-
-  const quizTakerState = useQuizTakerState();
-  const quizTakerDispatch = useQuizTakerDispatch();
+  const { quizTakerState, quizTakerStateDispatch } = useQuizTakerState();
 
   const [input, setInput] = useState<string>("");
 
@@ -35,8 +33,9 @@ export default function AnswerBox({
         displayedFeature.userDefinedName || displayedFeature.shortName,
       );
 
-      quizTakerDispatch({
-        type: QuizTakerDispatchType.MARK_CORRECT,
+      quizTakerStateDispatch({
+        type: QuizTakerStateDispatchType.MARK_CORRECT,
+        featureId: quizTakerState.remainingFeatureIds.values().next().value,
       });
     } else {
       toast.error(
@@ -45,8 +44,9 @@ export default function AnswerBox({
         }`,
       );
 
-      quizTakerDispatch({
-        type: QuizTakerDispatchType.MARK_INCORRECT,
+      quizTakerStateDispatch({
+        type: QuizTakerStateDispatchType.MARK_INCORRECT,
+        featureId: quizTakerState.remainingFeatureIds.values().next().value,
       });
     }
 

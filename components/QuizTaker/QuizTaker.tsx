@@ -5,46 +5,48 @@ import Map from "@/components/Map";
 import {
   AreaState,
   DisplayMode,
+  FeatureType,
   PointState,
-  QuizTakerDispatchType,
+  QuizTakerStateDispatchType,
 } from "@/types";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
 import AnswerBox from "./AnswerBox";
-import { useQuizTakerDispatch, useQuizTakerState } from "./QuizTakerProvider";
+import { useQuizTakerState } from "./QuizTakerStateProvider";
 import ScoreBox from "./ScoreBox";
 
 export default function QuizTaker() {
-  const allFeatures = useAllFeatures();
-
-  const quizTakerState = useQuizTakerState();
-  const quizTakerDispatch = useQuizTakerDispatch();
+  const { rootId, allFeatures } = useAllFeatures();
+  const { quizTakerState, quizTakerStateDispatch } = useQuizTakerState();
 
   const [displayedFeature, setDisplayedFeature] = useState<
     AreaState | PointState | null
-  >(
-    allFeatures.features[
-      quizTakerState.remainingIds[quizTakerState.currentIndex]
-    ] as AreaState | PointState,
-  );
+  >(null);
 
   const answerBoxInputRef = useRef<HTMLInputElement>();
 
   // reset quiz on component mount
   useEffect(() => {
-    quizTakerDispatch({
-      type: QuizTakerDispatchType.RESET,
+    quizTakerStateDispatch({
+      type: QuizTakerStateDispatchType.RESET,
+      rootId,
       allFeatures,
     });
-  }, [allFeatures, quizTakerDispatch]);
+  }, [rootId, allFeatures, quizTakerStateDispatch]);
 
   // set displayed location when orderedIdsIndex changes
   useEffect(() => {
-    const displayedFeature = allFeatures.features[
-      quizTakerState.remainingIds[quizTakerState.currentIndex]
-    ] as AreaState | PointState;
+    const displayedFeature = allFeatures.get(
+      quizTakerState.remainingFeatureIds.values().next().value,
+    );
 
-    console.log("displayedFeature", displayedFeature);
+    if (
+      !displayedFeature ||
+      (displayedFeature.featureType !== FeatureType.AREA &&
+        displayedFeature.featureType !== FeatureType.POINT)
+    ) {
+      return;
+    }
 
     setDisplayedFeature(displayedFeature);
   }, [allFeatures, quizTakerState]);
@@ -54,8 +56,9 @@ export default function QuizTaker() {
   }
 
   function handleClick() {
-    quizTakerDispatch({
-      type: QuizTakerDispatchType.RESET,
+    quizTakerStateDispatch({
+      type: QuizTakerStateDispatchType.RESET,
+      rootId,
       allFeatures,
     });
   }
@@ -63,9 +66,7 @@ export default function QuizTaker() {
   return (
     <div className="h-[calc(100vh-3rem)] relative flex justify-center align-middle content-center">
       <Dialog.Root
-        open={
-          quizTakerState.currentIndex === quizTakerState.remainingIds.length
-        }
+        open={quizTakerState.remainingFeatureIds.size <= 0}
         modal={false}
       >
         <Dialog.Content
@@ -95,9 +96,7 @@ export default function QuizTaker() {
       <AnswerBox
         displayedFeature={displayedFeature}
         inputRef={answerBoxInputRef}
-        disabled={
-          quizTakerState.currentIndex === quizTakerState.remainingIds.length
-        }
+        disabled={quizTakerState.remainingFeatureIds.size <= 0}
       />
     </div>
   );
