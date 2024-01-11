@@ -22,7 +22,7 @@ export enum QuizBuilderStateDispatchType {
   SET_SELECTED = "SET_SELECTED_FEATURE",
 }
 
-export enum QuizTakerDispatchType {
+export enum QuizTakerStateDispatchType {
   RESET = "RESET",
   MARK_CORRECT = "MARK_CORRECT",
   MARK_INCORRECT = "MARK_INCORRECT",

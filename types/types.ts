@@ -4,7 +4,7 @@ import {
   FeatureType,
   QuizBuilderStateDispatchType,
   AllFeaturesDispatchType,
-  QuizTakerDispatchType,
+  QuizTakerStateDispatchType,
 } from "./enums";
 
 export type AllFeatures = Map<string, RootState | AreaState | PointState>;
@@ -138,23 +138,27 @@ interface SetSelectedDispatch extends BaseQuizBuilderDispatch {
   featureId: string;
 }
 
-export type QuizTakerDispatch =
+export type QuizTakerStateDispatch =
   | ResetDispatch
   | MarkCorrectDispatch
   | MarkIncorrectDispatch;
 
 interface BaseQuizTakerDispatch {
-  type: QuizTakerDispatchType;
+  type: QuizTakerStateDispatchType;
 }
 
 interface ResetDispatch extends BaseQuizTakerDispatch {
-  type: QuizTakerDispatchType.RESET;
+  type: QuizTakerStateDispatchType.RESET;
+  rootId: string;
+  allFeatures: AllFeatures;
 }
 
 interface MarkCorrectDispatch extends BaseQuizTakerDispatch {
-  type: QuizTakerDispatchType.MARK_CORRECT;
+  type: QuizTakerStateDispatchType.MARK_CORRECT;
+  featureId: string;
 }
 
 interface MarkIncorrectDispatch extends BaseQuizTakerDispatch {
-  type: QuizTakerDispatchType.MARK_INCORRECT;
+  type: QuizTakerStateDispatchType.MARK_INCORRECT;
+  featureId: string;
 }
