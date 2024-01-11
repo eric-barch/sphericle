@@ -2,9 +2,7 @@
 
 Make custom geography quizzes to study niche locations.
 
-[Live Site](https://sphericle.app/build-quiz)
-
-[Demo Video](https://www.youtube.com/watch?v=PlWm2r0FBMI)
+[Live Demo](https://sphericle.app/)
 
 ## When to Use
 
