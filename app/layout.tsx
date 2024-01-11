@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body className={font.className}>
         <Nav />
-        <main>
+        <main className="h-[calc(100vh-4rem)] overflow-auto custom-scrollbar">
           <AllFeaturesProvider>
             <QuizBuilderStateProvider>{children}</QuizBuilderStateProvider>
           </AllFeaturesProvider>
