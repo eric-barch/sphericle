@@ -64,7 +64,7 @@ export default function QuizTaker() {
   }
 
   return (
-    <div className="h-[calc(100vh-3rem)] relative flex justify-center align-middle content-center">
+    <div className="h-[calc(100vh-4rem)] relative flex justify-center align-middle content-center">
       <Dialog.Root
         open={quizTakerState.remainingFeatureIds.size <= 0}
         modal={false}

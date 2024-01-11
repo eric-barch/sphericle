@@ -7,7 +7,7 @@ import Link from "next/link";
 export default function Nav() {
   return (
     <NavigationMenu.Root
-      className={`flex items-center sticky top-0 z-50 w-screen px-6 py-3 bg-gray-900 h-16`}
+      className={`flex items-center sticky top-0 z-50 w-full px-6 py-3 bg-gray-900 h-16`}
       orientation="horizontal"
     >
       <div className="grow">
