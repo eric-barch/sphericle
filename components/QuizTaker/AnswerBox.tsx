@@ -1,47 +1,52 @@
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState, PointState, QuizDispatchType } from "@/types";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { AreaState, PointState, QuizTakerStateDispatchType } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";
+import { useQuizTakerState } from "./QuizTakerStateProvider";
 
 interface AnswerBoxProps {
+  displayedFeature: AreaState | PointState;
   inputRef: RefObject<HTMLInputElement>;
   disabled: boolean;
 }
 
-export default function AnswerBox({ inputRef, disabled }: AnswerBoxProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
-  const takerSelected = quiz.locations[quiz.takerSelectedId] as
-    | AreaState
-    | PointState;
+export default function AnswerBox({
+  displayedFeature,
+  inputRef,
+  disabled,
+}: AnswerBoxProps) {
+  const allFeatures = useAllFeatures();
+  const { quizTakerState, quizTakerStateDispatch } = useQuizTakerState();
 
   const [input, setInput] = useState<string>("");
 
   function checkAnswer() {
     const normalizedAnswer = (
-      takerSelected.userDefinedName || takerSelected.shortName
+      displayedFeature.userDefinedName || displayedFeature.shortName
     )
       .trim()
       .toLowerCase();
     const normalizedInput = input.trim().toLowerCase();
 
     if (normalizedAnswer === normalizedInput) {
-      toast.success(takerSelected.userDefinedName || takerSelected.shortName);
+      toast.success(
+        displayedFeature.userDefinedName || displayedFeature.shortName,
+      );
 
-      quizDispatch({
-        type: QuizDispatchType.MARK_TAKER_SELECTED,
-        answeredCorrectly: true,
+      quizTakerStateDispatch({
+        type: QuizTakerStateDispatchType.MARK_CORRECT,
+        featureId: quizTakerState.remainingFeatureIds.values().next().value,
       });
     } else {
       toast.error(
         `You said: ${input}\nCorrect answer: ${
-          takerSelected.userDefinedName || takerSelected.shortName
+          displayedFeature.userDefinedName || displayedFeature.shortName
         }`,
       );
 
-      quizDispatch({
-        type: QuizDispatchType.MARK_TAKER_SELECTED,
-        answeredCorrectly: false,
+      quizTakerStateDispatch({
+        type: QuizTakerStateDispatchType.MARK_INCORRECT,
+        featureId: quizTakerState.remainingFeatureIds.values().next().value,
       });
     }
 

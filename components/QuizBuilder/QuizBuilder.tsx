@@ -1,87 +1,34 @@
 "use client";
 
 import Map from "@/components/Map";
-import { rootId, useQuiz } from "@/components/QuizProvider";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import SplitPane from "@/components/SplitPane";
-import { AreaState, LocationType, PointState } from "@/types";
+import { AreaState, DisplayMode, PointState, RootState } from "@/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import Sublocations from "./Sublocations";
+import Subfeatures from "./Subfeatures";
+import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 
 export default function QuizBuilder() {
-  const quiz = useQuiz();
-  const location = quiz.activeOption || quiz.locations[quiz.builderSelectedId];
+  const { rootId, allFeatures } = useAllFeatures();
+  const { quizBuilderState } = useQuizBuilderState();
 
-  const [mapId, setMapId] = useState<string>("696d0ea42431a75c");
-  const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>(null);
-  const [emptyAreas, setEmptyAreas] = useState<AreaState | null>(null);
-  const [filledAreas, setFilledAreas] = useState<AreaState | null>(null);
-  const [markedPoints, setMarkedPoints] = useState<PointState | null>(null);
+  const [displayedFeature, setDisplayedFeature] = useState<
+    RootState | AreaState | PointState | null
+  >(allFeatures.get(quizBuilderState.selectedFeatureId) || null);
 
   useEffect(() => {
-    if (!location) {
-      setEmptyAreas(null);
-      setFilledAreas(null);
-      setMarkedPoints(null);
-      return;
-    }
-
-    if (
-      location.locationType !== LocationType.AREA &&
-      location.locationType !== LocationType.POINT
-    ) {
-      throw new Error("location must be of type AREA or POINT.");
-    }
-
-    const parentLocation = quiz.locations[location.parentId];
-
-    if (parentLocation.locationType === LocationType.ROOT) {
-      if (location.locationType === LocationType.AREA) {
-        setBounds(location.displayBounds);
-
-        if (location.isOpen) {
-          setEmptyAreas(location);
-          setFilledAreas(null);
-          setMarkedPoints(null);
-        } else if (!location.isOpen) {
-          setEmptyAreas(null);
-          setFilledAreas(location);
-          setMarkedPoints(null);
-        }
-      } else if (location.locationType === LocationType.POINT) {
-        setBounds(location.displayBounds);
-        setEmptyAreas(null);
-        setFilledAreas(null);
-        setMarkedPoints(location);
-      }
-    } else if (parentLocation.locationType === LocationType.AREA) {
-      if (location.locationType === LocationType.AREA) {
-        if (location.isOpen) {
-          setBounds(location.displayBounds);
-          setEmptyAreas(location);
-          setFilledAreas(null);
-          setMarkedPoints(null);
-        } else if (!location.isOpen) {
-          setBounds(parentLocation.displayBounds);
-          setEmptyAreas(parentLocation);
-          setFilledAreas(location);
-          setMarkedPoints(null);
-        }
-      } else if (location.locationType === LocationType.POINT) {
-        setBounds(parentLocation.displayBounds);
-        setEmptyAreas(parentLocation);
-        setFilledAreas(null);
-        setMarkedPoints(location);
-      }
-    }
-  }, [quiz, location, setBounds]);
+    const activeOption = quizBuilderState.activeSearchOption;
+    const selectedFeature = allFeatures.get(quizBuilderState.selectedFeatureId);
+    setDisplayedFeature(activeOption || selectedFeature);
+  }, [allFeatures, quizBuilderState]);
 
   return (
     <SplitPane>
       <div className="relative h-full">
-        <Sublocations
+        <Subfeatures
           className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-3rem)]`}
-          parentId={rootId}
+          parentFeatureId={rootId}
         />
         <Link
           className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
@@ -91,11 +38,9 @@ export default function QuizBuilder() {
         </Link>
       </div>
       <Map
-        mapId={mapId}
-        bounds={bounds}
-        emptyAreas={emptyAreas}
-        filledAreas={filledAreas}
-        markedPoints={markedPoints}
+        mapId="696d0ea42431a75c"
+        displayedFeature={displayedFeature}
+        displayMode={DisplayMode.QUIZ_BUILDER}
       />
     </SplitPane>
   );

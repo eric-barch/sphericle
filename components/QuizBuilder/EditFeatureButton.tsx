@@ -1,25 +1,25 @@
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { LocationType, QuizDispatchType } from "@/types";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { FeatureType, AllFeaturesDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { MouseEvent } from "react";
 
-interface EditLocationButtonProps {
-  locationId: string;
+interface EditFeatureButtonProps {
+  featureId: string;
   setIsRenaming: (isRenaming: boolean) => void;
   setIsAdding?: (isAdding: boolean) => void;
 }
 
-export default function EditLocationButton({
-  locationId,
+export default function EditFeatureButton({
+  featureId,
   setIsRenaming,
   setIsAdding,
-}: EditLocationButtonProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
-  const location = quiz.locations[locationId];
+}: EditFeatureButtonProps) {
+  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
 
-  function handleAddSublocationClick(event: MouseEvent<HTMLDivElement>) {
+  const feature = allFeatures.get(featureId);
+
+  function handleAddSubfeatureClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
     setIsAdding(true);
   }
@@ -32,9 +32,9 @@ export default function EditLocationButton({
   function handleDeleteClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
 
-    quizDispatch({
-      type: QuizDispatchType.DELETE_LOCATION,
-      locationId,
+    allFeaturesDispatch({
+      type: AllFeaturesDispatchType.DELETE_FEATURE,
+      featureId,
     });
   }
 
@@ -47,12 +47,12 @@ export default function EditLocationButton({
         className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        {location.locationType === LocationType.AREA && (
+        {feature.featureType === FeatureType.AREA && (
           <DropdownMenu.Item
-            onClick={handleAddSublocationClick}
+            onClick={handleAddSubfeatureClick}
             className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
           >
-            Add Sublocation
+            Add Subfeature
           </DropdownMenu.Item>
         )}
         <DropdownMenu.Item

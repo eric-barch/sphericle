@@ -3,8 +3,10 @@ import { Nunito } from "next/font/google";
 import "@/styles/globals.css";
 import { ReactNode } from "react";
 import Nav from "@/components/Nav";
-import QuizProvider from "@/components/QuizProvider";
+import AllFeaturesProvider from "@/components/AllFeaturesProvider";
 import { Toaster } from "react-hot-toast";
+import QuizBuilderStateProvider from "@/components/QuizBuilder/QuizBuilderStateProvider";
+import Head from "next/head"; // Importing the Head component
 
 const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
@@ -19,7 +21,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={font.className}>
         <Nav />
         <main>
-          <QuizProvider>{children}</QuizProvider>
+          <AllFeaturesProvider>
+            <QuizBuilderStateProvider>{children}</QuizBuilderStateProvider>
+          </AllFeaturesProvider>
           <Toaster containerStyle={{ marginTop: "3rem" }} />
         </main>
       </body>

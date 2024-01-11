@@ -1,52 +1,58 @@
 "use client";
 
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { AreaState, LocationType, QuizDispatchType } from "@/types";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import {
+  AllFeaturesDispatchType,
+  FeatureType,
+  QuizBuilderStateDispatchType,
+} from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
-import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
-import EditLocationButton from "./EditLocationButton";
-import LocationName from "./LocationName";
-import Sublocations from "./Sublocations";
 import { ChevronRight } from "lucide-react";
+import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import EditFeatureButton from "./EditFeatureButton";
+import FeatureName from "./FeatureName";
+import { useQuizBuilderState } from "./QuizBuilderStateProvider";
+import Subfeatures from "./Subfeatures";
 
 interface AreaProps {
-  locationId: string;
+  featureId: string;
 }
 
-export default function Area({ locationId }: AreaProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
-  const location = quiz.locations[locationId] as AreaState;
+export default function Area({ featureId }: AreaProps) {
+  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  if (location.locationType !== LocationType.AREA) {
+  const areaState = allFeatures.get(featureId);
+
+  if (areaState.featureType !== FeatureType.AREA) {
     throw new Error("areaState must be of type AREA.");
   }
 
   const [accordionRootValue, setAccordionRootValue] = useState<string[]>(
-    location.isOpen ? [location.id] : [],
+    areaState.isOpen ? [areaState.id] : [],
   );
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
 
-  const locationNameInputRef = useRef<HTMLInputElement>();
-  const locationAdderInputRef = useRef<HTMLInputElement>();
+  const featureNameInputRef = useRef<HTMLInputElement>();
+  const featureAdderInputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    setAccordionRootValue(location.isOpen ? [locationId] : []);
-  }, [location.isOpen, locationId]);
+    setAccordionRootValue(areaState.isOpen ? [featureId] : []);
+  }, [areaState.isOpen, featureId]);
 
   function handleValueChange(value: string[]) {
-    if (value.includes(locationId)) {
-      quizDispatch({
-        type: QuizDispatchType.SET_AREA_IS_OPEN,
-        locationId,
+    if (value.includes(featureId)) {
+      allFeaturesDispatch({
+        type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
+        featureId,
         isOpen: true,
       });
     } else {
-      quizDispatch({
-        type: QuizDispatchType.SET_AREA_IS_OPEN,
-        locationId,
+      allFeaturesDispatch({
+        type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
+        featureId,
         isOpen: false,
       });
     }
@@ -72,9 +78,9 @@ export default function Area({ locationId }: AreaProps) {
         setWillToggle(true);
       }
 
-      quizDispatch({
-        type: QuizDispatchType.SET_BUILDER_SELECTED,
-        locationId,
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
+        featureId,
       });
     }
   }
@@ -96,28 +102,28 @@ export default function Area({ locationId }: AreaProps) {
 
     if (isRenaming) {
       setTimeout(() => {
-        locationNameInputRef?.current.focus();
-        locationNameInputRef?.current.select();
+        featureNameInputRef?.current.focus();
+        featureNameInputRef?.current.select();
       }, 0);
     }
   }
 
   function setIsAdding(isAdding: boolean) {
-    quizDispatch({
-      type: QuizDispatchType.SET_AREA_IS_ADDING,
-      locationId,
+    allFeaturesDispatch({
+      type: AllFeaturesDispatchType.SET_AREA_IS_ADDING,
+      featureId,
       isAdding,
     });
 
     if (isAdding) {
       setTimeout(() => {
-        locationAdderInputRef?.current.focus();
+        featureAdderInputRef?.current.focus();
       }, 0);
     }
   }
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (locationId !== quiz.builderSelectedId || !willToggle) {
+    if (featureId !== quizBuilderState.selectedFeatureId || !willToggle) {
       event.preventDefault();
     }
 
@@ -131,7 +137,7 @@ export default function Area({ locationId }: AreaProps) {
       onValueChange={handleValueChange}
       onBlur={handleContainerBlur}
     >
-      <Accordion.Item value={location.id}>
+      <Accordion.Item value={areaState.id}>
         <Accordion.Header
           className="relative"
           onBlur={handleBlur}
@@ -140,33 +146,33 @@ export default function Area({ locationId }: AreaProps) {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
         >
-          <EditLocationButton
-            locationId={locationId}
+          <EditFeatureButton
+            featureId={featureId}
             setIsRenaming={setIsRenaming}
             setIsAdding={setIsAdding}
           />
           <Accordion.Trigger
             className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
-              locationId === quiz.builderSelectedId
+              featureId === quizBuilderState.selectedFeatureId
                 ? "outline outline-2 outline-red-700"
                 : ""
             }`}
             onClick={handleClick}
           >
-            <LocationName
-              locationId={locationId}
-              inputRef={locationNameInputRef}
+            <FeatureName
+              featureId={featureId}
+              inputRef={featureNameInputRef}
               isRenaming={isRenaming}
               setIsRenaming={setIsRenaming}
             />
-            <OpenChevron isOpen={location.isOpen} />
+            <OpenChevron isOpen={areaState.isOpen} />
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content>
-          <Sublocations
-            locationAdderInputRef={locationAdderInputRef}
+          <Subfeatures
+            featureAdderInputRef={featureAdderInputRef}
             className="ml-10"
-            parentId={locationId}
+            parentFeatureId={featureId}
           />
         </Accordion.Content>
       </Accordion.Item>

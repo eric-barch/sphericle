@@ -1,32 +1,32 @@
-import { LocationType, QuizDispatchType } from "@/types";
-import { useQuiz, useQuizDispatch } from "../QuizProvider";
+import { AllFeaturesDispatchType, FeatureType } from "@/types";
 import { KeyboardEvent, RefObject, useState } from "react";
+import { useAllFeatures } from "../AllFeaturesProvider";
 
-interface LocationNameProps {
+interface FeatureNameProps {
   inputRef: RefObject<HTMLInputElement>;
-  locationId: string;
+  featureId: string;
   isRenaming: boolean;
   setIsRenaming: (isRenaming: boolean) => void;
 }
 
-export default function LocationName({
+export default function FeatureName({
   inputRef,
-  locationId,
+  featureId,
   isRenaming,
   setIsRenaming,
-}: LocationNameProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
-  const location = quiz.locations[locationId];
+}: FeatureNameProps) {
+  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+
+  const feature = allFeatures.get(featureId);
 
   if (
-    location.locationType !== LocationType.AREA &&
-    location.locationType !== LocationType.POINT
+    feature.featureType !== FeatureType.AREA &&
+    feature.featureType !== FeatureType.POINT
   ) {
-    throw new Error("location must be of type AREA or POINT.");
+    throw new Error("feature must be of type AREA or POINT.");
   }
 
-  const displayName = location.userDefinedName || location.shortName;
+  const displayName = feature.userDefinedName || feature.shortName;
 
   const [input, setInput] = useState<string>(displayName);
 
@@ -36,9 +36,9 @@ export default function LocationName({
       event.stopPropagation();
       setIsRenaming(false);
 
-      quizDispatch({
-        type: QuizDispatchType.RENAME_LOCATION,
-        locationId,
+      allFeaturesDispatch({
+        type: AllFeaturesDispatchType.RENAME_FEATURE,
+        featureId,
         name: input,
       });
     }

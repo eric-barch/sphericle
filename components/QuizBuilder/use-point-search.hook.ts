@@ -1,7 +1,7 @@
-import { useQuiz } from "@/components/QuizProvider";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
   AreaState,
-  LocationType,
+  FeatureType,
   PointState,
   RootState,
   SearchStatus,
@@ -19,9 +19,17 @@ export interface PointSearch {
   reset: () => void;
 }
 
-export default function usePointSearch(parentId: string): PointSearch {
-  const quiz = useQuiz();
-  const parentLocation = quiz.locations[parentId] as RootState | AreaState;
+export default function usePointSearch(parentFeatureId: string): PointSearch {
+  const { allFeatures } = useAllFeatures();
+
+  const parentFeature = allFeatures.get(parentFeatureId);
+
+  if (
+    parentFeature.featureType !== FeatureType.ROOT &&
+    parentFeature.featureType !== FeatureType.AREA
+  ) {
+    throw new Error("parentFeature must be of type ROOT or AREA.");
+  }
 
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
@@ -54,8 +62,8 @@ export default function usePointSearch(parentId: string): PointSearch {
         input: searchTerm,
       };
 
-      if (parentLocation.locationType === LocationType.AREA) {
-        request.locationRestriction = parentLocation.searchBounds;
+      if (parentFeature.featureType === FeatureType.AREA) {
+        request.locationRestriction = parentFeature.searchBounds;
       }
 
       const response = (
@@ -67,7 +75,7 @@ export default function usePointSearch(parentId: string): PointSearch {
           response.map(
             async (autocompletePrediction) =>
               await getPointState(
-                parentLocation,
+                parentFeature,
                 autocompletePrediction,
                 geocoderRef,
               ),
@@ -134,12 +142,12 @@ export default function usePointSearch(parentId: string): PointSearch {
 }
 
 async function getPointState(
-  parentLocation: RootState | AreaState,
+  parentFeature: RootState | AreaState,
   autocompletePrediction: google.maps.places.AutocompletePrediction,
   geocoderRef: RefObject<google.maps.Geocoder>,
 ): Promise<PointState | null> {
   const point = await getPoint(
-    parentLocation,
+    parentFeature,
     autocompletePrediction,
     geocoderRef,
   );
@@ -152,12 +160,12 @@ async function getPointState(
 
   return {
     id: crypto.randomUUID(),
-    parentId: parentLocation.id,
+    parentFeatureId: parentFeature.id,
     googlePlacesId: autocompletePrediction.place_id,
     longName: autocompletePrediction.description,
     shortName: autocompletePrediction.description,
     userDefinedName: null,
-    locationType: LocationType.POINT as LocationType.POINT,
+    featureType: FeatureType.POINT as FeatureType.POINT,
     displayBounds,
     point,
     answeredCorrectly: null,
@@ -165,7 +173,7 @@ async function getPointState(
 }
 
 async function getPoint(
-  parentLocation: RootState | AreaState,
+  parentFeature: RootState | AreaState,
   autocompletePrediction: google.maps.places.AutocompletePrediction,
   geocoderRef: RefObject<google.maps.Geocoder>,
 ): Promise<Point | null> {
@@ -180,11 +188,11 @@ async function getPoint(
 
   const point: Point = { type: "Point", coordinates: [lng, lat] };
 
-  if (parentLocation.locationType === LocationType.ROOT) {
+  if (parentFeature.featureType === FeatureType.ROOT) {
     return point;
   }
 
-  const parentPolygons = parentLocation.polygons;
+  const parentPolygons = parentFeature.polygons;
 
   if (booleanIntersects(point, parentPolygons)) {
     return point;

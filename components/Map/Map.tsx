@@ -1,28 +1,31 @@
 "use client";
 
-import { AreaState, PointState } from "@/types";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import {
+  AreaState,
+  DisplayMode,
+  FeatureType,
+  PointState,
+  RootState,
+} from "@/types";
+import { RefObject, useCallback, useEffect, useRef } from "react";
 
 interface MapProps {
   mapRef?: RefObject<HTMLDivElement>;
-  mapId: string;
-  bounds: google.maps.LatLngBoundsLiteral;
   padding?: google.maps.Padding;
-  emptyAreas: AreaState[] | AreaState | null;
-  filledAreas: AreaState[] | AreaState | null;
-  markedPoints: PointState[] | PointState | null;
+  mapId: string;
+  displayedFeature: RootState | AreaState | PointState | null;
+  displayMode: DisplayMode;
 }
 
 export default function Map({
   mapRef: propMapRef,
-  mapId,
-  bounds,
   padding = { top: 50, right: 50, bottom: 50, left: 50 },
-  emptyAreas,
-  filledAreas,
-  markedPoints,
+  mapId,
+  displayedFeature: displayedLocation,
+  displayMode,
 }: MapProps) {
-  const [tilesLoaded, setTilesLoaded] = useState<boolean>(false);
+  const { allFeatures } = useAllFeatures();
 
   const defaultMapRef = useRef<HTMLDivElement>(null);
   const mapRef = propMapRef || defaultMapRef;
@@ -31,48 +34,19 @@ export default function Map({
   const emptyAreasRef = useRef<google.maps.Polygon[] | null>(null);
   const markedPointsRef = useRef<google.maps.Marker[] | null>(null);
 
-  useEffect(() => {
-    if (googleMapRef?.current || !mapRef?.current) {
-      return;
-    }
+  const setBounds = useCallback(
+    (bounds: google.maps.LatLngBoundsLiteral) => {
+      if (!googleMapRef?.current || !bounds) {
+        return;
+      }
 
-    /** TODO: this drives me crazy, but initializing map with zoom < 2.5 causes issues on first
-     *  setBounds. */
-    googleMapRef.current = new google.maps.Map(mapRef.current, {
-      mapId,
-      center: { lat: 0, lng: 0 },
-      zoom: 2.5,
-      disableDefaultUI: true,
-      restriction: {
-        latLngBounds: {
-          east: 180,
-          west: -180,
-          north: 85,
-          south: -85,
-        },
-        strictBounds: true,
-      },
-    });
+      googleMapRef.current.fitBounds(bounds, padding);
+    },
+    [padding],
+  );
 
-    google.maps.event.addListenerOnce(
-      googleMapRef.current,
-      "tilesloaded",
-      () => {
-        setTilesLoaded(true);
-      },
-    );
-  }, [mapRef, mapId]);
-
-  useEffect(() => {
-    if (!googleMapRef?.current || !bounds || !tilesLoaded) {
-      return;
-    }
-
-    googleMapRef.current.fitBounds(bounds, padding);
-  }, [bounds, padding, tilesLoaded]);
-
-  useEffect(() => {
-    if (!googleMapRef?.current || !tilesLoaded) {
+  const setEmptyAreas = useCallback((emptyAreas: AreaState | null) => {
+    if (!googleMapRef?.current) {
       return;
     }
 
@@ -118,10 +92,10 @@ export default function Map({
         fillOpacity: 0.0,
       });
     });
-  }, [emptyAreas, tilesLoaded]);
+  }, []);
 
-  useEffect(() => {
-    if (!googleMapRef?.current || !tilesLoaded) {
+  const setFilledAreas = useCallback((filledAreas: AreaState | null) => {
+    if (!googleMapRef?.current) {
       return;
     }
 
@@ -167,10 +141,10 @@ export default function Map({
         fillOpacity: 0.2,
       });
     });
-  }, [filledAreas, tilesLoaded]);
+  }, []);
 
-  useEffect(() => {
-    if (!googleMapRef?.current || !tilesLoaded) {
+  const setMarkedPoints = useCallback((markedPoints: PointState | null) => {
+    if (!googleMapRef?.current) {
       return;
     }
 
@@ -196,7 +170,92 @@ export default function Map({
           map: googleMapRef.current,
         }),
     );
-  }, [markedPoints, tilesLoaded]);
+  }, []);
+
+  useEffect(() => {
+    if (googleMapRef?.current || !mapRef?.current) {
+      return;
+    }
+
+    /** TODO: this drives me crazy, but initializing map with zoom < 2.5 causes issues on first
+     *  setBounds. */
+    googleMapRef.current = new google.maps.Map(mapRef.current, {
+      mapId,
+      center: { lat: 0, lng: 0 },
+      zoom: 2.5,
+      disableDefaultUI: true,
+      restriction: {
+        latLngBounds: {
+          east: 180,
+          west: -180,
+          north: 85,
+          south: -85,
+        },
+        strictBounds: true,
+      },
+    });
+  }, [mapRef, mapId]);
+
+  useEffect(() => {
+    if (
+      !displayedLocation ||
+      displayedLocation.featureType === FeatureType.ROOT
+    ) {
+      setEmptyAreas(null);
+      setFilledAreas(null);
+      setMarkedPoints(null);
+      return;
+    }
+
+    const parentLocation = allFeatures.get(displayedLocation.parentFeatureId);
+
+    if (parentLocation.featureType === FeatureType.ROOT) {
+      if (displayedLocation.featureType === FeatureType.AREA) {
+        setBounds(displayedLocation.displayBounds);
+
+        if (displayedLocation.isOpen) {
+          setEmptyAreas(displayedLocation);
+          setFilledAreas(null);
+          setMarkedPoints(null);
+        } else if (!displayedLocation.isOpen) {
+          setEmptyAreas(null);
+          setFilledAreas(displayedLocation);
+          setMarkedPoints(null);
+        }
+      } else if (displayedLocation.featureType === FeatureType.POINT) {
+        setBounds(displayedLocation.displayBounds);
+        setEmptyAreas(null);
+        setFilledAreas(null);
+        setMarkedPoints(displayedLocation);
+      }
+    } else if (parentLocation.featureType === FeatureType.AREA) {
+      if (displayedLocation.featureType === FeatureType.AREA) {
+        if (displayedLocation.isOpen) {
+          setBounds(displayedLocation.displayBounds);
+          setEmptyAreas(displayedLocation);
+          setFilledAreas(null);
+          setMarkedPoints(null);
+        } else if (!displayedLocation.isOpen) {
+          setBounds(parentLocation.displayBounds);
+          setEmptyAreas(parentLocation);
+          setFilledAreas(displayedLocation);
+          setMarkedPoints(null);
+        }
+      } else if (displayedLocation.featureType === FeatureType.POINT) {
+        setBounds(parentLocation.displayBounds);
+        setEmptyAreas(parentLocation);
+        setFilledAreas(null);
+        setMarkedPoints(displayedLocation);
+      }
+    }
+  }, [
+    allFeatures,
+    displayedLocation,
+    setBounds,
+    setEmptyAreas,
+    setFilledAreas,
+    setMarkedPoints,
+  ]);
 
   return <div className="h-full w-full" ref={mapRef} />;
 }

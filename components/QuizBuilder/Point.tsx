@@ -1,33 +1,35 @@
 "use client";
 
-import { useQuiz, useQuizDispatch } from "@/components/QuizProvider";
-import { LocationType, PointState, QuizDispatchType } from "@/types";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { FeatureType, QuizBuilderStateDispatchType } from "@/types";
 import { FocusEvent, useRef, useState } from "react";
-import LocationName from "./LocationName";
-import EditLocationButton from "./EditLocationButton";
+import EditFeatureButton from "./EditFeatureButton";
+import FeatureName from "./FeatureName";
+import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 
 interface PointProps {
-  locationId: string;
+  featureId: string;
 }
 
-export default function Point({ locationId }: PointProps) {
-  const quiz = useQuiz();
-  const quizDispatch = useQuizDispatch();
-  const location = quiz.locations[locationId] as PointState;
+export default function Point({ featureId }: PointProps) {
+  const { allFeatures } = useAllFeatures();
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  if (location.locationType !== LocationType.POINT) {
+  const pointState = allFeatures.get(featureId);
+
+  if (pointState.featureType !== FeatureType.POINT) {
     throw new Error("pointState must be of type POINT.");
   }
 
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
 
-  const locationNameInputRef = useRef<HTMLInputElement>();
+  const featureNameInputRef = useRef<HTMLInputElement>();
 
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
-      quizDispatch({
-        type: QuizDispatchType.SET_BUILDER_SELECTED,
-        locationId,
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
+        featureId,
       });
     }
   }
@@ -37,28 +39,25 @@ export default function Point({ locationId }: PointProps) {
 
     if (isRenaming) {
       setTimeout(() => {
-        locationNameInputRef?.current.focus();
-        locationNameInputRef?.current.select();
+        featureNameInputRef?.current.focus();
+        featureNameInputRef?.current.select();
       }, 0);
     }
   }
 
   return (
     <div className="relative" onFocus={handleFocus}>
-      <EditLocationButton
-        locationId={locationId}
-        setIsRenaming={setIsRenaming}
-      />
+      <EditFeatureButton featureId={featureId} setIsRenaming={setIsRenaming} />
       <button
         className={`w-full p-1 rounded-2xl text-left bg-gray-600 ${
-          locationId === quiz.builderSelectedId
+          featureId === quizBuilderState.selectedFeatureId
             ? "outline outline-2 outline-red-700"
             : ""
         }`}
       >
-        <LocationName
-          locationId={locationId}
-          inputRef={locationNameInputRef}
+        <FeatureName
+          featureId={featureId}
+          inputRef={featureNameInputRef}
           isRenaming={isRenaming}
           setIsRenaming={setIsRenaming}
         />
