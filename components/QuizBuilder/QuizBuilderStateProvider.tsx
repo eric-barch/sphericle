@@ -55,7 +55,7 @@ function quizBuilderStateReducer(
     case QuizBuilderStateDispatchType.SET_ACTIVE_OPTION: {
       return { ...quizBuilderState, activeSearchOption: action.activeOption };
     }
-    case QuizBuilderStateDispatchType.SET_SELECTED: {
+    case QuizBuilderStateDispatchType.SET_SELECTED_FEATURE: {
       return { ...quizBuilderState, selectedFeatureId: action.featureId };
     }
     default: {

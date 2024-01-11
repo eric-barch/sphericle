@@ -122,7 +122,7 @@ interface DeleteFeatureDispatch extends BaseAllFeaturesDispatch {
 
 export type QuizBuilderStateDispatch =
   | SetActiveOptionDispatch
-  | SetSelectedDispatch;
+  | SetSelectedFeatureDispatch;
 
 interface BaseQuizBuilderDispatch {
   type: QuizBuilderStateDispatchType;
@@ -133,8 +133,8 @@ interface SetActiveOptionDispatch extends BaseQuizBuilderDispatch {
   activeOption: AreaState | PointState | null;
 }
 
-interface SetSelectedDispatch extends BaseQuizBuilderDispatch {
-  type: QuizBuilderStateDispatchType.SET_SELECTED;
+interface SetSelectedFeatureDispatch extends BaseQuizBuilderDispatch {
+  type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE;
   featureId: string;
 }
 
