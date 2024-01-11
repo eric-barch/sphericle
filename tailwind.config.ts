@@ -11,6 +11,15 @@ const config: Config = {
       borderRadius: {
         1.25: "1.25rem",
       },
+      keyframes: {
+        rotate: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+      },
+      animation: {
+        "spin-slow": "rotate 1s linear infinite",
+      },
     },
   },
   plugins: [],
