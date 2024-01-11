@@ -27,7 +27,7 @@ export default function QuizBuilder() {
     <SplitPane>
       <div className="relative h-full">
         <Subfeatures
-          className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-3rem)]`}
+          className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
           parentFeatureId={rootId}
         />
         <Link
