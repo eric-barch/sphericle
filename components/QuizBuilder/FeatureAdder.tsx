@@ -7,6 +7,7 @@ import {
   FeatureType,
   PointState,
   QuizBuilderStateDispatchType,
+  RootState,
   SearchStatus,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
@@ -38,14 +39,9 @@ export default function FeatureAdder({
   const { quizBuilderStateDispatch } = useQuizBuilderState();
   const { areaSearch, pointSearch } = useFeatureSearches(parentFeatureId);
 
-  const parentFeature = allFeatures.get(parentFeatureId);
-
-  if (
-    parentFeature.featureType !== FeatureType.ROOT &&
-    parentFeature.featureType !== FeatureType.AREA
-  ) {
-    throw new Error("parentFeature must be of type ROOT or AREA.");
-  }
+  const [parentFeature, setParentFeature] = useState<RootState | AreaState>(
+    null,
+  );
 
   const [isFocused, setIsFocused] = useState<boolean>(true);
   const [featureType, setFeatureType] = useState<FeatureType>(FeatureType.AREA);
@@ -102,43 +98,63 @@ export default function FeatureAdder({
     pointSearch.reset();
   }
 
+  useEffect(() => {
+    if (!allFeatures || !parentFeatureId) {
+      return;
+    }
+
+    const parentFeature = allFeatures.get(parentFeatureId);
+
+    if (
+      parentFeature?.featureType === FeatureType.ROOT ||
+      parentFeature?.featureType === FeatureType.AREA
+    ) {
+      setParentFeature(parentFeature);
+      return;
+    }
+
+    setParentFeature(null);
+  }, [allFeatures, parentFeatureId]);
+
   if (
-    parentFeature.featureType !== FeatureType.ROOT &&
-    !parentFeature.isAdding &&
-    parentFeature.subfeatureIds.size > 0
+    !parentFeature ||
+    parentFeature.featureType === FeatureType.ROOT ||
+    (parentFeature.featureType === FeatureType.AREA &&
+      parentFeature.isAdding) ||
+    parentFeature.subfeatureIds.size <= 0
   ) {
-    return null;
+    return (
+      <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
+        <Combobox onChange={handleChange}>
+          {({ activeOption }) => (
+            <>
+              <Input
+                inputRef={inputRef}
+                parentFeatureId={parentFeatureId}
+                input={input}
+                featureType={featureType}
+                areaSearch={areaSearch}
+                pointSearch={pointSearch}
+                setInput={setInput}
+                setFeatureType={setFeatureType}
+              />
+              <Options
+                parentFeatureId={parentFeatureId}
+                activeOption={activeOption}
+                input={input}
+                featureType={featureType}
+                areaSearch={areaSearch}
+                pointSearch={pointSearch}
+                featureAdderFocused={isFocused}
+              />
+            </>
+          )}
+        </Combobox>
+      </div>
+    );
   }
 
-  return (
-    <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
-      <Combobox onChange={handleChange}>
-        {({ activeOption }) => (
-          <>
-            <Input
-              inputRef={inputRef}
-              parentFeatureId={parentFeatureId}
-              input={input}
-              featureType={featureType}
-              areaSearch={areaSearch}
-              pointSearch={pointSearch}
-              setInput={setInput}
-              setFeatureType={setFeatureType}
-            />
-            <Options
-              parentFeatureId={parentFeatureId}
-              activeOption={activeOption}
-              input={input}
-              featureType={featureType}
-              areaSearch={areaSearch}
-              pointSearch={pointSearch}
-              featureAdderFocused={isFocused}
-            />
-          </>
-        )}
-      </Combobox>
-    </div>
-  );
+  return null;
 }
 
 interface InputProps {

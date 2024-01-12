@@ -126,7 +126,7 @@ function allFeaturesReducer(
 
       newFeature.isOpen = isOpen;
 
-      if (isOpen) {
+      if (!isOpen) {
         newFeature.isAdding = false;
       }
 
