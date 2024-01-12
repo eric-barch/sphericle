@@ -1,21 +1,27 @@
 "use client";
 
-import Map from "@/components/Map";
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import Map from "@/components/Map";
 import SplitPane from "@/components/SplitPane";
 import { AreaState, DisplayMode, PointState, RootState } from "@/types";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import Subfeatures from "./Subfeatures";
+import { useCallback, useEffect, useState } from "react";
+import Loading from "../Loading";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
+import Subfeatures from "./Subfeatures";
 
-export default function QuizBuilder() {
+interface QuizBuilderProps {
+  googleLibsLoaded: boolean;
+}
+
+export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const { rootId, allFeatures } = useAllFeatures();
   const { quizBuilderState } = useQuizBuilderState();
 
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [displayedFeature, setDisplayedFeature] = useState<
     RootState | AreaState | PointState | null
-  >(allFeatures.get(quizBuilderState.selectedFeatureId) || null);
+  >(null);
 
   useEffect(() => {
     const activeOption = quizBuilderState.activeSearchOption;
@@ -23,25 +29,37 @@ export default function QuizBuilder() {
     setDisplayedFeature(activeOption || selectedFeature);
   }, [allFeatures, quizBuilderState]);
 
+  const handleMapLoad = useCallback(() => {
+    setMapLoaded(true);
+  }, []);
+
   return (
-    <SplitPane>
-      <div className="relative h-full">
-        <Subfeatures
-          className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-3rem)]`}
-          parentFeatureId={rootId}
-        />
-        <Link
-          className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
-          href="/take-quiz"
-        >
-          Take Quiz
-        </Link>
-      </div>
-      <Map
-        mapId="696d0ea42431a75c"
-        displayedFeature={displayedFeature}
-        displayMode={DisplayMode.QUIZ_BUILDER}
-      />
-    </SplitPane>
+    <>
+      {!googleLibsLoaded || !mapLoaded ? (
+        <Loading className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
+      ) : null}
+      {googleLibsLoaded ? (
+        <SplitPane>
+          <div className="relative h-full">
+            <Subfeatures
+              className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
+              parentFeatureId={rootId}
+            />
+            <Link
+              className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
+              href="/take-quiz"
+            >
+              Take Quiz
+            </Link>
+          </div>
+          <Map
+            onLoad={handleMapLoad}
+            mapId="696d0ea42431a75c"
+            displayedFeature={displayedFeature}
+            displayMode={DisplayMode.QUIZ_BUILDER}
+          />
+        </SplitPane>
+      ) : null}
+    </>
   );
 }

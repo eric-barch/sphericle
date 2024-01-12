@@ -3,19 +3,20 @@
 import QuizTaker from "@/components/QuizTaker";
 import QuizTakerStateProvider from "@/components/QuizTaker/QuizTakerStateProvider";
 import useGoogleLibraries from "@/hooks/use-google-libraries";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function TakeQuiz() {
-  const [googleLibrariesLoaded, setGoogleLibrariesLoaded] =
-    useState<boolean>(false);
+  const [googleLibsLoaded, setGoogleLibsLoaded] = useState<boolean>(false);
 
-  useGoogleLibraries(() => setGoogleLibrariesLoaded(true));
+  const handleLibsLoad = useCallback(() => {
+    setGoogleLibsLoaded(true);
+  }, []);
 
-  return googleLibrariesLoaded ? (
+  useGoogleLibraries(handleLibsLoad);
+
+  return (
     <QuizTakerStateProvider>
-      <QuizTaker />
+      <QuizTaker googleLibsLoaded={googleLibsLoaded} />
     </QuizTakerStateProvider>
-  ) : (
-    "Loading..."
   );
 }

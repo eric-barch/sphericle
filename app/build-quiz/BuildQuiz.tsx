@@ -1,14 +1,22 @@
 "use client";
 
 import QuizBuilder from "@/components/QuizBuilder";
+import QuizBuilderStateProvider from "@/components/QuizBuilder/QuizBuilderStateProvider";
 import useGoogleLibraries from "@/hooks/use-google-libraries";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function BuildQuiz() {
-  const [googleLibrariesLoaded, setGoogleLibrariesLoaded] =
-    useState<boolean>(false);
+  const [googleLibsLoaded, setGoogleLibsLoaded] = useState<boolean>(false);
 
-  useGoogleLibraries(() => setGoogleLibrariesLoaded(true));
+  const handleLibsLoad = useCallback(() => {
+    setGoogleLibsLoaded(true);
+  }, []);
 
-  return googleLibrariesLoaded ? <QuizBuilder /> : "Loading...";
+  useGoogleLibraries(handleLibsLoad);
+
+  return (
+    <QuizBuilderStateProvider>
+      <QuizBuilder googleLibsLoaded={googleLibsLoaded} />
+    </QuizBuilderStateProvider>
+  );
 }

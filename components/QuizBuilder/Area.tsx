@@ -80,7 +80,7 @@ export default function Area({ featureId }: AreaProps) {
 
       quizBuilderStateDispatch({
         type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-        featureId,
+        selectedFeatureId: featureId,
       });
     }
   }
