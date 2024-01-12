@@ -113,6 +113,7 @@ function allFeaturesReducer(
 
       return newAllFeatures;
     }
+    // TODO: Intuitively this seems like it should be part of QuizBuilder state, not AllFeatures
     case AllFeaturesDispatchType.SET_AREA_IS_OPEN: {
       const { featureId, isOpen } = action;
 
@@ -131,6 +132,7 @@ function allFeaturesReducer(
 
       return newAllFeatures;
     }
+    // TODO: Intuitively this seems like it should be part of QuizBuilder state, not AllFeatures
     case AllFeaturesDispatchType.SET_AREA_IS_ADDING: {
       const { featureId, isAdding } = action;
 
