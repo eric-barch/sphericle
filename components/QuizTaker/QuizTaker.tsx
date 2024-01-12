@@ -59,6 +59,10 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
 
   const handleMapLoad = useCallback(() => {
     setMapLoaded(true);
+
+    if (answerBoxInputRef.current) {
+      answerBoxInputRef.current.focus();
+    }
   }, []);
 
   const handleOpenAutoFocus = useCallback((event: Event) => {
@@ -71,6 +75,12 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
       rootId,
       allFeatures,
     });
+
+    setTimeout(() => {
+      if (answerBoxInputRef.current) {
+        answerBoxInputRef.current.focus();
+      }
+    }, 0);
   }, [rootId, allFeatures, quizTakerStateDispatch]);
 
   return (
@@ -107,7 +117,7 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
             onLoad={handleMapLoad}
             padding={{
               top: 25,
-              bottom: 100,
+              bottom: 110,
               left: 25,
               right: 25,
             }}
