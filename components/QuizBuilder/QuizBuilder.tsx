@@ -6,23 +6,22 @@ import SplitPane from "@/components/SplitPane";
 import { AreaState, DisplayMode, PointState, RootState } from "@/types";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import Loading from "../Loading";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import Subfeatures from "./Subfeatures";
-import Loading from "../Loading";
-import useGoogleLibraries from "@/hooks/use-google-libraries";
 
-export default function QuizBuilder() {
+interface QuizBuilderProps {
+  googleLibsLoaded: boolean;
+}
+
+export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const { rootId, allFeatures } = useAllFeatures();
   const { quizBuilderState } = useQuizBuilderState();
 
-  const [googleLibrariesLoaded, setGoogleLibrariesLoaded] =
-    useState<boolean>(false);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [displayedFeature, setDisplayedFeature] = useState<
     RootState | AreaState | PointState | null
   >(allFeatures.get(quizBuilderState.selectedFeatureId) || null);
-
-  useGoogleLibraries(() => setGoogleLibrariesLoaded(true));
 
   useEffect(() => {
     const activeOption = quizBuilderState.activeSearchOption;
@@ -36,10 +35,10 @@ export default function QuizBuilder() {
 
   return (
     <>
-      {!googleLibrariesLoaded || !mapLoaded ? (
+      {!googleLibsLoaded || !mapLoaded ? (
         <Loading className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       ) : null}
-      {googleLibrariesLoaded ? (
+      {googleLibsLoaded ? (
         <SplitPane>
           <div className="relative h-full">
             <Subfeatures
