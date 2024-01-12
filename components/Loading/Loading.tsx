@@ -7,7 +7,7 @@ interface LoadingProps {
 export default function Loading({ className }: LoadingProps) {
   return (
     <div
-      className={`${className} flex h-full w-full absolute left-0 right-0 top-0 z-40 justify-center items-center`}
+      className={`${className} flex h-full w-full justify-center items-center`}
     >
       <Image
         priority
