@@ -6,7 +6,7 @@ import SplitPane from "@/components/SplitPane";
 import { AreaState, DisplayMode, PointState, RootState } from "@/types";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import Loading from "../Loading";
+import LoadingSpinner from "../LoadingSpinner";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import Subfeatures from "./Subfeatures";
 
@@ -36,7 +36,7 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   return (
     <>
       {!googleLibsLoaded || !mapLoaded ? (
-        <Loading className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
+        <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       ) : null}
       {googleLibsLoaded ? (
         <SplitPane>

@@ -14,7 +14,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import AnswerBox from "./AnswerBox";
 import { useQuizTakerState } from "./QuizTakerStateProvider";
 import ScoreBox from "./ScoreBox";
-import Loading from "../Loading";
+import LoadingSpinner from "../LoadingSpinner";
 
 interface QuizTakerProps {
   googleLibsLoaded: boolean;
@@ -86,7 +86,7 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
   return (
     <>
       {!googleLibsLoaded || !mapLoaded ? (
-        <Loading className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
+        <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       ) : null}
       {googleLibsLoaded ? (
         <div className="h-[calc(100vh-4rem)] relative flex justify-center align-middle content-center">
