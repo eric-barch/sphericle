@@ -52,11 +52,21 @@ function quizBuilderStateReducer(
   action: QuizBuilderStateDispatch,
 ): QuizBuilderState {
   switch (action.type) {
-    case QuizBuilderStateDispatchType.SET_ACTIVE_OPTION: {
-      return { ...quizBuilderState, activeSearchOption: action.activeOption };
+    case QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION: {
+      const { activeSearchOption } = action;
+
+      return {
+        ...quizBuilderState,
+        activeSearchOption,
+      };
     }
     case QuizBuilderStateDispatchType.SET_SELECTED_FEATURE: {
-      return { ...quizBuilderState, selectedFeatureId: action.featureId };
+      const { selectedFeatureId } = action;
+
+      return {
+        ...quizBuilderState,
+        selectedFeatureId,
+      };
     }
     default: {
       return { ...quizBuilderState };
