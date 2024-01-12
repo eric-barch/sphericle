@@ -106,8 +106,6 @@ function getAreaState(
     shortName: osmItem.name,
     userDefinedName: "",
     featureType: FeatureType.AREA,
-    isOpen: false,
-    isAdding: true,
     searchBounds,
     displayBounds,
     polygons,

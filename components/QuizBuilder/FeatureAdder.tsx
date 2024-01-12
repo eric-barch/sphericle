@@ -36,7 +36,7 @@ export default function FeatureAdder({
   parentFeatureId,
 }: FeatureAdderProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderStateDispatch } = useQuizBuilderState();
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
   const { areaSearch, pointSearch } = useFeatureSearches(parentFeatureId);
 
   const [parentFeature, setParentFeature] = useState<RootState | AreaState>(
@@ -120,7 +120,7 @@ export default function FeatureAdder({
     !parentFeature ||
     parentFeature.featureType === FeatureType.ROOT ||
     (parentFeature.featureType === FeatureType.AREA &&
-      parentFeature.isAdding) ||
+      quizBuilderState.openAreas.has(parentFeatureId)) ||
     parentFeature.subfeatureIds.size <= 0
   ) {
     return (

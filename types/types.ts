@@ -24,8 +24,6 @@ export interface AreaState {
   longName: string;
   shortName: string;
   userDefinedName: string | null;
-  isOpen: boolean;
-  isAdding: boolean;
   searchBounds: google.maps.LatLngBoundsLiteral;
   displayBounds: google.maps.LatLngBoundsLiteral;
   polygons: Polygon | MultiPolygon;
@@ -47,6 +45,8 @@ export interface PointState {
 export interface QuizBuilderState {
   activeSearchOption: AreaState | PointState | null;
   selectedFeatureId: string | null;
+  openAreas: Set<string>;
+  addingAreas: Set<string>;
 }
 
 export interface QuizTakerState {
@@ -77,8 +77,6 @@ export type AllFeaturesDispatch =
   | AddSubfeatureDispatch
   | SetSubfeaturesDispatch
   | RenameFeatureDispatch
-  | SetAreaIsOpenDispatch
-  | SetAreaIsAddingDispatch
   | DeleteFeatureDispatch;
 
 interface BaseAllFeaturesDispatch {
@@ -103,18 +101,6 @@ interface RenameFeatureDispatch extends BaseAllFeaturesDispatch {
   name: string;
 }
 
-interface SetAreaIsOpenDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.SET_AREA_IS_OPEN;
-  featureId: string;
-  isOpen: boolean;
-}
-
-interface SetAreaIsAddingDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.SET_AREA_IS_ADDING;
-  featureId: string;
-  isAdding: boolean;
-}
-
 interface DeleteFeatureDispatch extends BaseAllFeaturesDispatch {
   type: AllFeaturesDispatchType.DELETE_FEATURE;
   featureId: string;
@@ -122,20 +108,34 @@ interface DeleteFeatureDispatch extends BaseAllFeaturesDispatch {
 
 export type QuizBuilderStateDispatch =
   | SetActiveOptionDispatch
-  | SetSelectedFeatureDispatch;
+  | SetSelectedFeatureDispatch
+  | SetAreaIsAddingDispatch
+  | SetAreaIsOpenDispatch;
 
-interface BaseQuizBuilderDispatch {
+interface BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType;
 }
 
-interface SetActiveOptionDispatch extends BaseQuizBuilderDispatch {
+interface SetActiveOptionDispatch extends BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION;
   activeSearchOption: AreaState | PointState | null;
 }
 
-interface SetSelectedFeatureDispatch extends BaseQuizBuilderDispatch {
+interface SetSelectedFeatureDispatch extends BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE;
   selectedFeatureId: string;
+}
+
+interface SetAreaIsAddingDispatch extends BaseQuizBuilderStateDispatch {
+  type: QuizBuilderStateDispatchType.SET_AREA_IS_ADDING;
+  featureId: string;
+  isAdding: boolean;
+}
+
+interface SetAreaIsOpenDispatch extends BaseQuizBuilderStateDispatch {
+  type: QuizBuilderStateDispatchType.SET_AREA_IS_OPEN;
+  featureId: string;
+  isOpen: boolean;
 }
 
 export type QuizTakerStateDispatch =
@@ -143,22 +143,22 @@ export type QuizTakerStateDispatch =
   | MarkCorrectDispatch
   | MarkIncorrectDispatch;
 
-interface BaseQuizTakerDispatch {
+interface BaseQuizTakerStateDispatch {
   type: QuizTakerStateDispatchType;
 }
 
-interface ResetDispatch extends BaseQuizTakerDispatch {
+interface ResetDispatch extends BaseQuizTakerStateDispatch {
   type: QuizTakerStateDispatchType.RESET;
   rootId: string;
   allFeatures: AllFeatures;
 }
 
-interface MarkCorrectDispatch extends BaseQuizTakerDispatch {
+interface MarkCorrectDispatch extends BaseQuizTakerStateDispatch {
   type: QuizTakerStateDispatchType.MARK_CORRECT;
   featureId: string;
 }
 
-interface MarkIncorrectDispatch extends BaseQuizTakerDispatch {
+interface MarkIncorrectDispatch extends BaseQuizTakerStateDispatch {
   type: QuizTakerStateDispatchType.MARK_INCORRECT;
   featureId: string;
 }

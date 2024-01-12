@@ -68,6 +68,34 @@ function quizBuilderStateReducer(
         selectedFeatureId,
       };
     }
+    case QuizBuilderStateDispatchType.SET_AREA_IS_ADDING: {
+      const { featureId, isAdding } = action;
+
+      const newQuizBuilderState = { ...quizBuilderState };
+
+      if (isAdding) {
+        newQuizBuilderState.addingAreas.add(featureId);
+        newQuizBuilderState.openAreas.add(featureId);
+      } else {
+        newQuizBuilderState.addingAreas.delete(featureId);
+      }
+
+      return newQuizBuilderState;
+    }
+    case QuizBuilderStateDispatchType.SET_AREA_IS_OPEN: {
+      const { featureId, isOpen } = action;
+
+      const newQuizBuilderState = { ...quizBuilderState };
+
+      if (isOpen) {
+        newQuizBuilderState.openAreas.add(featureId);
+      } else {
+        newQuizBuilderState.openAreas.delete(featureId);
+        newQuizBuilderState.addingAreas.delete(featureId);
+      }
+
+      return newQuizBuilderState;
+    }
     default: {
       return { ...quizBuilderState };
     }
@@ -77,4 +105,6 @@ function quizBuilderStateReducer(
 const initialQuizBuilderState: QuizBuilderState = {
   activeSearchOption: null,
   selectedFeatureId: null,
+  openAreas: new Set<string>(),
+  addingAreas: new Set<string>(),
 };

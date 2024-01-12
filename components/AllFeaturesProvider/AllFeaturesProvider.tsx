@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  FeatureType,
   AllFeatures,
   AllFeaturesDispatch,
   AllFeaturesDispatchType,
-  RootState,
   AreaState,
+  FeatureType,
   PointState,
+  RootState,
 } from "@/types";
 import {
   Dispatch,
@@ -110,44 +110,6 @@ function allFeaturesReducer(
       }
 
       newFeature.userDefinedName = name;
-
-      return newAllFeatures;
-    }
-    // TODO: Intuitively this seems like it should be part of QuizBuilder state, not AllFeatures
-    case AllFeaturesDispatchType.SET_AREA_IS_OPEN: {
-      const { featureId, isOpen } = action;
-
-      const newAllFeatures = new Map(allFeatures);
-      const newFeature = newAllFeatures.get(featureId);
-
-      if (newFeature.featureType !== FeatureType.AREA) {
-        throw new Error("newFeature must be of type AREA.");
-      }
-
-      newFeature.isOpen = isOpen;
-
-      if (!isOpen) {
-        newFeature.isAdding = false;
-      }
-
-      return newAllFeatures;
-    }
-    // TODO: Intuitively this seems like it should be part of QuizBuilder state, not AllFeatures
-    case AllFeaturesDispatchType.SET_AREA_IS_ADDING: {
-      const { featureId, isAdding } = action;
-
-      const newAllFeatures = new Map(allFeatures);
-      const newFeature = newAllFeatures.get(featureId);
-
-      if (newFeature.featureType !== FeatureType.AREA) {
-        throw new Error("newFeature must be of type AREA.");
-      }
-
-      newFeature.isAdding = isAdding;
-
-      if (isAdding) {
-        newFeature.isOpen = true;
-      }
 
       return newAllFeatures;
     }
