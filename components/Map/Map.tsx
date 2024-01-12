@@ -11,7 +11,7 @@ import {
 import { RefObject, useCallback, useEffect, useRef } from "react";
 
 interface MapProps {
-  containerRef?: RefObject<HTMLDivElement>;
+  mapContainerRef?: RefObject<HTMLDivElement>;
   padding?: google.maps.Padding;
   onLoad?: () => void;
   mapId: string;
@@ -20,7 +20,7 @@ interface MapProps {
 }
 
 export default function Map({
-  containerRef: propContainerRef,
+  mapContainerRef: propMapContainerRef,
   padding = { top: 50, right: 50, bottom: 50, left: 50 },
   onLoad,
   mapId,
@@ -29,12 +29,12 @@ export default function Map({
 }: MapProps) {
   const { allFeatures } = useAllFeatures();
 
-  const defaultMapRef = useRef<HTMLDivElement>(null);
-  const containerRef = propContainerRef || defaultMapRef;
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const filledAreasRef = useRef<google.maps.Polygon[] | null>(null);
-  const emptyAreasRef = useRef<google.maps.Polygon[] | null>(null);
-  const markedPointsRef = useRef<google.maps.Marker[] | null>(null);
+  const defaultMapContainerRef = useRef<HTMLDivElement>(null);
+  const mapContainerRef = propMapContainerRef || defaultMapContainerRef;
+  const mapRef = useRef<google.maps.Map>(null);
+  const filledAreasRef = useRef<google.maps.Polygon[]>(null);
+  const emptyAreasRef = useRef<google.maps.Polygon[]>(null);
+  const markedPointsRef = useRef<google.maps.Marker[]>(null);
 
   const setBounds = useCallback(
     (bounds: google.maps.LatLngBoundsLiteral) => {
@@ -58,7 +58,7 @@ export default function Map({
 
     const emptyAreaPolygons = emptyAreas
       ? (Array.isArray(emptyAreas) ? emptyAreas : [emptyAreas]).map(
-          (area) => area.polygons,
+          (area: AreaState) => area.polygons,
         )
       : null;
 
@@ -175,7 +175,11 @@ export default function Map({
   }, []);
 
   useEffect(() => {
-    mapRef.current = new google.maps.Map(containerRef.current, {
+    if (mapRef.current) {
+      return;
+    }
+
+    mapRef.current = new google.maps.Map(mapContainerRef.current, {
       mapId,
       center: { lat: 0, lng: 0 },
       zoom: 2.5,
@@ -190,10 +194,10 @@ export default function Map({
         strictBounds: true,
       },
     });
-  }, [containerRef, onLoad, mapId]);
+  }, [mapContainerRef, mapId]);
 
   useEffect(() => {
-    if (!mapRef) {
+    if (!mapRef.current) {
       return;
     }
 
@@ -201,14 +205,12 @@ export default function Map({
       mapRef.current,
       "tilesloaded",
       () => {
-        console.log("tilesloaded");
         onLoad();
       },
     );
 
     return () => {
       google.maps.event.removeListener(tilesloadedListener);
-      console.log("Removed tilesloaded listener.");
     };
   }, [mapRef, onLoad]);
 
@@ -223,55 +225,85 @@ export default function Map({
       return;
     }
 
-    const parentLocation = allFeatures.get(displayedFeature.parentFeatureId);
+    const parentFeature = allFeatures.get(displayedFeature.parentFeatureId);
 
-    if (parentLocation.featureType === FeatureType.ROOT) {
-      if (displayedFeature.featureType === FeatureType.AREA) {
-        setBounds(displayedFeature.displayBounds);
-
-        if (displayedFeature.isOpen) {
-          setEmptyAreas(displayedFeature);
-          setFilledAreas(null);
-          setMarkedPoints(null);
-        } else if (!displayedFeature.isOpen) {
-          setEmptyAreas(null);
-          setFilledAreas(displayedFeature);
-          setMarkedPoints(null);
-        }
-      } else if (displayedFeature.featureType === FeatureType.POINT) {
-        setBounds(displayedFeature.displayBounds);
-        setEmptyAreas(null);
-        setFilledAreas(null);
-        setMarkedPoints(displayedFeature);
-      }
-    } else if (parentLocation.featureType === FeatureType.AREA) {
-      if (displayedFeature.featureType === FeatureType.AREA) {
-        if (displayedFeature.isOpen) {
+    switch (displayMode) {
+      case DisplayMode.QUIZ_BUILDER:
+        if (parentFeature.featureType === FeatureType.ROOT) {
           setBounds(displayedFeature.displayBounds);
-          setEmptyAreas(displayedFeature);
-          setFilledAreas(null);
-          setMarkedPoints(null);
-        } else if (!displayedFeature.isOpen) {
-          setBounds(parentLocation.displayBounds);
-          setEmptyAreas(parentLocation);
-          setFilledAreas(displayedFeature);
-          setMarkedPoints(null);
+
+          if (displayedFeature.featureType === FeatureType.AREA) {
+            if (displayedFeature.isOpen) {
+              setEmptyAreas(displayedFeature);
+              setFilledAreas(null);
+              setMarkedPoints(null);
+            } else if (!displayedFeature.isOpen) {
+              setEmptyAreas(null);
+              setFilledAreas(displayedFeature);
+              setMarkedPoints(null);
+            }
+          } else if (displayedFeature.featureType === FeatureType.POINT) {
+            setEmptyAreas(null);
+            setFilledAreas(null);
+            setMarkedPoints(displayedFeature);
+          }
+        } else if (parentFeature.featureType === FeatureType.AREA) {
+          if (displayedFeature.featureType === FeatureType.AREA) {
+            if (displayedFeature.isOpen) {
+              setBounds(displayedFeature.displayBounds);
+              setEmptyAreas(displayedFeature);
+              setFilledAreas(null);
+              setMarkedPoints(null);
+            } else if (!displayedFeature.isOpen) {
+              setBounds(parentFeature.displayBounds);
+              setEmptyAreas(parentFeature);
+              setFilledAreas(displayedFeature);
+              setMarkedPoints(null);
+            }
+          } else if (displayedFeature.featureType === FeatureType.POINT) {
+            setBounds(parentFeature.displayBounds);
+            setEmptyAreas(parentFeature);
+            setFilledAreas(null);
+            setMarkedPoints(displayedFeature);
+          }
         }
-      } else if (displayedFeature.featureType === FeatureType.POINT) {
-        setBounds(parentLocation.displayBounds);
-        setEmptyAreas(parentLocation);
-        setFilledAreas(null);
-        setMarkedPoints(displayedFeature);
-      }
+        break;
+      case DisplayMode.QUIZ_TAKER:
+        if (parentFeature.featureType === FeatureType.ROOT) {
+          setBounds(displayedFeature.displayBounds);
+
+          if (displayedFeature.featureType === FeatureType.AREA) {
+            setEmptyAreas(null);
+            setFilledAreas(displayedFeature);
+            setMarkedPoints(null);
+          } else if (displayedFeature.featureType === FeatureType.POINT) {
+            setEmptyAreas(null);
+            setFilledAreas(null);
+            setMarkedPoints(displayedFeature);
+          }
+        } else if (parentFeature.featureType === FeatureType.AREA) {
+          setBounds(parentFeature.displayBounds);
+          setEmptyAreas(parentFeature);
+
+          if (displayedFeature.featureType === FeatureType.AREA) {
+            setFilledAreas(displayedFeature);
+            setMarkedPoints(null);
+          } else if (displayedFeature.featureType === FeatureType.POINT) {
+            setFilledAreas(null);
+            setMarkedPoints(displayedFeature);
+          }
+        }
+        break;
     }
   }, [
     allFeatures,
     displayedFeature,
+    displayMode,
     setBounds,
     setEmptyAreas,
     setFilledAreas,
     setMarkedPoints,
   ]);
 
-  return <div className={`h-full w-full`} ref={containerRef} />;
+  return <div className={`h-full w-full`} ref={mapContainerRef} />;
 }
