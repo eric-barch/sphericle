@@ -16,7 +16,7 @@ export default function TakeQuiz() {
 
   return (
     <QuizTakerStateProvider>
-      <QuizTaker />
+      <QuizTaker googleLibsLoaded={googleLibsLoaded} />
     </QuizTakerStateProvider>
   );
 }

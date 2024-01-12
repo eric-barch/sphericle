@@ -21,7 +21,7 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [displayedFeature, setDisplayedFeature] = useState<
     RootState | AreaState | PointState | null
-  >(allFeatures.get(quizBuilderState.selectedFeatureId) || null);
+  >(null);
 
   useEffect(() => {
     const activeOption = quizBuilderState.activeSearchOption;
