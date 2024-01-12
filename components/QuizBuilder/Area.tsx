@@ -1,11 +1,7 @@
 "use client";
 
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import {
-  AllFeaturesDispatchType,
-  FeatureType,
-  QuizBuilderStateDispatchType,
-} from "@/types";
+import { FeatureType, QuizBuilderStateDispatchType } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
 import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
@@ -28,9 +24,6 @@ export default function Area({ featureId }: AreaProps) {
     throw new Error("areaState must be of type AREA.");
   }
 
-  const [accordionRootValue, setAccordionRootValue] = useState<string[]>(
-    areaState.isOpen ? [areaState.id] : [],
-  );
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
@@ -38,20 +31,16 @@ export default function Area({ featureId }: AreaProps) {
   const featureNameInputRef = useRef<HTMLInputElement>();
   const featureAdderInputRef = useRef<HTMLInputElement>();
 
-  useEffect(() => {
-    setAccordionRootValue(areaState.isOpen ? [featureId] : []);
-  }, [areaState.isOpen, featureId]);
-
   function handleValueChange(value: string[]) {
     if (value.includes(featureId)) {
-      allFeaturesDispatch({
-        type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_AREA_IS_OPEN,
         featureId,
         isOpen: true,
       });
     } else {
-      allFeaturesDispatch({
-        type: AllFeaturesDispatchType.SET_AREA_IS_OPEN,
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_AREA_IS_OPEN,
         featureId,
         isOpen: false,
       });
@@ -109,8 +98,8 @@ export default function Area({ featureId }: AreaProps) {
   }
 
   function setIsAdding(isAdding: boolean) {
-    allFeaturesDispatch({
-      type: AllFeaturesDispatchType.SET_AREA_IS_ADDING,
+    quizBuilderStateDispatch({
+      type: QuizBuilderStateDispatchType.SET_AREA_IS_ADDING,
       featureId,
       isAdding,
     });
@@ -133,7 +122,6 @@ export default function Area({ featureId }: AreaProps) {
   return (
     <Accordion.Root
       type="multiple"
-      value={accordionRootValue}
       onValueChange={handleValueChange}
       onBlur={handleContainerBlur}
     >
@@ -165,7 +153,7 @@ export default function Area({ featureId }: AreaProps) {
               isRenaming={isRenaming}
               setIsRenaming={setIsRenaming}
             />
-            <OpenChevron isOpen={areaState.isOpen} />
+            <OpenChevron isOpen={quizBuilderState.openAreas.has(featureId)} />
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content>

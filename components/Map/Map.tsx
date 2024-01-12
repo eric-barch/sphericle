@@ -9,6 +9,7 @@ import {
   RootState,
 } from "@/types";
 import { RefObject, useCallback, useEffect, useRef } from "react";
+import { useQuizBuilderState } from "../QuizBuilder";
 
 interface MapProps {
   mapContainerRef?: RefObject<HTMLDivElement>;
@@ -28,6 +29,7 @@ export default function Map({
   displayMode,
 }: MapProps) {
   const { allFeatures } = useAllFeatures();
+  const { quizBuilderState } = useQuizBuilderState();
 
   const defaultMapContainerRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = propMapContainerRef || defaultMapContainerRef;
@@ -233,11 +235,11 @@ export default function Map({
           setBounds(displayedFeature.displayBounds);
 
           if (displayedFeature.featureType === FeatureType.AREA) {
-            if (displayedFeature.isOpen) {
+            if (quizBuilderState.openAreas.has(displayedFeature.id)) {
               setEmptyAreas(displayedFeature);
               setFilledAreas(null);
               setMarkedPoints(null);
-            } else if (!displayedFeature.isOpen) {
+            } else {
               setEmptyAreas(null);
               setFilledAreas(displayedFeature);
               setMarkedPoints(null);
@@ -249,12 +251,12 @@ export default function Map({
           }
         } else if (parentFeature.featureType === FeatureType.AREA) {
           if (displayedFeature.featureType === FeatureType.AREA) {
-            if (displayedFeature.isOpen) {
+            if (quizBuilderState.openAreas.has(displayedFeature.id)) {
               setBounds(displayedFeature.displayBounds);
               setEmptyAreas(displayedFeature);
               setFilledAreas(null);
               setMarkedPoints(null);
-            } else if (!displayedFeature.isOpen) {
+            } else {
               setBounds(parentFeature.displayBounds);
               setEmptyAreas(parentFeature);
               setFilledAreas(displayedFeature);
@@ -299,6 +301,7 @@ export default function Map({
     allFeatures,
     displayedFeature,
     displayMode,
+    quizBuilderState.openAreas,
     setBounds,
     setEmptyAreas,
     setFilledAreas,
