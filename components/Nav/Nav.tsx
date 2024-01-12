@@ -15,11 +15,11 @@ export default function Nav() {
           <NavigationMenu.Item>
             <Link className="rounded-2xl" href="/">
               <Image
-                className="pt-0.5"
+                priority
                 src="/sphericle-americas.svg"
-                alt="Sphericle Logo"
-                width={150}
-                height={150}
+                alt="Sphericle Americas Logo"
+                width={100}
+                height={25}
               />
             </Link>
           </NavigationMenu.Item>
