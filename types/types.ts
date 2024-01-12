@@ -129,13 +129,13 @@ interface BaseQuizBuilderDispatch {
 }
 
 interface SetActiveOptionDispatch extends BaseQuizBuilderDispatch {
-  type: QuizBuilderStateDispatchType.SET_ACTIVE_OPTION;
-  activeOption: AreaState | PointState | null;
+  type: QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION;
+  activeSearchOption: AreaState | PointState | null;
 }
 
 interface SetSelectedFeatureDispatch extends BaseQuizBuilderDispatch {
   type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE;
-  featureId: string;
+  selectedFeatureId: string;
 }
 
 export type QuizTakerStateDispatch =

@@ -62,12 +62,12 @@ export default function FeatureAdder({
         if (parentFeature.featureType === FeatureType.ROOT) {
           quizBuilderStateDispatch({
             type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-            featureId: null,
+            selectedFeatureId: null,
           });
         } else if (parentFeature.featureType === FeatureType.AREA) {
           quizBuilderStateDispatch({
             type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-            featureId: parentFeatureId,
+            selectedFeatureId: parentFeatureId,
           });
         }
       }
@@ -85,7 +85,7 @@ export default function FeatureAdder({
 
     quizBuilderStateDispatch({
       type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-      featureId: subfeature.id,
+      selectedFeatureId: subfeature.id,
     });
 
     if (inputRef) {
@@ -338,8 +338,8 @@ function Options({
 
   useEffect(() => {
     quizBuilderStateDispatch({
-      type: QuizBuilderStateDispatchType.SET_ACTIVE_OPTION,
-      activeOption,
+      type: QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION,
+      activeSearchOption: activeOption,
     });
   }, [quizBuilderStateDispatch, activeOption]);
 

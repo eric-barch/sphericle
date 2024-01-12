@@ -29,7 +29,7 @@ export default function Point({ featureId }: PointProps) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
       quizBuilderStateDispatch({
         type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-        featureId,
+        selectedFeatureId: featureId,
       });
     }
   }

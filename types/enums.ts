@@ -18,7 +18,7 @@ export enum AllFeaturesDispatchType {
 }
 
 export enum QuizBuilderStateDispatchType {
-  SET_ACTIVE_OPTION = "SET_ACTIVE_OPTION",
+  SET_ACTIVE_SEARCH_OPTION = "SET_ACTIVE_OPTION",
   SET_SELECTED_FEATURE = "SET_SELECTED_FEATURE",
 }
 
