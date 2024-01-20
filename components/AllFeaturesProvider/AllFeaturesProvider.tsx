@@ -1,6 +1,6 @@
 "use client";
 
-import { isParentFeature } from "@/helpers/feature-type-guards";
+import { isParentFeature, isSubfeature } from "@/helpers/feature-type-guards";
 import {
   AllFeatures,
   AllFeaturesDispatch,
@@ -65,7 +65,7 @@ function allFeaturesReducer(
       const newParentFeature = { ...allFeatures.get(parentFeatureId) };
 
       if (!isParentFeature(newParentFeature)) {
-        throw new Error("newParentFeature must be a .");
+        throw new Error("newParentFeature must be a ParentFeatureState.");
       }
 
       newParentFeature.subfeatureIds.add(subfeature.id);
@@ -81,11 +81,8 @@ function allFeaturesReducer(
       const newAllFeatures = new Map(allFeatures);
       const newParentFeature = newAllFeatures.get(parentFeatureId);
 
-      if (
-        newParentFeature.featureType !== FeatureType.ROOT &&
-        newParentFeature.featureType !== FeatureType.AREA
-      ) {
-        throw new Error("newParentFeature must be of type ROOT or AREA.");
+      if (!isParentFeature(newParentFeature)) {
+        throw new Error("newParentFeature must be a ParentFeatureState.");
       }
 
       subfeatureIds.forEach((element) => {
@@ -100,11 +97,8 @@ function allFeaturesReducer(
       const newAllFeatures = new Map(allFeatures);
       const newFeature = newAllFeatures.get(featureId);
 
-      if (
-        newFeature.featureType !== FeatureType.AREA &&
-        newFeature.featureType !== FeatureType.POINT
-      ) {
-        throw new Error("newFeature must be of type ROOT or AREA.");
+      if (!isSubfeature(newFeature)) {
+        throw new Error("newFeature must be a SubfeatureState.");
       }
 
       newFeature.userDefinedName = name;
@@ -117,20 +111,14 @@ function allFeaturesReducer(
       const newAllFeatures = new Map(allFeatures);
       const newFeature = newAllFeatures.get(featureId);
 
-      if (
-        newFeature.featureType !== FeatureType.AREA &&
-        newFeature.featureType !== FeatureType.POINT
-      ) {
-        throw new Error("newFeature must be of type AREA or POINT.");
+      if (!isSubfeature(newFeature)) {
+        throw new Error("newFeature must be a SubfeatureState.");
       }
 
       const newParentFeature = newAllFeatures.get(newFeature.parentFeatureId);
 
-      if (
-        newParentFeature.featureType !== FeatureType.ROOT &&
-        newParentFeature.featureType !== FeatureType.AREA
-      ) {
-        throw new Error("newParentFeature must be of type ROOT or AREA.");
+      if (!isParentFeature(newParentFeature)) {
+        throw new Error("newParentFeature must be a ParentFeatureState.");
       }
 
       newParentFeature.subfeatureIds.delete(featureId);
