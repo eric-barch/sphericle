@@ -14,11 +14,11 @@ export interface FeatureState {
   featureType: FeatureType;
 }
 
-export interface ParentFeatureState {
+export interface ParentFeatureState extends FeatureState {
   subfeatureIds: Set<string>;
 }
 
-export interface SubfeatureState {
+export interface SubfeatureState extends FeatureState {
   parentFeatureId: string;
   longName: string;
   shortName: string;

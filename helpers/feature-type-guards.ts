@@ -1,17 +1,25 @@
-import { AreaState, FeatureType, PointState, RootState } from "@/types";
+import {
+  AreaState,
+  FeatureState,
+  FeatureType,
+  ParentFeatureState,
+  PointState,
+  RootState,
+  SubfeatureState,
+} from "@/types";
 
 export function isParentFeature(
-  feature: RootState | AreaState | PointState,
-): feature is RootState | AreaState {
+  feature: FeatureState,
+): feature is ParentFeatureState {
   return (
     feature.featureType === FeatureType.ROOT ||
     feature.featureType === FeatureType.AREA
   );
 }
 
-export function isQuizzableFeature(
-  feature: RootState | AreaState | PointState,
-): feature is AreaState | PointState {
+export function isSubfeature(
+  feature: FeatureState,
+): feature is SubfeatureState {
   return (
     feature.featureType === FeatureType.AREA ||
     feature.featureType === FeatureType.POINT
