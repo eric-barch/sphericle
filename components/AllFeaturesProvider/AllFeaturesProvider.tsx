@@ -1,5 +1,6 @@
 "use client";
 
+import { isParentFeature } from "@/helpers/feature-type-guards";
 import {
   AllFeatures,
   AllFeaturesDispatch,
@@ -63,11 +64,8 @@ function allFeaturesReducer(
       const newAllFeatures = new Map(allFeatures);
       const newParentFeature = { ...allFeatures.get(parentFeatureId) };
 
-      if (
-        newParentFeature.featureType !== FeatureType.ROOT &&
-        newParentFeature.featureType !== FeatureType.AREA
-      ) {
-        throw new Error("newParentFeature must be of type ROOT or AREA.");
+      if (!isParentFeature(newParentFeature)) {
+        throw new Error("newParentFeature must be a .");
       }
 
       newParentFeature.subfeatureIds.add(subfeature.id);

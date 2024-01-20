@@ -116,10 +116,10 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
           <Map
             onLoad={handleMapLoad}
             padding={{
-              top: 25,
+              top: 50,
               bottom: 110,
-              left: 25,
-              right: 25,
+              left: 50,
+              right: 50,
             }}
             mapId="8777b9e5230900fc"
             displayedFeature={displayedFeature}
