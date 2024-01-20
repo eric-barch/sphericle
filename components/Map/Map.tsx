@@ -1,6 +1,7 @@
 "use client";
 
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { useQuizBuilderState } from "@/components/QuizBuilder";
 import {
   AreaState,
   DisplayMode,
@@ -8,8 +9,7 @@ import {
   PointState,
   RootState,
 } from "@/types";
-import { RefObject, useCallback, useEffect, useRef } from "react";
-import { useQuizBuilderState } from "../QuizBuilder";
+import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 
 interface MapProps {
   mapContainerRef?: RefObject<HTMLDivElement>;
@@ -37,6 +37,9 @@ export default function Map({
   const filledAreasRef = useRef<google.maps.Polygon[]>(null);
   const emptyAreasRef = useRef<google.maps.Polygon[]>(null);
   const markedPointsRef = useRef<google.maps.Marker[]>(null);
+
+  const [tilesloaded, setTilesloaded] = useState<boolean>(false);
+  const [idle, setIdle] = useState<boolean>(false);
 
   const setBounds = useCallback(
     (bounds: google.maps.LatLngBoundsLiteral) => {
@@ -181,6 +184,10 @@ export default function Map({
       return;
     }
 
+    if (!mapContainerRef.current) {
+      return;
+    }
+
     mapRef.current = new google.maps.Map(mapContainerRef.current, {
       mapId,
       center: { lat: 0, lng: 0 },
@@ -207,14 +214,29 @@ export default function Map({
       mapRef.current,
       "tilesloaded",
       () => {
-        onLoad();
+        setTilesloaded(true);
+      },
+    );
+
+    const idleListener = google.maps.event.addListener(
+      mapRef.current,
+      "idle",
+      () => {
+        setIdle(true);
       },
     );
 
     return () => {
       google.maps.event.removeListener(tilesloadedListener);
+      google.maps.event.removeListener(idleListener);
     };
-  }, [mapRef, onLoad]);
+  }, [mapRef]);
+
+  useEffect(() => {
+    if (tilesloaded && idle) {
+      onLoad();
+    }
+  }, [tilesloaded, idle, onLoad]);
 
   useEffect(() => {
     if (
@@ -301,7 +323,7 @@ export default function Map({
     allFeatures,
     displayedFeature,
     displayMode,
-    quizBuilderState.openAreas,
+    quizBuilderState,
     setBounds,
     setEmptyAreas,
     setFilledAreas,

@@ -9,37 +9,41 @@ import {
 
 export type AllFeatures = Map<string, RootState | AreaState | PointState>;
 
-export interface RootState {
+export interface FeatureState {
   id: string;
+  featureType: FeatureType;
+}
+
+export interface ParentFeatureState {
   subfeatureIds: Set<string>;
+}
+
+export interface SubfeatureState {
+  parentFeatureId: string;
+  longName: string;
+  shortName: string;
+  userDefinedName: string | null;
+  displayBounds: google.maps.LatLngBoundsLiteral;
+}
+
+export interface RootState extends FeatureState, ParentFeatureState {
   featureType: FeatureType.ROOT;
 }
 
-export interface AreaState {
-  id: string;
-  parentFeatureId: string;
-  subfeatureIds: Set<string>;
+export interface AreaState
+  extends FeatureState,
+    ParentFeatureState,
+    SubfeatureState {
   featureType: FeatureType.AREA;
   openStreetMapPlaceId: number;
-  longName: string;
-  shortName: string;
-  userDefinedName: string | null;
   searchBounds: google.maps.LatLngBoundsLiteral;
-  displayBounds: google.maps.LatLngBoundsLiteral;
   polygons: Polygon | MultiPolygon;
 }
 
-export interface PointState {
-  id: string;
-  parentFeatureId: string;
+export interface PointState extends FeatureState, SubfeatureState {
   featureType: FeatureType.POINT;
   googlePlacesId: string;
-  longName: string;
-  shortName: string;
-  userDefinedName: string | null;
-  displayBounds: google.maps.LatLngBoundsLiteral;
   point: Point;
-  answeredCorrectly: boolean | null;
 }
 
 export interface QuizBuilderState {
