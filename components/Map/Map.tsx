@@ -8,17 +8,11 @@ import {
   isRootState,
   isSubfeatureState,
 } from "@/helpers/feature-type-guards";
-import {
-  AreaState,
-  DisplayMode,
-  FeatureState,
-  FeatureType,
-  PointState,
-} from "@/types";
+import { AreaState, DisplayMode, FeatureState, PointState } from "@/types";
 import { RefObject, useEffect, useRef, useState } from "react";
 
 interface MapProps {
-  mapContainerRef?: RefObject<HTMLDivElement>;
+  containerRef?: RefObject<HTMLDivElement>;
   padding?: google.maps.Padding;
   onLoad?: () => void;
   mapId: string;
@@ -27,7 +21,7 @@ interface MapProps {
 }
 
 export default function Map({
-  mapContainerRef: propMapContainerRef,
+  containerRef: propContainerRef,
   padding = { top: 50, right: 50, bottom: 50, left: 50 },
   onLoad,
   mapId,
@@ -37,60 +31,46 @@ export default function Map({
   const { allFeatures } = useAllFeatures();
   const { quizBuilderState } = useQuizBuilderState();
 
-  const defaultMapContainerRef = useRef<HTMLDivElement>(null);
-  const mapContainerRef = propMapContainerRef || defaultMapContainerRef;
+  const defaultContainerRef = useRef<HTMLDivElement>(null);
+  const containerRef = propContainerRef || defaultContainerRef;
   const mapRef = useRef<google.maps.Map>(null);
-  const filledAreasRef = useRef<google.maps.Polygon[]>(null);
-  const emptyAreasRef = useRef<google.maps.Polygon[]>(null);
-  const markedPointsRef = useRef<google.maps.Marker[]>(null);
+  const filledPolygonsRef = useRef<google.maps.Polygon[]>(null);
+  const emptyPolygonsRef = useRef<google.maps.Polygon[]>(null);
+  const markersRef = useRef<google.maps.Marker[]>(null);
 
-  const [tilesAreLoaded, setTilesAreLoaded] = useState<boolean>(false);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>(null);
-  const [emptyAreas, setEmptyAreas] = useState<AreaState>(null);
-  const [filledAreas, setFilledAreas] = useState<AreaState>(null);
-  const [markedPoints, setMarkedPoints] = useState<PointState>(null);
+  const [emptyAreas, setEmptyAreas] = useState<AreaState[]>([]);
+  const [filledAreas, setFilledAreas] = useState<AreaState[]>([]);
+  const [markedPoints, setMarkedPoints] = useState<PointState[]>([]);
 
   useEffect(() => {
-    if (!mapRef.current || !bounds) {
-      return;
-    }
-
-    if (!bounds) {
-      return;
-    }
-
-    if (!tilesAreLoaded) {
+    if (!mapRef.current || !bounds || !isLoaded) {
       return;
     }
 
     mapRef.current.fitBounds(bounds, padding);
-  }, [tilesAreLoaded, bounds, padding]);
+  }, [isLoaded, bounds, padding]);
 
   useEffect(() => {
-    if (!mapRef.current) {
+    if (!mapRef.current || !isLoaded) {
       return;
     }
 
-    if (!tilesAreLoaded) {
+    if (emptyPolygonsRef.current) {
+      emptyPolygonsRef.current.forEach((polygon) => polygon.setMap(null));
+    }
+
+    if (!emptyAreas) {
+      emptyPolygonsRef.current = null;
       return;
     }
 
-    if (emptyAreasRef.current) {
-      emptyAreasRef.current.forEach((polygon) => polygon.setMap(null));
-    }
+    const emptyAreaPolygons = emptyAreas.map(
+      (areaState: AreaState) => areaState.polygons,
+    );
 
-    const emptyAreaPolygons = emptyAreas
-      ? (Array.isArray(emptyAreas) ? emptyAreas : [emptyAreas]).map(
-          (area: AreaState) => area.polygons,
-        )
-      : null;
-
-    if (!emptyAreaPolygons) {
-      emptyAreasRef.current = null;
-      return;
-    }
-
-    emptyAreasRef.current = emptyAreaPolygons.map((polygon) => {
+    emptyPolygonsRef.current = emptyAreaPolygons.map((polygon) => {
       let paths: google.maps.LatLngLiteral[] | google.maps.LatLngLiteral[][] =
         [];
 
@@ -117,33 +97,27 @@ export default function Map({
         fillOpacity: 0.0,
       });
     });
-  }, [tilesAreLoaded, emptyAreas]);
+  }, [isLoaded, emptyAreas]);
 
   useEffect(() => {
-    if (!mapRef.current) {
+    if (!mapRef.current || !isLoaded) {
       return;
     }
 
-    if (!tilesAreLoaded) {
+    if (filledPolygonsRef.current) {
+      filledPolygonsRef.current.forEach((polygon) => polygon.setMap(null));
+    }
+
+    if (!filledAreas) {
+      filledPolygonsRef.current = null;
       return;
     }
 
-    if (filledAreasRef.current) {
-      filledAreasRef.current.forEach((polygon) => polygon.setMap(null));
-    }
+    const filledAreaPolygons = filledAreas.map(
+      (areaState: AreaState) => areaState.polygons,
+    );
 
-    const filledAreaPolygons = filledAreas
-      ? (Array.isArray(filledAreas) ? filledAreas : [filledAreas]).map(
-          (area) => area.polygons,
-        )
-      : null;
-
-    if (!filledAreaPolygons) {
-      filledAreasRef.current = null;
-      return;
-    }
-
-    filledAreasRef.current = filledAreaPolygons.map((polygon) => {
+    filledPolygonsRef.current = filledAreaPolygons.map((polygon) => {
       let paths: google.maps.LatLngLiteral[] | google.maps.LatLngLiteral[][] =
         [];
 
@@ -170,51 +144,41 @@ export default function Map({
         fillOpacity: 0.2,
       });
     });
-  }, [tilesAreLoaded, filledAreas]);
+  }, [isLoaded, filledAreas]);
 
   useEffect(() => {
-    if (!mapRef.current) {
+    if (!mapRef.current || !isLoaded) {
       return;
     }
 
-    if (!tilesAreLoaded) {
+    if (markersRef.current) {
+      markersRef.current.forEach((marker) => marker.setMap(null));
+    }
+
+    if (!markedPoints) {
+      markersRef.current = null;
       return;
     }
 
-    if (markedPointsRef.current) {
-      markedPointsRef.current.forEach((marker) => marker.setMap(null));
-    }
+    const markedPointMarkers = markedPoints.map(
+      (pointState: PointState) => pointState.point,
+    );
 
-    const markedPointMarkers = markedPoints
-      ? (Array.isArray(markedPoints) ? markedPoints : [markedPoints]).map(
-          (point) => point.point,
-        )
-      : null;
-
-    if (!markedPointMarkers) {
-      markedPointsRef.current = null;
-      return;
-    }
-
-    markedPointsRef.current = markedPointMarkers.map(
+    markersRef.current = markedPointMarkers.map(
       (point) =>
         new google.maps.Marker({
           position: { lng: point.coordinates[0], lat: point.coordinates[1] },
           map: mapRef.current,
         }),
     );
-  }, [tilesAreLoaded, markedPoints]);
+  }, [isLoaded, markedPoints]);
 
   useEffect(() => {
-    if (mapRef.current) {
+    if (mapRef.current || !containerRef) {
       return;
     }
 
-    if (!mapContainerRef.current) {
-      return;
-    }
-
-    mapRef.current = new google.maps.Map(mapContainerRef.current, {
+    mapRef.current = new google.maps.Map(containerRef.current, {
       mapId,
       center: { lat: 0, lng: 0 },
       zoom: 2.5,
@@ -229,7 +193,7 @@ export default function Map({
         strictBounds: true,
       },
     });
-  }, [mapContainerRef, mapId]);
+  }, [containerRef, mapId]);
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -240,23 +204,23 @@ export default function Map({
       mapRef.current,
       "tilesloaded",
       () => {
-        setTilesAreLoaded(true);
+        setIsLoaded(true);
       },
     );
 
     return () => {
-      setTilesAreLoaded(false);
+      setIsLoaded(false);
       google.maps.event.removeListener(tilesloadedListener);
     };
   }, [mapRef]);
 
   useEffect(() => {
-    if (!tilesAreLoaded) {
+    if (!isLoaded) {
       return;
     }
 
     onLoad();
-  }, [tilesAreLoaded, onLoad]);
+  }, [isLoaded, onLoad]);
 
   useEffect(() => {
     if (!displayedFeature || isRootState(displayedFeature)) {
@@ -279,37 +243,37 @@ export default function Map({
 
           if (isAreaState(displayedFeature)) {
             if (quizBuilderState.openAreas.has(displayedFeature.id)) {
-              setEmptyAreas(displayedFeature);
+              setEmptyAreas([displayedFeature]);
               setFilledAreas(null);
               setMarkedPoints(null);
             } else {
               setEmptyAreas(null);
-              setFilledAreas(displayedFeature);
+              setFilledAreas([displayedFeature]);
               setMarkedPoints(null);
             }
           } else if (isPointState(displayedFeature)) {
             setEmptyAreas(null);
             setFilledAreas(null);
-            setMarkedPoints(displayedFeature);
+            setMarkedPoints([displayedFeature]);
           }
         } else if (isAreaState(parentFeature)) {
           if (isAreaState(displayedFeature)) {
             if (quizBuilderState.openAreas.has(displayedFeature.id)) {
               setBounds(displayedFeature.displayBounds);
-              setEmptyAreas(displayedFeature);
+              setEmptyAreas([displayedFeature]);
               setFilledAreas(null);
               setMarkedPoints(null);
             } else {
               setBounds(parentFeature.displayBounds);
-              setEmptyAreas(parentFeature);
-              setFilledAreas(displayedFeature);
+              setEmptyAreas([parentFeature]);
+              setFilledAreas([displayedFeature]);
               setMarkedPoints(null);
             }
           } else if (isPointState(displayedFeature)) {
             setBounds(parentFeature.displayBounds);
-            setEmptyAreas(parentFeature);
+            setEmptyAreas([parentFeature]);
             setFilledAreas(null);
-            setMarkedPoints(displayedFeature);
+            setMarkedPoints([displayedFeature]);
           }
         }
         break;
@@ -319,28 +283,28 @@ export default function Map({
 
           if (isAreaState(displayedFeature)) {
             setEmptyAreas(null);
-            setFilledAreas(displayedFeature);
+            setFilledAreas([displayedFeature]);
             setMarkedPoints(null);
           } else if (isPointState(displayedFeature)) {
             setEmptyAreas(null);
             setFilledAreas(null);
-            setMarkedPoints(displayedFeature);
+            setMarkedPoints([displayedFeature]);
           }
         } else if (isAreaState(parentFeature)) {
           setBounds(parentFeature.displayBounds);
-          setEmptyAreas(parentFeature);
+          setEmptyAreas([parentFeature]);
 
           if (isAreaState(displayedFeature)) {
-            setFilledAreas(displayedFeature);
+            setFilledAreas([displayedFeature]);
             setMarkedPoints(null);
           } else if (isPointState(displayedFeature)) {
             setFilledAreas(null);
-            setMarkedPoints(displayedFeature);
+            setMarkedPoints([displayedFeature]);
           }
         }
         break;
     }
   }, [allFeatures, displayedFeature, displayMode, quizBuilderState]);
 
-  return <div className={`h-full w-full`} ref={mapContainerRef} />;
+  return <div className={`h-full w-full`} ref={containerRef} />;
 }
