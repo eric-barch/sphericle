@@ -1,26 +1,17 @@
 "use client";
 
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { FeatureType, QuizBuilderStateDispatchType } from "@/types";
+import { QuizBuilderStateDispatchType } from "@/types";
 import { FocusEvent, useRef, useState } from "react";
 import EditFeatureButton from "./EditFeatureButton";
 import FeatureName from "./FeatureName";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
-import { isPointState } from "@/helpers/feature-type-guards";
 
 interface PointProps {
   featureId: string;
 }
 
 export default function Point({ featureId }: PointProps) {
-  const { allFeatures } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
-
-  const pointState = allFeatures.get(featureId);
-
-  if (!isPointState(pointState)) {
-    throw new Error("pointState must be a PointState.");
-  }
 
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
 
