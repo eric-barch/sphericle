@@ -1,7 +1,7 @@
 "use client";
 
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { FeatureType, QuizBuilderStateDispatchType } from "@/types";
+import { AreaState, FeatureType, QuizBuilderStateDispatchType } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
 import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
@@ -19,19 +19,29 @@ export default function Area({ featureId }: AreaProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  // TODO: This is wrong. Need to replace with state and useEffect.
-  const areaState = allFeatures.get(featureId);
+  const initialAreaState = allFeatures.get(featureId);
 
-  if (!isAreaState(areaState)) {
-    throw new Error("areaState must be an AreaState.");
+  if (!isAreaState(initialAreaState)) {
+    throw new Error("initialAreaState must be an AreaState.");
   }
 
+  const [areaState, setAreaState] = useState<AreaState>(initialAreaState);
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [willToggle, setWillToggle] = useState<boolean>(false);
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
 
   const featureNameInputRef = useRef<HTMLInputElement>();
   const featureAdderInputRef = useRef<HTMLInputElement>();
+
+  useEffect(() => {
+    const areaState = allFeatures.get(featureId);
+
+    if (!areaState || !isAreaState(areaState)) {
+      return;
+    }
+
+    setAreaState(areaState);
+  }, [allFeatures, featureId]);
 
   function handleValueChange(value: string[]) {
     if (value.includes(featureId)) {
@@ -124,6 +134,7 @@ export default function Area({ featureId }: AreaProps) {
   return (
     <Accordion.Root
       type="multiple"
+      value={Array.from(quizBuilderState.openAreas)}
       onValueChange={handleValueChange}
       onBlur={handleContainerBlur}
     >
