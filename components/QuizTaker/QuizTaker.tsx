@@ -1,20 +1,19 @@
 "use client";
 
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import Map from "@/components/Map";
+import { isSubfeatureState } from "@/helpers/feature-type-guards";
 import {
-  AreaState,
   DisplayMode,
-  FeatureType,
-  PointState,
   QuizTakerStateDispatchType,
+  SubfeatureState,
 } from "@/types";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
 import AnswerBox from "./AnswerBox";
 import { useQuizTakerState } from "./QuizTakerStateProvider";
 import ScoreBox from "./ScoreBox";
-import LoadingSpinner from "../LoadingSpinner";
 
 interface QuizTakerProps {
   googleLibsLoaded: boolean;
@@ -25,14 +24,14 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
   const { quizTakerState, quizTakerStateDispatch } = useQuizTakerState();
 
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-  const [displayedFeature, setDisplayedFeature] = useState<
-    AreaState | PointState | null
-  >(null);
+  const [displayedFeature, setDisplayedFeature] =
+    useState<SubfeatureState | null>(null);
 
   const answerBoxInputRef = useRef<HTMLInputElement>();
 
-  // reset quiz on component mount
   useEffect(() => {
+    console.log("reset quiz taker state");
+
     quizTakerStateDispatch({
       type: QuizTakerStateDispatchType.RESET,
       rootId,
@@ -46,13 +45,11 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
       quizTakerState.remainingFeatureIds.values().next().value,
     );
 
-    if (
-      !displayedFeature ||
-      (displayedFeature.featureType !== FeatureType.AREA &&
-        displayedFeature.featureType !== FeatureType.POINT)
-    ) {
+    if (!displayedFeature || !isSubfeatureState(displayedFeature)) {
       return;
     }
+
+    console.log("set displayed feature");
 
     setDisplayedFeature(displayedFeature);
   }, [allFeatures, quizTakerState]);
