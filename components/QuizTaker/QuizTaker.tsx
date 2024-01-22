@@ -23,15 +23,13 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
   const { rootId, allFeatures } = useAllFeatures();
   const { quizTakerState, quizTakerStateDispatch } = useQuizTakerState();
 
-  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const [mapIsLoaded, setMapIsLoaded] = useState<boolean>(false);
   const [displayedFeature, setDisplayedFeature] =
     useState<SubfeatureState | null>(null);
 
   const answerBoxInputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    console.log("reset quiz taker state");
-
     quizTakerStateDispatch({
       type: QuizTakerStateDispatchType.RESET,
       rootId,
@@ -39,23 +37,24 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
     });
   }, [rootId, allFeatures, quizTakerStateDispatch]);
 
-  // set displayed location when orderedIdsIndex changes
   useEffect(() => {
-    const displayedFeature = allFeatures.get(
+    const newDisplayedFeature = allFeatures.get(
       quizTakerState.remainingFeatureIds.values().next().value,
     );
 
-    if (!displayedFeature || !isSubfeatureState(displayedFeature)) {
+    if (!newDisplayedFeature || !isSubfeatureState(newDisplayedFeature)) {
       return;
     }
 
-    console.log("set displayed feature");
+    if (newDisplayedFeature.id === displayedFeature?.id) {
+      return;
+    }
 
-    setDisplayedFeature(displayedFeature);
-  }, [allFeatures, quizTakerState]);
+    setDisplayedFeature(newDisplayedFeature);
+  }, [allFeatures, displayedFeature, quizTakerState]);
 
   const handleMapLoad = useCallback(() => {
-    setMapLoaded(true);
+    setMapIsLoaded(true);
 
     if (answerBoxInputRef.current) {
       answerBoxInputRef.current.focus();
@@ -82,7 +81,7 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
 
   return (
     <>
-      {!googleLibsLoaded || !mapLoaded ? (
+      {!googleLibsLoaded || !mapIsLoaded ? (
         <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       ) : null}
       {googleLibsLoaded ? (

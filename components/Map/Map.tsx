@@ -15,7 +15,7 @@ import {
   FeatureType,
   PointState,
 } from "@/types";
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 
 interface MapProps {
   mapContainerRef?: RefObject<HTMLDivElement>;
@@ -45,21 +45,33 @@ export default function Map({
   const markedPointsRef = useRef<google.maps.Marker[]>(null);
 
   const [tilesAreLoaded, setTilesAreLoaded] = useState<boolean>(false);
-  const [isIdle, setIsIdle] = useState<boolean>(false);
+  const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral>(null);
+  const [emptyAreas, setEmptyAreas] = useState<AreaState>(null);
+  const [filledAreas, setFilledAreas] = useState<AreaState>(null);
+  const [markedPoints, setMarkedPoints] = useState<PointState>(null);
 
-  const setBounds = useCallback(
-    (bounds: google.maps.LatLngBoundsLiteral) => {
-      if (!mapRef.current || !bounds) {
-        return;
-      }
+  useEffect(() => {
+    if (!mapRef.current || !bounds) {
+      return;
+    }
 
-      mapRef.current.fitBounds(bounds, padding);
-    },
-    [padding],
-  );
+    if (!bounds) {
+      return;
+    }
 
-  const setEmptyAreas = useCallback((emptyAreas: AreaState | null) => {
+    if (!tilesAreLoaded) {
+      return;
+    }
+
+    mapRef.current.fitBounds(bounds, padding);
+  }, [tilesAreLoaded, bounds, padding]);
+
+  useEffect(() => {
     if (!mapRef.current) {
+      return;
+    }
+
+    if (!tilesAreLoaded) {
       return;
     }
 
@@ -105,10 +117,14 @@ export default function Map({
         fillOpacity: 0.0,
       });
     });
-  }, []);
+  }, [tilesAreLoaded, emptyAreas]);
 
-  const setFilledAreas = useCallback((filledAreas: AreaState | null) => {
+  useEffect(() => {
     if (!mapRef.current) {
+      return;
+    }
+
+    if (!tilesAreLoaded) {
       return;
     }
 
@@ -154,10 +170,14 @@ export default function Map({
         fillOpacity: 0.2,
       });
     });
-  }, []);
+  }, [tilesAreLoaded, filledAreas]);
 
-  const setMarkedPoints = useCallback((markedPoints: PointState | null) => {
+  useEffect(() => {
     if (!mapRef.current) {
+      return;
+    }
+
+    if (!tilesAreLoaded) {
       return;
     }
 
@@ -183,7 +203,7 @@ export default function Map({
           map: mapRef.current,
         }),
     );
-  }, []);
+  }, [tilesAreLoaded, markedPoints]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -193,8 +213,6 @@ export default function Map({
     if (!mapContainerRef.current) {
       return;
     }
-
-    console.log("instantiate new Map");
 
     mapRef.current = new google.maps.Map(mapContainerRef.current, {
       mapId,
@@ -218,8 +236,6 @@ export default function Map({
       return;
     }
 
-    console.log("add listeners to new Map");
-
     const tilesloadedListener = google.maps.event.addListener(
       mapRef.current,
       "tilesloaded",
@@ -228,45 +244,21 @@ export default function Map({
       },
     );
 
-    const boundsChangedListener = google.maps.event.addListener(
-      mapRef.current,
-      "bounds_changed",
-      () => {
-        setTilesAreLoaded(false);
-      },
-    );
-
-    const idleListener = google.maps.event.addListener(
-      mapRef.current,
-      "idle",
-      () => {
-        setIsIdle(true);
-      },
-    );
-
     return () => {
       setTilesAreLoaded(false);
-      setIsIdle(false);
-
       google.maps.event.removeListener(tilesloadedListener);
-      google.maps.event.removeListener(boundsChangedListener);
-      google.maps.event.removeListener(idleListener);
     };
   }, [mapRef]);
 
   useEffect(() => {
-    if (!tilesAreLoaded || !isIdle) {
+    if (!tilesAreLoaded) {
       return;
     }
 
-    console.log("call onLoad()");
-
     onLoad();
-  }, [tilesAreLoaded, isIdle, onLoad]);
+  }, [tilesAreLoaded, onLoad]);
 
   useEffect(() => {
-    console.log("set appearances");
-
     if (
       !displayedFeature ||
       displayedFeature.featureType === FeatureType.ROOT
@@ -351,16 +343,7 @@ export default function Map({
         }
         break;
     }
-  }, [
-    allFeatures,
-    displayedFeature,
-    displayMode,
-    quizBuilderState,
-    setBounds,
-    setEmptyAreas,
-    setFilledAreas,
-    setMarkedPoints,
-  ]);
+  }, [allFeatures, displayedFeature, displayMode, quizBuilderState]);
 
   return <div className={`h-full w-full`} ref={mapContainerRef} />;
 }
