@@ -7,6 +7,12 @@ import { RefObject } from "react";
 import Area from "./Area";
 import FeatureAdder from "./FeatureAdder";
 import Point from "./Point";
+import {
+  isAreaState,
+  isParentFeatureState,
+  isPointState,
+  isSubfeatureState,
+} from "@/helpers/feature-type-guards";
 
 interface SubfeaturesProps {
   featureAdderInputRef?: RefObject<HTMLInputElement>;
@@ -23,11 +29,8 @@ export default function Subfeatures({
 
   const parentFeature = allFeatures.get(parentFeatureId);
 
-  if (
-    parentFeature.featureType !== FeatureType.ROOT &&
-    parentFeature.featureType !== FeatureType.AREA
-  ) {
-    throw new Error("parentFeature must be of type ROOT or AREA.");
+  if (!isParentFeatureState(parentFeature)) {
+    throw new Error("parentFeature must be ParentFeatureState.");
   }
 
   function handleReorder(subfeatureIds: string[]) {
@@ -75,18 +78,15 @@ function Subfeature({ subfeatureId }: SubfeatureProps) {
 
   const subfeature = allFeatures.get(subfeatureId);
 
-  if (
-    subfeature.featureType !== FeatureType.AREA &&
-    subfeature.featureType !== FeatureType.POINT
-  ) {
-    throw new Error("subfeature must be of type AREA or POINT.");
+  if (!isSubfeatureState(subfeature)) {
+    throw new Error("subfeature must be a SubfeatureState.");
   }
 
-  if (subfeature.featureType === FeatureType.AREA) {
+  if (isAreaState(subfeature)) {
     return <Area featureId={subfeatureId} />;
   }
 
-  if (subfeature.featureType === FeatureType.POINT) {
+  if (isPointState(subfeature)) {
     return <Point featureId={subfeatureId} />;
   }
 }

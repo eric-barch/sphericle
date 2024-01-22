@@ -1,5 +1,10 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
+  isAreaState,
+  isParentFeatureState,
+  isRootState,
+} from "@/helpers/feature-type-guards";
+import {
   AreaState,
   FeatureType,
   PointState,
@@ -24,11 +29,8 @@ export default function usePointSearch(parentFeatureId: string): PointSearch {
 
   const parentFeature = allFeatures.get(parentFeatureId);
 
-  if (
-    parentFeature.featureType !== FeatureType.ROOT &&
-    parentFeature.featureType !== FeatureType.AREA
-  ) {
-    throw new Error("parentFeature must be of type ROOT or AREA.");
+  if (!isParentFeatureState(parentFeature)) {
+    throw new Error("parentFeature must be ParentFeatureState.");
   }
 
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
@@ -62,7 +64,7 @@ export default function usePointSearch(parentFeatureId: string): PointSearch {
         input: searchTerm,
       };
 
-      if (parentFeature.featureType === FeatureType.AREA) {
+      if (isAreaState(parentFeature)) {
         request.locationRestriction = parentFeature.searchBounds;
       }
 
@@ -168,7 +170,6 @@ async function getPointState(
     featureType: FeatureType.POINT as FeatureType.POINT,
     displayBounds,
     point,
-    answeredCorrectly: null,
   };
 }
 
@@ -188,7 +189,7 @@ async function getPoint(
 
   const point: Point = { type: "Point", coordinates: [lng, lat] };
 
-  if (parentFeature.featureType === FeatureType.ROOT) {
+  if (isRootState(parentFeature)) {
     return point;
   }
 

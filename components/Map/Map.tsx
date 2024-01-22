@@ -259,10 +259,7 @@ export default function Map({
   }, [tilesAreLoaded, onLoad]);
 
   useEffect(() => {
-    if (
-      !displayedFeature ||
-      displayedFeature.featureType === FeatureType.ROOT
-    ) {
+    if (!displayedFeature || isRootState(displayedFeature)) {
       setEmptyAreas(null);
       setFilledAreas(null);
       setMarkedPoints(null);

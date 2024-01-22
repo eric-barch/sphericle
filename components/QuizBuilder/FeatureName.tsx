@@ -1,6 +1,7 @@
 import { AllFeaturesDispatchType, FeatureType } from "@/types";
 import { KeyboardEvent, RefObject, useState } from "react";
 import { useAllFeatures } from "../AllFeaturesProvider";
+import { isSubfeatureState } from "@/helpers/feature-type-guards";
 
 interface FeatureNameProps {
   inputRef: RefObject<HTMLInputElement>;
@@ -19,11 +20,8 @@ export default function FeatureName({
 
   const feature = allFeatures.get(featureId);
 
-  if (
-    feature.featureType !== FeatureType.AREA &&
-    feature.featureType !== FeatureType.POINT
-  ) {
-    throw new Error("feature must be of type AREA or POINT.");
+  if (!isSubfeatureState(feature)) {
+    throw new Error("feature must be SubfeatureState.");
   }
 
   const displayName = feature.userDefinedName || feature.shortName;

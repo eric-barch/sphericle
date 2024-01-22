@@ -9,6 +9,7 @@ import EditFeatureButton from "./EditFeatureButton";
 import FeatureName from "./FeatureName";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import Subfeatures from "./Subfeatures";
+import { isAreaState } from "@/helpers/feature-type-guards";
 
 interface AreaProps {
   featureId: string;
@@ -18,10 +19,11 @@ export default function Area({ featureId }: AreaProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
+  // TODO: This is wrong. Need to replace with state and useEffect.
   const areaState = allFeatures.get(featureId);
 
-  if (areaState.featureType !== FeatureType.AREA) {
-    throw new Error("areaState must be of type AREA.");
+  if (!isAreaState(areaState)) {
+    throw new Error("areaState must be an AreaState.");
   }
 
   const [mouseDown, setMouseDown] = useState<boolean>(false);
