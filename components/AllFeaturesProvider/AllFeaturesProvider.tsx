@@ -1,6 +1,9 @@
 "use client";
 
-import { isParentFeature, isSubfeature } from "@/helpers/feature-type-guards";
+import {
+  isParentFeatureState,
+  isSubfeatureState,
+} from "@/helpers/feature-type-guards";
 import {
   AllFeatures,
   AllFeaturesDispatch,
@@ -64,7 +67,7 @@ function allFeaturesReducer(
       const newAllFeatures = new Map(allFeatures);
       const newParentFeature = { ...allFeatures.get(parentFeatureId) };
 
-      if (!isParentFeature(newParentFeature)) {
+      if (!isParentFeatureState(newParentFeature)) {
         throw new Error("newParentFeature must be a ParentFeatureState.");
       }
 
@@ -81,7 +84,7 @@ function allFeaturesReducer(
       const newAllFeatures = new Map(allFeatures);
       const newParentFeature = newAllFeatures.get(parentFeatureId);
 
-      if (!isParentFeature(newParentFeature)) {
+      if (!isParentFeatureState(newParentFeature)) {
         throw new Error("newParentFeature must be a ParentFeatureState.");
       }
 
@@ -97,7 +100,7 @@ function allFeaturesReducer(
       const newAllFeatures = new Map(allFeatures);
       const newFeature = newAllFeatures.get(featureId);
 
-      if (!isSubfeature(newFeature)) {
+      if (!isSubfeatureState(newFeature)) {
         throw new Error("newFeature must be a SubfeatureState.");
       }
 
@@ -111,13 +114,13 @@ function allFeaturesReducer(
       const newAllFeatures = new Map(allFeatures);
       const newFeature = newAllFeatures.get(featureId);
 
-      if (!isSubfeature(newFeature)) {
+      if (!isSubfeatureState(newFeature)) {
         throw new Error("newFeature must be a SubfeatureState.");
       }
 
       const newParentFeature = newAllFeatures.get(newFeature.parentFeatureId);
 
-      if (!isParentFeature(newParentFeature)) {
+      if (!isParentFeatureState(newParentFeature)) {
         throw new Error("newParentFeature must be a ParentFeatureState.");
       }
 

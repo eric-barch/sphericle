@@ -1,11 +1,11 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { AreaState, PointState, QuizTakerStateDispatchType } from "@/types";
+import { QuizTakerStateDispatchType, SubfeatureState } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";
 import { useQuizTakerState } from "./QuizTakerStateProvider";
 
 interface AnswerBoxProps {
-  displayedFeature: AreaState | PointState;
+  displayedFeature: SubfeatureState;
   inputRef: RefObject<HTMLInputElement>;
   disabled: boolean;
 }

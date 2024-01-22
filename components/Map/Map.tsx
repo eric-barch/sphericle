@@ -3,11 +3,17 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import { useQuizBuilderState } from "@/components/QuizBuilder";
 import {
+  isAreaState,
+  isPointState,
+  isRootState,
+  isSubfeatureState,
+} from "@/helpers/feature-type-guards";
+import {
   AreaState,
   DisplayMode,
+  FeatureState,
   FeatureType,
   PointState,
-  RootState,
 } from "@/types";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 
@@ -16,7 +22,7 @@ interface MapProps {
   padding?: google.maps.Padding;
   onLoad?: () => void;
   mapId: string;
-  displayedFeature: RootState | AreaState | PointState | null;
+  displayedFeature: FeatureState | null;
   displayMode: DisplayMode;
 }
 
@@ -38,12 +44,12 @@ export default function Map({
   const emptyAreasRef = useRef<google.maps.Polygon[]>(null);
   const markedPointsRef = useRef<google.maps.Marker[]>(null);
 
-  const [tilesloaded, setTilesloaded] = useState<boolean>(false);
-  const [idle, setIdle] = useState<boolean>(false);
+  const [tilesAreLoaded, setTilesAreLoaded] = useState<boolean>(false);
+  const [isIdle, setIsIdle] = useState<boolean>(false);
 
   const setBounds = useCallback(
     (bounds: google.maps.LatLngBoundsLiteral) => {
-      if (!mapRef?.current || !bounds) {
+      if (!mapRef.current || !bounds) {
         return;
       }
 
@@ -53,7 +59,7 @@ export default function Map({
   );
 
   const setEmptyAreas = useCallback((emptyAreas: AreaState | null) => {
-    if (!mapRef?.current) {
+    if (!mapRef.current) {
       return;
     }
 
@@ -102,11 +108,11 @@ export default function Map({
   }, []);
 
   const setFilledAreas = useCallback((filledAreas: AreaState | null) => {
-    if (!mapRef?.current) {
+    if (!mapRef.current) {
       return;
     }
 
-    if (filledAreasRef?.current) {
+    if (filledAreasRef.current) {
       filledAreasRef.current.forEach((polygon) => polygon.setMap(null));
     }
 
@@ -151,11 +157,11 @@ export default function Map({
   }, []);
 
   const setMarkedPoints = useCallback((markedPoints: PointState | null) => {
-    if (!mapRef?.current) {
+    if (!mapRef.current) {
       return;
     }
 
-    if (markedPointsRef?.current) {
+    if (markedPointsRef.current) {
       markedPointsRef.current.forEach((marker) => marker.setMap(null));
     }
 
@@ -188,6 +194,8 @@ export default function Map({
       return;
     }
 
+    console.log("instantiate new Map");
+
     mapRef.current = new google.maps.Map(mapContainerRef.current, {
       mapId,
       center: { lat: 0, lng: 0 },
@@ -210,11 +218,21 @@ export default function Map({
       return;
     }
 
+    console.log("add listeners to new Map");
+
     const tilesloadedListener = google.maps.event.addListener(
       mapRef.current,
       "tilesloaded",
       () => {
-        setTilesloaded(true);
+        setTilesAreLoaded(true);
+      },
+    );
+
+    const boundsChangedListener = google.maps.event.addListener(
+      mapRef.current,
+      "bounds_changed",
+      () => {
+        setTilesAreLoaded(false);
       },
     );
 
@@ -222,23 +240,33 @@ export default function Map({
       mapRef.current,
       "idle",
       () => {
-        setIdle(true);
+        setIsIdle(true);
       },
     );
 
     return () => {
+      setTilesAreLoaded(false);
+      setIsIdle(false);
+
       google.maps.event.removeListener(tilesloadedListener);
+      google.maps.event.removeListener(boundsChangedListener);
       google.maps.event.removeListener(idleListener);
     };
   }, [mapRef]);
 
   useEffect(() => {
-    if (tilesloaded && idle) {
-      onLoad();
+    if (!tilesAreLoaded || !isIdle) {
+      return;
     }
-  }, [tilesloaded, idle, onLoad]);
+
+    console.log("call onLoad()");
+
+    onLoad();
+  }, [tilesAreLoaded, isIdle, onLoad]);
 
   useEffect(() => {
+    console.log("set appearances");
+
     if (
       !displayedFeature ||
       displayedFeature.featureType === FeatureType.ROOT
@@ -249,14 +277,18 @@ export default function Map({
       return;
     }
 
+    if (!isSubfeatureState(displayedFeature)) {
+      throw new Error("displayedFeature must be a subfeature.");
+    }
+
     const parentFeature = allFeatures.get(displayedFeature.parentFeatureId);
 
     switch (displayMode) {
       case DisplayMode.QUIZ_BUILDER:
-        if (parentFeature.featureType === FeatureType.ROOT) {
+        if (isRootState(parentFeature)) {
           setBounds(displayedFeature.displayBounds);
 
-          if (displayedFeature.featureType === FeatureType.AREA) {
+          if (isAreaState(displayedFeature)) {
             if (quizBuilderState.openAreas.has(displayedFeature.id)) {
               setEmptyAreas(displayedFeature);
               setFilledAreas(null);
@@ -266,13 +298,13 @@ export default function Map({
               setFilledAreas(displayedFeature);
               setMarkedPoints(null);
             }
-          } else if (displayedFeature.featureType === FeatureType.POINT) {
+          } else if (isPointState(displayedFeature)) {
             setEmptyAreas(null);
             setFilledAreas(null);
             setMarkedPoints(displayedFeature);
           }
-        } else if (parentFeature.featureType === FeatureType.AREA) {
-          if (displayedFeature.featureType === FeatureType.AREA) {
+        } else if (isAreaState(parentFeature)) {
+          if (isAreaState(displayedFeature)) {
             if (quizBuilderState.openAreas.has(displayedFeature.id)) {
               setBounds(displayedFeature.displayBounds);
               setEmptyAreas(displayedFeature);
@@ -284,7 +316,7 @@ export default function Map({
               setFilledAreas(displayedFeature);
               setMarkedPoints(null);
             }
-          } else if (displayedFeature.featureType === FeatureType.POINT) {
+          } else if (isPointState(displayedFeature)) {
             setBounds(parentFeature.displayBounds);
             setEmptyAreas(parentFeature);
             setFilledAreas(null);
@@ -293,26 +325,26 @@ export default function Map({
         }
         break;
       case DisplayMode.QUIZ_TAKER:
-        if (parentFeature.featureType === FeatureType.ROOT) {
+        if (isRootState(parentFeature)) {
           setBounds(displayedFeature.displayBounds);
 
-          if (displayedFeature.featureType === FeatureType.AREA) {
+          if (isAreaState(displayedFeature)) {
             setEmptyAreas(null);
             setFilledAreas(displayedFeature);
             setMarkedPoints(null);
-          } else if (displayedFeature.featureType === FeatureType.POINT) {
+          } else if (isPointState(displayedFeature)) {
             setEmptyAreas(null);
             setFilledAreas(null);
             setMarkedPoints(displayedFeature);
           }
-        } else if (parentFeature.featureType === FeatureType.AREA) {
+        } else if (isAreaState(parentFeature)) {
           setBounds(parentFeature.displayBounds);
           setEmptyAreas(parentFeature);
 
-          if (displayedFeature.featureType === FeatureType.AREA) {
+          if (isAreaState(displayedFeature)) {
             setFilledAreas(displayedFeature);
             setMarkedPoints(null);
-          } else if (displayedFeature.featureType === FeatureType.POINT) {
+          } else if (isPointState(displayedFeature)) {
             setFilledAreas(null);
             setMarkedPoints(displayedFeature);
           }
