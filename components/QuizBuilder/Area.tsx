@@ -1,7 +1,8 @@
 "use client";
 
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { AreaState, FeatureType, QuizBuilderStateDispatchType } from "@/types";
+import { isAreaState } from "@/helpers/feature-type-guards";
+import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
 import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
@@ -9,7 +10,6 @@ import EditFeatureButton from "./EditFeatureButton";
 import FeatureName from "./FeatureName";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import Subfeatures from "./Subfeatures";
-import { isAreaState } from "@/helpers/feature-type-guards";
 
 interface AreaProps {
   featureId: string;
