@@ -16,7 +16,7 @@ interface AreaProps {
 }
 
 export default function Area({ featureId }: AreaProps) {
-  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+  const { allFeatures } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const initialAreaState = allFeatures.get(featureId);
