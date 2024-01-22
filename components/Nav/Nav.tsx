@@ -12,8 +12,8 @@ export default function Nav() {
     >
       <div className="grow">
         <NavigationMenu.List className="flex flex-row items-center justify-between">
-          <NavigationMenu.Item>
-            <Link className="rounded-2xl" href="/">
+          <NavigationMenu.Item asChild>
+            <Link className="rounded-3xl p-1.5" href="/">
               <Image
                 priority
                 src="/sphericle-americas.svg"
