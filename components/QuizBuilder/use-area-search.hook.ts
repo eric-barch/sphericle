@@ -1,5 +1,10 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
+  isAreaState,
+  isParentFeatureState,
+  isRootState,
+} from "@/helpers/feature-type-guards";
+import {
   AreaState,
   FeatureType,
   OsmItem,
@@ -24,11 +29,8 @@ export default function useAreaSearch(parentFeatureId: string): AreaSearch {
 
   const parentFeature = allFeatures.get(parentFeatureId);
 
-  if (
-    parentFeature.featureType !== FeatureType.ROOT &&
-    parentFeature.featureType !== FeatureType.AREA
-  ) {
-    throw new Error("parentFeature must be of type ROOT or AREA.");
+  if (!isParentFeatureState(parentFeature)) {
+    throw new Error("parentFeature must be a ParentFeatureState.");
   }
 
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
@@ -45,7 +47,7 @@ export default function useAreaSearch(parentFeatureId: string): AreaSearch {
 
       let query: string = searchTerm;
 
-      if (parentFeature.featureType === FeatureType.AREA) {
+      if (isAreaState(parentFeature)) {
         const { south, north, west, east } = parentFeature.searchBounds;
         query = query + `&viewbox=${west},${south},${east},${north}&bounded=1`;
       }
@@ -122,7 +124,7 @@ function getPolygons(
     return null;
   }
 
-  if (parentFeature.featureType === FeatureType.ROOT) {
+  if (isRootState(parentFeature)) {
     return polygons;
   }
 

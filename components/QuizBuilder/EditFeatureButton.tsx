@@ -1,4 +1,5 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { isAreaState } from "@/helpers/feature-type-guards";
 import { FeatureType, AllFeaturesDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
@@ -47,7 +48,7 @@ export default function EditFeatureButton({
         className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        {feature.featureType === FeatureType.AREA && (
+        {isAreaState(feature) && (
           <DropdownMenu.Item
             onClick={handleAddSubfeatureClick}
             className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"

@@ -25,6 +25,11 @@ import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import { AreaSearch } from "./use-area-search.hook";
 import useFeatureSearches from "./use-feature-searches.hook";
 import { PointSearch } from "./use-point-search.hook";
+import {
+  isAreaState,
+  isParentFeatureState,
+  isRootState,
+} from "@/helpers/feature-type-guards";
 
 interface FeatureAdderProps {
   inputRef?: RefObject<HTMLInputElement>;
@@ -59,12 +64,12 @@ export default function FeatureAdder({
       setIsFocused(true);
 
       if (!optionSelected) {
-        if (parentFeature.featureType === FeatureType.ROOT) {
+        if (isRootState(parentFeature)) {
           quizBuilderStateDispatch({
             type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
             selectedFeatureId: null,
           });
-        } else if (parentFeature.featureType === FeatureType.AREA) {
+        } else if (isAreaState(parentFeature)) {
           quizBuilderStateDispatch({
             type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
             selectedFeatureId: parentFeatureId,
@@ -105,10 +110,7 @@ export default function FeatureAdder({
 
     const parentFeature = allFeatures.get(parentFeatureId);
 
-    if (
-      parentFeature?.featureType === FeatureType.ROOT ||
-      parentFeature?.featureType === FeatureType.AREA
-    ) {
+    if (isParentFeatureState(parentFeature)) {
       setParentFeature(parentFeature);
       return;
     }
@@ -118,8 +120,8 @@ export default function FeatureAdder({
 
   if (
     !parentFeature ||
-    parentFeature.featureType === FeatureType.ROOT ||
-    (parentFeature.featureType === FeatureType.AREA &&
+    isRootState(parentFeature) ||
+    (isAreaState(parentFeature) &&
       quizBuilderState.openAreas.has(parentFeatureId)) ||
     parentFeature.subfeatureIds.size <= 0
   ) {
@@ -182,19 +184,15 @@ function Input({
 
   const parentFeature = allFeatures.get(parentFeatureId);
 
-  if (
-    parentFeature.featureType !== FeatureType.ROOT &&
-    parentFeature.featureType !== FeatureType.AREA
-  ) {
-    throw new Error("parentFeature must be of type ROOT or AREA.");
+  if (!isParentFeatureState(parentFeature)) {
+    throw new Error("parentFeature must be ParentFeatureState.");
   }
 
-  const placeholder =
-    parentFeature.featureType === FeatureType.ROOT
-      ? `Add ${featureType.toLowerCase()} anywhere`
-      : `Add ${featureType.toLowerCase()} in ${
-          parentFeature.userDefinedName || parentFeature.shortName
-        }`;
+  const placeholder = isRootState(parentFeature)
+    ? `Add ${featureType.toLowerCase()} anywhere`
+    : `Add ${featureType.toLowerCase()} in ${
+        parentFeature.userDefinedName || parentFeature.shortName
+      }`;
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     setInput(event.target.value);
@@ -329,11 +327,8 @@ function Options({
 
   const parentFeature = allFeatures.get(parentFeatureId);
 
-  if (
-    parentFeature.featureType !== FeatureType.ROOT &&
-    parentFeature.featureType !== FeatureType.AREA
-  ) {
-    throw new Error("parentFeature must be of type ROOT or AREA.");
+  if (!isParentFeatureState(parentFeature)) {
+    throw new Error("parentFeature must be a ParentFeatureState.");
   }
 
   useEffect(() => {

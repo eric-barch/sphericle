@@ -6,6 +6,7 @@ import { FocusEvent, useRef, useState } from "react";
 import EditFeatureButton from "./EditFeatureButton";
 import FeatureName from "./FeatureName";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
+import { isPointState } from "@/helpers/feature-type-guards";
 
 interface PointProps {
   featureId: string;
@@ -17,8 +18,8 @@ export default function Point({ featureId }: PointProps) {
 
   const pointState = allFeatures.get(featureId);
 
-  if (pointState.featureType !== FeatureType.POINT) {
-    throw new Error("pointState must be of type POINT.");
+  if (!isPointState(pointState)) {
+    throw new Error("pointState must be a PointState.");
   }
 
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
