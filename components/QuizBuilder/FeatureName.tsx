@@ -65,7 +65,7 @@ export default function FeatureName({ featureId }: FeatureNameProps) {
 
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.RENAME_FEATURE,
-        featureId,
+        feature: featureId,
         name: input,
       });
     }

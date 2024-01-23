@@ -4,7 +4,9 @@ import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
   isAreaState,
   isParentFeatureState,
+  isPointState,
   isRootState,
+  isSubfeatureState,
 } from "@/helpers/feature-type-guards";
 import {
   AllFeaturesDispatchType,
@@ -14,6 +16,7 @@ import {
   PointState,
   QuizBuilderStateDispatchType,
   SearchStatus,
+  SubfeatureState,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { Grid2X2, MapPin } from "lucide-react";
@@ -45,21 +48,20 @@ export default function FeatureAdder({ parentFeatureId }: FeatureAdderProps) {
     useState<ParentFeatureState>(() => {
       const parentFeatureState = allFeatures.get(parentFeatureId);
 
-      if (!parentFeatureState || !isParentFeatureState(parentFeatureState)) {
-        throw new Error("parentFeatureState must be a ParentFeatureState.");
+      if (!isParentFeatureState(parentFeatureState)) {
+        return null;
       }
 
       return parentFeatureState;
     });
-  const [isFocused, setIsFocused] = useState<boolean>(true);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
   const [featureType, setFeatureType] = useState<FeatureType>(FeatureType.AREA);
   const [input, setInput] = useState<string>("");
-  const [optionSelected, setOptionSelected] = useState<boolean>(false);
 
   useEffect(() => {
     const parentFeatureState = allFeatures.get(parentFeatureId);
 
-    if (!parentFeatureState || !isParentFeatureState(parentFeatureState)) {
+    if (!isParentFeatureState(parentFeatureState)) {
       return;
     }
 
@@ -67,118 +69,113 @@ export default function FeatureAdder({ parentFeatureId }: FeatureAdderProps) {
   }, [allFeatures, parentFeatureId]);
 
   const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
-    if (!event.currentTarget.contains(event.relatedTarget)) {
-      setIsFocused(false);
+    if (event.currentTarget.contains(event.relatedTarget)) {
+      return;
     }
+
+    setIsFocused(false);
+    console.log(`blur FeatureAdder`);
   }, []);
 
   const handleFocus = useCallback(
     (event: FocusEvent) => {
       if (!event.currentTarget.contains(event.relatedTarget)) {
-        setIsFocused(true);
+        return;
+      }
 
-        if (!optionSelected) {
-          if (isRootState(parentFeatureState)) {
-            quizBuilderStateDispatch({
-              type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-              feature: null,
-            });
-          } else if (isAreaState(parentFeatureState)) {
-            quizBuilderStateDispatch({
-              type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-              feature: parentFeatureState,
-            });
-          }
-        }
-      } else {
-        setOptionSelected(false);
+      setIsFocused(true);
+      console.log("focus FeatureAdder");
+
+      if (isRootState(parentFeatureState)) {
+        quizBuilderStateDispatch({
+          type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
+          feature: null,
+        });
+      }
+
+      if (isSubfeatureState(parentFeatureState)) {
+        quizBuilderStateDispatch({
+          type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
+          feature: parentFeatureState,
+        });
       }
     },
-    [optionSelected, parentFeatureState, quizBuilderStateDispatch],
+    [parentFeatureState, quizBuilderStateDispatch],
   );
 
-  function handleChange(subfeature: AreaState | PointState) {
-    allFeaturesDispatch({
-      type: AllFeaturesDispatchType.ADD_SUBFEATURE,
-      parentFeatureId,
-      subfeature,
-    });
-
-    quizBuilderStateDispatch({
-      type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-      feature: subfeature,
-    });
-
-    if (isAreaState(subfeature)) {
-      quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
-        feature: subfeature,
-        isAdding: true,
+  const handleChange = useCallback(
+    (subfeature: AreaState | PointState) => {
+      allFeaturesDispatch({
+        type: AllFeaturesDispatchType.ADD_SUBFEATURE,
+        parentFeature: parentFeatureState,
+        subfeature,
       });
-    }
 
-    setOptionSelected(true);
-    setInput("");
-    areaSearch.reset();
-    pointSearch.reset();
-  }
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
+        feature: subfeature,
+      });
 
-  useEffect(() => {
-    if (!allFeatures || !parentFeatureId) {
-      return;
-    }
+      if (isParentFeatureState(subfeature)) {
+        quizBuilderStateDispatch({
+          type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
+          feature: subfeature,
+          isAdding: true,
+        });
+      }
 
-    const parentFeature = allFeatures.get(parentFeatureId);
+      setInput("");
 
-    if (isParentFeatureState(parentFeature)) {
-      setParentFeatureState(parentFeature);
-      return;
-    }
-
-    setParentFeatureState(null);
-  }, [allFeatures, parentFeatureId]);
+      areaSearch.reset();
+      pointSearch.reset();
+    },
+    [
+      allFeaturesDispatch,
+      areaSearch,
+      parentFeatureState,
+      pointSearch,
+      quizBuilderStateDispatch,
+    ],
+  );
 
   if (
-    !parentFeatureState ||
-    isRootState(parentFeatureState) ||
-    (isParentFeatureState(parentFeatureState) &&
-      quizBuilderState.addingFeatureIds.has(parentFeatureId))
+    !isRootState(parentFeatureState) &&
+    !quizBuilderState.addingFeatureIds.has(parentFeatureId)
   ) {
-    return (
-      <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
-        <Combobox onChange={handleChange}>
-          {({ activeOption }) => (
-            <>
-              <Input
-                parentFeatureId={parentFeatureId}
-                input={input}
-                featureType={featureType}
-                areaSearch={areaSearch}
-                pointSearch={pointSearch}
-                setInput={setInput}
-                setFeatureType={setFeatureType}
-              />
-              <Options
-                parentFeatureId={parentFeatureId}
-                activeOption={activeOption}
-                input={input}
-                featureType={featureType}
-                areaSearch={areaSearch}
-                pointSearch={pointSearch}
-                featureAdderFocused={isFocused}
-              />
-            </>
-          )}
-        </Combobox>
-      </div>
-    );
+    return null;
   }
 
-  return null;
+  return (
+    <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
+      <Combobox onChange={handleChange}>
+        {({ activeOption }) => (
+          <>
+            <Input
+              parentFeatureState={parentFeatureState}
+              input={input}
+              featureType={featureType}
+              areaSearch={areaSearch}
+              pointSearch={pointSearch}
+              setInput={setInput}
+              setFeatureType={setFeatureType}
+            />
+            <Options
+              activeOption={activeOption}
+              input={input}
+              featureType={featureType}
+              areaSearch={areaSearch}
+              pointSearch={pointSearch}
+              isFocused={isFocused}
+            />
+          </>
+        )}
+      </Combobox>
+    </div>
+  );
 }
 
 interface InputProps {
-  parentFeatureId: string;
+  parentFeatureState: ParentFeatureState;
   input: string;
   featureType: FeatureType;
   areaSearch: AreaSearch;
@@ -188,7 +185,7 @@ interface InputProps {
 }
 
 function Input({
-  parentFeatureId,
+  parentFeatureState,
   input,
   featureType,
   areaSearch,
@@ -196,39 +193,55 @@ function Input({
   setInput,
   setFeatureType,
 }: InputProps) {
-  const { allFeatures } = useAllFeatures();
-
-  const parentFeature = allFeatures.get(parentFeatureId);
-
-  if (!isParentFeatureState(parentFeature)) {
-    throw new Error("parentFeature must be ParentFeatureState.");
-  }
-
-  const placeholder = isRootState(parentFeature)
-    ? `Add ${featureType.toLowerCase()} anywhere`
-    : `Add ${featureType.toLowerCase()} in ${
-        parentFeature.userDefinedName || parentFeature.shortName
+  const [placeholder, setPlaceholder] = useState<string>(() => {
+    if (isRootState(parentFeatureState)) {
+      return `Add ${featureType.toLowerCase()} anywhere`;
+    } else if (isAreaState(parentFeatureState)) {
+      return `Add ${featureType.toLowerCase()} in ${
+        parentFeatureState.userDefinedName || parentFeatureState.shortName
       }`;
-
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    setInput(event.target.value);
-
-    if (event.target.value === "") {
-      pointSearch.reset();
-    } else if (featureType === FeatureType.POINT) {
-      pointSearch.setTerm(event.target.value);
     }
-  }
+  });
 
-  function handleEnter(event: KeyboardEvent<HTMLInputElement>) {
-    if (featureType === FeatureType.AREA && input !== areaSearch.term) {
+  useEffect(() => {
+    if (isRootState(parentFeatureState)) {
+      setPlaceholder(`Add ${featureType.toLowerCase()} anywhere`);
+    } else if (isAreaState(parentFeatureState)) {
+      setPlaceholder(
+        `Add ${featureType.toLowerCase()} in ${
+          parentFeatureState.userDefinedName || parentFeatureState.shortName
+        }`,
+      );
+    }
+  }, [parentFeatureState, featureType]);
+
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setInput(event.target.value);
+
+      if (event.target.value === "") {
+        pointSearch.reset();
+      } else if (isPointState(parentFeatureState)) {
+        pointSearch.setTerm(event.target.value);
+      }
+    },
+    [parentFeatureState, pointSearch, setInput],
+  );
+
+  const handleEnter = useCallback(
+    (event: KeyboardEvent<HTMLInputElement>) => {
+      if (!isAreaState(parentFeatureState) || input === areaSearch.term) {
+        return;
+      }
+
       event.preventDefault();
       areaSearch.setTerm(input);
-    }
-  }
+    },
+    [areaSearch, parentFeatureState, input],
+  );
 
   // override HeadlessUI Combobox Tab behavior
-  function handleTab(event: KeyboardEvent<HTMLInputElement>) {
+  const handleTab = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault();
 
     const focusableElements = Array.from(
@@ -248,18 +261,21 @@ function Input({
         focusableElements[currentIndex + 1] || focusableElements[0];
       (nextElement as HTMLElement).focus();
     }
-  }
+  }, []);
 
-  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter") {
-      handleEnter(event);
-    }
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") {
+        handleEnter(event);
+      }
 
-    // override HeadlessUI Combobox Tab behavior
-    if (event.key === "Tab") {
-      handleTab(event);
-    }
-  }
+      // override HeadlessUI Combobox Tab behavior
+      if (event.key === "Tab") {
+        handleTab(event);
+      }
+    },
+    [handleEnter, handleTab],
+  );
 
   return (
     <div className="relative">
@@ -293,7 +309,7 @@ function ToggleAreaPointButton({
   pointSearch,
   setFeatureType,
 }: ToggleAreaPointButtonProps) {
-  function handleClick() {
+  const handleClick = useCallback(() => {
     const nextFeatureType =
       featureType === FeatureType.AREA ? FeatureType.POINT : FeatureType.AREA;
 
@@ -302,7 +318,7 @@ function ToggleAreaPointButton({
     if (nextFeatureType === FeatureType.POINT && input !== pointSearch.term) {
       pointSearch.setTerm(input);
     }
-  }
+  }, [featureType, input, pointSearch, setFeatureType]);
 
   return (
     <button
@@ -319,45 +335,23 @@ function ToggleAreaPointButton({
 }
 
 interface OptionsProps {
-  parentFeatureId: string;
-  activeOption: AreaState | PointState;
+  activeOption: SubfeatureState;
   input: string;
   featureType: FeatureType;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
-  featureAdderFocused: boolean;
+  isFocused: boolean;
 }
 
 function Options({
-  parentFeatureId,
   activeOption,
   input,
   featureType,
   areaSearch,
   pointSearch,
-  featureAdderFocused,
+  isFocused,
 }: OptionsProps) {
-  const { allFeatures } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
-
-  const initialParentFeatureState = allFeatures.get(parentFeatureId);
-
-  if (!isParentFeatureState(initialParentFeatureState)) {
-    throw new Error("initialParentFeature must be a ParentFeatureState.");
-  }
-
-  const [parentFeatureState, setParentFeatureState] =
-    useState<ParentFeatureState>(initialParentFeatureState);
-
-  useEffect(() => {
-    const parentFeatureState = allFeatures.get(parentFeatureId);
-
-    if (!parentFeatureState || !isParentFeatureState(parentFeatureState)) {
-      return;
-    }
-
-    setParentFeatureState(parentFeatureState);
-  }, [allFeatures, parentFeatureId]);
 
   useEffect(() => {
     quizBuilderStateDispatch({
@@ -366,7 +360,7 @@ function Options({
     });
   }, [quizBuilderStateDispatch, activeOption]);
 
-  function renderOptionsContent() {
+  const renderOptionsContent = useCallback(() => {
     if (featureType === FeatureType.AREA) {
       if (input !== areaSearch.term) {
         return <OptionsSubstitute>Press Enter to Search</OptionsSubstitute>;
@@ -388,14 +382,14 @@ function Options({
         <Option key={result.id} feature={result} />
       ));
     }
-  }
+  }, [areaSearch, pointSearch, featureType, input]);
 
-  function renderOptions() {
+  const render = useCallback(() => {
     if (input === "") {
       return null;
     }
 
-    if (!featureAdderFocused) {
+    if (!isFocused) {
       return null;
     }
 
@@ -419,9 +413,9 @@ function Options({
         {renderOptionsContent()}
       </Combobox.Options>
     );
-  }
+  }, [featureType, input, isFocused, pointSearch, renderOptionsContent]);
 
-  return <>{renderOptions()}</>;
+  return <>{render()}</>;
 }
 
 function OptionsSubstitute({ children }: { children: ReactNode }) {

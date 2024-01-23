@@ -36,7 +36,7 @@ export default function Subfeatures({
   function handleReorder(subfeatureIds: string[]) {
     allFeaturesDispatch({
       type: AllFeaturesDispatchType.SET_SUBFEATURES,
-      parentFeatureId,
+      parentFeature: parentFeatureId,
       subfeatureIds,
     });
   }
@@ -63,7 +63,7 @@ export default function Subfeatures({
       </Reorder.Group>
       <FeatureAdder
         inputRef={featureAdderInputRef}
-        parentFeatureId={parentFeatureId}
+        featureId={parentFeatureId}
       />
     </div>
   );
