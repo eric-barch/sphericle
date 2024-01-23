@@ -49,8 +49,9 @@ export interface PointState extends FeatureState, SubfeatureState {
 export interface QuizBuilderState {
   activeSearchOption: AreaState | PointState | null;
   selectedFeatureId: string | null;
-  openParentFeatures: Set<string>;
-  addingParentFeatures: Set<string>;
+  openFeatures: Set<string>;
+  addingFeatures: Set<string>;
+  renamingFeatures: Set<string>;
 }
 
 export interface QuizTakerState {
@@ -113,8 +114,9 @@ interface DeleteFeatureDispatch extends BaseAllFeaturesDispatch {
 export type QuizBuilderStateDispatch =
   | SetActiveOptionDispatch
   | SetSelectedFeatureDispatch
-  | SetAreaIsAddingDispatch
-  | SetAreaIsOpenDispatch;
+  | SetFeatureIsAddingDispatch
+  | SetFeatureIsOpenDispatch
+  | SetFeatureIsRenamingDispatch;
 
 interface BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType;
@@ -130,16 +132,22 @@ interface SetSelectedFeatureDispatch extends BaseQuizBuilderStateDispatch {
   selectedFeatureId: string;
 }
 
-interface SetAreaIsAddingDispatch extends BaseQuizBuilderStateDispatch {
-  type: QuizBuilderStateDispatchType.SET_AREA_IS_ADDING;
+interface SetFeatureIsAddingDispatch extends BaseQuizBuilderStateDispatch {
+  type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING;
   featureId: string;
   isAdding: boolean;
 }
 
-interface SetAreaIsOpenDispatch extends BaseQuizBuilderStateDispatch {
-  type: QuizBuilderStateDispatchType.SET_AREA_IS_OPEN;
+interface SetFeatureIsOpenDispatch extends BaseQuizBuilderStateDispatch {
+  type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN;
   featureId: string;
   isOpen: boolean;
+}
+
+interface SetFeatureIsRenamingDispatch extends BaseQuizBuilderStateDispatch {
+  type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING;
+  featureId: string;
+  isRenaming: boolean;
 }
 
 export type QuizTakerStateDispatch =

@@ -5,7 +5,13 @@ import { isAreaState } from "@/helpers/feature-type-guards";
 import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
-import { FocusEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import {
+  FocusEvent,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import EditFeatureButton from "./EditFeatureButton";
 import FeatureName from "./FeatureName";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
@@ -19,19 +25,110 @@ export default function Area({ featureId }: AreaProps) {
   const { allFeatures } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const initialAreaState = allFeatures.get(featureId);
+  const [areaState, setAreaState] = useState<AreaState>(() => {
+    const initialAreaState = allFeatures.get(featureId);
 
-  if (!isAreaState(initialAreaState)) {
-    throw new Error("initialAreaState must be an AreaState.");
-  }
+    if (!initialAreaState || !isAreaState(initialAreaState)) {
+      throw new Error("initialAreaState must be an AreaState.");
+    }
 
-  const [areaState, setAreaState] = useState<AreaState>(initialAreaState);
-  const [mouseDown, setMouseDown] = useState<boolean>(false);
-  const [willToggle, setWillToggle] = useState<boolean>(false);
-  const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
+    return initialAreaState;
+  });
+  const [mouseIsDown, setMouseIsDown] = useState<boolean>(false);
+  const [toggleOnNextClick, setToggleOnNextClick] = useState<boolean>(true);
 
-  const featureNameInputRef = useRef<HTMLInputElement>();
-  const featureAdderInputRef = useRef<HTMLInputElement>();
+  const handleValueChange = useCallback(
+    (value: string[]) => {
+      if (value.includes(featureId)) {
+        quizBuilderStateDispatch({
+          type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN,
+          featureId,
+          isOpen: true,
+        });
+      } else {
+        quizBuilderStateDispatch({
+          type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN,
+          featureId,
+          isOpen: false,
+        });
+      }
+    },
+    [featureId, quizBuilderStateDispatch],
+  );
+
+  const handleContainerBlur = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      if (
+        !event.currentTarget.contains(event.relatedTarget) &&
+        areaState.subfeatureIds.size > 0
+      ) {
+        quizBuilderStateDispatch({
+          type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
+          featureId,
+          isAdding: false,
+        });
+      }
+    },
+    [featureId, areaState, quizBuilderStateDispatch],
+  );
+
+  const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setToggleOnNextClick(false);
+    }
+  }, []);
+
+  const handleFocus = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      if (!event.currentTarget.contains(event.relatedTarget)) {
+        if (
+          mouseIsDown &&
+          areaState.id !== quizBuilderState.selectedFeatureId
+        ) {
+          setToggleOnNextClick(false);
+        } else {
+          setToggleOnNextClick(true);
+        }
+
+        quizBuilderStateDispatch({
+          type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
+          selectedFeatureId: areaState.id,
+        });
+      }
+    },
+    [
+      areaState,
+      quizBuilderState.selectedFeatureId,
+      quizBuilderStateDispatch,
+      mouseIsDown,
+    ],
+  );
+
+  const handleMouseDown = useCallback(() => {
+    setMouseIsDown(true);
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    setMouseIsDown(false);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setMouseIsDown(false);
+  }, []);
+
+  const handleClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      if (
+        areaState.id !== quizBuilderState.selectedFeatureId ||
+        !toggleOnNextClick
+      ) {
+        event.preventDefault();
+      }
+
+      setToggleOnNextClick(true);
+    },
+    [areaState, quizBuilderState.selectedFeatureId, toggleOnNextClick],
+  );
 
   useEffect(() => {
     const areaState = allFeatures.get(featureId);
@@ -43,102 +140,10 @@ export default function Area({ featureId }: AreaProps) {
     setAreaState(areaState);
   }, [allFeatures, featureId]);
 
-  function handleValueChange(value: string[]) {
-    if (value.includes(featureId)) {
-      quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_AREA_IS_OPEN,
-        featureId,
-        isOpen: true,
-      });
-    } else {
-      quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_AREA_IS_OPEN,
-        featureId,
-        isOpen: false,
-      });
-    }
-  }
-
-  function handleContainerBlur(event: FocusEvent<HTMLDivElement>) {
-    if (!event.currentTarget.contains(event.relatedTarget)) {
-      setIsAdding(false);
-    }
-  }
-
-  function handleBlur(event: FocusEvent<HTMLDivElement>) {
-    if (!event.currentTarget.contains(event.relatedTarget)) {
-      setWillToggle(false);
-    }
-  }
-
-  function handleFocus(event: FocusEvent<HTMLDivElement>) {
-    if (!event.currentTarget.contains(event.relatedTarget)) {
-      if (mouseDown) {
-        setWillToggle(false);
-      } else {
-        setWillToggle(true);
-      }
-
-      quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-        selectedFeatureId: featureId,
-      });
-    }
-  }
-
-  function handleMouseDown(event: MouseEvent<HTMLDivElement>) {
-    setMouseDown(true);
-  }
-
-  function handleMouseUp(event: MouseEvent<HTMLDivElement>) {
-    setMouseDown(false);
-  }
-
-  function handleMouseLeave(event: MouseEvent<HTMLDivElement>) {
-    setMouseDown(false);
-  }
-
-  function setIsRenaming(isRenaming: boolean) {
-    setIsRenamingRaw(isRenaming);
-
-    if (isRenaming) {
-      setTimeout(() => {
-        featureNameInputRef?.current.focus();
-        featureNameInputRef?.current.select();
-      }, 0);
-    }
-  }
-
-  function setIsAdding(isAdding: boolean) {
-    if (areaState.subfeatureIds.size > 0) {
-      console.log("setIsAdding", isAdding);
-
-      quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_AREA_IS_ADDING,
-        featureId,
-        isAdding,
-      });
-    }
-
-    if (isAdding) {
-      setTimeout(() => {
-        featureAdderInputRef?.current.focus();
-      }, 0);
-    }
-  }
-
-  function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    if (featureId !== quizBuilderState.selectedFeatureId || !willToggle) {
-      event.preventDefault();
-    }
-
-    setWillToggle(true);
-  }
-
   return (
     <Accordion.Root
       type="multiple"
-      value={Array.from(quizBuilderState.openParentFeatures)}
+      value={Array.from(quizBuilderState.openFeatures)}
       onValueChange={handleValueChange}
       onBlur={handleContainerBlur}
     >
@@ -151,11 +156,7 @@ export default function Area({ featureId }: AreaProps) {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
         >
-          <EditFeatureButton
-            featureId={featureId}
-            setIsRenaming={setIsRenaming}
-            setIsAdding={setIsAdding}
-          />
+          <EditFeatureButton featureId={featureId} />
           <Accordion.Trigger
             className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
               featureId === quizBuilderState.selectedFeatureId
@@ -164,23 +165,14 @@ export default function Area({ featureId }: AreaProps) {
             }`}
             onClick={handleClick}
           >
-            <FeatureName
-              featureId={featureId}
-              inputRef={featureNameInputRef}
-              isRenaming={isRenaming}
-              setIsRenaming={setIsRenaming}
-            />
+            <FeatureName featureId={featureId} />
             <OpenChevron
-              isOpen={quizBuilderState.openParentFeatures.has(featureId)}
+              isOpen={quizBuilderState.openFeatures.has(featureId)}
             />
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content>
-          <Subfeatures
-            featureAdderInputRef={featureAdderInputRef}
-            className="ml-10"
-            parentFeatureId={featureId}
-          />
+          <Subfeatures className="ml-10" parentFeatureId={featureId} />
         </Accordion.Content>
       </Accordion.Item>
     </Accordion.Root>

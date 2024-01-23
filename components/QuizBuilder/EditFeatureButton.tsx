@@ -1,33 +1,41 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import { isAreaState } from "@/helpers/feature-type-guards";
-import { FeatureType, AllFeaturesDispatchType } from "@/types";
+import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { MouseEvent } from "react";
+import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 
 interface EditFeatureButtonProps {
   featureId: string;
-  setIsRenaming: (isRenaming: boolean) => void;
-  setIsAdding?: (isAdding: boolean) => void;
 }
 
 export default function EditFeatureButton({
   featureId,
-  setIsRenaming,
-  setIsAdding,
 }: EditFeatureButtonProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+  const { quizBuilderStateDispatch } = useQuizBuilderState();
 
   const feature = allFeatures.get(featureId);
 
   function handleAddSubfeatureClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
-    setIsAdding(true);
+
+    quizBuilderStateDispatch({
+      type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
+      featureId,
+      isAdding: true,
+    });
   }
 
   function handleRenameClick(event: MouseEvent<HTMLDivElement>) {
     event.stopPropagation();
-    setIsRenaming(true);
+
+    quizBuilderStateDispatch({
+      type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
+      featureId,
+      isRenaming: true,
+    });
   }
 
   function handleDeleteClick(event: MouseEvent<HTMLDivElement>) {

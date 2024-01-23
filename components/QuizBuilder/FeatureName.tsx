@@ -1,38 +1,67 @@
-import { AllFeaturesDispatchType, FeatureType } from "@/types";
-import { KeyboardEvent, RefObject, useState } from "react";
-import { useAllFeatures } from "../AllFeaturesProvider";
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import { isSubfeatureState } from "@/helpers/feature-type-guards";
+import {
+  AllFeaturesDispatchType,
+  QuizBuilderStateDispatchType,
+  SubfeatureState,
+} from "@/types";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 
 interface FeatureNameProps {
-  inputRef: RefObject<HTMLInputElement>;
   featureId: string;
-  isRenaming: boolean;
-  setIsRenaming: (isRenaming: boolean) => void;
 }
 
-export default function FeatureName({
-  inputRef,
-  featureId,
-  isRenaming,
-  setIsRenaming,
-}: FeatureNameProps) {
+export default function FeatureName({ featureId }: FeatureNameProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const feature = allFeatures.get(featureId);
+  const [featureState, setFeatureState] = useState<SubfeatureState>(() => {
+    const initialFeatureState = allFeatures.get(featureId);
 
-  if (!isSubfeatureState(feature)) {
-    throw new Error("feature must be SubfeatureState.");
-  }
+    if (!isSubfeatureState(initialFeatureState)) {
+      throw new Error("initialFeatureState must be a SubfeatureState.");
+    }
 
-  const displayName = feature.userDefinedName || feature.shortName;
+    return initialFeatureState;
+  });
+  const [input, setInput] = useState<string>(
+    featureState.userDefinedName || featureState.shortName,
+  );
 
-  const [input, setInput] = useState<string>(displayName);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const featureState = allFeatures.get(featureId);
+
+    if (!featureState || !isSubfeatureState(featureState)) {
+      return;
+    }
+
+    setFeatureState(featureState);
+  }, [allFeatures, featureId]);
+
+  useEffect(() => {
+    if (!inputRef.current) {
+      return;
+    }
+
+    if (quizBuilderState.renamingFeatures.has(featureId)) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [featureId, quizBuilderState.renamingFeatures]);
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
       event.preventDefault();
       event.stopPropagation();
-      setIsRenaming(false);
+
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
+        featureId,
+        isRenaming: false,
+      });
 
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.RENAME_FEATURE,
@@ -47,20 +76,25 @@ export default function FeatureName({
   }
 
   function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
+    // Prevent default Radix Accordion toggle when typing spaces
     if (event.key === " ") {
-      // stop from toggling Radix Accordion
       event.preventDefault();
     }
   }
 
   function handleBlur() {
-    setInput(displayName);
-    setIsRenaming(false);
+    setInput(featureState.userDefinedName || featureState.shortName);
+
+    quizBuilderStateDispatch({
+      type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
+      featureId,
+      isRenaming: false,
+    });
   }
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
-      {isRenaming ? (
+      {quizBuilderState.renamingFeatures.has(featureId) ? (
         <input
           ref={inputRef}
           className="bg-transparent w-full focus:outline-none"
@@ -72,7 +106,7 @@ export default function FeatureName({
           onBlur={handleBlur}
         />
       ) : (
-        <>{displayName}</>
+        <>{featureState.userDefinedName || featureState.shortName}</>
       )}
     </div>
   );
