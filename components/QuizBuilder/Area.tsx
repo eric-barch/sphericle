@@ -37,6 +37,16 @@ export default function Area({ featureId }: AreaProps) {
   const [mouseIsDown, setMouseIsDown] = useState<boolean>(false);
   const [toggleOnNextClick, setToggleOnNextClick] = useState<boolean>(true);
 
+  useEffect(() => {
+    const areaState = allFeatures.get(featureId);
+
+    if (!areaState || !isAreaState(areaState)) {
+      return;
+    }
+
+    setAreaState(areaState);
+  }, [allFeatures, featureId]);
+
   const handleValueChange = useCallback(
     (value: string[]) => {
       if (value.includes(areaState.id)) {
@@ -132,16 +142,6 @@ export default function Area({ featureId }: AreaProps) {
     },
     [areaState, quizBuilderState.selectedFeatureId, toggleOnNextClick],
   );
-
-  useEffect(() => {
-    const areaState = allFeatures.get(featureId);
-
-    if (!areaState || !isAreaState(areaState)) {
-      return;
-    }
-
-    setAreaState(areaState);
-  }, [allFeatures, featureId]);
 
   return (
     <Accordion.Root

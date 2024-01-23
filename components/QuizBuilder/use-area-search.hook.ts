@@ -8,13 +8,14 @@ import {
   AreaState,
   FeatureType,
   OsmItem,
+  ParentFeatureState,
   RootState,
   SearchStatus,
 } from "@/types";
 import booleanIntersects from "@turf/boolean-intersects";
 import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Polygon } from "geojson";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export interface AreaSearch {
   term: string;
@@ -27,18 +28,35 @@ export interface AreaSearch {
 export default function useAreaSearch(parentFeatureId: string): AreaSearch {
   const { allFeatures } = useAllFeatures();
 
-  const parentFeature = allFeatures.get(parentFeatureId);
+  const [parentFeatureState, setParentFeatureState] =
+    useState<ParentFeatureState>(() => {
+      const initialParentFeatureState = allFeatures.get(parentFeatureId);
 
-  if (!isParentFeatureState(parentFeature)) {
-    throw new Error("parentFeature must be a ParentFeatureState.");
-  }
+      if (
+        !initialParentFeatureState ||
+        !isParentFeatureState(initialParentFeatureState)
+      ) {
+        return null;
+      }
 
+      return initialParentFeatureState;
+    });
   const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
   const [internalSearchStatus, setInternalSearchStatus] =
     useState<SearchStatus>(SearchStatus.SEARCHED);
   const [internalSearchResults, setInternalSearchResults] = useState<
     AreaState[]
   >([]);
+
+  useEffect(() => {
+    const initialParentFeatureState = allFeatures.get(parentFeatureId);
+
+    if (!isParentFeatureState(initialParentFeatureState)) {
+      return;
+    }
+
+    setParentFeatureState(initialParentFeatureState);
+  }, [allFeatures, parentFeatureId]);
 
   const fetchSearchResults = useCallback(
     async (searchTerm: string) => {
@@ -47,8 +65,8 @@ export default function useAreaSearch(parentFeatureId: string): AreaSearch {
 
       let query: string = searchTerm;
 
-      if (isAreaState(parentFeature)) {
-        const { south, north, west, east } = parentFeature.searchBounds;
+      if (isAreaState(parentFeatureState)) {
+        const { south, north, west, east } = parentFeatureState.searchBounds;
         query = query + `&viewbox=${west},${south},${east},${north}&bounded=1`;
       }
 
@@ -57,16 +75,16 @@ export default function useAreaSearch(parentFeatureId: string): AreaSearch {
       ).json()) as OsmItem[];
 
       const searchResults = response
-        .map((osmItem) => getAreaState(parentFeature, osmItem))
+        .map((osmItem) => getAreaState(parentFeatureState, osmItem))
         .filter((searchResult) => searchResult !== null);
 
       setInternalSearchResults(searchResults);
       setInternalSearchStatus(SearchStatus.SEARCHED);
     },
-    [parentFeature],
+    [parentFeatureState],
   );
 
-  const setSearchTerm = useCallback(
+  const setTerm = useCallback(
     (searchTerm: string) => {
       setInternalSearchTerm(searchTerm);
       if (searchTerm !== "") {
@@ -86,13 +104,13 @@ export default function useAreaSearch(parentFeatureId: string): AreaSearch {
     term: internalSearchTerm,
     status: internalSearchStatus,
     results: internalSearchResults,
-    setTerm: setSearchTerm,
+    setTerm,
     reset,
   };
 }
 
 function getAreaState(
-  parentFeature: RootState | AreaState,
+  parentFeature: ParentFeatureState,
   osmItem: OsmItem,
 ): AreaState | null {
   const polygons = getPolygons(parentFeature, osmItem);
@@ -115,7 +133,7 @@ function getAreaState(
 }
 
 function getPolygons(
-  parentFeature: RootState | AreaState,
+  parentFeature: ParentFeatureState,
   osmItem: OsmItem,
 ): Polygon | MultiPolygon | null {
   const polygons = osmItem.geojson;
@@ -128,10 +146,12 @@ function getPolygons(
     return polygons;
   }
 
-  const parentPolygons = parentFeature.polygons;
+  if (isAreaState(parentFeature)) {
+    const parentPolygons = parentFeature.polygons;
 
-  if (booleanIntersects(polygons, parentPolygons)) {
-    return polygons;
+    if (booleanIntersects(polygons, parentPolygons)) {
+      return polygons;
+    }
   }
 
   return null;

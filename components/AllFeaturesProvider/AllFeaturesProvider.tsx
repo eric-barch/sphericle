@@ -62,10 +62,10 @@ function allFeaturesReducer(
 ): AllFeatures {
   switch (action.type) {
     case AllFeaturesDispatchType.ADD_SUBFEATURE: {
-      const { parentFeatureId, subfeature } = action;
+      const { parentFeature, subfeature } = action;
 
       const newAllFeatures = new Map(allFeatures);
-      const newParentFeature = { ...allFeatures.get(parentFeatureId) };
+      const newParentFeature = { ...allFeatures.get(parentFeature.id) };
 
       if (!isParentFeatureState(newParentFeature)) {
         throw new Error("newParentFeature must be a ParentFeatureState.");
@@ -73,16 +73,16 @@ function allFeaturesReducer(
 
       newParentFeature.subfeatureIds.add(subfeature.id);
 
-      newAllFeatures.set(parentFeatureId, newParentFeature);
+      newAllFeatures.set(parentFeature.id, newParentFeature);
       newAllFeatures.set(subfeature.id, subfeature);
 
       return newAllFeatures;
     }
     case AllFeaturesDispatchType.SET_SUBFEATURES: {
-      const { parentFeatureId, subfeatureIds } = action;
+      const { parentFeature, subfeatureIds } = action;
 
       const newAllFeatures = new Map(allFeatures);
-      const newParentFeature = newAllFeatures.get(parentFeatureId);
+      const newParentFeature = newAllFeatures.get(parentFeature.id);
 
       if (!isParentFeatureState(newParentFeature)) {
         throw new Error("newParentFeature must be a ParentFeatureState.");
@@ -95,10 +95,10 @@ function allFeaturesReducer(
       return newAllFeatures;
     }
     case AllFeaturesDispatchType.RENAME_FEATURE: {
-      const { featureId, name } = action;
+      const { feature, name } = action;
 
       const newAllFeatures = new Map(allFeatures);
-      const newFeature = newAllFeatures.get(featureId);
+      const newFeature = newAllFeatures.get(feature.id);
 
       if (!isSubfeatureState(newFeature)) {
         throw new Error("newFeature must be a SubfeatureState.");
@@ -109,10 +109,10 @@ function allFeaturesReducer(
       return newAllFeatures;
     }
     case AllFeaturesDispatchType.DELETE_FEATURE: {
-      const { featureId } = action;
+      const { feature } = action;
 
       const newAllFeatures = new Map(allFeatures);
-      const newFeature = newAllFeatures.get(featureId);
+      const newFeature = newAllFeatures.get(feature.id);
 
       if (!isSubfeatureState(newFeature)) {
         throw new Error("newFeature must be a SubfeatureState.");
@@ -124,8 +124,8 @@ function allFeaturesReducer(
         throw new Error("newParentFeature must be a ParentFeatureState.");
       }
 
-      newParentFeature.subfeatureIds.delete(featureId);
-      newAllFeatures.delete(featureId);
+      newParentFeature.subfeatureIds.delete(feature.id);
+      newAllFeatures.delete(feature.id);
 
       return newAllFeatures;
     }

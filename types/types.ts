@@ -7,7 +7,7 @@ import {
   QuizTakerStateDispatchType,
 } from "./enums";
 
-export type AllFeatures = Map<string, RootState | AreaState | PointState>;
+export type AllFeatures = Map<string, FeatureState>;
 
 export interface FeatureState {
   id: string;
@@ -90,25 +90,25 @@ interface BaseAllFeaturesDispatch {
 
 interface AddSubfeatureDispatch extends BaseAllFeaturesDispatch {
   type: AllFeaturesDispatchType.ADD_SUBFEATURE;
-  parentFeatureId: string;
-  subfeature: AreaState | PointState;
+  parentFeature: ParentFeatureState;
+  subfeature: SubfeatureState;
 }
 
 interface SetSubfeaturesDispatch extends BaseAllFeaturesDispatch {
   type: AllFeaturesDispatchType.SET_SUBFEATURES;
-  parentFeatureId: string;
+  parentFeature: ParentFeatureState;
   subfeatureIds: string[];
 }
 
 interface RenameFeatureDispatch extends BaseAllFeaturesDispatch {
   type: AllFeaturesDispatchType.RENAME_FEATURE;
-  featureId: string;
+  feature: SubfeatureState;
   name: string;
 }
 
 interface DeleteFeatureDispatch extends BaseAllFeaturesDispatch {
   type: AllFeaturesDispatchType.DELETE_FEATURE;
-  featureId: string;
+  feature: SubfeatureState;
 }
 
 export type QuizBuilderStateDispatch =

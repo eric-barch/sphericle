@@ -33,6 +33,16 @@ export default function EditFeatureButton({
     return initialFeatureState;
   });
 
+  useEffect(() => {
+    const featureState = allFeatures.get(featureId);
+
+    if (!featureState || !isSubfeatureState(featureState)) {
+      return;
+    }
+
+    setFeatureState(featureState);
+  }, [featureId, allFeatures]);
+
   const handleAddSubfeatureClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       event.stopPropagation();
@@ -75,21 +85,11 @@ export default function EditFeatureButton({
 
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.DELETE_FEATURE,
-        featureId: featureState.id,
+        feature: featureState,
       });
     },
     [featureState, allFeaturesDispatch],
   );
-
-  useEffect(() => {
-    const featureState = allFeatures.get(featureId);
-
-    if (!featureState || !isSubfeatureState(featureState)) {
-      return;
-    }
-
-    setFeatureState(featureState);
-  }, [featureId, allFeatures]);
 
   return (
     <DropdownMenu.Root>
