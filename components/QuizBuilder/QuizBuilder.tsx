@@ -24,8 +24,12 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   >(null);
 
   useEffect(() => {
+    console.log("\nopenAreas", quizBuilderState.openParentFeatures.size);
+    console.log("addingAreas", quizBuilderState.addingParentFeatures.size);
+
     const activeOption = quizBuilderState.activeSearchOption;
     const selectedFeature = allFeatures.get(quizBuilderState.selectedFeatureId);
+
     setDisplayedFeature(activeOption || selectedFeature);
   }, [allFeatures, quizBuilderState]);
 

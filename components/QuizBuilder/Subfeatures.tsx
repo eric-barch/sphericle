@@ -1,18 +1,18 @@
 "use client";
 
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { AllFeaturesDispatchType, FeatureType } from "@/types";
-import { Reorder } from "framer-motion";
-import { RefObject } from "react";
-import Area from "./Area";
-import FeatureAdder from "./FeatureAdder";
-import Point from "./Point";
 import {
   isAreaState,
   isParentFeatureState,
   isPointState,
   isSubfeatureState,
 } from "@/helpers/feature-type-guards";
+import { AllFeaturesDispatchType } from "@/types";
+import { Reorder } from "framer-motion";
+import { RefObject } from "react";
+import Area from "./Area";
+import FeatureAdder from "./FeatureAdder";
+import Point from "./Point";
 
 interface SubfeaturesProps {
   featureAdderInputRef?: RefObject<HTMLInputElement>;

@@ -2,12 +2,17 @@
 
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
+  isAreaState,
+  isParentFeatureState,
+  isRootState,
+} from "@/helpers/feature-type-guards";
+import {
   AllFeaturesDispatchType,
   AreaState,
   FeatureType,
+  ParentFeatureState,
   PointState,
   QuizBuilderStateDispatchType,
-  RootState,
   SearchStatus,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
@@ -25,11 +30,6 @@ import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import { AreaSearch } from "./use-area-search.hook";
 import useFeatureSearches from "./use-feature-searches.hook";
 import { PointSearch } from "./use-point-search.hook";
-import {
-  isAreaState,
-  isParentFeatureState,
-  isRootState,
-} from "@/helpers/feature-type-guards";
 
 interface FeatureAdderProps {
   inputRef?: RefObject<HTMLInputElement>;
@@ -44,14 +44,22 @@ export default function FeatureAdder({
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
   const { areaSearch, pointSearch } = useFeatureSearches(parentFeatureId);
 
-  const [parentFeature, setParentFeature] = useState<RootState | AreaState>(
-    null,
-  );
-
+  const [parentFeatureState, setParentFeatureState] =
+    useState<ParentFeatureState>(null);
   const [isFocused, setIsFocused] = useState<boolean>(true);
   const [featureType, setFeatureType] = useState<FeatureType>(FeatureType.AREA);
   const [input, setInput] = useState<string>("");
   const [optionSelected, setOptionSelected] = useState<boolean>(false);
+
+  useEffect(() => {
+    const parentFeatureState = allFeatures.get(parentFeatureId);
+
+    if (!parentFeatureState || !isParentFeatureState(parentFeatureState)) {
+      return;
+    }
+
+    setParentFeatureState(parentFeatureState);
+  }, [allFeatures, parentFeatureId]);
 
   function handleBlur(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -64,12 +72,12 @@ export default function FeatureAdder({
       setIsFocused(true);
 
       if (!optionSelected) {
-        if (isRootState(parentFeature)) {
+        if (isRootState(parentFeatureState)) {
           quizBuilderStateDispatch({
             type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
             selectedFeatureId: null,
           });
-        } else if (isAreaState(parentFeature)) {
+        } else if (isAreaState(parentFeatureState)) {
           quizBuilderStateDispatch({
             type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
             selectedFeatureId: parentFeatureId,
@@ -93,6 +101,14 @@ export default function FeatureAdder({
       selectedFeatureId: subfeature.id,
     });
 
+    if (isAreaState(subfeature)) {
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_AREA_IS_ADDING,
+        featureId: subfeature.id,
+        isAdding: true,
+      });
+    }
+
     if (inputRef) {
       inputRef.current.value = "";
     }
@@ -111,19 +127,18 @@ export default function FeatureAdder({
     const parentFeature = allFeatures.get(parentFeatureId);
 
     if (isParentFeatureState(parentFeature)) {
-      setParentFeature(parentFeature);
+      setParentFeatureState(parentFeature);
       return;
     }
 
-    setParentFeature(null);
+    setParentFeatureState(null);
   }, [allFeatures, parentFeatureId]);
 
   if (
-    !parentFeature ||
-    isRootState(parentFeature) ||
-    (isAreaState(parentFeature) &&
-      quizBuilderState.openAreas.has(parentFeatureId)) ||
-    parentFeature.subfeatureIds.size <= 0
+    !parentFeatureState ||
+    isRootState(parentFeatureState) ||
+    (isParentFeatureState(parentFeatureState) &&
+      quizBuilderState.addingParentFeatures.has(parentFeatureId))
   ) {
     return (
       <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
@@ -325,11 +340,24 @@ function Options({
   const { allFeatures } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const parentFeature = allFeatures.get(parentFeatureId);
+  const initialParentFeatureState = allFeatures.get(parentFeatureId);
 
-  if (!isParentFeatureState(parentFeature)) {
-    throw new Error("parentFeature must be a ParentFeatureState.");
+  if (!isParentFeatureState(initialParentFeatureState)) {
+    throw new Error("initialParentFeature must be a ParentFeatureState.");
   }
+
+  const [parentFeatureState, setParentFeatureState] =
+    useState<ParentFeatureState>(initialParentFeatureState);
+
+  useEffect(() => {
+    const parentFeatureState = allFeatures.get(parentFeatureId);
+
+    if (!parentFeatureState || !isParentFeatureState(parentFeatureState)) {
+      return;
+    }
+
+    setParentFeatureState(parentFeatureState);
+  }, [allFeatures, parentFeatureId]);
 
   useEffect(() => {
     quizBuilderStateDispatch({

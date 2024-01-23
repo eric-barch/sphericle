@@ -74,10 +74,9 @@ function quizBuilderStateReducer(
       const newQuizBuilderState = { ...quizBuilderState };
 
       if (isAdding) {
-        newQuizBuilderState.addingAreas.add(featureId);
-        newQuizBuilderState.openAreas.add(featureId);
+        newQuizBuilderState.addingParentFeatures.add(featureId);
       } else {
-        newQuizBuilderState.addingAreas.delete(featureId);
+        newQuizBuilderState.addingParentFeatures.delete(featureId);
       }
 
       return newQuizBuilderState;
@@ -88,10 +87,9 @@ function quizBuilderStateReducer(
       const newQuizBuilderState = { ...quizBuilderState };
 
       if (isOpen) {
-        newQuizBuilderState.openAreas.add(featureId);
+        newQuizBuilderState.openParentFeatures.add(featureId);
       } else {
-        newQuizBuilderState.openAreas.delete(featureId);
-        newQuizBuilderState.addingAreas.delete(featureId);
+        newQuizBuilderState.openParentFeatures.delete(featureId);
       }
 
       return newQuizBuilderState;
@@ -105,6 +103,6 @@ function quizBuilderStateReducer(
 const initialQuizBuilderState: QuizBuilderState = {
   activeSearchOption: null,
   selectedFeatureId: null,
-  openAreas: new Set<string>(),
-  addingAreas: new Set<string>(),
+  openParentFeatures: new Set<string>(),
+  addingParentFeatures: new Set<string>(),
 };
