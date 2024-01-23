@@ -1,9 +1,16 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { isAreaState } from "@/helpers/feature-type-guards";
-import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
+import {
+  isParentFeatureState,
+  isSubfeatureState,
+} from "@/helpers/feature-type-guards";
+import {
+  AllFeaturesDispatchType,
+  QuizBuilderStateDispatchType,
+  SubfeatureState,
+} from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
-import { MouseEvent } from "react";
+import { MouseEvent, useCallback, useEffect, useState } from "react";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 
 interface EditFeatureButtonProps {
@@ -16,36 +23,73 @@ export default function EditFeatureButton({
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const feature = allFeatures.get(featureId);
+  const [featureState, setFeatureState] = useState<SubfeatureState>(() => {
+    const initialFeatureState = allFeatures.get(featureId);
 
-  function handleAddSubfeatureClick(event: MouseEvent<HTMLDivElement>) {
-    event.stopPropagation();
+    if (!initialFeatureState || !isSubfeatureState(initialFeatureState)) {
+      throw new Error("initialFeatureState must be a SubfeatureState.");
+    }
 
-    quizBuilderStateDispatch({
-      type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
-      featureId,
-      isAdding: true,
-    });
-  }
+    return initialFeatureState;
+  });
 
-  function handleRenameClick(event: MouseEvent<HTMLDivElement>) {
-    event.stopPropagation();
+  const handleAddSubfeatureClick = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      event.stopPropagation();
 
-    quizBuilderStateDispatch({
-      type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
-      featureId,
-      isRenaming: true,
-    });
-  }
+      if (!isParentFeatureState(featureState)) {
+        return;
+      }
 
-  function handleDeleteClick(event: MouseEvent<HTMLDivElement>) {
-    event.stopPropagation();
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN,
+        feature: featureState,
+        isOpen: true,
+      });
 
-    allFeaturesDispatch({
-      type: AllFeaturesDispatchType.DELETE_FEATURE,
-      featureId,
-    });
-  }
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
+        feature: featureState,
+        isAdding: true,
+      });
+    },
+    [featureState, quizBuilderStateDispatch],
+  );
+
+  const handleRenameClick = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      event.stopPropagation();
+
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
+        feature: featureState,
+        isRenaming: true,
+      });
+    },
+    [featureState, quizBuilderStateDispatch],
+  );
+
+  const handleDeleteClick = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      event.stopPropagation();
+
+      allFeaturesDispatch({
+        type: AllFeaturesDispatchType.DELETE_FEATURE,
+        featureId: featureState.id,
+      });
+    },
+    [featureState, allFeaturesDispatch],
+  );
+
+  useEffect(() => {
+    const featureState = allFeatures.get(featureId);
+
+    if (!featureState || !isSubfeatureState(featureState)) {
+      return;
+    }
+
+    setFeatureState(featureState);
+  }, [featureId, allFeatures]);
 
   return (
     <DropdownMenu.Root>
@@ -56,7 +100,7 @@ export default function EditFeatureButton({
         className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        {isAreaState(feature) && (
+        {isParentFeatureState(featureState) && (
           <DropdownMenu.Item
             onClick={handleAddSubfeatureClick}
             className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"

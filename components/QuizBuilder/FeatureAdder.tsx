@@ -81,12 +81,12 @@ export default function FeatureAdder({ parentFeatureId }: FeatureAdderProps) {
           if (isRootState(parentFeatureState)) {
             quizBuilderStateDispatch({
               type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-              selectedFeatureId: null,
+              feature: null,
             });
           } else if (isAreaState(parentFeatureState)) {
             quizBuilderStateDispatch({
               type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-              selectedFeatureId: parentFeatureState.id,
+              feature: parentFeatureState,
             });
           }
         }
@@ -106,13 +106,13 @@ export default function FeatureAdder({ parentFeatureId }: FeatureAdderProps) {
 
     quizBuilderStateDispatch({
       type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-      selectedFeatureId: subfeature.id,
+      feature: subfeature,
     });
 
     if (isAreaState(subfeature)) {
       quizBuilderStateDispatch({
         type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
-        featureId: subfeature.id,
+        feature: subfeature,
         isAdding: true,
       });
     }
@@ -142,7 +142,7 @@ export default function FeatureAdder({ parentFeatureId }: FeatureAdderProps) {
     !parentFeatureState ||
     isRootState(parentFeatureState) ||
     (isParentFeatureState(parentFeatureState) &&
-      quizBuilderState.addingFeatures.has(parentFeatureId))
+      quizBuilderState.addingFeatureIds.has(parentFeatureId))
   ) {
     return (
       <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>

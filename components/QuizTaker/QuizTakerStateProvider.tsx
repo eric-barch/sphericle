@@ -66,7 +66,7 @@ function quizTakerStateReducer(
       return newQuizTaker;
     }
     case QuizTakerStateDispatchType.MARK_CORRECT: {
-      const { featureId } = action;
+      const { feature: featureId } = action;
 
       const newQuizTaker = { ...quizTakerState };
 
@@ -76,7 +76,7 @@ function quizTakerStateReducer(
       return newQuizTaker;
     }
     case QuizTakerStateDispatchType.MARK_INCORRECT: {
-      const { featureId } = action;
+      const { feature: featureId } = action;
 
       const newQuizTaker = { ...quizTakerState };
 

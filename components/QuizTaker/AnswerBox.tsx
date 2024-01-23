@@ -35,7 +35,7 @@ export default function AnswerBox({
 
       quizTakerStateDispatch({
         type: QuizTakerStateDispatchType.MARK_CORRECT,
-        featureId: quizTakerState.remainingFeatureIds.values().next().value,
+        feature: quizTakerState.remainingFeatureIds.values().next().value,
       });
     } else {
       toast.error(
@@ -46,7 +46,7 @@ export default function AnswerBox({
 
       quizTakerStateDispatch({
         type: QuizTakerStateDispatchType.MARK_INCORRECT,
-        featureId: quizTakerState.remainingFeatureIds.values().next().value,
+        feature: quizTakerState.remainingFeatureIds.values().next().value,
       });
     }
 

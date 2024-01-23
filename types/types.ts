@@ -47,11 +47,11 @@ export interface PointState extends FeatureState, SubfeatureState {
 }
 
 export interface QuizBuilderState {
-  activeSearchOption: AreaState | PointState | null;
+  activeSearchOption: SubfeatureState | null;
   selectedFeatureId: string | null;
-  openFeatures: Set<string>;
-  addingFeatures: Set<string>;
-  renamingFeatures: Set<string>;
+  openFeatureIds: Set<string>;
+  addingFeatureIds: Set<string>;
+  renamingFeatureIds: Set<string>;
 }
 
 export interface QuizTakerState {
@@ -124,29 +124,29 @@ interface BaseQuizBuilderStateDispatch {
 
 interface SetActiveOptionDispatch extends BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION;
-  activeSearchOption: AreaState | PointState | null;
+  activeSearchOption: SubfeatureState | null;
 }
 
 interface SetSelectedFeatureDispatch extends BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE;
-  selectedFeatureId: string;
+  feature: SubfeatureState;
 }
 
 interface SetFeatureIsAddingDispatch extends BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING;
-  featureId: string;
+  feature: SubfeatureState;
   isAdding: boolean;
 }
 
 interface SetFeatureIsOpenDispatch extends BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN;
-  featureId: string;
+  feature: SubfeatureState;
   isOpen: boolean;
 }
 
 interface SetFeatureIsRenamingDispatch extends BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING;
-  featureId: string;
+  feature: SubfeatureState;
   isRenaming: boolean;
 }
 
@@ -167,10 +167,10 @@ interface ResetDispatch extends BaseQuizTakerStateDispatch {
 
 interface MarkCorrectDispatch extends BaseQuizTakerStateDispatch {
   type: QuizTakerStateDispatchType.MARK_CORRECT;
-  featureId: string;
+  feature: SubfeatureState;
 }
 
 interface MarkIncorrectDispatch extends BaseQuizTakerStateDispatch {
   type: QuizTakerStateDispatchType.MARK_INCORRECT;
-  featureId: string;
+  feature: SubfeatureState;
 }
