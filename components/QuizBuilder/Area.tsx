@@ -39,62 +39,65 @@ export default function Area({ featureId }: AreaProps) {
 
   const handleValueChange = useCallback(
     (value: string[]) => {
-      if (value.includes(featureId)) {
+      if (value.includes(areaState.id)) {
         quizBuilderStateDispatch({
           type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN,
-          featureId,
+          featureId: areaState.id,
           isOpen: true,
         });
       } else {
         quizBuilderStateDispatch({
           type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN,
-          featureId,
+          featureId: areaState.id,
           isOpen: false,
         });
       }
     },
-    [featureId, quizBuilderStateDispatch],
+    [areaState, quizBuilderStateDispatch],
   );
 
   const handleContainerBlur = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
       if (
-        !event.currentTarget.contains(event.relatedTarget) &&
-        areaState.subfeatureIds.size > 0
+        event.currentTarget.contains(event.relatedTarget) ||
+        areaState.subfeatureIds.size <= 0
       ) {
-        quizBuilderStateDispatch({
-          type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
-          featureId,
-          isAdding: false,
-        });
+        return;
       }
+
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
+        featureId: areaState.id,
+        isAdding: false,
+      });
     },
-    [featureId, areaState, quizBuilderStateDispatch],
+    [areaState, quizBuilderStateDispatch],
   );
 
   const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
-    if (!event.currentTarget.contains(event.relatedTarget)) {
-      setToggleOnNextClick(false);
+    if (event.currentTarget.contains(event.relatedTarget)) {
+      return;
     }
+
+    setToggleOnNextClick(false);
   }, []);
 
   const handleFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
-      if (!event.currentTarget.contains(event.relatedTarget)) {
-        if (
-          mouseIsDown &&
-          areaState.id !== quizBuilderState.selectedFeatureId
-        ) {
-          setToggleOnNextClick(false);
-        } else {
-          setToggleOnNextClick(true);
-        }
-
-        quizBuilderStateDispatch({
-          type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-          selectedFeatureId: areaState.id,
-        });
+      if (event.currentTarget.contains(event.relatedTarget)) {
+        return;
       }
+
+      if (mouseIsDown && areaState.id !== quizBuilderState.selectedFeatureId) {
+        setToggleOnNextClick(false);
+      } else {
+        setToggleOnNextClick(true);
+      }
+
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
+        selectedFeatureId: areaState.id,
+      });
     },
     [
       areaState,
@@ -156,23 +159,23 @@ export default function Area({ featureId }: AreaProps) {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
         >
-          <EditFeatureButton featureId={featureId} />
+          <EditFeatureButton featureId={areaState.id} />
           <Accordion.Trigger
             className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
-              featureId === quizBuilderState.selectedFeatureId
+              areaState.id === quizBuilderState.selectedFeatureId
                 ? "outline outline-2 outline-red-700"
                 : ""
             }`}
             onClick={handleClick}
           >
-            <FeatureName featureId={featureId} />
+            <FeatureName featureId={areaState.id} />
             <OpenChevron
-              isOpen={quizBuilderState.openFeatures.has(featureId)}
+              isOpen={quizBuilderState.openFeatures.has(areaState.id)}
             />
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content>
-          <Subfeatures className="ml-10" parentFeatureId={featureId} />
+          <Subfeatures className="ml-10" parentFeatureId={areaState.id} />
         </Accordion.Content>
       </Accordion.Item>
     </Accordion.Root>
