@@ -49,8 +49,8 @@ export interface PointState extends FeatureState, SubfeatureState {
 export interface QuizBuilderState {
   activeSearchOption: AreaState | PointState | null;
   selectedFeatureId: string | null;
-  openAreas: Set<string>;
-  addingAreas: Set<string>;
+  openParentFeatures: Set<string>;
+  addingParentFeatures: Set<string>;
 }
 
 export interface QuizTakerState {

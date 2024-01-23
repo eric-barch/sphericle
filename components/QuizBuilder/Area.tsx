@@ -110,11 +110,15 @@ export default function Area({ featureId }: AreaProps) {
   }
 
   function setIsAdding(isAdding: boolean) {
-    quizBuilderStateDispatch({
-      type: QuizBuilderStateDispatchType.SET_AREA_IS_ADDING,
-      featureId,
-      isAdding,
-    });
+    if (areaState.subfeatureIds.size > 0) {
+      console.log("setIsAdding", isAdding);
+
+      quizBuilderStateDispatch({
+        type: QuizBuilderStateDispatchType.SET_AREA_IS_ADDING,
+        featureId,
+        isAdding,
+      });
+    }
 
     if (isAdding) {
       setTimeout(() => {
@@ -134,7 +138,7 @@ export default function Area({ featureId }: AreaProps) {
   return (
     <Accordion.Root
       type="multiple"
-      value={Array.from(quizBuilderState.openAreas)}
+      value={Array.from(quizBuilderState.openParentFeatures)}
       onValueChange={handleValueChange}
       onBlur={handleContainerBlur}
     >
@@ -166,7 +170,9 @@ export default function Area({ featureId }: AreaProps) {
               isRenaming={isRenaming}
               setIsRenaming={setIsRenaming}
             />
-            <OpenChevron isOpen={quizBuilderState.openAreas.has(featureId)} />
+            <OpenChevron
+              isOpen={quizBuilderState.openParentFeatures.has(featureId)}
+            />
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content>
