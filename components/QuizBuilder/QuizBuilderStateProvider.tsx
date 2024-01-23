@@ -13,6 +13,7 @@ import {
   useReducer,
 } from "react";
 import { useAllFeatures } from "../AllFeaturesProvider";
+import { isParentFeatureState } from "@/helpers/feature-type-guards";
 
 const QuizBuilderStateContext = createContext<QuizBuilderState | null>(null);
 const QuizBuilderStateDispatchContext =
@@ -56,54 +57,76 @@ function quizBuilderStateReducer(
     case QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION: {
       const { activeSearchOption } = action;
 
-      return {
-        ...quizBuilderState,
-        activeSearchOption,
-      };
+      const newQuizBuilderState = { ...quizBuilderState };
+
+      if (!activeSearchOption) {
+        return newQuizBuilderState;
+      }
+
+      newQuizBuilderState.activeSearchOption = activeSearchOption;
+
+      return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_SELECTED_FEATURE: {
-      const { selectedFeatureId } = action;
-
-      return {
-        ...quizBuilderState,
-        selectedFeatureId,
-      };
-    }
-    case QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING: {
-      const { featureId, isAdding } = action;
+      const { feature } = action;
 
       const newQuizBuilderState = { ...quizBuilderState };
 
+      if (!feature) {
+        return newQuizBuilderState;
+      }
+
+      newQuizBuilderState.selectedFeatureId = feature.id;
+
+      return newQuizBuilderState;
+    }
+    case QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING: {
+      const { feature, isAdding } = action;
+
+      const newQuizBuilderState = { ...quizBuilderState };
+
+      if (!feature || !isParentFeatureState(feature)) {
+        return newQuizBuilderState;
+      }
+
       if (isAdding) {
-        newQuizBuilderState.addingFeatures.add(featureId);
+        newQuizBuilderState.addingFeatureIds.add(feature.id);
       } else {
-        newQuizBuilderState.addingFeatures.delete(featureId);
+        newQuizBuilderState.addingFeatureIds.delete(feature.id);
       }
 
       return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN: {
-      const { featureId, isOpen } = action;
+      const { feature, isOpen } = action;
 
       const newQuizBuilderState = { ...quizBuilderState };
 
+      if (!feature || !isParentFeatureState(feature)) {
+        return newQuizBuilderState;
+      }
+
       if (isOpen) {
-        newQuizBuilderState.openFeatures.add(featureId);
+        newQuizBuilderState.openFeatureIds.add(feature.id);
       } else {
-        newQuizBuilderState.openFeatures.delete(featureId);
+        newQuizBuilderState.openFeatureIds.delete(feature.id);
       }
 
       return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING: {
-      const { featureId, isRenaming } = action;
+      const { feature, isRenaming } = action;
 
       const newQuizBuilderState = { ...quizBuilderState };
 
+      if (!feature) {
+        return newQuizBuilderState;
+      }
+
       if (isRenaming) {
-        newQuizBuilderState.renamingFeatures.add(featureId);
+        newQuizBuilderState.renamingFeatureIds.add(feature.id);
       } else {
-        newQuizBuilderState.renamingFeatures.delete(featureId);
+        newQuizBuilderState.renamingFeatureIds.delete(feature.id);
       }
 
       return newQuizBuilderState;
@@ -117,7 +140,7 @@ function quizBuilderStateReducer(
 const initialQuizBuilderState: QuizBuilderState = {
   activeSearchOption: null,
   selectedFeatureId: null,
-  openFeatures: new Set<string>(),
-  addingFeatures: new Set<string>(),
-  renamingFeatures: new Set<string>(),
+  openFeatureIds: new Set<string>(),
+  addingFeatureIds: new Set<string>(),
+  renamingFeatureIds: new Set<string>(),
 };

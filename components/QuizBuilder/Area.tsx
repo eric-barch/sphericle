@@ -42,13 +42,13 @@ export default function Area({ featureId }: AreaProps) {
       if (value.includes(areaState.id)) {
         quizBuilderStateDispatch({
           type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN,
-          featureId: areaState.id,
+          feature: areaState,
           isOpen: true,
         });
       } else {
         quizBuilderStateDispatch({
           type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN,
-          featureId: areaState.id,
+          feature: areaState,
           isOpen: false,
         });
       }
@@ -67,7 +67,7 @@ export default function Area({ featureId }: AreaProps) {
 
       quizBuilderStateDispatch({
         type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
-        featureId: areaState.id,
+        feature: areaState,
         isAdding: false,
       });
     },
@@ -96,7 +96,7 @@ export default function Area({ featureId }: AreaProps) {
 
       quizBuilderStateDispatch({
         type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-        selectedFeatureId: areaState.id,
+        feature: areaState,
       });
     },
     [
@@ -146,7 +146,7 @@ export default function Area({ featureId }: AreaProps) {
   return (
     <Accordion.Root
       type="multiple"
-      value={Array.from(quizBuilderState.openFeatures)}
+      value={Array.from(quizBuilderState.openFeatureIds)}
       onValueChange={handleValueChange}
       onBlur={handleContainerBlur}
     >
@@ -170,7 +170,7 @@ export default function Area({ featureId }: AreaProps) {
           >
             <FeatureName featureId={areaState.id} />
             <OpenChevron
-              isOpen={quizBuilderState.openFeatures.has(areaState.id)}
+              isOpen={quizBuilderState.openFeatureIds.has(areaState.id)}
             />
           </Accordion.Trigger>
         </Accordion.Header>

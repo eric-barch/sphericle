@@ -46,11 +46,11 @@ export default function FeatureName({ featureId }: FeatureNameProps) {
       return;
     }
 
-    if (quizBuilderState.renamingFeatures.has(featureId)) {
+    if (quizBuilderState.renamingFeatureIds.has(featureId)) {
       inputRef.current.focus();
       inputRef.current.select();
     }
-  }, [featureId, quizBuilderState.renamingFeatures]);
+  }, [featureId, quizBuilderState.renamingFeatureIds]);
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
@@ -59,7 +59,7 @@ export default function FeatureName({ featureId }: FeatureNameProps) {
 
       quizBuilderStateDispatch({
         type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
-        featureId,
+        feature: featureId,
         isRenaming: false,
       });
 
@@ -87,14 +87,14 @@ export default function FeatureName({ featureId }: FeatureNameProps) {
 
     quizBuilderStateDispatch({
       type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
-      featureId,
+      feature: featureId,
       isRenaming: false,
     });
   }
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
-      {quizBuilderState.renamingFeatures.has(featureId) ? (
+      {quizBuilderState.renamingFeatureIds.has(featureId) ? (
         <input
           ref={inputRef}
           className="bg-transparent w-full focus:outline-none"
