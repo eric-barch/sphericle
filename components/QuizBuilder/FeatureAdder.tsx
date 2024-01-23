@@ -23,6 +23,7 @@ import {
   KeyboardEvent,
   ReactNode,
   RefObject,
+  useCallback,
   useEffect,
   useState,
 } from "react";
@@ -32,20 +33,24 @@ import useFeatureSearches from "./use-feature-searches.hook";
 import { PointSearch } from "./use-point-search.hook";
 
 interface FeatureAdderProps {
-  inputRef?: RefObject<HTMLInputElement>;
   parentFeatureId: string;
 }
 
-export default function FeatureAdder({
-  inputRef,
-  parentFeatureId,
-}: FeatureAdderProps) {
+export default function FeatureAdder({ parentFeatureId }: FeatureAdderProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
   const { areaSearch, pointSearch } = useFeatureSearches(parentFeatureId);
 
   const [parentFeatureState, setParentFeatureState] =
-    useState<ParentFeatureState>(null);
+    useState<ParentFeatureState>(() => {
+      const parentFeatureState = allFeatures.get(parentFeatureId);
+
+      if (!parentFeatureState || !isParentFeatureState(parentFeatureState)) {
+        throw new Error("parentFeatureState must be a ParentFeatureState.");
+      }
+
+      return parentFeatureState;
+    });
   const [isFocused, setIsFocused] = useState<boolean>(true);
   const [featureType, setFeatureType] = useState<FeatureType>(FeatureType.AREA);
   const [input, setInput] = useState<string>("");
@@ -61,33 +66,36 @@ export default function FeatureAdder({
     setParentFeatureState(parentFeatureState);
   }, [allFeatures, parentFeatureId]);
 
-  function handleBlur(event: FocusEvent<HTMLDivElement>) {
+  const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
     if (!event.currentTarget.contains(event.relatedTarget)) {
       setIsFocused(false);
     }
-  }
+  }, []);
 
-  function handleFocus(event: FocusEvent) {
-    if (!event.currentTarget.contains(event.relatedTarget)) {
-      setIsFocused(true);
+  const handleFocus = useCallback(
+    (event: FocusEvent) => {
+      if (!event.currentTarget.contains(event.relatedTarget)) {
+        setIsFocused(true);
 
-      if (!optionSelected) {
-        if (isRootState(parentFeatureState)) {
-          quizBuilderStateDispatch({
-            type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-            selectedFeatureId: null,
-          });
-        } else if (isAreaState(parentFeatureState)) {
-          quizBuilderStateDispatch({
-            type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-            selectedFeatureId: parentFeatureId,
-          });
+        if (!optionSelected) {
+          if (isRootState(parentFeatureState)) {
+            quizBuilderStateDispatch({
+              type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
+              selectedFeatureId: null,
+            });
+          } else if (isAreaState(parentFeatureState)) {
+            quizBuilderStateDispatch({
+              type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
+              selectedFeatureId: parentFeatureState.id,
+            });
+          }
         }
+      } else {
+        setOptionSelected(false);
       }
-    } else {
-      setOptionSelected(false);
-    }
-  }
+    },
+    [optionSelected, parentFeatureState, quizBuilderStateDispatch],
+  );
 
   function handleChange(subfeature: AreaState | PointState) {
     allFeaturesDispatch({
@@ -103,14 +111,10 @@ export default function FeatureAdder({
 
     if (isAreaState(subfeature)) {
       quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_AREA_IS_ADDING,
+        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
         featureId: subfeature.id,
         isAdding: true,
       });
-    }
-
-    if (inputRef) {
-      inputRef.current.value = "";
     }
 
     setOptionSelected(true);
@@ -138,7 +142,7 @@ export default function FeatureAdder({
     !parentFeatureState ||
     isRootState(parentFeatureState) ||
     (isParentFeatureState(parentFeatureState) &&
-      quizBuilderState.addingParentFeatures.has(parentFeatureId))
+      quizBuilderState.addingFeatures.has(parentFeatureId))
   ) {
     return (
       <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
@@ -146,7 +150,6 @@ export default function FeatureAdder({
           {({ activeOption }) => (
             <>
               <Input
-                inputRef={inputRef}
                 parentFeatureId={parentFeatureId}
                 input={input}
                 featureType={featureType}
@@ -175,7 +178,6 @@ export default function FeatureAdder({
 }
 
 interface InputProps {
-  inputRef: RefObject<HTMLInputElement>;
   parentFeatureId: string;
   input: string;
   featureType: FeatureType;
@@ -186,7 +188,6 @@ interface InputProps {
 }
 
 function Input({
-  inputRef,
   parentFeatureId,
   input,
   featureType,
@@ -269,7 +270,6 @@ function Input({
         setFeatureType={setFeatureType}
       />
       <Combobox.Input
-        ref={inputRef}
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
         displayValue={() => input}
         placeholder={placeholder}

@@ -12,6 +12,7 @@ import {
   useContext,
   useReducer,
 } from "react";
+import { useAllFeatures } from "../AllFeaturesProvider";
 
 const QuizBuilderStateContext = createContext<QuizBuilderState | null>(null);
 const QuizBuilderStateDispatchContext =
@@ -68,28 +69,41 @@ function quizBuilderStateReducer(
         selectedFeatureId,
       };
     }
-    case QuizBuilderStateDispatchType.SET_AREA_IS_ADDING: {
+    case QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING: {
       const { featureId, isAdding } = action;
 
       const newQuizBuilderState = { ...quizBuilderState };
 
       if (isAdding) {
-        newQuizBuilderState.addingParentFeatures.add(featureId);
+        newQuizBuilderState.addingFeatures.add(featureId);
       } else {
-        newQuizBuilderState.addingParentFeatures.delete(featureId);
+        newQuizBuilderState.addingFeatures.delete(featureId);
       }
 
       return newQuizBuilderState;
     }
-    case QuizBuilderStateDispatchType.SET_AREA_IS_OPEN: {
+    case QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN: {
       const { featureId, isOpen } = action;
 
       const newQuizBuilderState = { ...quizBuilderState };
 
       if (isOpen) {
-        newQuizBuilderState.openParentFeatures.add(featureId);
+        newQuizBuilderState.openFeatures.add(featureId);
       } else {
-        newQuizBuilderState.openParentFeatures.delete(featureId);
+        newQuizBuilderState.openFeatures.delete(featureId);
+      }
+
+      return newQuizBuilderState;
+    }
+    case QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING: {
+      const { featureId, isRenaming } = action;
+
+      const newQuizBuilderState = { ...quizBuilderState };
+
+      if (isRenaming) {
+        newQuizBuilderState.renamingFeatures.add(featureId);
+      } else {
+        newQuizBuilderState.renamingFeatures.delete(featureId);
       }
 
       return newQuizBuilderState;
@@ -103,6 +117,7 @@ function quizBuilderStateReducer(
 const initialQuizBuilderState: QuizBuilderState = {
   activeSearchOption: null,
   selectedFeatureId: null,
-  openParentFeatures: new Set<string>(),
-  addingParentFeatures: new Set<string>(),
+  openFeatures: new Set<string>(),
+  addingFeatures: new Set<string>(),
+  renamingFeatures: new Set<string>(),
 };
