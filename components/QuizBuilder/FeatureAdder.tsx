@@ -27,6 +27,7 @@ import {
   ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
@@ -78,7 +79,7 @@ export default function FeatureAdder({
   );
 
   const handleChange = useCallback(
-    (subfeature: AreaState | PointState) => {
+    (subfeature: SubfeatureState) => {
       setOptionWasSelected(true);
 
       allFeaturesDispatch({
@@ -168,7 +169,7 @@ function Input({
   setInput,
   setFeatureType,
 }: InputProps) {
-  const [placeholder, setPlaceholder] = useState<string>(() => {
+  const placeholder = useMemo(() => {
     if (isRootState(parentFeatureState)) {
       return `Add ${featureType.toLowerCase()} anywhere`;
     } else if (isAreaState(parentFeatureState)) {
@@ -176,19 +177,7 @@ function Input({
         parentFeatureState.userDefinedName || parentFeatureState.shortName
       }`;
     }
-  });
-
-  useEffect(() => {
-    if (isRootState(parentFeatureState)) {
-      setPlaceholder(`Add ${featureType.toLowerCase()} anywhere`);
-    } else if (isAreaState(parentFeatureState)) {
-      setPlaceholder(
-        `Add ${featureType.toLowerCase()} in ${
-          parentFeatureState.userDefinedName || parentFeatureState.shortName
-        }`,
-      );
-    }
-  }, [parentFeatureState, featureType]);
+  }, [featureType, parentFeatureState]);
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -205,7 +194,7 @@ function Input({
 
   const handleEnter = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
-      if (isAreaState(parentFeatureState) || input !== areaSearch.term) {
+      if (isAreaState(parentFeatureState) && input !== areaSearch.term) {
         event.preventDefault();
         areaSearch.setTerm(input);
       }
