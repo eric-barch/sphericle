@@ -257,7 +257,7 @@ function Input({
 
   return (
     <div className="relative">
-      <ToggleAreaPointButton
+      <AdvanceFeatureTypeButton
         featureType={featureType}
         setFeatureType={setFeatureType}
       />
@@ -272,15 +272,15 @@ function Input({
   );
 }
 
-interface ToggleAreaPointButtonProps {
+interface AdvanceFeatureTypeButtonProps {
   featureType: FeatureType;
   setFeatureType: (featureType: FeatureType) => void;
 }
 
-function ToggleAreaPointButton({
+function AdvanceFeatureTypeButton({
   featureType,
   setFeatureType,
-}: ToggleAreaPointButtonProps) {
+}: AdvanceFeatureTypeButtonProps) {
   const handleClick = useCallback(() => {
     const nextFeatureType =
       featureType === FeatureType.AREA ? FeatureType.POINT : FeatureType.AREA;
@@ -319,6 +319,8 @@ function Options({
 }: OptionsProps) {
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
+  /**TODO: This is hacky, but only way I have been able to work arond HeadlessUI Combobox bug.
+   * Replace with Radix UI.*/
   useEffect(() => {
     quizBuilderStateDispatch({
       type: QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION,
@@ -326,62 +328,72 @@ function Options({
     });
   }, [quizBuilderStateDispatch, activeOption]);
 
-  const renderOptionsContent = useCallback(() => {
+  const optionsPlaceholderText = useMemo(() => {
     if (featureType === FeatureType.AREA) {
       if (input !== areaSearch.term) {
-        return <OptionsSubstitute>Press Enter to Search</OptionsSubstitute>;
+        return "Press Enter to Search";
       }
+
       if (areaSearch.status === SearchStatus.SEARCHING) {
-        return <OptionsSubstitute>Searching...</OptionsSubstitute>;
+        return "Searching...";
       }
-      if (areaSearch.results.length === 0) {
-        return <OptionsSubstitute>No results found.</OptionsSubstitute>;
+
+      if (!areaSearch.results || areaSearch.results.length === 0) {
+        return "No results found.";
       }
-      return areaSearch.results.map((result: AreaState) => (
-        <Option key={result.id} feature={result} />
-      ));
-    } else if (featureType === FeatureType.POINT) {
-      if (pointSearch.results.length === 0) {
-        return <OptionsSubstitute>No results found.</OptionsSubstitute>;
+    }
+
+    if (featureType === FeatureType.POINT) {
+      if (!pointSearch.results || pointSearch.results.length === 0) {
+        return "No results found.";
       }
-      return pointSearch.results.map((result: PointState) => (
-        <Option key={result.id} feature={result} />
-      ));
-    }
-  }, [areaSearch, pointSearch, featureType, input]);
-
-  const render = useCallback(() => {
-    if (input === "") {
-      return null;
     }
 
-    if (featureType === FeatureType.POINT && pointSearch.term === "") {
-      return null;
-    }
+    return null;
+  }, [areaSearch, featureType, input, pointSearch]);
 
-    if (
-      featureType === FeatureType.POINT &&
-      pointSearch.status === SearchStatus.SEARCHING &&
-      pointSearch.results.length < 1
-    ) {
-      return null;
-    }
+  if (input === "") {
+    return null;
+  }
 
-    return (
-      <Combobox.Options
-        className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-500 p-1 space-y-1"
-        static
-      >
-        {renderOptionsContent()}
-      </Combobox.Options>
-    );
-  }, [featureType, input, pointSearch, renderOptionsContent]);
+  if (featureType === FeatureType.POINT && pointSearch.term === "") {
+    return null;
+  }
 
-  return <>{render()}</>;
+  if (
+    featureType === FeatureType.POINT &&
+    pointSearch.status === SearchStatus.SEARCHING &&
+    pointSearch.results.length < 1
+  ) {
+    return null;
+  }
+
+  return (
+    <Combobox.Options
+      className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-500 p-1 space-y-1"
+      static
+    >
+      {optionsPlaceholderText ? (
+        <OptionsPlaceholder text={optionsPlaceholderText} />
+      ) : featureType === FeatureType.AREA ? (
+        areaSearch.results.map((result: AreaState) => (
+          <Option key={result.id} feature={result} />
+        ))
+      ) : (
+        pointSearch.results.map((result: PointState) => (
+          <Option key={result.id} feature={result} />
+        ))
+      )}
+    </Combobox.Options>
+  );
 }
 
-function OptionsSubstitute({ children }: { children: ReactNode }) {
-  return <div className="pl-7 p-1">{children}</div>;
+interface OptionsPlaceholderProps {
+  text: string;
+}
+
+function OptionsPlaceholder({ text }: OptionsPlaceholderProps) {
+  return <div className="pl-7 p-1">{text}</div>;
 }
 
 interface OptionProps {
