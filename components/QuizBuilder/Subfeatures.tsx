@@ -6,13 +6,9 @@ import {
   isPointState,
   isSubfeatureState,
 } from "@/helpers/feature-type-guards";
-import {
-  AllFeaturesDispatchType,
-  ParentFeatureState,
-  SubfeatureState,
-} from "@/types";
+import { AllFeaturesDispatchType, ParentFeatureState } from "@/types";
 import { Reorder } from "framer-motion";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import Area from "./Area";
 import FeatureAdder from "./FeatureAdder";
 import Point from "./Point";

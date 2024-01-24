@@ -25,7 +25,6 @@ import {
   FocusEvent,
   KeyboardEvent,
   ReactNode,
-  RefObject,
   useCallback,
   useEffect,
   useState,
@@ -48,10 +47,16 @@ export default function FeatureAdder({
 
   const [featureType, setFeatureType] = useState<FeatureType>(FeatureType.AREA);
   const [input, setInput] = useState<string>("");
+  const [optionWasSelected, setOptionWasSelected] = useState<boolean>(false);
 
   const handleFocus = useCallback(
     (event: FocusEvent) => {
-      if (!event.currentTarget.contains(event.relatedTarget)) {
+      if (event.currentTarget.contains(event.relatedTarget)) {
+        return;
+      }
+
+      if (optionWasSelected) {
+        setOptionWasSelected(false);
         return;
       }
 
@@ -69,11 +74,13 @@ export default function FeatureAdder({
         });
       }
     },
-    [parentFeatureState, quizBuilderStateDispatch],
+    [optionWasSelected, parentFeatureState, quizBuilderStateDispatch],
   );
 
   const handleChange = useCallback(
     (subfeature: AreaState | PointState) => {
+      setOptionWasSelected(true);
+
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.ADD_SUBFEATURE,
         parentFeature: parentFeatureState,

@@ -46,24 +46,6 @@ export default function Area({ areaState }: AreaProps) {
     [areaState, quizBuilderStateDispatch],
   );
 
-  const handleContainerBlur = useCallback(
-    (event: FocusEvent<HTMLDivElement>) => {
-      if (
-        event.currentTarget.contains(event.relatedTarget) ||
-        areaState.subfeatureIds.size <= 0
-      ) {
-        return;
-      }
-
-      quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
-        feature: areaState,
-        isAdding: false,
-      });
-    },
-    [areaState, quizBuilderStateDispatch],
-  );
-
   const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
     if (event.currentTarget.contains(event.relatedTarget)) {
       return;
@@ -128,7 +110,6 @@ export default function Area({ areaState }: AreaProps) {
       type="multiple"
       value={Array.from(quizBuilderState.openFeatureIds)}
       onValueChange={handleValueChange}
-      onBlur={handleContainerBlur}
     >
       <Accordion.Item value={areaState.id}>
         <Accordion.Header

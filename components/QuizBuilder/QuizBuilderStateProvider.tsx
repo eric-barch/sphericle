@@ -86,11 +86,8 @@ function quizBuilderStateReducer(
 
       const newQuizBuilderState = { ...quizBuilderState };
 
-      if (!feature) {
-        return newQuizBuilderState;
-      }
-
-      newQuizBuilderState.selectedFeatureId = feature.id;
+      newQuizBuilderState.selectedFeatureId = (feature && feature.id) || null;
+      newQuizBuilderState.activeSearchOption = null;
 
       return newQuizBuilderState;
     }
@@ -124,6 +121,10 @@ function quizBuilderStateReducer(
         newQuizBuilderState.openFeatureIds.add(feature.id);
       } else {
         newQuizBuilderState.openFeatureIds.delete(feature.id);
+
+        if (feature.subfeatureIds.size > 0) {
+          newQuizBuilderState.addingFeatureIds.delete(feature.id);
+        }
       }
 
       return newQuizBuilderState;
