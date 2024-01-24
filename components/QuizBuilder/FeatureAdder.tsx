@@ -25,9 +25,11 @@ import {
   FocusEvent,
   KeyboardEvent,
   ReactNode,
+  RefObject,
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
@@ -52,8 +54,10 @@ export default function FeatureAdder({
   const [input, setInput] = useState<string>("");
   const [optionWasSelected, setOptionWasSelected] = useState<boolean>(false);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const handleFocus = useCallback(
-    (event: FocusEvent) => {
+    (event: FocusEvent<HTMLDivElement>) => {
       if (event.currentTarget.contains(event.relatedTarget)) {
         return;
       }
@@ -82,7 +86,15 @@ export default function FeatureAdder({
 
   const handleChange = useCallback(
     (subfeature: SubfeatureState) => {
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+
+      setInput("");
       setOptionWasSelected(true);
+
+      areaSearch.reset();
+      pointSearch.reset();
 
       allFeaturesDispatch({
         type: AllFeaturesDispatchType.ADD_SUBFEATURE,
@@ -102,11 +114,6 @@ export default function FeatureAdder({
           isAdding: true,
         });
       }
-
-      setInput("");
-
-      areaSearch.reset();
-      pointSearch.reset();
     },
     [
       allFeaturesDispatch,
@@ -141,6 +148,7 @@ export default function FeatureAdder({
         {({ activeOption }) => (
           <>
             <Input
+              inputRef={inputRef}
               parentFeatureState={parentFeatureState}
               input={input}
               featureType={featureType}
@@ -164,6 +172,7 @@ export default function FeatureAdder({
 }
 
 interface InputProps {
+  inputRef: RefObject<HTMLInputElement>;
   parentFeatureState: ParentFeatureState;
   input: string;
   featureType: FeatureType;
@@ -174,6 +183,7 @@ interface InputProps {
 }
 
 function Input({
+  inputRef,
   parentFeatureState,
   input,
   featureType,
@@ -191,6 +201,10 @@ function Input({
       }`;
     }
   }, [featureType, parentFeatureState]);
+
+  function handleBlurCapture(event: FocusEvent<HTMLInputElement>) {
+    event.stopPropagation();
+  }
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -262,9 +276,10 @@ function Input({
         setFeatureType={setFeatureType}
       />
       <Combobox.Input
+        ref={inputRef}
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
-        displayValue={() => input}
         placeholder={placeholder}
+        onBlurCapture={handleBlurCapture}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
@@ -369,10 +384,7 @@ function Options({
   }
 
   return (
-    <Combobox.Options
-      className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-500 p-1 space-y-1"
-      static
-    >
+    <Combobox.Options className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-500 p-1 space-y-1">
       {optionsPlaceholderText ? (
         <OptionsPlaceholder text={optionsPlaceholderText} />
       ) : featureType === FeatureType.AREA ? (
