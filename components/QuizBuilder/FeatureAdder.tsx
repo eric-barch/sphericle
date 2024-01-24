@@ -46,7 +46,9 @@ export default function FeatureAdder({
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
   const { areaSearch, pointSearch } = useFeatureSearches(parentFeatureState.id);
 
-  const [featureType, setFeatureType] = useState<FeatureType>(FeatureType.AREA);
+  const [featureType, setFeatureTypeRaw] = useState<FeatureType>(
+    FeatureType.AREA,
+  );
   const [input, setInput] = useState<string>("");
   const [optionWasSelected, setOptionWasSelected] = useState<boolean>(false);
 
@@ -113,6 +115,17 @@ export default function FeatureAdder({
       pointSearch,
       quizBuilderStateDispatch,
     ],
+  );
+
+  const setFeatureType = useCallback(
+    (featureType: FeatureType) => {
+      setFeatureTypeRaw(featureType);
+
+      if (featureType === FeatureType.POINT) {
+        pointSearch.setTerm(input);
+      }
+    },
+    [input, pointSearch],
   );
 
   if (
@@ -194,7 +207,10 @@ function Input({
 
   const handleEnter = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
-      if (isAreaState(parentFeatureState) && input !== areaSearch.term) {
+      if (
+        isParentFeatureState(parentFeatureState) &&
+        input !== areaSearch.term
+      ) {
         event.preventDefault();
         areaSearch.setTerm(input);
       }
@@ -242,9 +258,7 @@ function Input({
   return (
     <div className="relative">
       <ToggleAreaPointButton
-        input={input}
         featureType={featureType}
-        pointSearch={pointSearch}
         setFeatureType={setFeatureType}
       />
       <Combobox.Input
@@ -259,16 +273,12 @@ function Input({
 }
 
 interface ToggleAreaPointButtonProps {
-  input: string;
   featureType: FeatureType;
-  pointSearch: PointSearch;
   setFeatureType: (featureType: FeatureType) => void;
 }
 
 function ToggleAreaPointButton({
-  input,
   featureType,
-  pointSearch,
   setFeatureType,
 }: ToggleAreaPointButtonProps) {
   const handleClick = useCallback(() => {
@@ -276,11 +286,7 @@ function ToggleAreaPointButton({
       featureType === FeatureType.AREA ? FeatureType.POINT : FeatureType.AREA;
 
     setFeatureType(nextFeatureType);
-
-    if (nextFeatureType === FeatureType.POINT && input !== pointSearch.term) {
-      pointSearch.setTerm(input);
-    }
-  }, [featureType, input, pointSearch, setFeatureType]);
+  }, [featureType, setFeatureType]);
 
   return (
     <button
