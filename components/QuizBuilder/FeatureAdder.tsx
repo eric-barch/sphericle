@@ -36,55 +36,24 @@ import useFeatureSearches from "./use-feature-searches.hook";
 import { PointSearch } from "./use-point-search.hook";
 
 interface FeatureAdderProps {
-  parentFeatureId: string;
+  parentFeatureState: ParentFeatureState;
 }
 
-export default function FeatureAdder({ parentFeatureId }: FeatureAdderProps) {
-  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+export default function FeatureAdder({
+  parentFeatureState,
+}: FeatureAdderProps) {
+  const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
-  const { areaSearch, pointSearch } = useFeatureSearches(parentFeatureId);
+  const { areaSearch, pointSearch } = useFeatureSearches(parentFeatureState.id);
 
-  const [parentFeatureState, setParentFeatureState] =
-    useState<ParentFeatureState>(() => {
-      const parentFeatureState = allFeatures.get(parentFeatureId);
-
-      if (!isParentFeatureState(parentFeatureState)) {
-        return null;
-      }
-
-      return parentFeatureState;
-    });
-  const [isFocused, setIsFocused] = useState<boolean>(false);
   const [featureType, setFeatureType] = useState<FeatureType>(FeatureType.AREA);
   const [input, setInput] = useState<string>("");
-
-  useEffect(() => {
-    const parentFeatureState = allFeatures.get(parentFeatureId);
-
-    if (!isParentFeatureState(parentFeatureState)) {
-      return;
-    }
-
-    setParentFeatureState(parentFeatureState);
-  }, [allFeatures, parentFeatureId]);
-
-  const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
-    if (event.currentTarget.contains(event.relatedTarget)) {
-      return;
-    }
-
-    setIsFocused(false);
-    console.log(`blur FeatureAdder`);
-  }, []);
 
   const handleFocus = useCallback(
     (event: FocusEvent) => {
       if (!event.currentTarget.contains(event.relatedTarget)) {
         return;
       }
-
-      setIsFocused(true);
-      console.log("focus FeatureAdder");
 
       if (isRootState(parentFeatureState)) {
         quizBuilderStateDispatch({
@@ -140,13 +109,13 @@ export default function FeatureAdder({ parentFeatureId }: FeatureAdderProps) {
 
   if (
     !isRootState(parentFeatureState) &&
-    !quizBuilderState.addingFeatureIds.has(parentFeatureId)
+    !quizBuilderState.addingFeatureIds.has(parentFeatureState.id)
   ) {
     return null;
   }
 
   return (
-    <div className="relative" onBlur={handleBlur} onFocus={handleFocus}>
+    <div className="relative" onFocus={handleFocus}>
       <Combobox onChange={handleChange}>
         {({ activeOption }) => (
           <>
@@ -165,7 +134,6 @@ export default function FeatureAdder({ parentFeatureId }: FeatureAdderProps) {
               featureType={featureType}
               areaSearch={areaSearch}
               pointSearch={pointSearch}
-              isFocused={isFocused}
             />
           </>
         )}
@@ -230,12 +198,10 @@ function Input({
 
   const handleEnter = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
-      if (!isAreaState(parentFeatureState) || input === areaSearch.term) {
-        return;
+      if (isAreaState(parentFeatureState) || input !== areaSearch.term) {
+        event.preventDefault();
+        areaSearch.setTerm(input);
       }
-
-      event.preventDefault();
-      areaSearch.setTerm(input);
     },
     [areaSearch, parentFeatureState, input],
   );
@@ -340,7 +306,6 @@ interface OptionsProps {
   featureType: FeatureType;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
-  isFocused: boolean;
 }
 
 function Options({
@@ -349,7 +314,6 @@ function Options({
   featureType,
   areaSearch,
   pointSearch,
-  isFocused,
 }: OptionsProps) {
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
@@ -389,10 +353,6 @@ function Options({
       return null;
     }
 
-    if (!isFocused) {
-      return null;
-    }
-
     if (featureType === FeatureType.POINT && pointSearch.term === "") {
       return null;
     }
@@ -413,7 +373,7 @@ function Options({
         {renderOptionsContent()}
       </Combobox.Options>
     );
-  }, [featureType, input, isFocused, pointSearch, renderOptionsContent]);
+  }, [featureType, input, pointSearch, renderOptionsContent]);
 
   return <>{render()}</>;
 }

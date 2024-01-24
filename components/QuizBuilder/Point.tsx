@@ -1,16 +1,16 @@
 "use client";
 
-import { QuizBuilderStateDispatchType } from "@/types";
+import { PointState, QuizBuilderStateDispatchType } from "@/types";
 import { FocusEvent, useRef, useState } from "react";
 import EditFeatureButton from "./EditFeatureButton";
 import FeatureName from "./FeatureName";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 
 interface PointProps {
-  featureId: string;
+  pointState: PointState;
 }
 
-export default function Point({ featureId }: PointProps) {
+export default function Point({ pointState }: PointProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const [isRenaming, setIsRenamingRaw] = useState<boolean>(false);
@@ -21,7 +21,7 @@ export default function Point({ featureId }: PointProps) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
       quizBuilderStateDispatch({
         type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-        feature: featureId,
+        feature: pointState,
       });
     }
   }
@@ -39,20 +39,15 @@ export default function Point({ featureId }: PointProps) {
 
   return (
     <div className="relative" onFocus={handleFocus}>
-      <EditFeatureButton featureId={featureId} setIsRenaming={setIsRenaming} />
+      <EditFeatureButton featureId={pointState.id} />
       <button
         className={`w-full p-1 rounded-2xl text-left bg-gray-600 ${
-          featureId === quizBuilderState.selectedFeatureId
+          pointState.id === quizBuilderState.selectedFeatureId
             ? "outline outline-2 outline-red-700"
             : ""
         }`}
       >
-        <FeatureName
-          featureId={featureId}
-          inputRef={featureNameInputRef}
-          isRenaming={isRenaming}
-          setIsRenaming={setIsRenaming}
-        />
+        <FeatureName featureId={pointState.id} />
       </button>
     </div>
   );

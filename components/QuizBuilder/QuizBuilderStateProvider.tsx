@@ -1,5 +1,7 @@
 "use client";
 
+import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { isParentFeatureState } from "@/helpers/feature-type-guards";
 import {
   QuizBuilderState,
   QuizBuilderStateDispatch,
@@ -9,11 +11,11 @@ import {
   Dispatch,
   ReactNode,
   createContext,
+  useCallback,
   useContext,
+  useMemo,
   useReducer,
 } from "react";
-import { useAllFeatures } from "../AllFeaturesProvider";
-import { isParentFeatureState } from "@/helpers/feature-type-guards";
 
 const QuizBuilderStateContext = createContext<QuizBuilderState | null>(null);
 const QuizBuilderStateDispatchContext =
@@ -24,6 +26,18 @@ export default function QuizBuilderStateProvider({
 }: {
   children: ReactNode;
 }) {
+  const { rootId } = useAllFeatures();
+
+  const initialQuizBuilderState = useMemo<QuizBuilderState>(() => {
+    return {
+      activeSearchOption: null,
+      selectedFeatureId: null,
+      openFeatureIds: new Set<string>(),
+      addingFeatureIds: new Set<string>([rootId]),
+      renamingFeatureIds: new Set<string>(),
+    };
+  }, [rootId]);
+
   const [quizBuilderState, quizBuilderStateDispatch] = useReducer(
     quizBuilderStateReducer,
     initialQuizBuilderState,
@@ -52,7 +66,7 @@ export function useQuizBuilderState(): {
 function quizBuilderStateReducer(
   quizBuilderState: QuizBuilderState,
   action: QuizBuilderStateDispatch,
-): QuizBuilderState {
+) {
   switch (action.type) {
     case QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION: {
       const { activeSearchOption } = action;
@@ -136,11 +150,3 @@ function quizBuilderStateReducer(
     }
   }
 }
-
-const initialQuizBuilderState: QuizBuilderState = {
-  activeSearchOption: null,
-  selectedFeatureId: null,
-  openFeatureIds: new Set<string>(),
-  addingFeatureIds: new Set<string>(),
-  renamingFeatureIds: new Set<string>(),
-};
