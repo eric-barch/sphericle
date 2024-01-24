@@ -112,7 +112,7 @@ interface DeleteFeatureDispatch extends BaseAllFeaturesDispatch {
 }
 
 export type QuizBuilderStateDispatch =
-  | SetActiveOptionDispatch
+  | SetActiveSearchOptionDispatch
   | SetSelectedFeatureDispatch
   | SetFeatureIsAddingDispatch
   | SetFeatureIsOpenDispatch
@@ -122,14 +122,14 @@ interface BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType;
 }
 
-interface SetActiveOptionDispatch extends BaseQuizBuilderStateDispatch {
+interface SetActiveSearchOptionDispatch extends BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION;
   activeSearchOption: SubfeatureState | null;
 }
 
 interface SetSelectedFeatureDispatch extends BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE;
-  feature: SubfeatureState;
+  feature: SubfeatureState | null;
 }
 
 interface SetFeatureIsAddingDispatch extends BaseQuizBuilderStateDispatch {
