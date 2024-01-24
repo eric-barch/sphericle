@@ -1,12 +1,13 @@
 "use client";
 
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import Map from "@/components/Map";
 import SplitPane from "@/components/SplitPane";
-import { AreaState, DisplayMode, PointState, RootState } from "@/types";
+import { isRootState, isSubfeatureState } from "@/helpers/feature-type-guards";
+import { DisplayMode } from "@/types";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-import LoadingSpinner from "../LoadingSpinner";
+import { useCallback, useMemo, useState } from "react";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import Subfeatures from "./Subfeatures";
 
@@ -18,16 +19,19 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const { rootId, allFeatures } = useAllFeatures();
   const { quizBuilderState } = useQuizBuilderState();
 
-  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-  const [displayedFeature, setDisplayedFeature] = useState<
-    RootState | AreaState | PointState | null
-  >(null);
-
-  useEffect(() => {
-    const activeOption = quizBuilderState.activeSearchOption;
-    const selectedFeature = allFeatures.get(quizBuilderState.selectedFeatureId);
-    setDisplayedFeature(activeOption || selectedFeature);
+  const rootState = useMemo(() => {
+    const newRootState = allFeatures.get(rootId);
+    return isRootState(newRootState) ? newRootState : null;
+  }, [allFeatures, rootId]);
+  const displayedFeature = useMemo(() => {
+    const { activeSearchOption, selectedFeatureId } = quizBuilderState;
+    const selectedFeature = allFeatures.get(selectedFeatureId);
+    return (
+      activeSearchOption ||
+      (isSubfeatureState(selectedFeature) && selectedFeature)
+    );
   }, [allFeatures, quizBuilderState]);
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
   const handleMapLoad = useCallback(() => {
     setMapLoaded(true);
@@ -43,7 +47,7 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
           <div className="relative h-full">
             <Subfeatures
               className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
-              parentFeatureId={rootId}
+              parentFeatureState={rootState}
             />
             <Link
               className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"

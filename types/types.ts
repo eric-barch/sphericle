@@ -134,7 +134,7 @@ interface SetSelectedFeatureDispatch extends BaseQuizBuilderStateDispatch {
 
 interface SetFeatureIsAddingDispatch extends BaseQuizBuilderStateDispatch {
   type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING;
-  feature: SubfeatureState;
+  feature: FeatureState;
   isAdding: boolean;
 }
 

@@ -18,34 +18,14 @@ import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import Subfeatures from "./Subfeatures";
 
 interface AreaProps {
-  featureId: string;
+  areaState: AreaState;
 }
 
-export default function Area({ featureId }: AreaProps) {
-  const { allFeatures } = useAllFeatures();
+export default function Area({ areaState }: AreaProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const [areaState, setAreaState] = useState<AreaState>(() => {
-    const initialAreaState = allFeatures.get(featureId);
-
-    if (!initialAreaState || !isAreaState(initialAreaState)) {
-      throw new Error("initialAreaState must be an AreaState.");
-    }
-
-    return initialAreaState;
-  });
   const [mouseIsDown, setMouseIsDown] = useState<boolean>(false);
   const [toggleOnNextClick, setToggleOnNextClick] = useState<boolean>(true);
-
-  useEffect(() => {
-    const areaState = allFeatures.get(featureId);
-
-    if (!areaState || !isAreaState(areaState)) {
-      return;
-    }
-
-    setAreaState(areaState);
-  }, [allFeatures, featureId]);
 
   const handleValueChange = useCallback(
     (value: string[]) => {
@@ -175,7 +155,7 @@ export default function Area({ featureId }: AreaProps) {
           </Accordion.Trigger>
         </Accordion.Header>
         <Accordion.Content>
-          <Subfeatures className="ml-10" parentFeatureId={areaState.id} />
+          <Subfeatures className="ml-10" parentFeatureState={areaState} />
         </Accordion.Content>
       </Accordion.Item>
     </Accordion.Root>
