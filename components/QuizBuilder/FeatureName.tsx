@@ -1,79 +1,75 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { isSubfeatureState } from "@/helpers/feature-type-guards";
 import {
   AllFeaturesDispatchType,
   QuizBuilderStateDispatchType,
   SubfeatureState,
 } from "@/types";
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import {
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 
 interface FeatureNameProps {
-  featureId: string;
+  featureState: SubfeatureState;
 }
 
-export default function FeatureName({ featureId }: FeatureNameProps) {
-  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+export default function FeatureName({ featureState }: FeatureNameProps) {
+  const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const [featureState, setFeatureState] = useState<SubfeatureState>(() => {
-    const initialFeatureState = allFeatures.get(featureId);
-
-    if (!isSubfeatureState(initialFeatureState)) {
-      throw new Error("initialFeatureState must be a SubfeatureState.");
-    }
-
-    return initialFeatureState;
-  });
   const [input, setInput] = useState<string>(
     featureState.userDefinedName || featureState.shortName,
   );
 
+  const isRenaming = useMemo(() => {
+    if (quizBuilderState.renamingFeatureIds.has(featureState.id)) {
+      return true;
+    }
+
+    return false;
+  }, [quizBuilderState, featureState]);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const featureState = allFeatures.get(featureId);
+    setTimeout(() => {
+      if (isRenaming) {
+        inputRef.current?.focus();
+        inputRef.current?.select();
+      }
+    }, 0);
+  }, [isRenaming]);
 
-    if (!featureState || !isSubfeatureState(featureState)) {
-      return;
-    }
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
 
-    setFeatureState(featureState);
-  }, [allFeatures, featureId]);
+        quizBuilderStateDispatch({
+          type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
+          feature: featureState,
+          isRenaming: false,
+        });
 
-  useEffect(() => {
-    if (!inputRef.current) {
-      return;
-    }
+        allFeaturesDispatch({
+          type: AllFeaturesDispatchType.RENAME_FEATURE,
+          feature: featureState,
+          name: input,
+        });
+      }
 
-    if (quizBuilderState.renamingFeatureIds.has(featureId)) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [featureId, quizBuilderState.renamingFeatureIds]);
-
-  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      event.stopPropagation();
-
-      quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
-        feature: featureId,
-        isRenaming: false,
-      });
-
-      allFeaturesDispatch({
-        type: AllFeaturesDispatchType.RENAME_FEATURE,
-        feature: featureId,
-        name: input,
-      });
-    }
-
-    if (event.key === "Escape") {
-      event.currentTarget.blur();
-    }
-  }
+      if (event.key === "Escape") {
+        event.currentTarget.blur();
+      }
+    },
+    [allFeaturesDispatch, featureState, input, quizBuilderStateDispatch],
+  );
 
   function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
     // Prevent default Radix Accordion toggle when typing spaces
@@ -87,14 +83,14 @@ export default function FeatureName({ featureId }: FeatureNameProps) {
 
     quizBuilderStateDispatch({
       type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
-      feature: featureId,
+      feature: featureState,
       isRenaming: false,
     });
   }
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
-      {quizBuilderState.renamingFeatureIds.has(featureId) ? (
+      {quizBuilderState.renamingFeatureIds.has(featureState.id) ? (
         <input
           ref={inputRef}
           className="bg-transparent w-full focus:outline-none"
