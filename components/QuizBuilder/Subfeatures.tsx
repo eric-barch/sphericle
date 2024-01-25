@@ -4,11 +4,12 @@ import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
   isAreaState,
   isPointState,
+  isRootState,
   isSubfeatureState,
 } from "@/helpers/feature-type-guards";
 import { AllFeaturesDispatchType, ParentFeatureState } from "@/types";
 import { Reorder } from "framer-motion";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import Area from "./Area";
 import FeatureAdder from "./FeatureAdder";
 import Point from "./Point";
