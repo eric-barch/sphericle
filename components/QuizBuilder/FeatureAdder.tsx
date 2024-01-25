@@ -192,7 +192,7 @@ function Input({
   setInput,
   setFeatureType,
 }: InputProps) {
-  const placeholder = useMemo(() => {
+  const placeholder = (() => {
     if (isRootState(parentFeatureState)) {
       return `Add ${featureType.toLowerCase()} anywhere`;
     } else if (isAreaState(parentFeatureState)) {
@@ -200,7 +200,7 @@ function Input({
         parentFeatureState.userDefinedName || parentFeatureState.shortName
       }`;
     }
-  }, [featureType, parentFeatureState]);
+  })();
 
   function handleBlurCapture(event: FocusEvent<HTMLInputElement>) {
     event.stopPropagation();
