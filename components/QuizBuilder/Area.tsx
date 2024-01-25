@@ -129,7 +129,7 @@ export default function Area({ areaState }: AreaProps) {
             }`}
             onClick={handleClick}
           >
-            <FeatureName featureId={areaState.id} />
+            <FeatureName featureState={areaState} />
             <OpenChevron
               isOpen={quizBuilderState.openFeatureIds.has(areaState.id)}
             />
