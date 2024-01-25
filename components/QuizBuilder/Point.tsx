@@ -39,7 +39,7 @@ export default function Point({ pointState }: PointProps) {
 
   return (
     <div className="relative" onFocus={handleFocus}>
-      <EditFeatureButton featureId={pointState.id} />
+      <EditFeatureButton featureState={pointState} />
       <button
         className={`w-full p-1 rounded-2xl text-left bg-gray-600 ${
           pointState.id === quizBuilderState.selectedFeatureId
@@ -47,7 +47,7 @@ export default function Point({ pointState }: PointProps) {
             : ""
         }`}
       >
-        <FeatureName featureId={pointState.id} />
+        <FeatureName featureState={pointState} />
       </button>
     </div>
   );
