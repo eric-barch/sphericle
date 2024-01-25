@@ -167,10 +167,10 @@ interface ResetDispatch extends BaseQuizTakerStateDispatch {
 
 interface MarkCorrectDispatch extends BaseQuizTakerStateDispatch {
   type: QuizTakerStateDispatchType.MARK_CORRECT;
-  feature: SubfeatureState;
+  featureState: SubfeatureState;
 }
 
 interface MarkIncorrectDispatch extends BaseQuizTakerStateDispatch {
   type: QuizTakerStateDispatchType.MARK_INCORRECT;
-  feature: SubfeatureState;
+  featureState: SubfeatureState;
 }

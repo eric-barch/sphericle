@@ -1,10 +1,11 @@
 "use client";
 
+import { isParentFeatureState } from "@/helpers/feature-type-guards";
 import {
   AllFeatures,
+  QuizTakerState,
   QuizTakerStateDispatch,
   QuizTakerStateDispatchType,
-  QuizTakerState,
 } from "@/types";
 import {
   Dispatch,
@@ -66,22 +67,22 @@ function quizTakerStateReducer(
       return newQuizTaker;
     }
     case QuizTakerStateDispatchType.MARK_CORRECT: {
-      const { feature: featureId } = action;
+      const { featureState } = action;
 
       const newQuizTaker = { ...quizTakerState };
 
-      newQuizTaker.remainingFeatureIds.delete(featureId);
-      newQuizTaker.correctFeatureIds.add(featureId);
+      newQuizTaker.remainingFeatureIds.delete(featureState.id);
+      newQuizTaker.correctFeatureIds.add(featureState.id);
 
       return newQuizTaker;
     }
     case QuizTakerStateDispatchType.MARK_INCORRECT: {
-      const { feature: featureId } = action;
+      const { featureState } = action;
 
       const newQuizTaker = { ...quizTakerState };
 
-      newQuizTaker.remainingFeatureIds.delete(featureId);
-      newQuizTaker.incorrectFeatureIds.add(featureId);
+      newQuizTaker.remainingFeatureIds.delete(featureState.id);
+      newQuizTaker.incorrectFeatureIds.add(featureState.id);
 
       return newQuizTaker;
     }
@@ -98,10 +99,10 @@ function resetRemainingFeatureIds(
   const remainingFeatureIds = new Set<string>();
 
   function addDirectChildren(featureId: string) {
-    const feature = allFeatures.get(featureId);
+    const featureState = allFeatures.get(featureId);
 
-    if (feature && "subfeatureIds" in feature) {
-      const shuffledSubfeatureIds = [...feature.subfeatureIds];
+    if (featureState && isParentFeatureState(featureState)) {
+      const shuffledSubfeatureIds = [...featureState.subfeatureIds];
 
       // Fisher-Yates shuffle
       for (let i = shuffledSubfeatureIds.length - 1; i > 0; i--) {
@@ -123,31 +124,6 @@ function resetRemainingFeatureIds(
   }
 
   addDirectChildren(rootId);
-
-  return remainingFeatureIds;
-}
-
-function resetRemainingFeatureIdsOld(
-  rootId: string,
-  allFeatures: AllFeatures,
-): Set<string> {
-  const remainingFeatureIds = new Set<string>();
-  const rootFeature = allFeatures.get(rootId);
-  const queue: string[] =
-    rootFeature && "subfeatureIds" in rootFeature
-      ? Array.from(rootFeature.subfeatureIds)
-      : [];
-
-  while (queue.length > 0) {
-    const currentId = queue.shift();
-    const feature = allFeatures.get(currentId);
-
-    remainingFeatureIds.add(feature.id);
-
-    if ("subfeatureIds" in feature && feature.subfeatureIds.size > 0) {
-      queue.push(...feature.subfeatureIds);
-    }
-  }
 
   return remainingFeatureIds;
 }

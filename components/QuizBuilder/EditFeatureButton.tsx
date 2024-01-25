@@ -1,8 +1,5 @@
 import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import {
-  isParentFeatureState,
-  isSubfeatureState,
-} from "@/helpers/feature-type-guards";
+import { isParentFeatureState } from "@/helpers/feature-type-guards";
 import {
   AllFeaturesDispatchType,
   QuizBuilderStateDispatchType,
@@ -10,38 +7,18 @@ import {
 } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
-import { MouseEvent, useCallback, useEffect, useState } from "react";
+import { MouseEvent, useCallback } from "react";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 
 interface EditFeatureButtonProps {
-  featureId: string;
+  featureState: SubfeatureState;
 }
 
 export default function EditFeatureButton({
-  featureId,
+  featureState,
 }: EditFeatureButtonProps) {
-  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+  const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
-
-  const [featureState, setFeatureState] = useState<SubfeatureState>(() => {
-    const initialFeatureState = allFeatures.get(featureId);
-
-    if (!initialFeatureState || !isSubfeatureState(initialFeatureState)) {
-      throw new Error("initialFeatureState must be a SubfeatureState.");
-    }
-
-    return initialFeatureState;
-  });
-
-  useEffect(() => {
-    const featureState = allFeatures.get(featureId);
-
-    if (!featureState || !isSubfeatureState(featureState)) {
-      return;
-    }
-
-    setFeatureState(featureState);
-  }, [featureId, allFeatures]);
 
   const handleAddSubfeatureClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {

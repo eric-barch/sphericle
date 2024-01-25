@@ -1,17 +1,9 @@
 "use client";
 
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { isAreaState } from "@/helpers/feature-type-guards";
 import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
-import {
-  FocusEvent,
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { FocusEvent, MouseEvent, useCallback, useState } from "react";
 import EditFeatureButton from "./EditFeatureButton";
 import FeatureName from "./FeatureName";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
@@ -120,7 +112,7 @@ export default function Area({ areaState }: AreaProps) {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
         >
-          <EditFeatureButton featureId={areaState.id} />
+          <EditFeatureButton featureState={areaState} />
           <Accordion.Trigger
             className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
               areaState.id === quizBuilderState.selectedFeatureId
