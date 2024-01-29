@@ -179,8 +179,8 @@ async function getPointState(
   const displayBounds = getDisplayBounds(point);
 
   return {
-    id: crypto.randomUUID(),
-    parentFeatureId: parentFeature.id,
+    featureId: crypto.randomUUID(),
+    parentFeatureId: parentFeature.featureId,
     googlePlacesId: autocompletePrediction.place_id,
     longName: autocompletePrediction.description,
     shortName: autocompletePrediction.description,

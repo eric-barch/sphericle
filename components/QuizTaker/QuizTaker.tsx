@@ -31,7 +31,7 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
 
   useEffect(() => {
     quizTakerStateDispatch({
-      type: QuizTakerStateDispatchType.RESET,
+      dispatchType: QuizTakerStateDispatchType.RESET,
       rootId,
       allFeatures,
     });
@@ -46,7 +46,7 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
       return;
     }
 
-    if (newDisplayedFeature.id === displayedFeature?.id) {
+    if (newDisplayedFeature.featureId === displayedFeature?.featureId) {
       return;
     }
 
@@ -67,7 +67,7 @@ export default function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
 
   const handleClick = useCallback(() => {
     quizTakerStateDispatch({
-      type: QuizTakerStateDispatchType.RESET,
+      dispatchType: QuizTakerStateDispatchType.RESET,
       rootId,
       allFeatures,
     });

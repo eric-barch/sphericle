@@ -34,7 +34,7 @@ export default function AnswerBox({
       );
 
       quizTakerStateDispatch({
-        type: QuizTakerStateDispatchType.MARK_CORRECT,
+        dispatchType: QuizTakerStateDispatchType.MARK_CORRECT,
         featureState: displayedFeature,
       });
     } else {
@@ -45,7 +45,7 @@ export default function AnswerBox({
       );
 
       quizTakerStateDispatch({
-        type: QuizTakerStateDispatchType.MARK_INCORRECT,
+        dispatchType: QuizTakerStateDispatchType.MARK_INCORRECT,
         featureState: displayedFeature,
       });
     }
