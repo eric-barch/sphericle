@@ -15,7 +15,7 @@ export default function AnswerBox({
   inputRef,
   disabled,
 }: AnswerBoxProps) {
-  const allFeatures = useAllFeatures();
+  const { allFeatures } = useAllFeatures();
   const { quizTakerState, quizTakerStateDispatch } = useQuizTakerState();
 
   const [input, setInput] = useState<string>("");
@@ -35,7 +35,7 @@ export default function AnswerBox({
 
       quizTakerStateDispatch({
         type: QuizTakerStateDispatchType.MARK_CORRECT,
-        featureState: quizTakerState.remainingFeatureIds.values().next().value,
+        featureState: displayedFeature,
       });
     } else {
       toast.error(
@@ -46,7 +46,7 @@ export default function AnswerBox({
 
       quizTakerStateDispatch({
         type: QuizTakerStateDispatchType.MARK_INCORRECT,
-        featureState: quizTakerState.remainingFeatureIds.values().next().value,
+        featureState: displayedFeature,
       });
     }
 
