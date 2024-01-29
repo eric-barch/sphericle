@@ -21,16 +21,16 @@ export default function Area({ areaState }: AreaProps) {
 
   const handleValueChange = useCallback(
     (value: string[]) => {
-      if (value.includes(areaState.id)) {
+      if (value.includes(areaState.featureId)) {
         quizBuilderStateDispatch({
-          type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN,
-          feature: areaState,
+          dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+          featureState: areaState,
           isOpen: true,
         });
       } else {
         quizBuilderStateDispatch({
-          type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN,
-          feature: areaState,
+          dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+          featureState: areaState,
           isOpen: false,
         });
       }
@@ -52,15 +52,18 @@ export default function Area({ areaState }: AreaProps) {
         return;
       }
 
-      if (mouseIsDown && areaState.id !== quizBuilderState.selectedFeatureId) {
+      if (
+        mouseIsDown &&
+        areaState.featureId !== quizBuilderState.selectedFeatureId
+      ) {
         setToggleOnNextClick(false);
       } else {
         setToggleOnNextClick(true);
       }
 
       quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-        feature: areaState,
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureState: areaState,
       });
     },
     [
@@ -86,7 +89,7 @@ export default function Area({ areaState }: AreaProps) {
   const handleClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
       if (
-        areaState.id !== quizBuilderState.selectedFeatureId ||
+        areaState.featureId !== quizBuilderState.selectedFeatureId ||
         !toggleOnNextClick
       ) {
         event.preventDefault();
@@ -103,7 +106,7 @@ export default function Area({ areaState }: AreaProps) {
       value={Array.from(quizBuilderState.openFeatureIds)}
       onValueChange={handleValueChange}
     >
-      <Accordion.Item value={areaState.id}>
+      <Accordion.Item value={areaState.featureId}>
         <Accordion.Header
           className="relative"
           onBlur={handleBlur}
@@ -115,7 +118,7 @@ export default function Area({ areaState }: AreaProps) {
           <EditFeatureButton featureState={areaState} />
           <Accordion.Trigger
             className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
-              areaState.id === quizBuilderState.selectedFeatureId
+              areaState.featureId === quizBuilderState.selectedFeatureId
                 ? "outline outline-2 outline-red-700"
                 : ""
             }`}
@@ -123,7 +126,7 @@ export default function Area({ areaState }: AreaProps) {
           >
             <FeatureName featureState={areaState} />
             <OpenChevron
-              isOpen={quizBuilderState.openFeatureIds.has(areaState.id)}
+              isOpen={quizBuilderState.openFeatureIds.has(areaState.featureId)}
             />
           </Accordion.Trigger>
         </Accordion.Header>

@@ -27,7 +27,7 @@ export default function FeatureName({ featureState }: FeatureNameProps) {
   );
 
   const isRenaming = useMemo(() => {
-    if (quizBuilderState.renamingFeatureIds.has(featureState.id)) {
+    if (quizBuilderState.renamingFeatureIds.has(featureState.featureId)) {
       return true;
     }
 
@@ -52,14 +52,14 @@ export default function FeatureName({ featureState }: FeatureNameProps) {
         event.stopPropagation();
 
         quizBuilderStateDispatch({
-          type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
-          feature: featureState,
+          dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
+          featureState: featureState,
           isRenaming: false,
         });
 
         allFeaturesDispatch({
-          type: AllFeaturesDispatchType.RENAME_FEATURE,
-          feature: featureState,
+          dispatchType: AllFeaturesDispatchType.RENAME,
+          featureState: featureState,
           name: input,
         });
       }
@@ -82,15 +82,15 @@ export default function FeatureName({ featureState }: FeatureNameProps) {
     setInput(featureState.userDefinedName || featureState.shortName);
 
     quizBuilderStateDispatch({
-      type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
-      feature: featureState,
+      dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
+      featureState: featureState,
       isRenaming: false,
     });
   }
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
-      {quizBuilderState.renamingFeatureIds.has(featureState.id) ? (
+      {quizBuilderState.renamingFeatureIds.has(featureState.featureId) ? (
         <input
           ref={inputRef}
           className="bg-transparent w-full focus:outline-none"

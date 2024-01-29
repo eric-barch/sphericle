@@ -51,7 +51,7 @@ function quizTakerStateReducer(
   quizTakerState: QuizTakerState,
   action: QuizTakerStateDispatch,
 ): QuizTakerState {
-  switch (action.type) {
+  switch (action.dispatchType) {
     case QuizTakerStateDispatchType.RESET: {
       const { rootId, allFeatures } = action;
 
@@ -71,8 +71,8 @@ function quizTakerStateReducer(
 
       const newQuizTaker = { ...quizTakerState };
 
-      newQuizTaker.remainingFeatureIds.delete(featureState.id);
-      newQuizTaker.correctFeatureIds.add(featureState.id);
+      newQuizTaker.remainingFeatureIds.delete(featureState.featureId);
+      newQuizTaker.correctFeatureIds.add(featureState.featureId);
 
       return newQuizTaker;
     }
@@ -81,8 +81,8 @@ function quizTakerStateReducer(
 
       const newQuizTaker = { ...quizTakerState };
 
-      newQuizTaker.remainingFeatureIds.delete(featureState.id);
-      newQuizTaker.incorrectFeatureIds.add(featureState.id);
+      newQuizTaker.remainingFeatureIds.delete(featureState.featureId);
+      newQuizTaker.incorrectFeatureIds.add(featureState.featureId);
 
       return newQuizTaker;
     }

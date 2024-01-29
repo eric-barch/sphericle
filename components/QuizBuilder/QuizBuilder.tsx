@@ -24,7 +24,10 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
     return isRootState(newRootState) ? newRootState : null;
   }, [allFeatures, rootId]);
   const displayedFeature = useMemo(() => {
-    const { activeSearchOption, selectedFeatureId } = quizBuilderState;
+    const {
+      featureAdderFeatureState: activeSearchOption,
+      selectedFeatureId: selectedFeatureId,
+    } = quizBuilderState;
     const selectedFeature = allFeatures.get(selectedFeatureId);
     return (
       activeSearchOption ||

@@ -118,8 +118,8 @@ function getAreaState(
   const displayBounds = getDisplayBounds(polygons, searchBounds);
 
   return {
-    id: crypto.randomUUID(),
-    parentFeatureId: parentFeature.id,
+    featureId: crypto.randomUUID(),
+    parentFeatureId: parentFeature.featureId,
     subfeatureIds: new Set<string>(),
     openStreetMapPlaceId: osmItem.place_id,
     longName: osmItem.display_name,

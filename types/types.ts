@@ -10,7 +10,7 @@ import {
 export type AllFeatures = Map<string, FeatureState>;
 
 export interface FeatureState {
-  id: string;
+  featureId: string;
   featureType: FeatureType;
 }
 
@@ -47,7 +47,7 @@ export interface PointState extends FeatureState, SubfeatureState {
 }
 
 export interface QuizBuilderState {
-  activeSearchOption: SubfeatureState | null;
+  featureAdderFeatureState: SubfeatureState | null;
   selectedFeatureId: string | null;
   openFeatureIds: Set<string>;
   addingFeatureIds: Set<string>;
@@ -81,72 +81,72 @@ export interface OsmItem {
 export type AllFeaturesDispatch =
   | AddSubfeatureDispatch
   | SetSubfeaturesDispatch
-  | RenameFeatureDispatch
-  | DeleteFeatureDispatch;
+  | RenameDispatch
+  | DeleteDispatch;
 
 interface BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType;
+  dispatchType: AllFeaturesDispatchType;
 }
 
 interface AddSubfeatureDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.ADD_SUBFEATURE;
-  parentFeature: ParentFeatureState;
-  subfeature: SubfeatureState;
+  dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE;
+  featureState: ParentFeatureState;
+  subfeatureState: SubfeatureState;
 }
 
 interface SetSubfeaturesDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.SET_SUBFEATURES;
-  parentFeature: ParentFeatureState;
+  dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES;
+  featureState: ParentFeatureState;
   subfeatureIds: string[];
 }
 
-interface RenameFeatureDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.RENAME_FEATURE;
-  feature: SubfeatureState;
+interface RenameDispatch extends BaseAllFeaturesDispatch {
+  dispatchType: AllFeaturesDispatchType.RENAME;
+  featureState: SubfeatureState;
   name: string;
 }
 
-interface DeleteFeatureDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.DELETE_FEATURE;
-  feature: SubfeatureState;
+interface DeleteDispatch extends BaseAllFeaturesDispatch {
+  dispatchType: AllFeaturesDispatchType.DELETE;
+  featureState: SubfeatureState;
 }
 
 export type QuizBuilderStateDispatch =
-  | SetActiveSearchOptionDispatch
-  | SetSelectedFeatureDispatch
-  | SetFeatureIsAddingDispatch
-  | SetFeatureIsOpenDispatch
-  | SetFeatureIsRenamingDispatch;
+  | SetFeatureAdderSelectedDispatch
+  | SetSelectedDispatch
+  | SetIsAddingDispatch
+  | SetIsOpenDispatch
+  | SetIsRenamingDispatch;
 
 interface BaseQuizBuilderStateDispatch {
-  type: QuizBuilderStateDispatchType;
+  dispatchType: QuizBuilderStateDispatchType;
 }
 
-interface SetActiveSearchOptionDispatch extends BaseQuizBuilderStateDispatch {
-  type: QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION;
-  activeSearchOption: SubfeatureState | null;
+interface SetFeatureAdderSelectedDispatch extends BaseQuizBuilderStateDispatch {
+  dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED;
+  featureState: SubfeatureState | null;
 }
 
-interface SetSelectedFeatureDispatch extends BaseQuizBuilderStateDispatch {
-  type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE;
-  feature: SubfeatureState | null;
+interface SetSelectedDispatch extends BaseQuizBuilderStateDispatch {
+  dispatchType: QuizBuilderStateDispatchType.SET_SELECTED;
+  featureState: SubfeatureState | null;
 }
 
-interface SetFeatureIsAddingDispatch extends BaseQuizBuilderStateDispatch {
-  type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING;
-  feature: FeatureState;
+interface SetIsAddingDispatch extends BaseQuizBuilderStateDispatch {
+  dispatchType: QuizBuilderStateDispatchType.SET_IS_ADDING;
+  featureState: FeatureState;
   isAdding: boolean;
 }
 
-interface SetFeatureIsOpenDispatch extends BaseQuizBuilderStateDispatch {
-  type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN;
-  feature: SubfeatureState;
+interface SetIsOpenDispatch extends BaseQuizBuilderStateDispatch {
+  dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN;
+  featureState: SubfeatureState;
   isOpen: boolean;
 }
 
-interface SetFeatureIsRenamingDispatch extends BaseQuizBuilderStateDispatch {
-  type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING;
-  feature: SubfeatureState;
+interface SetIsRenamingDispatch extends BaseQuizBuilderStateDispatch {
+  dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING;
+  featureState: SubfeatureState;
   isRenaming: boolean;
 }
 
@@ -156,21 +156,21 @@ export type QuizTakerStateDispatch =
   | MarkIncorrectDispatch;
 
 interface BaseQuizTakerStateDispatch {
-  type: QuizTakerStateDispatchType;
+  dispatchType: QuizTakerStateDispatchType;
 }
 
 interface ResetDispatch extends BaseQuizTakerStateDispatch {
-  type: QuizTakerStateDispatchType.RESET;
+  dispatchType: QuizTakerStateDispatchType.RESET;
   rootId: string;
   allFeatures: AllFeatures;
 }
 
 interface MarkCorrectDispatch extends BaseQuizTakerStateDispatch {
-  type: QuizTakerStateDispatchType.MARK_CORRECT;
+  dispatchType: QuizTakerStateDispatchType.MARK_CORRECT;
   featureState: SubfeatureState;
 }
 
 interface MarkIncorrectDispatch extends BaseQuizTakerStateDispatch {
-  type: QuizTakerStateDispatchType.MARK_INCORRECT;
+  dispatchType: QuizTakerStateDispatchType.MARK_INCORRECT;
   featureState: SubfeatureState;
 }

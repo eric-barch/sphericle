@@ -242,7 +242,9 @@ export default function Map({
           setBounds(displayedFeature.displayBounds);
 
           if (isAreaState(displayedFeature)) {
-            if (quizBuilderState.openFeatureIds.has(displayedFeature.id)) {
+            if (
+              quizBuilderState.openFeatureIds.has(displayedFeature.featureId)
+            ) {
               setEmptyAreas([displayedFeature]);
               setFilledAreas(null);
               setMarkedPoints(null);
@@ -258,7 +260,9 @@ export default function Map({
           }
         } else if (isAreaState(parentFeature)) {
           if (isAreaState(displayedFeature)) {
-            if (quizBuilderState.openFeatureIds.has(displayedFeature.id)) {
+            if (
+              quizBuilderState.openFeatureIds.has(displayedFeature.featureId)
+            ) {
               setBounds(displayedFeature.displayBounds);
               setEmptyAreas([displayedFeature]);
               setFilledAreas(null);

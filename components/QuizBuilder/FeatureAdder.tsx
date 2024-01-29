@@ -46,7 +46,9 @@ export default function FeatureAdder({
 }: FeatureAdderProps) {
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
-  const { areaSearch, pointSearch } = useFeatureSearches(parentFeatureState.id);
+  const { areaSearch, pointSearch } = useFeatureSearches(
+    parentFeatureState.featureId,
+  );
 
   const [featureType, setFeatureTypeRaw] = useState<FeatureType>(
     FeatureType.AREA,
@@ -69,15 +71,15 @@ export default function FeatureAdder({
 
       if (isRootState(parentFeatureState)) {
         quizBuilderStateDispatch({
-          type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-          feature: null,
+          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+          featureState: null,
         });
       }
 
       if (isSubfeatureState(parentFeatureState)) {
         quizBuilderStateDispatch({
-          type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-          feature: parentFeatureState,
+          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+          featureState: parentFeatureState,
         });
       }
     },
@@ -97,20 +99,20 @@ export default function FeatureAdder({
       pointSearch.reset();
 
       allFeaturesDispatch({
-        type: AllFeaturesDispatchType.ADD_SUBFEATURE,
-        parentFeature: parentFeatureState,
-        subfeature,
+        dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE,
+        featureState: parentFeatureState,
+        subfeatureState: subfeature,
       });
 
       quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-        feature: subfeature,
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureState: subfeature,
       });
 
       if (isParentFeatureState(subfeature)) {
         quizBuilderStateDispatch({
-          type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
-          feature: subfeature,
+          dispatchType: QuizBuilderStateDispatchType.SET_IS_ADDING,
+          featureState: subfeature,
           isAdding: true,
         });
       }
@@ -137,7 +139,7 @@ export default function FeatureAdder({
 
   if (
     !isRootState(parentFeatureState) &&
-    !quizBuilderState.addingFeatureIds.has(parentFeatureState.id)
+    !quizBuilderState.addingFeatureIds.has(parentFeatureState.featureId)
   ) {
     return null;
   }
@@ -338,8 +340,8 @@ function Options({
    * Replace with Radix UI.*/
   useEffect(() => {
     quizBuilderStateDispatch({
-      type: QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION,
-      activeSearchOption: activeOption,
+      dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
+      featureState: activeOption,
     });
   }, [quizBuilderStateDispatch, activeOption]);
 
@@ -389,11 +391,11 @@ function Options({
         <OptionsPlaceholder text={optionsPlaceholderText} />
       ) : featureType === FeatureType.AREA ? (
         areaSearch.results.map((result: AreaState) => (
-          <Option key={result.id} feature={result} />
+          <Option key={result.featureId} feature={result} />
         ))
       ) : (
         pointSearch.results.map((result: PointState) => (
-          <Option key={result.id} feature={result} />
+          <Option key={result.featureId} feature={result} />
         ))
       )}
     </Combobox.Options>

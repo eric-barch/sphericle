@@ -29,14 +29,14 @@ export default function EditFeatureButton({
       }
 
       quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_OPEN,
-        feature: featureState,
+        dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+        featureState: featureState,
         isOpen: true,
       });
 
       quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_ADDING,
-        feature: featureState,
+        dispatchType: QuizBuilderStateDispatchType.SET_IS_ADDING,
+        featureState: featureState,
         isAdding: true,
       });
     },
@@ -48,8 +48,8 @@ export default function EditFeatureButton({
       event.stopPropagation();
 
       quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_FEATURE_IS_RENAMING,
-        feature: featureState,
+        dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
+        featureState: featureState,
         isRenaming: true,
       });
     },
@@ -61,8 +61,8 @@ export default function EditFeatureButton({
       event.stopPropagation();
 
       allFeaturesDispatch({
-        type: AllFeaturesDispatchType.DELETE_FEATURE,
-        feature: featureState,
+        dispatchType: AllFeaturesDispatchType.DELETE,
+        featureState: featureState,
       });
     },
     [featureState, allFeaturesDispatch],

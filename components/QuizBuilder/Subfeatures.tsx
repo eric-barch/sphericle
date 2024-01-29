@@ -29,8 +29,8 @@ export default function Subfeatures({
   const handleReorder = useCallback(
     (subfeatureIds: string[]) => {
       allFeaturesDispatch({
-        type: AllFeaturesDispatchType.SET_SUBFEATURES,
-        parentFeature: parentFeatureState,
+        dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES,
+        featureState: parentFeatureState,
         subfeatureIds,
       });
     },
@@ -57,7 +57,7 @@ export default function Subfeatures({
           </Reorder.Item>
         ))}
       </Reorder.Group>
-      {quizBuilderState.addingFeatureIds.has(parentFeatureState.id) && (
+      {quizBuilderState.addingFeatureIds.has(parentFeatureState.featureId) && (
         <FeatureAdder parentFeatureState={parentFeatureState} />
       )}
     </div>

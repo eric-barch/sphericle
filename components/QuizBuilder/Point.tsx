@@ -20,8 +20,8 @@ export default function Point({ pointState }: PointProps) {
   function handleFocus(event: FocusEvent<HTMLDivElement>) {
     if (!event.currentTarget.contains(event.relatedTarget)) {
       quizBuilderStateDispatch({
-        type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE,
-        feature: pointState,
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureState: pointState,
       });
     }
   }
@@ -42,7 +42,7 @@ export default function Point({ pointState }: PointProps) {
       <EditFeatureButton featureState={pointState} />
       <button
         className={`w-full p-1 rounded-2xl text-left bg-gray-600 ${
-          pointState.id === quizBuilderState.selectedFeatureId
+          pointState.featureId === quizBuilderState.selectedFeatureId
             ? "outline outline-2 outline-red-700"
             : ""
         }`}
