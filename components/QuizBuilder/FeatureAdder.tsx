@@ -4,7 +4,6 @@ import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import {
   isAreaState,
   isParentFeatureState,
-  isPointState,
   isRootState,
   isSubfeatureState,
 } from "@/helpers/feature-type-guards";
@@ -24,7 +23,6 @@ import {
   ChangeEvent,
   FocusEvent,
   KeyboardEvent,
-  ReactNode,
   RefObject,
   useCallback,
   useEffect,
@@ -54,7 +52,6 @@ export default function FeatureAdder({
     FeatureType.AREA,
   );
   const [input, setInput] = useState<string>("");
-  const [optionWasSelected, setOptionWasSelected] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -64,10 +61,9 @@ export default function FeatureAdder({
         return;
       }
 
-      if (optionWasSelected) {
-        setOptionWasSelected(false);
-        return;
-      }
+      console.log("focus FeatureAdder");
+      console.log("event.currentTarget", event.currentTarget);
+      console.log("event.relatedTarget", event.relatedTarget);
 
       if (isRootState(parentFeatureState)) {
         quizBuilderStateDispatch({
@@ -83,17 +79,16 @@ export default function FeatureAdder({
         });
       }
     },
-    [optionWasSelected, parentFeatureState, quizBuilderStateDispatch],
+    [parentFeatureState, quizBuilderStateDispatch],
   );
 
-  const handleChange = useCallback(
-    (subfeature: SubfeatureState) => {
+  const handleSelectOption = useCallback(
+    (subfeatureState: SubfeatureState) => {
       if (inputRef.current) {
         inputRef.current.value = "";
       }
 
       setInput("");
-      setOptionWasSelected(true);
 
       areaSearch.reset();
       pointSearch.reset();
@@ -101,18 +96,18 @@ export default function FeatureAdder({
       allFeaturesDispatch({
         dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE,
         featureState: parentFeatureState,
-        subfeatureState: subfeature,
+        subfeatureState,
       });
 
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-        featureState: subfeature,
+        featureState: subfeatureState,
       });
 
-      if (isParentFeatureState(subfeature)) {
+      if (isParentFeatureState(subfeatureState)) {
         quizBuilderStateDispatch({
           dispatchType: QuizBuilderStateDispatchType.SET_IS_ADDING,
-          featureState: subfeature,
+          featureState: subfeatureState,
           isAdding: true,
         });
       }
@@ -146,7 +141,7 @@ export default function FeatureAdder({
 
   return (
     <div className="relative" onFocus={handleFocus}>
-      <Combobox onChange={handleChange}>
+      <Combobox onChange={handleSelectOption}>
         {({ activeOption }) => (
           <>
             <Input
@@ -212,26 +207,38 @@ function Input({
     (event: ChangeEvent<HTMLInputElement>) => {
       setInput(event.target.value);
 
-      if (event.target.value === "") {
-        pointSearch.reset();
-      } else if (isPointState(parentFeatureState)) {
+      if (featureType === FeatureType.POINT) {
         pointSearch.setTerm(event.target.value);
       }
     },
-    [parentFeatureState, pointSearch, setInput],
+    [featureType, pointSearch, setInput],
   );
 
+  // TODO: this is broken.
   const handleEnter = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
       if (
-        isParentFeatureState(parentFeatureState) &&
-        input !== areaSearch.term
+        featureType === FeatureType.AREA &&
+        areaSearch.status === SearchStatus.SEARCHING
       ) {
+        event.preventDefault();
+        return;
+      }
+
+      if (
+        featureType === FeatureType.POINT &&
+        pointSearch.status === SearchStatus.SEARCHING
+      ) {
+        event.preventDefault();
+        return;
+      }
+
+      if (featureType === FeatureType.AREA && input !== areaSearch.term) {
         event.preventDefault();
         areaSearch.setTerm(input);
       }
     },
-    [areaSearch, parentFeatureState, input],
+    [areaSearch, pointSearch, featureType, input],
   );
 
   // override HeadlessUI Combobox Tab behavior
@@ -337,7 +344,7 @@ function Options({
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
   /**TODO: This is hacky, but only way I have been able to work arond HeadlessUI Combobox bug.
-   * Replace with Radix UI.*/
+   * Probably need to replace with Radix UI.*/
   useEffect(() => {
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
