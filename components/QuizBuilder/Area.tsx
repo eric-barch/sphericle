@@ -1,9 +1,11 @@
 "use client";
 
+import { isAreaState } from "@/helpers/feature-type-guards";
 import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
 import { FocusEvent, MouseEvent, useCallback, useState } from "react";
+import { useAllFeatures } from "../AllFeaturesProvider";
 import EditFeatureButton from "./EditFeatureButton";
 import FeatureName from "./FeatureName";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
@@ -14,6 +16,7 @@ interface AreaProps {
 }
 
 export default function Area({ areaState }: AreaProps) {
+  const { allFeatures } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const [mouseIsDown, setMouseIsDown] = useState<boolean>(false);

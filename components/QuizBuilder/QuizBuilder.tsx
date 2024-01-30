@@ -4,7 +4,10 @@ import { useAllFeatures } from "@/components/AllFeaturesProvider";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Map from "@/components/Map";
 import SplitPane from "@/components/SplitPane";
-import { isRootState, isSubfeatureState } from "@/helpers/feature-type-guards";
+import {
+  isParentFeatureState,
+  isSubfeatureState,
+} from "@/helpers/feature-type-guards";
 import { DisplayMode } from "@/types";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
@@ -21,7 +24,7 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
 
   const rootState = useMemo(() => {
     const newRootState = allFeatures.get(rootId);
-    return isRootState(newRootState) ? newRootState : null;
+    return isParentFeatureState(newRootState) ? newRootState : null;
   }, [allFeatures, rootId]);
   const displayedFeature = useMemo(() => {
     const {
