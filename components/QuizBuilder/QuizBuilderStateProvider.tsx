@@ -69,80 +69,85 @@ function quizBuilderStateReducer(
 ) {
   switch (action.dispatchType) {
     case QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED: {
-      const { featureState: activeSearchOption } = action;
+      const { featureState } = action;
 
       const newQuizBuilderState = { ...quizBuilderState };
 
-      if (!activeSearchOption) {
+      if (!featureState) {
         return newQuizBuilderState;
       }
 
-      newQuizBuilderState.featureAdderFeatureState = activeSearchOption;
+      newQuizBuilderState.featureAdderFeatureState = featureState;
 
       return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_SELECTED: {
-      const { featureState: feature } = action;
+      const { featureState } = action;
+
+      console.log(
+        "QuizBuilderStateDispatchType.SET_SELECTED",
+        featureState?.shortName,
+      );
 
       const newQuizBuilderState = { ...quizBuilderState };
 
       newQuizBuilderState.selectedFeatureId =
-        (feature && feature.featureId) || null;
+        (featureState && featureState.featureId) || null;
       newQuizBuilderState.featureAdderFeatureState = null;
 
       return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_IS_ADDING: {
-      const { featureState: feature, isAdding } = action;
+      const { featureState, isAdding } = action;
 
       const newQuizBuilderState = { ...quizBuilderState };
 
-      if (!feature || !isParentFeatureState(feature)) {
+      if (!featureState || !isParentFeatureState(featureState)) {
         return newQuizBuilderState;
       }
 
       if (isAdding) {
-        newQuizBuilderState.addingFeatureIds.add(feature.featureId);
+        newQuizBuilderState.addingFeatureIds.add(featureState.featureId);
       } else {
-        newQuizBuilderState.addingFeatureIds.delete(feature.featureId);
+        newQuizBuilderState.addingFeatureIds.delete(featureState.featureId);
       }
 
       return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_IS_OPEN: {
-      const { featureState: feature, isOpen } = action;
+      const { featureState, isOpen } = action;
 
       const newQuizBuilderState = { ...quizBuilderState };
 
-      if (!feature || !isParentFeatureState(feature)) {
+      if (!featureState || !isParentFeatureState(featureState)) {
         return newQuizBuilderState;
       }
 
       if (isOpen) {
-        newQuizBuilderState.openFeatureIds.add(feature.featureId);
+        newQuizBuilderState.openFeatureIds.add(featureState.featureId);
       } else {
-        newQuizBuilderState.openFeatureIds.delete(feature.featureId);
+        newQuizBuilderState.openFeatureIds.delete(featureState.featureId);
 
-        if (feature.subfeatureIds.size > 0) {
-          newQuizBuilderState.addingFeatureIds.delete(feature.featureId);
+        if (featureState.subfeatureIds.size > 0) {
+          newQuizBuilderState.addingFeatureIds.delete(featureState.featureId);
         }
       }
 
       return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_IS_RENAMING: {
-      const { featureState: feature, isRenaming } = action;
+      const { featureState, isRenaming } = action;
 
       const newQuizBuilderState = { ...quizBuilderState };
 
-      if (!feature) {
+      if (!featureState) {
         return newQuizBuilderState;
       }
 
       if (isRenaming) {
-        newQuizBuilderState.renamingFeatureIds.add(feature.featureId);
+        newQuizBuilderState.renamingFeatureIds.add(featureState.featureId);
       } else {
-        newQuizBuilderState.renamingFeatureIds.delete(feature.featureId);
+        newQuizBuilderState.renamingFeatureIds.delete(featureState.featureId);
       }
 
       return newQuizBuilderState;
