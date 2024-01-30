@@ -6,13 +6,17 @@ import {
   isPointState,
   isSubfeatureState,
 } from "@/helpers/feature-type-guards";
-import { AllFeaturesDispatchType, ParentFeatureState } from "@/types";
+import {
+  AllFeaturesDispatchType,
+  ParentFeatureState,
+  SubfeatureState,
+} from "@/types";
 import { Reorder } from "framer-motion";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Area from "./Area";
 import FeatureAdder from "./FeatureAdder";
-import Point from "./Point";
 import { useQuizBuilderState } from "./QuizBuilderStateProvider";
+import Point from "./Point";
 
 interface SubfeaturesProps {
   className?: string;
@@ -23,7 +27,7 @@ export default function Subfeatures({
   className,
   parentFeatureState,
 }: SubfeaturesProps) {
-  const { allFeaturesDispatch } = useAllFeatures();
+  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState } = useQuizBuilderState();
 
   const handleReorder = useCallback(
