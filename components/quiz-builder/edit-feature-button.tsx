@@ -1,21 +1,18 @@
 import { useAllFeatures } from "@/components/all-features-provider";
-import { isParentFeatureState } from "@/helpers/feature-type-guards";
-import {
-  AllFeaturesDispatchType,
-  QuizBuilderStateDispatchType,
-  SubfeatureState,
-} from "@/types";
+import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { MouseEvent, useCallback } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
 interface EditFeatureButtonProps {
-  featureState: SubfeatureState;
+  featureId: string;
+  isParentFeatureState: boolean;
 }
 
 export default function EditFeatureButton({
-  featureState,
+  featureId,
+  isParentFeatureState,
 }: EditFeatureButtonProps) {
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
@@ -23,31 +20,27 @@ export default function EditFeatureButton({
   const handleTriggerClick = useCallback(() => {
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-      featureState,
+      featureId,
     });
-  }, [featureState, quizBuilderStateDispatch]);
+  }, [featureId, quizBuilderStateDispatch]);
 
   const handleAddSubfeatureClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       event.stopPropagation();
 
-      if (!isParentFeatureState(featureState)) {
-        return;
-      }
-
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
-        featureState: featureState,
+        featureId,
         isOpen: true,
       });
 
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_IS_ADDING,
-        featureState: featureState,
+        featureId,
         isAdding: true,
       });
     },
-    [featureState, quizBuilderStateDispatch],
+    [featureId, quizBuilderStateDispatch],
   );
 
   const handleRenameClick = useCallback(
@@ -56,11 +49,11 @@ export default function EditFeatureButton({
 
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
-        featureState: featureState,
+        featureId,
         isRenaming: true,
       });
     },
-    [featureState, quizBuilderStateDispatch],
+    [featureId, quizBuilderStateDispatch],
   );
 
   const handleDeleteClick = useCallback(
@@ -69,10 +62,10 @@ export default function EditFeatureButton({
 
       allFeaturesDispatch({
         dispatchType: AllFeaturesDispatchType.DELETE,
-        featureId: featureState.featureId,
+        featureId,
       });
     },
-    [featureState, allFeaturesDispatch],
+    [featureId, allFeaturesDispatch],
   );
 
   return (
@@ -84,7 +77,7 @@ export default function EditFeatureButton({
         className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        {isParentFeatureState(featureState) && (
+        {isParentFeatureState && (
           <DropdownMenu.Item
             onClick={handleAddSubfeatureClick}
             className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"

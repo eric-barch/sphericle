@@ -28,7 +28,7 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   }, [allFeatures, rootId]);
   const displayedFeature = useMemo(() => {
     const {
-      featureAdderFeatureState: activeSearchOption,
+      featureAdderSelectedFeatureState: activeSearchOption,
       selectedFeatureId: selectedFeatureId,
     } = quizBuilderState;
     const selectedFeature = allFeatures.get(selectedFeatureId);
