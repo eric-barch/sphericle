@@ -84,11 +84,6 @@ function quizBuilderStateReducer(
     case QuizBuilderStateDispatchType.SET_SELECTED: {
       const { featureState } = action;
 
-      console.log(
-        "QuizBuilderStateDispatchType.SET_SELECTED",
-        featureState?.shortName,
-      );
-
       const newQuizBuilderState = { ...quizBuilderState };
 
       newQuizBuilderState.selectedFeatureId =

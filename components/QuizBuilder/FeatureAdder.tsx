@@ -34,6 +34,7 @@ import { useQuizBuilderState } from "./QuizBuilderStateProvider";
 import { AreaSearch } from "./use-area-search.hook";
 import useFeatureSearches from "./use-feature-searches.hook";
 import { PointSearch } from "./use-point-search.hook";
+import { set } from "lodash";
 
 interface FeatureAdderProps {
   parentFeatureState: ParentFeatureState;
@@ -48,6 +49,7 @@ export default function FeatureAdder({
     parentFeatureState.featureId,
   );
 
+  const [isFocused, setIsFocused] = useState(false);
   const [featureType, setFeatureTypeRaw] = useState<FeatureType>(
     FeatureType.AREA,
   );
@@ -55,15 +57,25 @@ export default function FeatureAdder({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
+    if (event.currentTarget.contains(event.relatedTarget)) {
+      return;
+    }
+
+    setIsFocused(false);
+  }, []);
+
   const handleFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
       if (event.currentTarget.contains(event.relatedTarget)) {
         return;
       }
 
-      console.log("focus FeatureAdder");
-      console.log("event.currentTarget", event.currentTarget);
-      console.log("event.relatedTarget", event.relatedTarget);
+      if (isFocused) {
+        return;
+      }
+
+      setIsFocused(true);
 
       if (isRootState(parentFeatureState)) {
         quizBuilderStateDispatch({
@@ -79,7 +91,7 @@ export default function FeatureAdder({
         });
       }
     },
-    [parentFeatureState, quizBuilderStateDispatch],
+    [isFocused, parentFeatureState, quizBuilderStateDispatch],
   );
 
   const handleSelectOption = useCallback(
@@ -140,10 +152,10 @@ export default function FeatureAdder({
   }
 
   return (
-    <div className="relative" onFocus={handleFocus}>
+    <div className="relative">
       <Combobox onChange={handleSelectOption}>
         {({ activeOption }) => (
-          <>
+          <div onBlur={handleBlur} onFocus={handleFocus}>
             <Input
               inputRef={inputRef}
               parentFeatureState={parentFeatureState}
@@ -161,7 +173,7 @@ export default function FeatureAdder({
               areaSearch={areaSearch}
               pointSearch={pointSearch}
             />
-          </>
+          </div>
         )}
       </Combobox>
     </div>
@@ -198,10 +210,6 @@ function Input({
       }`;
     }
   })();
-
-  function handleBlurCapture(event: FocusEvent<HTMLInputElement>) {
-    event.stopPropagation();
-  }
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -288,7 +296,6 @@ function Input({
         ref={inputRef}
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
         placeholder={placeholder}
-        onBlurCapture={handleBlurCapture}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
