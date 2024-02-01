@@ -23,6 +23,7 @@ import {
   ChangeEvent,
   FocusEvent,
   KeyboardEvent,
+  MouseEvent,
   RefObject,
   useCallback,
   useEffect,
@@ -34,7 +35,6 @@ import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { AreaSearch } from "./use-area-search.hook";
 import useFeatureSearches from "./use-feature-searches.hook";
 import { PointSearch } from "./use-point-search.hook";
-import { set } from "lodash";
 
 interface FeatureAdderProps {
   parentFeatureState: ParentFeatureState;
@@ -93,6 +93,25 @@ export default function FeatureAdder({
     },
     [isFocused, parentFeatureState, quizBuilderStateDispatch],
   );
+
+  // const handleClick = useCallback(
+  //   (event: MouseEvent<HTMLDivElement>) => {
+  //     if (isRootState(parentFeatureState)) {
+  //       quizBuilderStateDispatch({
+  //         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+  //         featureState: null,
+  //       });
+  //     }
+
+  //     if (isSubfeatureState(parentFeatureState)) {
+  //       quizBuilderStateDispatch({
+  //         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+  //         featureState: parentFeatureState,
+  //       });
+  //     }
+  //   },
+  //   [parentFeatureState, quizBuilderStateDispatch],
+  // );
 
   const handleSelectOption = useCallback(
     (subfeatureState: SubfeatureState) => {

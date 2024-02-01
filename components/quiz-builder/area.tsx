@@ -3,7 +3,7 @@
 import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
-import { FocusEvent, MouseEvent, useCallback, useState } from "react";
+import { MouseEvent, useCallback } from "react";
 import EditFeatureButton from "./edit-feature-button";
 import FeatureName from "./feature-name";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
@@ -15,10 +15,6 @@ interface AreaProps {
 
 export default function Area({ areaState }: AreaProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
-
-  // TODO: Hacky. Fix.
-  const [mouseIsDown, setMouseIsDown] = useState<boolean>(false);
-  const [toggleOnNextClick, setToggleOnNextClick] = useState<boolean>(true);
 
   const handleValueChange = useCallback(
     (value: string[]) => {
@@ -39,66 +35,18 @@ export default function Area({ areaState }: AreaProps) {
     [areaState, quizBuilderStateDispatch],
   );
 
-  const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
-    if (event.currentTarget.contains(event.relatedTarget)) {
-      return;
-    }
-
-    setToggleOnNextClick(false);
-  }, []);
-
-  const handleFocus = useCallback(
-    (event: FocusEvent<HTMLDivElement>) => {
-      if (event.currentTarget.contains(event.relatedTarget)) {
-        return;
-      }
-
-      if (
-        mouseIsDown &&
-        areaState.featureId !== quizBuilderState.selectedFeatureId
-      ) {
-        setToggleOnNextClick(false);
-      } else {
-        setToggleOnNextClick(true);
-      }
-
+  const handleClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
         featureState: areaState,
       });
-    },
-    [
-      areaState,
-      quizBuilderState.selectedFeatureId,
-      quizBuilderStateDispatch,
-      mouseIsDown,
-    ],
-  );
 
-  const handleMouseDown = useCallback(() => {
-    setMouseIsDown(true);
-  }, []);
-
-  const handleMouseUp = useCallback(() => {
-    setMouseIsDown(false);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setMouseIsDown(false);
-  }, []);
-
-  const handleClick = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
-      if (
-        areaState.featureId !== quizBuilderState.selectedFeatureId ||
-        !toggleOnNextClick
-      ) {
+      if (areaState.featureId !== quizBuilderState.selectedFeatureId) {
         event.preventDefault();
       }
-
-      setToggleOnNextClick(true);
     },
-    [areaState, quizBuilderState.selectedFeatureId, toggleOnNextClick],
+    [areaState, quizBuilderState.selectedFeatureId, quizBuilderStateDispatch],
   );
 
   return (
@@ -108,14 +56,7 @@ export default function Area({ areaState }: AreaProps) {
       onValueChange={handleValueChange}
     >
       <Accordion.Item value={areaState.featureId}>
-        <Accordion.Header
-          className="relative"
-          onBlur={handleBlur}
-          onFocus={handleFocus}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-        >
+        <Accordion.Header className="relative">
           <EditFeatureButton featureState={areaState} />
           <Accordion.Trigger
             className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${

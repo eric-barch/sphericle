@@ -20,6 +20,15 @@ export default function EditFeatureButton({
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
+  const handleTriggerClick = useCallback(() => {
+    console.log("trigger click");
+
+    quizBuilderStateDispatch({
+      dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+      featureState,
+    });
+  }, [featureState, quizBuilderStateDispatch]);
+
   const handleAddSubfeatureClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       event.stopPropagation();
@@ -69,7 +78,7 @@ export default function EditFeatureButton({
   );
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root onOpenChange={handleTriggerClick}>
       <DropdownMenu.Trigger className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl left-1.5">
         <MoreVertical className="w-5 h-5" />
       </DropdownMenu.Trigger>
