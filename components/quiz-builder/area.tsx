@@ -48,8 +48,13 @@ export default function Area({ areaState }: AreaProps) {
       open={quizBuilderState.openFeatureIds.has(areaState.featureId)}
       onOpenChange={handleOpenChange}
     >
+      {/* EditFeatureButton must be BEFORE Collapsible.Trigger (rather than inside it) to receive 
+          accessibility focus in the correct order. */}
       <div className="relative">
-        <EditFeatureButton featureState={areaState} />
+        <EditFeatureButton
+          featureId={areaState.featureId}
+          isParentFeatureState={true}
+        />
         <Collapsible.Trigger
           className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
             areaState.featureId === quizBuilderState.selectedFeatureId

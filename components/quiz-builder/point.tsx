@@ -23,7 +23,7 @@ export default function Point({ pointState }: PointProps) {
 
   return (
     <div className="relative">
-      <EditFeatureButton featureState={pointState} />
+      <EditFeatureButton featureId={pointState} />
       <Button
         className={`w-full p-1 cursor-pointer rounded-2xl text-left bg-gray-600 ${
           pointState.featureId === quizBuilderState.selectedFeatureId
