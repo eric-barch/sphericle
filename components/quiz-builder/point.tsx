@@ -1,11 +1,11 @@
 "use client";
 
 import { PointState, QuizBuilderStateDispatchType } from "@/types";
-import { FocusEvent, MouseEvent } from "react";
+import { MouseEvent } from "react";
+import { Button } from "../ui/button";
 import EditFeatureButton from "./edit-feature-button";
 import FeatureName from "./feature-name";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
-import { Button } from "../ui/button";
 
 interface PointProps {
   pointState: PointState;

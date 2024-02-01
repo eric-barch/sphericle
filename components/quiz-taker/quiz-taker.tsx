@@ -1,7 +1,7 @@
 "use client";
 
 import { useAllFeatures } from "@/components/all-features-provider";
-import LoadingSpinner from "@/components/loading-spinner";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 import Map from "@/components/map";
 import { isSubfeatureState } from "@/helpers/feature-type-guards";
 import {
