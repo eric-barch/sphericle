@@ -32,7 +32,7 @@ export default function Point({ pointState }: PointProps) {
         }`}
         onClick={handleClick}
       >
-        <FeatureName featureState={pointState} />
+        <FeatureName featureId={pointState} />
       </Button>
     </div>
   );

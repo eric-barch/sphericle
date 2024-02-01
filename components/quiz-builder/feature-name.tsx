@@ -15,35 +15,24 @@ import {
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
 interface FeatureNameProps {
-  featureState: SubfeatureState;
+  featureId: string;
+  featureName: string;
+  isRenaming: boolean;
+  renameInputRef: React.RefObject<HTMLInputElement>;
 }
 
-export default function FeatureName({ featureState }: FeatureNameProps) {
+export default function FeatureName({
+  featureId,
+  featureName,
+  isRenaming,
+  renameInputRef,
+}: FeatureNameProps) {
   const { allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
+  const { quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const [input, setInput] = useState<string>(
-    featureState.userDefinedName || featureState.shortName,
-  );
+  const [input, setInput] = useState<string>(featureName);
 
-  const isRenaming = useMemo(() => {
-    if (quizBuilderState.renamingFeatureIds.has(featureState.featureId)) {
-      return true;
-    }
-
-    return false;
-  }, [quizBuilderState, featureState]);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (isRenaming) {
-        inputRef.current?.focus();
-        inputRef.current?.select();
-      }
-    }, 0);
-  }, [isRenaming]);
+  useEffect(() => {}, [isRenaming, renameInputRef]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
@@ -53,13 +42,13 @@ export default function FeatureName({ featureState }: FeatureNameProps) {
 
         quizBuilderStateDispatch({
           dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
-          featureState: featureState,
+          featureId,
           isRenaming: false,
         });
 
         allFeaturesDispatch({
           dispatchType: AllFeaturesDispatchType.RENAME,
-          featureState: featureState,
+          featureId,
           name: input,
         });
       }
@@ -68,9 +57,11 @@ export default function FeatureName({ featureState }: FeatureNameProps) {
         event.currentTarget.blur();
       }
     },
-    [allFeaturesDispatch, featureState, input, quizBuilderStateDispatch],
+    [allFeaturesDispatch, featureId, input, quizBuilderStateDispatch],
   );
 
+  /**TODO: Would rather do this with keydown if possible. Also, think it would be better to do by
+   * stopping propagation. */
   function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
     // Prevent default Radix Accordion toggle when typing spaces
     if (event.key === " ") {
@@ -79,20 +70,20 @@ export default function FeatureName({ featureState }: FeatureNameProps) {
   }
 
   function handleBlur() {
-    setInput(featureState.userDefinedName || featureState.shortName);
+    setInput(featureName);
 
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
-      featureState: featureState,
+      featureId,
       isRenaming: false,
     });
   }
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
-      {quizBuilderState.renamingFeatureIds.has(featureState.featureId) ? (
+      {isRenaming ? (
         <input
-          ref={inputRef}
+          ref={renameInputRef}
           className="bg-transparent w-full focus:outline-none"
           type="text"
           value={input}
@@ -102,7 +93,7 @@ export default function FeatureName({ featureState }: FeatureNameProps) {
           onBlur={handleBlur}
         />
       ) : (
-        <>{featureState.userDefinedName || featureState.shortName}</>
+        <>{featureName}</>
       )}
     </div>
   );
