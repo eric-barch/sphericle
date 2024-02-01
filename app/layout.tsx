@@ -1,5 +1,5 @@
 import AllFeaturesProvider from "@/components/all-features-provider";
-import Nav from "@/components/Nav";
+import Nav from "@/components/nav";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
