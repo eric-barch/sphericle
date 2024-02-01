@@ -1,7 +1,7 @@
 "use client";
 
-import QuizTaker from "@/components/QuizTaker";
-import QuizTakerStateProvider from "@/components/QuizTaker/QuizTakerStateProvider";
+import QuizTaker from "@/components/quiz-taker";
+import QuizTakerStateProvider from "@/components/quiz-taker/quiz-taker-state-provider";
 import useGoogleLibraries from "@/hooks/use-google-libraries";
 import { useCallback, useState } from "react";
 

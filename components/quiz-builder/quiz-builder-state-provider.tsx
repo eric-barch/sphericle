@@ -1,6 +1,6 @@
 "use client";
 
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { useAllFeatures } from "@/components/all-features-provider";
 import { isParentFeatureState } from "@/helpers/feature-type-guards";
 import {
   QuizBuilderState,

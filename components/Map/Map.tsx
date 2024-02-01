@@ -1,7 +1,7 @@
 "use client";
 
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import { useQuizBuilderState } from "@/components/QuizBuilder";
+import { useAllFeatures } from "@/components/all-features-provider";
+import { useQuizBuilderState } from "@/components/quiz-builder";
 import {
   isAreaState,
   isPointState,

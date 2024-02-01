@@ -1,2 +1,2 @@
-export * from "./Map";
-export { default } from "./Map";
+export * from "./map";
+export { default } from "./map";

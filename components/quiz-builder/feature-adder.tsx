@@ -1,6 +1,6 @@
 "use client";
 
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { useAllFeatures } from "@/components/all-features-provider";
 import {
   isAreaState,
   isParentFeatureState,
@@ -30,7 +30,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useQuizBuilderState } from "./QuizBuilderStateProvider";
+import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { AreaSearch } from "./use-area-search.hook";
 import useFeatureSearches from "./use-feature-searches.hook";
 import { PointSearch } from "./use-point-search.hook";

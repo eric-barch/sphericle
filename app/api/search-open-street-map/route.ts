@@ -1,1 +1,1 @@
-export * from "./SearchOpenStreetMap";
+export * from "./search-open-street-map";

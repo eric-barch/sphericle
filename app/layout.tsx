@@ -1,4 +1,4 @@
-import AllFeaturesProvider from "@/components/AllFeaturesProvider";
+import AllFeaturesProvider from "@/components/all-features-provider";
 import Nav from "@/components/Nav";
 import "@/styles/globals.css";
 import type { Metadata } from "next";

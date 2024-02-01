@@ -4,10 +4,10 @@ import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronRight } from "lucide-react";
 import { FocusEvent, MouseEvent, useCallback, useState } from "react";
-import EditFeatureButton from "./EditFeatureButton";
-import FeatureName from "./FeatureName";
-import { useQuizBuilderState } from "./QuizBuilderStateProvider";
-import Subfeatures from "./Subfeatures";
+import EditFeatureButton from "./edit-feature-button";
+import FeatureName from "./feature-name";
+import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import Subfeatures from "./subfeatures";
 
 interface AreaProps {
   areaState: AreaState;

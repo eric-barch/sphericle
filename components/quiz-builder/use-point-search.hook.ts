@@ -1,4 +1,4 @@
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { useAllFeatures } from "@/components/all-features-provider";
 import {
   isAreaState,
   isParentFeatureState,

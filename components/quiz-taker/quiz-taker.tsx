@@ -1,8 +1,8 @@
 "use client";
 
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import Map from "@/components/Map";
+import { useAllFeatures } from "@/components/all-features-provider";
+import LoadingSpinner from "@/components/loading-spinner";
+import Map from "@/components/map";
 import { isSubfeatureState } from "@/helpers/feature-type-guards";
 import {
   DisplayMode,
@@ -11,9 +11,9 @@ import {
 } from "@/types";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
-import AnswerBox from "./AnswerBox";
-import { useQuizTakerState } from "./QuizTakerStateProvider";
-import ScoreBox from "./ScoreBox";
+import AnswerBox from "./answer-box";
+import { useQuizTakerState } from "./quiz-taker-state-provider";
+import ScoreBox from "./score-box";
 
 interface QuizTakerProps {
   googleLibsLoaded: boolean;

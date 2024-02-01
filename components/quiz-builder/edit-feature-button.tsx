@@ -1,4 +1,4 @@
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { useAllFeatures } from "@/components/all-features-provider";
 import { isParentFeatureState } from "@/helpers/feature-type-guards";
 import {
   AllFeaturesDispatchType,
@@ -8,7 +8,7 @@ import {
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { MouseEvent, useCallback } from "react";
-import { useQuizBuilderState } from "./QuizBuilderStateProvider";
+import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
 interface EditFeatureButtonProps {
   featureState: SubfeatureState;

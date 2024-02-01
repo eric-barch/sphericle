@@ -1,6 +1,6 @@
 "use client";
 
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { useAllFeatures } from "@/components/all-features-provider";
 import {
   isAreaState,
   isPointState,
@@ -13,10 +13,10 @@ import {
 } from "@/types";
 import { Reorder } from "framer-motion";
 import { useCallback, useMemo, useState } from "react";
-import Area from "./Area";
-import FeatureAdder from "./FeatureAdder";
-import { useQuizBuilderState } from "./QuizBuilderStateProvider";
-import Point from "./Point";
+import Area from "./area";
+import FeatureAdder from "./feature-adder";
+import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import Point from "./point";
 
 interface SubfeaturesProps {
   className?: string;
