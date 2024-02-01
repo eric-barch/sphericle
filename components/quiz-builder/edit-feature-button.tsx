@@ -2,17 +2,19 @@ import { useAllFeatures } from "@/components/all-features-provider";
 import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
-import { MouseEvent, useCallback } from "react";
+import { MouseEvent, RefObject, useCallback } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
 interface EditFeatureButtonProps {
   featureId: string;
-  isParentFeatureState: boolean;
+  canHaveSubfeatures: boolean;
+  renameInputRef: RefObject<HTMLInputElement>;
 }
 
 export default function EditFeatureButton({
   featureId,
-  isParentFeatureState,
+  canHaveSubfeatures,
+  renameInputRef,
 }: EditFeatureButtonProps) {
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
@@ -52,8 +54,13 @@ export default function EditFeatureButton({
         featureId,
         isRenaming: true,
       });
+
+      setTimeout(() => {
+        renameInputRef.current?.focus();
+        renameInputRef.current?.select();
+      }, 0);
     },
-    [featureId, quizBuilderStateDispatch],
+    [featureId, quizBuilderStateDispatch, renameInputRef],
   );
 
   const handleDeleteClick = useCallback(
@@ -77,7 +84,7 @@ export default function EditFeatureButton({
         className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        {isParentFeatureState && (
+        {canHaveSubfeatures && (
           <DropdownMenu.Item
             onClick={handleAddSubfeatureClick}
             className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"

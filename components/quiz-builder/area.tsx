@@ -3,7 +3,7 @@
 import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
-import { MouseEvent, useCallback } from "react";
+import { MouseEvent, useCallback, useRef } from "react";
 import EditFeatureButton from "./edit-feature-button";
 import FeatureName from "./feature-name";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
@@ -15,6 +15,8 @@ interface AreaProps {
 
 export default function Area({ areaState }: AreaProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
+
+  const renameInputRef = useRef<HTMLInputElement>();
 
   const handleOpenChange = useCallback(
     (open: boolean) => {
@@ -53,7 +55,8 @@ export default function Area({ areaState }: AreaProps) {
       <div className="relative">
         <EditFeatureButton
           featureId={areaState.featureId}
-          isParentFeatureState={true}
+          canHaveSubfeatures={true}
+          renameInputRef={renameInputRef}
         />
         <Collapsible.Trigger
           className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
@@ -63,7 +66,14 @@ export default function Area({ areaState }: AreaProps) {
           }`}
           onClick={handleClick}
         >
-          <FeatureName featureState={areaState} />
+          <FeatureName
+            featureId={areaState.featureId}
+            featureName={areaState.userDefinedName || areaState.shortName}
+            isRenaming={quizBuilderState.renamingFeatureIds.has(
+              areaState.featureId,
+            )}
+            renameInputRef={renameInputRef}
+          />
           <OpenChevron
             isOpen={quizBuilderState.openFeatureIds.has(areaState.featureId)}
           />
