@@ -1,7 +1,7 @@
 "use client";
 
 import { AreaState, QuizBuilderStateDispatchType } from "@/types";
-import * as Accordion from "@radix-ui/react-accordion";
+import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
 import { MouseEvent, useCallback } from "react";
 import EditFeatureButton from "./edit-feature-button";
@@ -16,21 +16,13 @@ interface AreaProps {
 export default function Area({ areaState }: AreaProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const handleValueChange = useCallback(
-    (value: string[]) => {
-      if (value.includes(areaState.featureId)) {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
-          featureState: areaState,
-          isOpen: true,
-        });
-      } else {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
-          featureState: areaState,
-          isOpen: false,
-        });
-      }
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+        featureState: areaState,
+        isOpen: open,
+      });
     },
     [areaState, quizBuilderStateDispatch],
   );
@@ -42,41 +34,39 @@ export default function Area({ areaState }: AreaProps) {
         featureState: areaState,
       });
 
+      // If Area is not already selected, prevent toggling Collapsible on first click.
       if (areaState.featureId !== quizBuilderState.selectedFeatureId) {
         event.preventDefault();
       }
     },
-    [areaState, quizBuilderState.selectedFeatureId, quizBuilderStateDispatch],
+    [areaState, quizBuilderState, quizBuilderStateDispatch],
   );
 
   return (
-    <Accordion.Root
-      type="multiple"
-      value={Array.from(quizBuilderState.openFeatureIds)}
-      onValueChange={handleValueChange}
+    <Collapsible.Root
+      open={quizBuilderState.openFeatureIds.has(areaState.featureId)}
+      onOpenChange={handleOpenChange}
     >
-      <Accordion.Item value={areaState.featureId}>
-        <Accordion.Header className="relative">
-          <EditFeatureButton featureState={areaState} />
-          <Accordion.Trigger
-            className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
-              areaState.featureId === quizBuilderState.selectedFeatureId
-                ? "outline outline-2 outline-red-700"
-                : ""
-            }`}
-            onClick={handleClick}
-          >
-            <FeatureName featureState={areaState} />
-            <OpenChevron
-              isOpen={quizBuilderState.openFeatureIds.has(areaState.featureId)}
-            />
-          </Accordion.Trigger>
-        </Accordion.Header>
-        <Accordion.Content>
-          <Subfeatures className="ml-10" parentFeatureState={areaState} />
-        </Accordion.Content>
-      </Accordion.Item>
-    </Accordion.Root>
+      <div className="relative">
+        <EditFeatureButton featureState={areaState} />
+        <Collapsible.Trigger
+          className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
+            areaState.featureId === quizBuilderState.selectedFeatureId
+              ? "outline outline-2 outline-red-700"
+              : ""
+          }`}
+          onClick={handleClick}
+        >
+          <FeatureName featureState={areaState} />
+          <OpenChevron
+            isOpen={quizBuilderState.openFeatureIds.has(areaState.featureId)}
+          />
+        </Collapsible.Trigger>
+      </div>
+      <Collapsible.Content>
+        <Subfeatures className="ml-10" parentFeatureState={areaState} />
+      </Collapsible.Content>
+    </Collapsible.Root>
   );
 }
 
