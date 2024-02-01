@@ -222,10 +222,10 @@ function Input({
     [featureType, pointSearch, setInput],
   );
 
-  // TODO: this is broken.
   const handleEnter = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
       if (
+        // TODO: think this condition is prone to race conditions
         featureType === FeatureType.AREA &&
         areaSearch.status === SearchStatus.SEARCHING
       ) {
@@ -234,6 +234,7 @@ function Input({
       }
 
       if (
+        // TODO: think this condition is prone to race conditions
         featureType === FeatureType.POINT &&
         pointSearch.status === SearchStatus.SEARCHING
       ) {
@@ -249,7 +250,7 @@ function Input({
     [areaSearch, pointSearch, featureType, input],
   );
 
-  // override HeadlessUI Combobox Tab behavior
+  // override HeadlessUI Combobox Tab advance behavior
   const handleTab = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault();
 
@@ -350,8 +351,7 @@ function Options({
 }: OptionsProps) {
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
-  /**TODO: This is hacky, but only way I have been able to work arond HeadlessUI Combobox bug.
-   * Probably need to replace with Radix UI.*/
+  // TODO: This is hacky, but only way I have been able to work arond HeadlessUI Combobox bug.
   useEffect(() => {
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
