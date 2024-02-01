@@ -8,13 +8,13 @@ import { useQuizBuilderState } from "./quiz-builder-state-provider";
 interface EditFeatureButtonProps {
   featureId: string;
   canHaveSubfeatures: boolean;
-  renameInputRef: RefObject<HTMLInputElement>;
+  nameInputRef: RefObject<HTMLInputElement>;
 }
 
 export default function EditFeatureButton({
   featureId,
   canHaveSubfeatures,
-  renameInputRef,
+  nameInputRef,
 }: EditFeatureButtonProps) {
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
@@ -56,11 +56,11 @@ export default function EditFeatureButton({
       });
 
       setTimeout(() => {
-        renameInputRef.current?.focus();
-        renameInputRef.current?.select();
+        nameInputRef.current?.focus();
+        nameInputRef.current?.select();
       }, 0);
     },
-    [featureId, quizBuilderStateDispatch, renameInputRef],
+    [featureId, quizBuilderStateDispatch, nameInputRef],
   );
 
   const handleDeleteClick = useCallback(

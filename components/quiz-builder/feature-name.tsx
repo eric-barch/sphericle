@@ -18,76 +18,80 @@ interface FeatureNameProps {
   featureId: string;
   featureName: string;
   isRenaming: boolean;
-  renameInputRef: React.RefObject<HTMLInputElement>;
+  nameInputRef: React.RefObject<HTMLInputElement>;
 }
 
 export default function FeatureName({
   featureId,
   featureName,
   isRenaming,
-  renameInputRef,
+  nameInputRef,
 }: FeatureNameProps) {
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
   const [input, setInput] = useState<string>(featureName);
 
-  useEffect(() => {}, [isRenaming, renameInputRef]);
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        event.stopPropagation();
-
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
-          featureId,
-          isRenaming: false,
-        });
-
-        allFeaturesDispatch({
-          dispatchType: AllFeaturesDispatchType.RENAME,
-          featureId,
-          name: input,
-        });
-      }
-
-      if (event.key === "Escape") {
-        event.currentTarget.blur();
-      }
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setInput(event.target.value);
     },
-    [allFeaturesDispatch, featureId, input, quizBuilderStateDispatch],
+    [],
   );
 
-  /**TODO: Would rather do this with keydown if possible. Also, think it would be better to do by
-   * stopping propagation. */
-  function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
-    // Prevent default Radix Accordion toggle when typing spaces
-    if (event.key === " ") {
-      event.preventDefault();
-    }
-  }
-
-  function handleBlur() {
-    setInput(featureName);
+  const handleSubmitName = useCallback(() => {
+    allFeaturesDispatch({
+      dispatchType: AllFeaturesDispatchType.RENAME,
+      featureId,
+      name: input,
+    });
 
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
       featureId,
       isRenaming: false,
     });
+  }, [allFeaturesDispatch, featureId, input, quizBuilderStateDispatch]);
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") {
+        handleSubmitName();
+      }
+
+      if (event.key === "Escape") {
+        event.currentTarget.blur();
+      }
+    },
+    [handleSubmitName],
+  );
+
+  function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
+    // Prevent Radix Accordion toggle when typing spaces
+    if (event.key === " ") {
+      event.preventDefault();
+    }
+  }
+
+  function handleBlur() {
+    quizBuilderStateDispatch({
+      dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
+      featureId,
+      isRenaming: false,
+    });
+
+    setInput(featureName);
   }
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
       {isRenaming ? (
         <input
-          ref={renameInputRef}
+          ref={nameInputRef}
           className="bg-transparent w-full focus:outline-none"
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
           onKeyUp={handleKeyUp}
           onBlur={handleBlur}

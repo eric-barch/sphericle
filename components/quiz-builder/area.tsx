@@ -56,7 +56,7 @@ export default function Area({ areaState }: AreaProps) {
         <EditFeatureButton
           featureId={areaState.featureId}
           canHaveSubfeatures={true}
-          renameInputRef={renameInputRef}
+          nameInputRef={renameInputRef}
         />
         <Collapsible.Trigger
           className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
@@ -72,7 +72,7 @@ export default function Area({ areaState }: AreaProps) {
             isRenaming={quizBuilderState.renamingFeatureIds.has(
               areaState.featureId,
             )}
-            renameInputRef={renameInputRef}
+            nameInputRef={renameInputRef}
           />
           <OpenChevron
             isOpen={quizBuilderState.openFeatureIds.has(areaState.featureId)}
