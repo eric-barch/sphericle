@@ -21,8 +21,6 @@ export default function EditFeatureButton({
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
   const handleTriggerClick = useCallback(() => {
-    console.log("trigger click");
-
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
       featureState,
@@ -71,7 +69,7 @@ export default function EditFeatureButton({
 
       allFeaturesDispatch({
         dispatchType: AllFeaturesDispatchType.DELETE,
-        featureState: featureState,
+        featureId: featureState.featureId,
       });
     },
     [featureState, allFeaturesDispatch],
