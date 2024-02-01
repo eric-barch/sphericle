@@ -1,4 +1,4 @@
-import { useQuizTakerState } from "./QuizTakerStateProvider";
+import { useQuizTakerState } from "./quiz-taker-state-provider";
 
 export default function ScoreBox() {
   const { quizTakerState } = useQuizTakerState();

@@ -1,7 +1,7 @@
 "use client";
 
-import QuizBuilder from "@/components/QuizBuilder";
-import QuizBuilderStateProvider from "@/components/QuizBuilder/QuizBuilderStateProvider";
+import QuizBuilder from "@/components/quiz-builder";
+import QuizBuilderStateProvider from "@/components/quiz-builder/quiz-builder-state-provider";
 import useGoogleLibraries from "@/hooks/use-google-libraries";
 import { useCallback, useState } from "react";
 

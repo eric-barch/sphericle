@@ -1,9 +1,9 @@
 "use client";
 
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import Map from "@/components/Map";
-import SplitPane from "@/components/SplitPane";
+import { useAllFeatures } from "@/components/all-features-provider";
+import LoadingSpinner from "@/components/loading-spinner";
+import Map from "@/components/map";
+import SplitPane from "@/components/split-pane";
 import {
   isParentFeatureState,
   isSubfeatureState,
@@ -11,8 +11,8 @@ import {
 import { DisplayMode } from "@/types";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
-import { useQuizBuilderState } from "./QuizBuilderStateProvider";
-import Subfeatures from "./Subfeatures";
+import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import Subfeatures from "./subfeatures";
 
 interface QuizBuilderProps {
   googleLibsLoaded: boolean;

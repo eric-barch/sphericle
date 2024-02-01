@@ -1,2 +1,2 @@
-export * from "./TakeQuiz";
-export { default } from "./TakeQuiz";
+export * from "./take-quiz";
+export { default } from "./take-quiz";

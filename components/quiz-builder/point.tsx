@@ -2,9 +2,9 @@
 
 import { PointState, QuizBuilderStateDispatchType } from "@/types";
 import { FocusEvent } from "react";
-import EditFeatureButton from "./EditFeatureButton";
-import FeatureName from "./FeatureName";
-import { useQuizBuilderState } from "./QuizBuilderStateProvider";
+import EditFeatureButton from "./edit-feature-button";
+import FeatureName from "./feature-name";
+import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
 interface PointProps {
   pointState: PointState;

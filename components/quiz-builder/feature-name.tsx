@@ -1,4 +1,4 @@
-import { useAllFeatures } from "@/components/AllFeaturesProvider";
+import { useAllFeatures } from "@/components/all-features-provider";
 import {
   AllFeaturesDispatchType,
   QuizBuilderStateDispatchType,
@@ -12,7 +12,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useQuizBuilderState } from "./QuizBuilderStateProvider";
+import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
 interface FeatureNameProps {
   featureState: SubfeatureState;
