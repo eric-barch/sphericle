@@ -44,6 +44,7 @@ export default function Area({ areaState }: AreaProps) {
 
   return (
     <Collapsible.Root
+      className="relative"
       open={quizBuilderState.openFeatureIds.has(areaState.featureId)}
       onOpenChange={handleOpenChange}
     >

@@ -62,71 +62,77 @@ function allFeaturesReducer(
 ): AllFeatures {
   switch (action.dispatchType) {
     case AllFeaturesDispatchType.ADD_SUBFEATURE: {
-      const { featureState: parentFeature, subfeatureState: subfeature } =
-        action;
+      const { subfeatureState } = action;
+
+      const featureId = action.featureId || action.featureState.featureId;
+      const subfeatureId = subfeatureState.featureId;
 
       const newAllFeatures = new Map(allFeatures);
-      const newParentFeature = { ...allFeatures.get(parentFeature.featureId) };
+      const newFeatureState = newAllFeatures.get(featureId);
 
-      if (!isParentFeatureState(newParentFeature)) {
-        throw new Error("newParentFeature must be a ParentFeatureState.");
+      if (!isParentFeatureState(newFeatureState)) {
+        throw new Error("newFeatureState must be a ParentFeatureState.");
       }
 
-      newParentFeature.subfeatureIds.add(subfeature.featureId);
+      newFeatureState.subfeatureIds.add(subfeatureId);
 
-      newAllFeatures.set(parentFeature.featureId, newParentFeature);
-      newAllFeatures.set(subfeature.featureId, subfeature);
+      newAllFeatures.set(featureId, newFeatureState);
+      newAllFeatures.set(subfeatureId, subfeatureState);
 
       return newAllFeatures;
     }
     case AllFeaturesDispatchType.SET_SUBFEATURES: {
-      const { featureState: parentFeature, subfeatureIds } = action;
+      const { subfeatureIds } = action;
+
+      const featureId = action.featureId || action.featureState.featureId;
 
       const newAllFeatures = new Map(allFeatures);
-      const newParentFeature = newAllFeatures.get(parentFeature.featureId);
+      const newFeatureState = newAllFeatures.get(featureId);
 
-      if (!isParentFeatureState(newParentFeature)) {
-        throw new Error("newParentFeature must be a ParentFeatureState.");
+      if (!isParentFeatureState(newFeatureState)) {
+        throw new Error("newFeatureState must be a ParentFeatureState.");
       }
 
-      subfeatureIds.forEach((element) => {
-        newParentFeature.subfeatureIds.add(element);
-      });
+      newFeatureState.subfeatureIds = new Set(subfeatureIds);
 
       return newAllFeatures;
     }
     case AllFeaturesDispatchType.RENAME: {
-      const { featureState: feature, name } = action;
+      const { name } = action;
+
+      const featureId = action.featureId || action.featureState.featureId;
 
       const newAllFeatures = new Map(allFeatures);
-      const newFeature = newAllFeatures.get(feature.featureId);
+      const newFeatureState = newAllFeatures.get(featureId);
 
-      if (!isSubfeatureState(newFeature)) {
-        throw new Error("newFeature must be a SubfeatureState.");
+      if (!isSubfeatureState(newFeatureState)) {
+        throw new Error("newFeatureState must be a SubfeatureState.");
       }
 
-      newFeature.userDefinedName = name;
+      newFeatureState.userDefinedName = name;
 
       return newAllFeatures;
     }
     case AllFeaturesDispatchType.DELETE: {
-      const { featureState: feature } = action;
+      const featureId = action.featureId || action.featureState.featureId;
 
       const newAllFeatures = new Map(allFeatures);
-      const newFeature = newAllFeatures.get(feature.featureId);
+      const newFeatureState = newAllFeatures.get(featureId);
 
-      if (!isSubfeatureState(newFeature)) {
-        throw new Error("newFeature must be a SubfeatureState.");
+      if (!isSubfeatureState(newFeatureState)) {
+        throw new Error("newFeatureState must be a SubfeatureState.");
       }
 
-      const newParentFeature = newAllFeatures.get(newFeature.parentFeatureId);
+      const newParentFeature = newAllFeatures.get(
+        newFeatureState.parentFeatureId,
+      );
 
       if (!isParentFeatureState(newParentFeature)) {
         throw new Error("newParentFeature must be a ParentFeatureState.");
       }
 
-      newParentFeature.subfeatureIds.delete(feature.featureId);
-      newAllFeatures.delete(feature.featureId);
+      newParentFeature.subfeatureIds.delete(featureId);
+      newAllFeatures.delete(featureId);
 
       return newAllFeatures;
     }

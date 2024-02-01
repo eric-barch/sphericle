@@ -23,7 +23,6 @@ import {
   ChangeEvent,
   FocusEvent,
   KeyboardEvent,
-  MouseEvent,
   RefObject,
   useCallback,
   useEffect,
@@ -94,25 +93,6 @@ export default function FeatureAdder({
     [isFocused, parentFeatureState, quizBuilderStateDispatch],
   );
 
-  // const handleClick = useCallback(
-  //   (event: MouseEvent<HTMLDivElement>) => {
-  //     if (isRootState(parentFeatureState)) {
-  //       quizBuilderStateDispatch({
-  //         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-  //         featureState: null,
-  //       });
-  //     }
-
-  //     if (isSubfeatureState(parentFeatureState)) {
-  //       quizBuilderStateDispatch({
-  //         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-  //         featureState: parentFeatureState,
-  //       });
-  //     }
-  //   },
-  //   [parentFeatureState, quizBuilderStateDispatch],
-  // );
-
   const handleSelectOption = useCallback(
     (subfeatureState: SubfeatureState) => {
       if (inputRef.current) {
@@ -126,8 +106,8 @@ export default function FeatureAdder({
 
       allFeaturesDispatch({
         dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE,
-        featureState: parentFeatureState,
-        subfeatureState,
+        featureId: parentFeatureState.featureId,
+        subfeatureState: subfeatureState,
       });
 
       quizBuilderStateDispatch({

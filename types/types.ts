@@ -88,28 +88,67 @@ interface BaseAllFeaturesDispatch {
   dispatchType: AllFeaturesDispatchType;
 }
 
-interface AddSubfeatureDispatch extends BaseAllFeaturesDispatch {
-  dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE;
-  featureState: ParentFeatureState;
-  subfeatureState: SubfeatureState;
-}
+type AddSubfeatureDispatch = BaseAllFeaturesDispatch &
+  (
+    | {
+        dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE;
+        featureState: ParentFeatureState;
+        subfeatureState: SubfeatureState;
+        featureId?: never;
+      }
+    | {
+        dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE;
+        featureId: string;
+        subfeatureState: SubfeatureState;
+        featureState?: never;
+      }
+  );
 
-interface SetSubfeaturesDispatch extends BaseAllFeaturesDispatch {
-  dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES;
-  featureState: ParentFeatureState;
-  subfeatureIds: string[];
-}
+type SetSubfeaturesDispatch = BaseAllFeaturesDispatch &
+  (
+    | {
+        dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES;
+        featureState: ParentFeatureState;
+        subfeatureIds: string[];
+        featureId?: never;
+      }
+    | {
+        dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES;
+        featureId: string;
+        subfeatureIds: string[];
+        featureState?: never;
+      }
+  );
 
-interface RenameDispatch extends BaseAllFeaturesDispatch {
-  dispatchType: AllFeaturesDispatchType.RENAME;
-  featureState: SubfeatureState;
-  name: string;
-}
+type RenameDispatch = BaseAllFeaturesDispatch &
+  (
+    | {
+        dispatchType: AllFeaturesDispatchType.RENAME;
+        featureState: SubfeatureState;
+        name: string;
+        featureId?: never;
+      }
+    | {
+        dispatchType: AllFeaturesDispatchType.RENAME;
+        featureId: string;
+        name: string;
+        featureState?: never;
+      }
+  );
 
-interface DeleteDispatch extends BaseAllFeaturesDispatch {
-  dispatchType: AllFeaturesDispatchType.DELETE;
-  featureState: SubfeatureState;
-}
+type DeleteDispatch = BaseAllFeaturesDispatch &
+  (
+    | {
+        dispatchType: AllFeaturesDispatchType.DELETE;
+        featureState: SubfeatureState;
+        featureId?: never;
+      }
+    | {
+        dispatchType: AllFeaturesDispatchType.DELETE;
+        featureId: string;
+        featureState?: never;
+      }
+  );
 
 export type QuizBuilderStateDispatch =
   | SetFeatureAdderSelectedDispatch
