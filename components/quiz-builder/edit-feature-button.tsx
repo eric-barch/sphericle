@@ -5,16 +5,23 @@ import { MoreVertical } from "lucide-react";
 import { RefObject, useCallback } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
-interface EditFeatureButtonProps {
-  featureId: string;
-  canHaveSubfeatures: boolean;
-  featureNameInputRef: RefObject<HTMLInputElement>;
-  featureAdderInputRef: RefObject<HTMLInputElement>;
-}
+type EditFeatureButtonProps =
+  | {
+      featureId: string;
+      canAddSubfeature: true;
+      featureNameInputRef: RefObject<HTMLInputElement>;
+      featureAdderInputRef: RefObject<HTMLInputElement>;
+    }
+  | {
+      featureId: string;
+      canAddSubfeature?: never;
+      featureNameInputRef: RefObject<HTMLInputElement>;
+      featureAdderInputRef?: never;
+    };
 
 export default function EditFeatureButton({
   featureId,
-  canHaveSubfeatures,
+  canAddSubfeature,
   featureNameInputRef,
   featureAdderInputRef,
 }: EditFeatureButtonProps) {
@@ -48,8 +55,8 @@ export default function EditFeatureButton({
     });
 
     setTimeout(() => {
-      featureAdderInputRef.current?.focus();
-      featureAdderInputRef.current?.select();
+      featureAdderInputRef?.current?.focus();
+      featureAdderInputRef?.current?.select();
     }, 0);
   }, [featureAdderInputRef, featureId, quizBuilderStateDispatch]);
 
@@ -82,7 +89,7 @@ export default function EditFeatureButton({
         className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={handleCloseAutoFocus}
       >
-        {canHaveSubfeatures && (
+        {canAddSubfeature && (
           <DropdownMenu.Item
             onClick={handleAddSubfeature}
             className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"

@@ -1,7 +1,7 @@
 "use client";
 
 import { PointState, QuizBuilderStateDispatchType } from "@/types";
-import { MouseEvent } from "react";
+import { MouseEvent, useRef } from "react";
 import { Button } from "../ui/button";
 import EditFeatureButton from "./edit-feature-button";
 import FeatureName from "./feature-name";
@@ -14,6 +14,12 @@ interface PointProps {
 export default function Point({ pointState }: PointProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
+  const isRenaming = quizBuilderState.renamingFeatureIds.has(
+    pointState.featureId,
+  );
+
+  const featureNameInputRef = useRef<HTMLInputElement>();
+
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
@@ -23,7 +29,10 @@ export default function Point({ pointState }: PointProps) {
 
   return (
     <div className="relative">
-      <EditFeatureButton featureId={pointState} />
+      <EditFeatureButton
+        featureId={pointState.featureId}
+        featureNameInputRef={featureNameInputRef}
+      />
       <Button
         className={`w-full p-1 cursor-pointer rounded-2xl text-left bg-gray-600 ${
           pointState.featureId === quizBuilderState.selectedFeatureId
@@ -32,7 +41,12 @@ export default function Point({ pointState }: PointProps) {
         }`}
         onClick={handleClick}
       >
-        <FeatureName featureId={pointState} />
+        <FeatureName
+          featureId={pointState.featureId}
+          featureName={pointState.userDefinedName || pointState.shortName}
+          isRenaming={isRenaming}
+          featureNameInputRef={featureNameInputRef}
+        />
       </Button>
     </div>
   );

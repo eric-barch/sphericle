@@ -64,7 +64,7 @@ export default function Area({ areaState }: AreaProps) {
             order. */}
         <EditFeatureButton
           featureId={areaState.featureId}
-          canHaveSubfeatures={true}
+          canAddSubfeature
           featureNameInputRef={featureNameInputRef}
           featureAdderInputRef={featureAdderInputRef}
         />
