@@ -37,10 +37,12 @@ import { PointSearch } from "./use-point-search.hook";
 
 interface FeatureAdderProps {
   parentFeatureState: ParentFeatureState;
+  featureAdderInputRef: RefObject<HTMLInputElement>;
 }
 
 export default function FeatureAdder({
   parentFeatureState,
+  featureAdderInputRef,
 }: FeatureAdderProps) {
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
@@ -53,8 +55,6 @@ export default function FeatureAdder({
     FeatureType.AREA,
   );
   const [input, setInput] = useState<string>("");
-
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
     if (event.currentTarget.contains(event.relatedTarget)) {
@@ -95,8 +95,8 @@ export default function FeatureAdder({
 
   const handleSelectOption = useCallback(
     (subfeatureState: SubfeatureState) => {
-      if (inputRef.current) {
-        inputRef.current.value = "";
+      if (featureAdderInputRef?.current) {
+        featureAdderInputRef.current.value = "";
       }
 
       setInput("");
@@ -126,6 +126,7 @@ export default function FeatureAdder({
     [
       allFeaturesDispatch,
       areaSearch,
+      featureAdderInputRef,
       parentFeatureState,
       pointSearch,
       quizBuilderStateDispatch,
@@ -156,7 +157,7 @@ export default function FeatureAdder({
         {({ activeOption }) => (
           <div onBlur={handleBlur} onFocus={handleFocus}>
             <Input
-              inputRef={inputRef}
+              inputRef={featureAdderInputRef}
               parentFeatureState={parentFeatureState}
               input={input}
               featureType={featureType}

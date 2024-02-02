@@ -1,38 +1,27 @@
 import { useAllFeatures } from "@/components/all-features-provider";
-import {
-  AllFeaturesDispatchType,
-  QuizBuilderStateDispatchType,
-  SubfeatureState,
-} from "@/types";
-import {
-  KeyboardEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
+import { KeyboardEvent, useCallback, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
 interface FeatureNameProps {
   featureId: string;
   featureName: string;
   isRenaming: boolean;
-  nameInputRef: React.RefObject<HTMLInputElement>;
+  featureNameInputRef: React.RefObject<HTMLInputElement>;
 }
 
 export default function FeatureName({
   featureId,
   featureName,
   isRenaming,
-  nameInputRef,
+  featureNameInputRef,
 }: FeatureNameProps) {
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
   const [input, setInput] = useState<string>(featureName);
 
-  const handleChange = useCallback(
+  const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setInput(event.target.value);
     },
@@ -67,8 +56,8 @@ export default function FeatureName({
   );
 
   function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
-    // Prevent Radix Accordion toggle when typing spaces
     if (event.key === " ") {
+      // Prevent Accordion toggle when feature name contains spaces.
       event.preventDefault();
     }
   }
@@ -87,11 +76,11 @@ export default function FeatureName({
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
       {isRenaming ? (
         <input
-          ref={nameInputRef}
+          ref={featureNameInputRef}
           className="bg-transparent w-full focus:outline-none"
           type="text"
           value={input}
-          onChange={handleChange}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onKeyUp={handleKeyUp}
           onBlur={handleBlur}
