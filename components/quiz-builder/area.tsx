@@ -46,29 +46,27 @@ export default function Area({ areaState }: AreaProps) {
     [areaState, quizBuilderStateDispatch],
   );
 
-  const handleContainerClick = useCallback(() => {
-    quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-      featureId: areaState.featureId,
-    });
-
-    if (isOpen) {
-      quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
-        featureId: areaState.featureId,
-        isAdding: true,
-      });
-    }
-  }, [areaState, isOpen, quizBuilderStateDispatch]);
-
   const handleTriggerClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
       if (!isSelected) {
         /**If feature is not already selected, prevent toggling Collapsible on first click. */
         event.stopPropagation();
       }
+
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureId: areaState.featureId,
+      });
+
+      if (isOpen) {
+        quizBuilderStateDispatch({
+          dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+          featureId: areaState.featureId,
+          isAdding: true,
+        });
+      }
     },
-    [isSelected],
+    [isSelected, isOpen, areaState, quizBuilderStateDispatch],
   );
 
   return (
@@ -77,7 +75,7 @@ export default function Area({ areaState }: AreaProps) {
       open={isOpen}
       onOpenChange={handleOpenChange}
     >
-      <div className="relative" onClickCapture={handleContainerClick}>
+      <div className="relative">
         {/* EditFeatureButton must be BEFORE Collapsible.Trigger (rather than inside it, which would
             more closely align with actual UI appearance) to receive accessible focus in correct
             order. */}
