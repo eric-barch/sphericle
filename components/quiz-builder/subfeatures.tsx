@@ -6,7 +6,12 @@ import {
   isPointState,
   isSubfeatureState,
 } from "@/helpers/feature-type-guards";
-import { AllFeaturesDispatchType, ParentFeatureState } from "@/types";
+import {
+  AllFeaturesDispatchType,
+  AreaState,
+  ParentFeatureState,
+  RootState,
+} from "@/types";
 import { Reorder } from "framer-motion";
 import { useCallback, useMemo } from "react";
 import Area from "./area";
@@ -14,17 +19,21 @@ import FeatureAdder from "./feature-adder";
 import Point from "./point";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
-interface SubfeaturesProps {
-  className?: string;
-  parentFeatureState: ParentFeatureState;
-  isAdding: boolean;
-  featureAdderInputRef: React.RefObject<HTMLInputElement>;
-}
+type SubfeaturesProps =
+  | {
+      className?: string;
+      parentFeatureState: RootState;
+      featureAdderInputRef?: never;
+    }
+  | {
+      className?: string;
+      parentFeatureState: ParentFeatureState;
+      featureAdderInputRef: React.RefObject<HTMLInputElement>;
+    };
 
 export default function Subfeatures({
   className,
   parentFeatureState,
-  isAdding,
   featureAdderInputRef,
 }: SubfeaturesProps) {
   const { allFeaturesDispatch } = useAllFeatures();

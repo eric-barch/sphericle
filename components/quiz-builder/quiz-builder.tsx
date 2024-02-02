@@ -1,16 +1,13 @@
 "use client";
 
 import { useAllFeatures } from "@/components/all-features-provider";
-import LoadingSpinner from "@/components/ui/loading-spinner";
 import Map from "@/components/map";
 import SplitPane from "@/components/split-pane";
-import {
-  isParentFeatureState,
-  isSubfeatureState,
-} from "@/helpers/feature-type-guards";
+import LoadingSpinner from "@/components/ui/loading-spinner";
+import { isRootState, isSubfeatureState } from "@/helpers/feature-type-guards";
 import { DisplayMode } from "@/types";
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import Subfeatures from "./subfeatures";
 
@@ -22,21 +19,24 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const { rootId, allFeatures } = useAllFeatures();
   const { quizBuilderState } = useQuizBuilderState();
 
-  const rootState = useMemo(() => {
+  const rootState = (() => {
     const newRootState = allFeatures.get(rootId);
-    return isParentFeatureState(newRootState) ? newRootState : null;
-  }, [allFeatures, rootId]);
-  const displayedFeature = useMemo(() => {
-    const {
-      featureAdderSelectedFeatureState: activeSearchOption,
-      selectedFeatureId: selectedFeatureId,
-    } = quizBuilderState;
-    const selectedFeature = allFeatures.get(selectedFeatureId);
-    return (
-      activeSearchOption ||
-      (isSubfeatureState(selectedFeature) && selectedFeature)
-    );
-  }, [allFeatures, quizBuilderState]);
+    return isRootState(newRootState) ? newRootState : undefined;
+  })();
+  const displayedFeature = (() => {
+    const { featureAdderSelectedFeatureState, selectedFeatureId } =
+      quizBuilderState;
+    const selectedFeatureState = allFeatures.get(selectedFeatureId);
+
+    if (featureAdderSelectedFeatureState) {
+      return featureAdderSelectedFeatureState;
+    }
+
+    if (isSubfeatureState(selectedFeatureState)) {
+      return selectedFeatureState;
+    }
+  })();
+
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
   const handleMapLoad = useCallback(() => {
