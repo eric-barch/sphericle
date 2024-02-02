@@ -16,7 +16,15 @@ interface AreaProps {
 export default function Area({ areaState }: AreaProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const renameInputRef = useRef<HTMLInputElement>();
+  const isSelected = areaState.featureId === quizBuilderState.selectedFeatureId;
+  const isAdding = quizBuilderState.addingFeatureIds.has(areaState.featureId);
+  const isOpen = quizBuilderState.openFeatureIds.has(areaState.featureId);
+  const isRenaming = quizBuilderState.renamingFeatureIds.has(
+    areaState.featureId,
+  );
+
+  const featureNameInputRef = useRef<HTMLInputElement>();
+  const featureAdderInputRef = useRef<HTMLInputElement>();
 
   const handleOpenChange = useCallback(
     (open: boolean) => {
@@ -29,58 +37,59 @@ export default function Area({ areaState }: AreaProps) {
     [areaState, quizBuilderStateDispatch],
   );
 
-  const handleClick = useCallback(
+  const handleTriggerClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
-      quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-        featureState: areaState,
-      });
-
-      // If Area is not already selected, prevent toggling Collapsible on first click.
-      if (areaState.featureId !== quizBuilderState.selectedFeatureId) {
+      if (!isSelected) {
+        // If Area is not already selected, prevent toggling Collapsible on first click.
         event.preventDefault();
       }
+
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureId: areaState.featureId,
+      });
     },
-    [areaState, quizBuilderState, quizBuilderStateDispatch],
+    [areaState, isSelected, quizBuilderStateDispatch],
   );
 
   return (
     <Collapsible.Root
       className="relative"
-      open={quizBuilderState.openFeatureIds.has(areaState.featureId)}
+      open={isOpen}
       onOpenChange={handleOpenChange}
     >
-      {/* EditFeatureButton must be BEFORE Collapsible.Trigger (rather than inside it) to receive 
-          accessibility focus in the correct order. */}
       <div className="relative">
+        {/* EditFeatureButton must be BEFORE Collapsible.Trigger (rather than inside it, which would
+            more closely align with actual UI appearance) to receive accessible focus in correct
+            order. */}
         <EditFeatureButton
           featureId={areaState.featureId}
           canHaveSubfeatures={true}
-          nameInputRef={renameInputRef}
+          featureNameInputRef={featureNameInputRef}
+          featureAdderInputRef={featureAdderInputRef}
         />
         <Collapsible.Trigger
           className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
-            areaState.featureId === quizBuilderState.selectedFeatureId
-              ? "outline outline-2 outline-red-700"
-              : ""
+            isSelected ? "outline outline-2 outline-red-700" : ""
           }`}
-          onClick={handleClick}
+          onClick={handleTriggerClick}
         >
           <FeatureName
             featureId={areaState.featureId}
             featureName={areaState.userDefinedName || areaState.shortName}
-            isRenaming={quizBuilderState.renamingFeatureIds.has(
-              areaState.featureId,
-            )}
-            nameInputRef={renameInputRef}
+            isRenaming={isRenaming}
+            featureNameInputRef={featureNameInputRef}
           />
-          <OpenChevron
-            isOpen={quizBuilderState.openFeatureIds.has(areaState.featureId)}
-          />
+          <OpenChevron isOpen={isOpen} />
         </Collapsible.Trigger>
       </div>
       <Collapsible.Content>
-        <Subfeatures className="ml-10" parentFeatureState={areaState} />
+        <Subfeatures
+          className="ml-10"
+          parentFeatureState={areaState}
+          isAdding={isAdding}
+          featureAdderInputRef={featureAdderInputRef}
+        />
       </Collapsible.Content>
     </Collapsible.Root>
   );
