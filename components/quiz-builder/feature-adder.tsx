@@ -36,13 +36,13 @@ import useFeatureSearches from "./use-feature-searches.hook";
 import { PointSearch } from "./use-point-search.hook";
 
 interface FeatureAdderProps {
-  parentFeatureState: ParentFeatureState;
   featureAdderInputRef: RefObject<HTMLInputElement>;
+  parentFeatureState: ParentFeatureState;
 }
 
 export default function FeatureAdder({
-  parentFeatureState,
   featureAdderInputRef,
+  parentFeatureState,
 }: FeatureAdderProps) {
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
@@ -135,13 +135,6 @@ export default function FeatureAdder({
     },
     [input, pointSearch],
   );
-
-  if (
-    !isRootState(parentFeatureState) &&
-    !quizBuilderState.addingFeatureIds.has(parentFeatureState.featureId)
-  ) {
-    return null;
-  }
 
   return (
     <div className="relative">

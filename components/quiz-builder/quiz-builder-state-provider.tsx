@@ -31,11 +31,11 @@ export default function QuizBuilderStateProvider({
     return {
       featureAdderSelectedFeatureState: null,
       selectedFeatureId: null,
+      renamingFeatureId: null,
+      addingFeatureId: null,
       openFeatureIds: new Set<string>(),
-      addingFeatureIds: new Set<string>([rootId]),
-      renamingFeatureIds: new Set<string>(),
     };
-  }, [rootId]);
+  }, []);
 
   const [quizBuilderState, quizBuilderStateDispatch] = useReducer(
     quizBuilderStateReducer,
@@ -86,8 +86,7 @@ function quizBuilderStateReducer(
 
       return newQuizBuilderState;
     }
-    case QuizBuilderStateDispatchType.SET_IS_ADDING: {
-      console.log("SET_IS_ADDING");
+    case QuizBuilderStateDispatchType.SET_ADDING: {
       const { isAdding } = action;
 
       const featureId = action.featureId || action.featureState?.featureId;
@@ -95,16 +94,14 @@ function quizBuilderStateReducer(
       const newQuizBuilderState = { ...quizBuilderState };
 
       if (isAdding) {
-        newQuizBuilderState.addingFeatureIds.add(featureId);
+        newQuizBuilderState.addingFeatureId = featureId;
       } else {
-        newQuizBuilderState.addingFeatureIds.delete(featureId);
+        newQuizBuilderState.addingFeatureId = null;
       }
 
       return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_IS_OPEN: {
-      console.log("SET_IS_OPEN");
-
       const { isOpen } = action;
 
       const featureId = action.featureId || action.featureState?.featureId;
@@ -119,7 +116,7 @@ function quizBuilderStateReducer(
 
       return newQuizBuilderState;
     }
-    case QuizBuilderStateDispatchType.SET_IS_RENAMING: {
+    case QuizBuilderStateDispatchType.SET_RENAMING: {
       const { isRenaming } = action;
 
       const featureId = action.featureId || action.featureState?.featureId;
@@ -127,9 +124,9 @@ function quizBuilderStateReducer(
       const newQuizBuilderState = { ...quizBuilderState };
 
       if (isRenaming) {
-        newQuizBuilderState.renamingFeatureIds.add(featureId);
+        newQuizBuilderState.renamingFeatureId = featureId;
       } else {
-        newQuizBuilderState.renamingFeatureIds.delete(featureId);
+        newQuizBuilderState.renamingFeatureId = null;
       }
 
       return newQuizBuilderState;

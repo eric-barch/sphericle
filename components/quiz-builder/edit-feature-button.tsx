@@ -49,7 +49,7 @@ export default function EditFeatureButton({
     });
 
     quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_IS_ADDING,
+      dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
       featureId,
       isAdding: true,
     });
@@ -62,7 +62,7 @@ export default function EditFeatureButton({
 
   const handleRename = useCallback(() => {
     quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
+      dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
       featureId,
       isRenaming: true,
     });

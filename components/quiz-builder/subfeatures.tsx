@@ -4,16 +4,17 @@ import { useAllFeatures } from "@/components/all-features-provider";
 import {
   isAreaState,
   isPointState,
+  isRootState,
   isSubfeatureState,
 } from "@/helpers/feature-type-guards";
 import {
   AllFeaturesDispatchType,
-  AreaState,
   ParentFeatureState,
+  QuizBuilderStateDispatchType,
   RootState,
 } from "@/types";
 import { Reorder } from "framer-motion";
-import { useCallback, useMemo } from "react";
+import { FocusEvent, useCallback, useMemo } from "react";
 import Area from "./area";
 import FeatureAdder from "./feature-adder";
 import Point from "./point";
@@ -23,21 +24,24 @@ type SubfeaturesProps =
   | {
       className?: string;
       parentFeatureState: RootState;
+      isAdding: boolean;
       featureAdderInputRef?: never;
     }
   | {
       className?: string;
       parentFeatureState: ParentFeatureState;
+      isAdding: boolean;
       featureAdderInputRef: React.RefObject<HTMLInputElement>;
     };
 
 export default function Subfeatures({
   className,
   parentFeatureState,
+  isAdding,
   featureAdderInputRef,
 }: SubfeaturesProps) {
   const { allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderState } = useQuizBuilderState();
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const handleReorder = useCallback(
     (subfeatureIds: string[]) => {
@@ -70,10 +74,10 @@ export default function Subfeatures({
           </Reorder.Item>
         ))}
       </Reorder.Group>
-      {quizBuilderState.addingFeatureIds.has(parentFeatureState.featureId) && (
+      {isAdding && (
         <FeatureAdder
-          parentFeatureState={parentFeatureState}
           featureAdderInputRef={featureAdderInputRef}
+          parentFeatureState={parentFeatureState}
         />
       )}
     </div>
