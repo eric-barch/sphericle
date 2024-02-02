@@ -30,7 +30,7 @@ export default function Area({ areaState }: AreaProps) {
     (open: boolean) => {
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
-        featureState: areaState,
+        featureId: areaState.featureId,
         isOpen: open,
       });
     },
@@ -87,7 +87,6 @@ export default function Area({ areaState }: AreaProps) {
         <Subfeatures
           className="ml-10"
           parentFeatureState={areaState}
-          isAdding={isAdding}
           featureAdderInputRef={featureAdderInputRef}
         />
       </Collapsible.Content>

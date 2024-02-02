@@ -114,14 +114,6 @@ export default function FeatureAdder({
         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
         featureState: subfeatureState,
       });
-
-      if (isParentFeatureState(subfeatureState)) {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_IS_ADDING,
-          featureState: subfeatureState,
-          isAdding: true,
-        });
-      }
     },
     [
       allFeaturesDispatch,

@@ -1,7 +1,6 @@
 "use client";
 
 import { useAllFeatures } from "@/components/all-features-provider";
-import { isParentFeatureState } from "@/helpers/feature-type-guards";
 import {
   QuizBuilderState,
   QuizBuilderStateDispatch,
@@ -11,8 +10,8 @@ import {
   Dispatch,
   ReactNode,
   createContext,
-  useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
 } from "react";
@@ -88,6 +87,7 @@ function quizBuilderStateReducer(
       return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_IS_ADDING: {
+      console.log("SET_IS_ADDING");
       const { isAdding } = action;
 
       const featureId = action.featureId || action.featureState?.featureId;
@@ -103,6 +103,8 @@ function quizBuilderStateReducer(
       return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_IS_OPEN: {
+      console.log("SET_IS_OPEN");
+
       const { isOpen } = action;
 
       const featureId = action.featureId || action.featureState?.featureId;
