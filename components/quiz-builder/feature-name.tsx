@@ -36,7 +36,7 @@ export default function FeatureName({
     });
 
     quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
+      dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
       featureId,
       isRenaming: false,
     });
@@ -64,7 +64,7 @@ export default function FeatureName({
 
   function handleBlur() {
     quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING,
+      dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
       featureId,
       isRenaming: false,
     });

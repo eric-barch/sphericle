@@ -16,15 +16,16 @@ interface AreaProps {
 export default function Area({ areaState }: AreaProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const isSelected = areaState.featureId === quizBuilderState.selectedFeatureId;
-  const isAdding = quizBuilderState.addingFeatureIds.has(areaState.featureId);
-  const isOpen = quizBuilderState.openFeatureIds.has(areaState.featureId);
-  const isRenaming = quizBuilderState.renamingFeatureIds.has(
-    areaState.featureId,
-  );
-
   const featureNameInputRef = useRef<HTMLInputElement>();
   const featureAdderInputRef = useRef<HTMLInputElement>();
+
+  const isSelected = quizBuilderState.selectedFeatureId === areaState.featureId;
+  const isRenaming = quizBuilderState.renamingFeatureId === areaState.featureId;
+  const isOpen = quizBuilderState.openFeatureIds.has(areaState.featureId);
+  const isAdding =
+    quizBuilderState.addingFeatureId === areaState.featureId ||
+    isSelected ||
+    areaState.subfeatureIds.size <= 0;
 
   const handleOpenChange = useCallback(
     (open: boolean) => {
@@ -33,23 +34,41 @@ export default function Area({ areaState }: AreaProps) {
         featureId: areaState.featureId,
         isOpen: open,
       });
+
+      if (open) {
+        quizBuilderStateDispatch({
+          dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+          featureId: areaState.featureId,
+          isAdding: true,
+        });
+      }
     },
     [areaState, quizBuilderStateDispatch],
   );
 
+  const handleContainerClick = useCallback(() => {
+    quizBuilderStateDispatch({
+      dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+      featureId: areaState.featureId,
+    });
+
+    if (isOpen) {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+        featureId: areaState.featureId,
+        isAdding: true,
+      });
+    }
+  }, [areaState, isOpen, quizBuilderStateDispatch]);
+
   const handleTriggerClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
       if (!isSelected) {
-        // If Area is not already selected, prevent toggling Collapsible on first click.
-        event.preventDefault();
+        /**If feature is not already selected, prevent toggling Collapsible on first click. */
+        event.stopPropagation();
       }
-
-      quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-        featureId: areaState.featureId,
-      });
     },
-    [areaState, isSelected, quizBuilderStateDispatch],
+    [isSelected],
   );
 
   return (
@@ -58,7 +77,7 @@ export default function Area({ areaState }: AreaProps) {
       open={isOpen}
       onOpenChange={handleOpenChange}
     >
-      <div className="relative">
+      <div className="relative" onClickCapture={handleContainerClick}>
         {/* EditFeatureButton must be BEFORE Collapsible.Trigger (rather than inside it, which would
             more closely align with actual UI appearance) to receive accessible focus in correct
             order. */}
@@ -72,7 +91,7 @@ export default function Area({ areaState }: AreaProps) {
           className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
             isSelected ? "outline outline-2 outline-red-700" : ""
           }`}
-          onClick={handleTriggerClick}
+          onClickCapture={handleTriggerClick}
         >
           <FeatureName
             featureId={areaState.featureId}
@@ -87,6 +106,7 @@ export default function Area({ areaState }: AreaProps) {
         <Subfeatures
           className="ml-10"
           parentFeatureState={areaState}
+          isAdding={isAdding}
           featureAdderInputRef={featureAdderInputRef}
         />
       </Collapsible.Content>

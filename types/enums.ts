@@ -14,9 +14,9 @@ export enum AllFeaturesDispatchType {
 export enum QuizBuilderStateDispatchType {
   SET_FEATURE_ADDER_SELECTED,
   SET_SELECTED,
+  SET_RENAMING,
+  SET_ADDING,
   SET_IS_OPEN,
-  SET_IS_ADDING,
-  SET_IS_RENAMING,
 }
 
 export enum QuizTakerStateDispatchType {

@@ -49,9 +49,9 @@ export interface PointState extends FeatureState, SubfeatureState {
 export interface QuizBuilderState {
   featureAdderSelectedFeatureState: SubfeatureState | null;
   selectedFeatureId: string | null;
+  addingFeatureId: string | null;
+  renamingFeatureId: string | null;
   openFeatureIds: Set<string>;
-  addingFeatureIds: Set<string>;
-  renamingFeatureIds: Set<string>;
 }
 
 export interface QuizTakerState {
@@ -183,13 +183,13 @@ type SetSelectedDispatch = BaseQuizBuilderStateDispatch &
 type SetIsAddingDispatch = BaseQuizBuilderStateDispatch &
   (
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_IS_ADDING;
+        dispatchType: QuizBuilderStateDispatchType.SET_ADDING;
         featureState: FeatureState;
         isAdding: boolean;
         featureId?: never;
       }
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_IS_ADDING;
+        dispatchType: QuizBuilderStateDispatchType.SET_ADDING;
         featureId: string;
         isAdding: boolean;
         featureState?: never;
@@ -215,13 +215,13 @@ type SetIsOpenDispatch = BaseQuizBuilderStateDispatch &
 type SetIsRenamingDispatch = BaseQuizBuilderStateDispatch &
   (
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING;
+        dispatchType: QuizBuilderStateDispatchType.SET_RENAMING;
         featureState: SubfeatureState;
         isRenaming: boolean;
         featureId?: never;
       }
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_IS_RENAMING;
+        dispatchType: QuizBuilderStateDispatchType.SET_RENAMING;
         featureId: string;
         isRenaming: boolean;
         featureState?: never;

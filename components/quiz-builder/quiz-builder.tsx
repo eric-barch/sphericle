@@ -53,6 +53,7 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
           <div className="relative h-full">
             <Subfeatures
               className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
+              isAdding
               parentFeatureState={rootState}
             />
             <Link
