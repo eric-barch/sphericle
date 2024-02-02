@@ -14,11 +14,10 @@ interface PointProps {
 export default function Point({ pointState }: PointProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const isRenaming = quizBuilderState.renamingFeatureIds.has(
-    pointState.featureId,
-  );
-
   const featureNameInputRef = useRef<HTMLInputElement>();
+
+  const isRenaming =
+    quizBuilderState.renamingFeatureId === pointState.featureId;
 
   function handleClick(event: MouseEvent<HTMLButtonElement>) {
     quizBuilderStateDispatch({
