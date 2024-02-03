@@ -26,12 +26,14 @@ type SubfeaturesProps =
       parentFeatureState: RootState;
       isAdding: boolean;
       featureAdderInputRef?: never;
+      onBlur?: (event: FocusEvent<HTMLDivElement>) => void;
     }
   | {
       className?: string;
       parentFeatureState: ParentFeatureState;
       isAdding: boolean;
       featureAdderInputRef: React.RefObject<HTMLInputElement>;
+      onBlur?: (event: FocusEvent<HTMLDivElement>) => void;
     };
 
 export default function Subfeatures({
@@ -39,6 +41,7 @@ export default function Subfeatures({
   parentFeatureState,
   isAdding,
   featureAdderInputRef,
+  onBlur,
 }: SubfeaturesProps) {
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
@@ -55,7 +58,7 @@ export default function Subfeatures({
   );
 
   return (
-    <div className={`${className} space-y-1 h-full`}>
+    <div className={`${className} space-y-1 h-full`} onBlur={onBlur}>
       <Reorder.Group
         className="mt-1 space-y-1"
         axis="y"

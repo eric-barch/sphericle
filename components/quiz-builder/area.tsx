@@ -1,5 +1,7 @@
 "use client";
 
+import { useAllFeatures } from "@/components/all-features-provider";
+import { isParentFeatureState } from "@/helpers/feature-type-guards";
 import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
@@ -14,6 +16,7 @@ interface AreaProps {
 }
 
 export default function Area({ areaState }: AreaProps) {
+  const { allFeatures } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const featureNameInputRef = useRef<HTMLInputElement>();
@@ -22,59 +25,51 @@ export default function Area({ areaState }: AreaProps) {
   const isSelected = quizBuilderState.selectedFeatureId === areaState.featureId;
   const isRenaming = quizBuilderState.renamingFeatureId === areaState.featureId;
   const isOpen = quizBuilderState.openFeatureIds.has(areaState.featureId);
-  const isAdding =
-    quizBuilderState.addingFeatureId === areaState.featureId ||
-    isSelected ||
-    areaState.subfeatureIds.size <= 0;
-
-  const handleOpenChange = useCallback(
-    (open: boolean) => {
-      quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
-        featureId: areaState.featureId,
-        isOpen: open,
-      });
-
-      if (open) {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
-          featureId: areaState.featureId,
-          isAdding: true,
-        });
-      }
-    },
-    [areaState, quizBuilderStateDispatch],
-  );
+  const isAdding = quizBuilderState.addingFeatureId === areaState.featureId;
 
   const handleTriggerClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
-      if (!isSelected) {
-        /**If feature is not already selected, prevent toggling Collapsible on first click. */
-        event.stopPropagation();
+      if (!isOpen && !isSelected) {
+        quizBuilderStateDispatch({
+          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+          featureId: areaState.featureId,
+        });
       }
 
-      quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-        featureId: areaState.featureId,
-      });
+      if (isOpen && isSelected) {
+        quizBuilderStateDispatch({
+          dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+          featureId: areaState.featureId,
+          isOpen: false,
+        });
+      }
 
-      if (isOpen) {
+      if ((isOpen && !isSelected) || (!isOpen && isSelected)) {
+        const lastAddingFeatureState = allFeatures.get(
+          quizBuilderState.addingFeatureId,
+        );
+
         quizBuilderStateDispatch({
           dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+          lastFeatureState: isParentFeatureState(lastAddingFeatureState)
+            ? lastAddingFeatureState
+            : undefined,
           featureId: areaState.featureId,
-          isAdding: true,
         });
       }
     },
-    [isSelected, isOpen, areaState, quizBuilderStateDispatch],
+    [
+      allFeatures,
+      areaState,
+      isOpen,
+      isSelected,
+      quizBuilderState,
+      quizBuilderStateDispatch,
+    ],
   );
 
   return (
-    <Collapsible.Root
-      className="relative"
-      open={isOpen}
-      onOpenChange={handleOpenChange}
-    >
+    <Collapsible.Root className="relative" open={isOpen}>
       <div className="relative">
         {/* EditFeatureButton must be BEFORE Collapsible.Trigger (rather than inside it, which would
             more closely align with actual UI appearance) to receive accessible focus in correct

@@ -37,8 +37,7 @@ export default function FeatureName({
 
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
-      featureId,
-      isRenaming: false,
+      featureId: null,
     });
   }, [allFeaturesDispatch, featureId, input, quizBuilderStateDispatch]);
 
@@ -66,7 +65,6 @@ export default function FeatureName({
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
       featureId,
-      isRenaming: false,
     });
 
     setInput(featureName);
