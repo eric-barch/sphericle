@@ -75,7 +75,6 @@ function quizBuilderStateReducer(
       const featureId = action.featureId || action.featureState?.featureId;
 
       newQuizBuilderState.selectedFeatureId = featureId;
-      // newQuizBuilderState.featureAdderSelectedFeatureState = null;
 
       return newQuizBuilderState;
     }
