@@ -7,7 +7,7 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import { isRootState, isSubfeatureState } from "@/helpers/feature-type-guards";
 import { DisplayMode } from "@/types";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import Subfeatures from "./subfeatures";
 
@@ -17,7 +17,9 @@ interface QuizBuilderProps {
 
 export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const { rootId, allFeatures } = useAllFeatures();
-  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
+  const { quizBuilderState } = useQuizBuilderState();
+
+  const featureAdderInputRef = useRef<HTMLInputElement>();
 
   const rootState = (() => {
     const newRootState = allFeatures.get(rootId);
@@ -43,6 +45,7 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
 
   const handleMapLoad = useCallback(() => {
     setMapLoaded(true);
+    featureAdderInputRef.current?.focus();
   }, []);
 
   return (
@@ -54,6 +57,7 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
         <SplitPane>
           <div className="relative h-full">
             <Subfeatures
+              featureAdderInputRef={featureAdderInputRef}
               className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
               isAdding
               parentFeatureState={rootState}

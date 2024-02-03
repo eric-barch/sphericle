@@ -43,13 +43,14 @@ export default function Area({ areaState }: AreaProps) {
       }
 
       if (isOpen !== isSelected) {
-        const lastAddingFeatureState = allFeatures.get(
+        const lastFeatureState = allFeatures.get(
           quizBuilderState.addingFeatureId,
         );
+
         quizBuilderStateDispatch({
           dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
-          lastFeatureState: isParentFeatureState(lastAddingFeatureState)
-            ? lastAddingFeatureState
+          lastFeatureState: isParentFeatureState(lastFeatureState)
+            ? lastFeatureState
             : undefined,
           featureId: areaState.featureId,
         });

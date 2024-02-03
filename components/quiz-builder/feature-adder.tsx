@@ -48,48 +48,10 @@ export default function FeatureAdder({
     parentFeatureState.featureId,
   );
 
-  const [isFocused, setIsFocused] = useState(false);
   const [featureType, setFeatureTypeRaw] = useState<FeatureType>(
     FeatureType.AREA,
   );
   const [input, setInput] = useState<string>("");
-
-  const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
-    if (event.currentTarget.contains(event.relatedTarget)) {
-      return;
-    }
-
-    setIsFocused(false);
-  }, []);
-
-  const handleFocus = useCallback(
-    (event: FocusEvent<HTMLDivElement>) => {
-      if (event.currentTarget.contains(event.relatedTarget)) {
-        return;
-      }
-
-      if (isFocused) {
-        return;
-      }
-
-      setIsFocused(true);
-
-      if (isRootState(parentFeatureState)) {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-          featureState: null,
-        });
-      }
-
-      if (isSubfeatureState(parentFeatureState)) {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-          featureState: parentFeatureState,
-        });
-      }
-    },
-    [isFocused, parentFeatureState, quizBuilderStateDispatch],
-  );
 
   const handleSelectOption = useCallback(
     (subfeatureState: SubfeatureState) => {
@@ -132,18 +94,38 @@ export default function FeatureAdder({
     (featureType: FeatureType) => {
       setFeatureTypeRaw(featureType);
 
+      if (quizBuilderState.selectedFeatureId !== parentFeatureState.featureId) {
+        if (isRootState(parentFeatureState)) {
+          quizBuilderStateDispatch({
+            dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+            featureId: null,
+          });
+        } else {
+          quizBuilderStateDispatch({
+            dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+            featureId: parentFeatureState.featureId,
+          });
+        }
+      }
+
       if (featureType === FeatureType.POINT) {
         pointSearch.setTerm(input);
       }
     },
-    [input, pointSearch],
+    [
+      parentFeatureState,
+      quizBuilderState,
+      quizBuilderStateDispatch,
+      input,
+      pointSearch,
+    ],
   );
 
   return (
     <div className="relative">
       <Combobox onChange={handleSelectOption}>
         {({ activeOption }) => (
-          <div onBlur={handleBlur} onFocus={handleFocus}>
+          <>
             <Input
               inputRef={featureAdderInputRef}
               parentFeatureState={parentFeatureState}
@@ -161,7 +143,7 @@ export default function FeatureAdder({
               areaSearch={areaSearch}
               pointSearch={pointSearch}
             />
-          </div>
+          </>
         )}
       </Combobox>
     </div>
@@ -189,6 +171,11 @@ function Input({
   setInput,
   setFeatureType,
 }: InputProps) {
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
+
+  const isSelected =
+    quizBuilderState.selectedFeatureId === parentFeatureState.featureId;
+
   const placeholder = (() => {
     if (isRootState(parentFeatureState)) {
       return `Add ${featureType.toLowerCase()} anywhere`;
@@ -203,11 +190,25 @@ function Input({
     (event: ChangeEvent<HTMLInputElement>) => {
       setInput(event.target.value);
 
+      if (!isSelected) {
+        quizBuilderStateDispatch({
+          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+          featureId: parentFeatureState.featureId,
+        });
+      }
+
       if (featureType === FeatureType.POINT) {
         pointSearch.setTerm(event.target.value);
       }
     },
-    [featureType, pointSearch, setInput],
+    [
+      featureType,
+      parentFeatureState,
+      pointSearch,
+      setInput,
+      quizBuilderStateDispatch,
+      isSelected,
+    ],
   );
 
   const handleEnter = useCallback(

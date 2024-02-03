@@ -4,47 +4,29 @@ import { useAllFeatures } from "@/components/all-features-provider";
 import {
   isAreaState,
   isPointState,
-  isRootState,
   isSubfeatureState,
 } from "@/helpers/feature-type-guards";
-import {
-  AllFeaturesDispatchType,
-  ParentFeatureState,
-  QuizBuilderStateDispatchType,
-  RootState,
-} from "@/types";
+import { AllFeaturesDispatchType, ParentFeatureState } from "@/types";
 import { Reorder } from "framer-motion";
-import { FocusEvent, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import Area from "./area";
 import FeatureAdder from "./feature-adder";
 import Point from "./point";
-import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
-type SubfeaturesProps =
-  | {
-      className?: string;
-      parentFeatureState: RootState;
-      isAdding: boolean;
-      featureAdderInputRef?: never;
-      onBlur?: (event: FocusEvent<HTMLDivElement>) => void;
-    }
-  | {
-      className?: string;
-      parentFeatureState: ParentFeatureState;
-      isAdding: boolean;
-      featureAdderInputRef: React.RefObject<HTMLInputElement>;
-      onBlur?: (event: FocusEvent<HTMLDivElement>) => void;
-    };
+type SubfeaturesProps = {
+  className?: string;
+  parentFeatureState: ParentFeatureState;
+  isAdding: boolean;
+  featureAdderInputRef: React.RefObject<HTMLInputElement>;
+};
 
 export default function Subfeatures({
   className,
   parentFeatureState,
   isAdding,
   featureAdderInputRef,
-  onBlur,
 }: SubfeaturesProps) {
   const { allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const handleReorder = useCallback(
     (subfeatureIds: string[]) => {
@@ -58,7 +40,7 @@ export default function Subfeatures({
   );
 
   return (
-    <div className={`${className} space-y-1 h-full`} onBlur={onBlur}>
+    <div className={`${className} space-y-1 h-full`}>
       <Reorder.Group
         className="mt-1 space-y-1"
         axis="y"
@@ -66,6 +48,7 @@ export default function Subfeatures({
         onReorder={handleReorder}
       >
         {Array.from(parentFeatureState.subfeatureIds).map((subfeatureId) => (
+          // TODO: Fix animation
           <Reorder.Item
             key={subfeatureId}
             layout="position"

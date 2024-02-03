@@ -1,8 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { PointState, QuizBuilderStateDispatchType } from "@/types";
-import { MouseEvent, useRef } from "react";
-import { Button } from "../ui/button";
+import { MouseEvent, useCallback, useRef } from "react";
 import EditFeatureButton from "./edit-feature-button";
 import FeatureName from "./feature-name";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
@@ -19,12 +19,15 @@ export default function Point({ pointState }: PointProps) {
   const isRenaming =
     quizBuilderState.renamingFeatureId === pointState.featureId;
 
-  function handleClick(event: MouseEvent<HTMLButtonElement>) {
-    quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-      featureState: pointState,
-    });
-  }
+  const handleClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureState: pointState,
+      });
+    },
+    [pointState, quizBuilderStateDispatch],
+  );
 
   return (
     <div className="relative">

@@ -1,10 +1,10 @@
 import { useAllFeatures } from "@/components/all-features-provider";
+import { isParentFeatureState } from "@/helpers/feature-type-guards";
 import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { RefObject, useCallback } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
-import { isParentFeatureState } from "@/helpers/feature-type-guards";
 
 type EditFeatureButtonProps =
   | {
@@ -29,13 +29,17 @@ export default function EditFeatureButton({
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
+  const isSelected = quizBuilderState.selectedFeatureId === featureId;
+
   const handleOpenChange = useCallback(() => {
     // If DropdownMenu open state changes, it means the feature was clicked and should be selected.
-    quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-      featureId,
-    });
-  }, [featureId, quizBuilderStateDispatch]);
+    if (!isSelected) {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureId,
+      });
+    }
+  }, [featureId, isSelected, quizBuilderStateDispatch]);
 
   const handleCloseAutoFocus = useCallback((event: Event) => {
     // Prevent DropdownMenu.Trigger from stealing focus on close.
