@@ -5,9 +5,9 @@ import Map from "@/components/map";
 import SplitPane from "@/components/split-pane";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { isRootState, isSubfeatureState } from "@/helpers/feature-type-guards";
-import { DisplayMode, QuizBuilderStateDispatchType } from "@/types";
+import { DisplayMode } from "@/types";
 import Link from "next/link";
-import { FocusEvent, useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import Subfeatures from "./subfeatures";
 
@@ -19,14 +19,20 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const { rootId, allFeatures } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
+  useEffect(() => {
+    console.log(quizBuilderState);
+  }, [quizBuilderState]);
+
   const rootState = (() => {
     const newRootState = allFeatures.get(rootId);
     return isRootState(newRootState) ? newRootState : undefined;
   })();
   const displayedFeature = (() => {
-    const { featureAdderSelectedFeatureState, selectedFeatureId } =
-      quizBuilderState;
-    const selectedFeatureState = allFeatures.get(selectedFeatureId);
+    const featureAdderSelectedFeatureState =
+      quizBuilderState.featureAdderSelectedFeatureState;
+    const selectedFeatureState = allFeatures.get(
+      quizBuilderState.selectedFeatureId,
+    );
 
     if (featureAdderSelectedFeatureState) {
       return featureAdderSelectedFeatureState;
@@ -36,7 +42,6 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
       return selectedFeatureState;
     }
   })();
-  const isAdding = quizBuilderState.addingFeatureId === rootId;
 
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 

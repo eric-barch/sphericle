@@ -110,9 +110,7 @@ function quizBuilderStateReducer(
       const { lastFeatureState } = action;
       const featureId = action.featureId || action.featureState.featureId;
 
-      newQuizBuilderState.selectedFeatureId = featureId;
       newQuizBuilderState.addingFeatureId = featureId;
-      newQuizBuilderState.openFeatureIds.add(featureId);
 
       if (lastFeatureState?.subfeatureIds.size <= 0) {
         newQuizBuilderState.openFeatureIds.delete(lastFeatureState.featureId);

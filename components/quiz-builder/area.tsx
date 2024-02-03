@@ -29,26 +29,23 @@ export default function Area({ areaState }: AreaProps) {
 
   const handleTriggerClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
-      if (!isOpen && !isSelected) {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-          featureId: areaState.featureId,
-        });
-      }
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureId: areaState.featureId,
+      });
 
-      if (isOpen && isSelected) {
+      if (isSelected) {
         quizBuilderStateDispatch({
           dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
           featureId: areaState.featureId,
-          isOpen: false,
+          isOpen: !isOpen,
         });
       }
 
-      if ((isOpen && !isSelected) || (!isOpen && isSelected)) {
+      if (isOpen !== isSelected) {
         const lastAddingFeatureState = allFeatures.get(
           quizBuilderState.addingFeatureId,
         );
-
         quizBuilderStateDispatch({
           dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
           lastFeatureState: isParentFeatureState(lastAddingFeatureState)
