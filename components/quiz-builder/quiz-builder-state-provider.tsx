@@ -1,6 +1,5 @@
 "use client";
 
-import { useAllFeatures } from "@/components/all-features-provider";
 import {
   QuizBuilderState,
   QuizBuilderStateDispatch,
@@ -11,8 +10,6 @@ import {
   ReactNode,
   createContext,
   useContext,
-  useEffect,
-  useMemo,
   useReducer,
 } from "react";
 
@@ -25,17 +22,13 @@ export default function QuizBuilderStateProvider({
 }: {
   children: ReactNode;
 }) {
-  const { rootId } = useAllFeatures();
-
-  const initialQuizBuilderState = useMemo<QuizBuilderState>(() => {
-    return {
-      featureAdderSelectedFeatureState: null,
-      selectedFeatureId: null,
-      renamingFeatureId: null,
-      addingFeatureId: rootId,
-      openFeatureIds: new Set<string>(),
-    };
-  }, [rootId]);
+  const initialQuizBuilderState = {
+    featureAdderSelectedFeatureState: null,
+    selectedFeatureId: null,
+    renamingFeatureId: null,
+    addingFeatureId: null,
+    openFeatureIds: new Set<string>(),
+  };
 
   const [quizBuilderState, quizBuilderStateDispatch] = useReducer(
     quizBuilderStateReducer,
@@ -68,47 +61,41 @@ function quizBuilderStateReducer(
 ) {
   switch (action.dispatchType) {
     case QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED: {
-      const { featureState } = action;
-
       const newQuizBuilderState = { ...quizBuilderState };
+
+      const { featureState } = action;
 
       newQuizBuilderState.featureAdderSelectedFeatureState = featureState;
 
       return newQuizBuilderState;
     }
     case QuizBuilderStateDispatchType.SET_SELECTED: {
-      const featureId = action.featureId || action.featureState?.featureId;
-
       const newQuizBuilderState = { ...quizBuilderState };
 
+      const featureId = action.featureId || action.featureState?.featureId;
+
       newQuizBuilderState.selectedFeatureId = featureId;
-      newQuizBuilderState.featureAdderSelectedFeatureState = null;
+      // newQuizBuilderState.featureAdderSelectedFeatureState = null;
 
       return newQuizBuilderState;
     }
-    case QuizBuilderStateDispatchType.SET_ADDING: {
-      const { lastFeatureState } = action;
-
-      const featureId = action.featureId || action.featureState.featureId;
-
+    case QuizBuilderStateDispatchType.SET_RENAMING: {
       const newQuizBuilderState = { ...quizBuilderState };
 
-      if (lastFeatureState.subfeatureIds.size <= 0) {
-        newQuizBuilderState.openFeatureIds.delete(lastFeatureState.featureId);
-      }
+      const featureId = action.featureId || action.featureState?.featureId;
 
-      newQuizBuilderState.selectedFeatureId = featureId;
-      newQuizBuilderState.addingFeatureId = featureId;
-      newQuizBuilderState.openFeatureIds.add(featureId);
+      newQuizBuilderState.renamingFeatureId = featureId;
 
       return newQuizBuilderState;
+    }
+    default: {
+      return { ...quizBuilderState };
     }
     case QuizBuilderStateDispatchType.SET_IS_OPEN: {
-      const { isOpen } = action;
-
-      const featureId = action.featureId || action.featureState?.featureId;
-
       const newQuizBuilderState = { ...quizBuilderState };
+
+      const { isOpen } = action;
+      const featureId = action.featureId || action.featureState?.featureId;
 
       if (isOpen) {
         newQuizBuilderState.openFeatureIds.add(featureId);
@@ -118,17 +105,21 @@ function quizBuilderStateReducer(
 
       return newQuizBuilderState;
     }
-    case QuizBuilderStateDispatchType.SET_RENAMING: {
-      const featureId = action.featureId || action.featureState?.featureId;
-
+    case QuizBuilderStateDispatchType.SET_ADDING: {
       const newQuizBuilderState = { ...quizBuilderState };
 
-      newQuizBuilderState.renamingFeatureId = featureId;
+      const { lastFeatureState } = action;
+      const featureId = action.featureId || action.featureState.featureId;
+
+      newQuizBuilderState.selectedFeatureId = featureId;
+      newQuizBuilderState.addingFeatureId = featureId;
+      newQuizBuilderState.openFeatureIds.add(featureId);
+
+      if (lastFeatureState?.subfeatureIds.size <= 0) {
+        newQuizBuilderState.openFeatureIds.delete(lastFeatureState.featureId);
+      }
 
       return newQuizBuilderState;
-    }
-    default: {
-      return { ...quizBuilderState };
     }
   }
 }
