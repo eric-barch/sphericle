@@ -3,7 +3,6 @@
 import { useAllFeatures } from "@/components/all-features-provider";
 import {
   isAreaState,
-  isParentFeatureState,
   isRootState,
   isSubfeatureState,
 } from "@/helpers/feature-type-guards";
@@ -27,7 +26,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
@@ -113,6 +111,11 @@ export default function FeatureAdder({
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
         featureState: subfeatureState,
+      });
+
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
+        featureState: null,
       });
     },
     [
