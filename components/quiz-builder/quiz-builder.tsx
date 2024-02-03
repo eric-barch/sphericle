@@ -5,9 +5,9 @@ import Map from "@/components/map";
 import SplitPane from "@/components/split-pane";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { isRootState, isSubfeatureState } from "@/helpers/feature-type-guards";
-import { DisplayMode } from "@/types";
+import { DisplayMode, QuizBuilderStateDispatchType } from "@/types";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { FocusEvent, useCallback, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import Subfeatures from "./subfeatures";
 
@@ -17,7 +17,7 @@ interface QuizBuilderProps {
 
 export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const { rootId, allFeatures } = useAllFeatures();
-  const { quizBuilderState } = useQuizBuilderState();
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const rootState = (() => {
     const newRootState = allFeatures.get(rootId);
@@ -36,6 +36,7 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
       return selectedFeatureState;
     }
   })();
+  const isAdding = quizBuilderState.addingFeatureId === rootId;
 
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 

@@ -153,9 +153,9 @@ type DeleteDispatch = BaseAllFeaturesDispatch &
 export type QuizBuilderStateDispatch =
   | SetFeatureAdderSelectedDispatch
   | SetSelectedDispatch
-  | SetIsAddingDispatch
+  | SetAddingDispatch
   | SetIsOpenDispatch
-  | SetIsRenamingDispatch;
+  | SetRenamingDispatch;
 
 type BaseQuizBuilderStateDispatch = {
   dispatchType: QuizBuilderStateDispatchType;
@@ -180,18 +180,18 @@ type SetSelectedDispatch = BaseQuizBuilderStateDispatch &
       }
   );
 
-type SetIsAddingDispatch = BaseQuizBuilderStateDispatch &
+type SetAddingDispatch = BaseQuizBuilderStateDispatch &
   (
     | {
         dispatchType: QuizBuilderStateDispatchType.SET_ADDING;
-        featureState: FeatureState;
-        isAdding: boolean;
+        lastFeatureState: ParentFeatureState | null;
+        featureState: ParentFeatureState;
         featureId?: never;
       }
     | {
         dispatchType: QuizBuilderStateDispatchType.SET_ADDING;
+        lastFeatureState: ParentFeatureState | null;
         featureId: string;
-        isAdding: boolean;
         featureState?: never;
       }
   );
@@ -212,18 +212,16 @@ type SetIsOpenDispatch = BaseQuizBuilderStateDispatch &
       }
   );
 
-type SetIsRenamingDispatch = BaseQuizBuilderStateDispatch &
+type SetRenamingDispatch = BaseQuizBuilderStateDispatch &
   (
     | {
         dispatchType: QuizBuilderStateDispatchType.SET_RENAMING;
         featureState: SubfeatureState;
-        isRenaming: boolean;
         featureId?: never;
       }
     | {
         dispatchType: QuizBuilderStateDispatchType.SET_RENAMING;
         featureId: string;
-        isRenaming: boolean;
         featureState?: never;
       }
   );

@@ -4,6 +4,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { RefObject, useCallback } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { isParentFeatureState } from "@/helpers/feature-type-guards";
 
 type EditFeatureButtonProps =
   | {
@@ -25,8 +26,8 @@ export default function EditFeatureButton({
   featureNameInputRef,
   featureAdderInputRef,
 }: EditFeatureButtonProps) {
-  const { allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderStateDispatch } = useQuizBuilderState();
+  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const handleOpenChange = useCallback(() => {
     // If DropdownMenu open state changes, it means the feature was clicked and should be selected.
@@ -48,23 +49,32 @@ export default function EditFeatureButton({
       isOpen: true,
     });
 
+    const lastFeatureState = allFeatures.get(quizBuilderState.addingFeatureId);
+
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+      lastFeatureState: isParentFeatureState(lastFeatureState)
+        ? lastFeatureState
+        : null,
       featureId,
-      isAdding: true,
     });
 
     setTimeout(() => {
       featureAdderInputRef?.current?.focus();
       featureAdderInputRef?.current?.select();
     }, 0);
-  }, [featureAdderInputRef, featureId, quizBuilderStateDispatch]);
+  }, [
+    featureId,
+    quizBuilderState,
+    quizBuilderStateDispatch,
+    allFeatures,
+    featureAdderInputRef,
+  ]);
 
   const handleRename = useCallback(() => {
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
       featureId,
-      isRenaming: true,
     });
 
     setTimeout(() => {
