@@ -19,10 +19,6 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const { rootId, allFeatures } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  useEffect(() => {
-    console.log(quizBuilderState);
-  }, [quizBuilderState]);
-
   const rootState = (() => {
     const newRootState = allFeatures.get(rootId);
     return isRootState(newRootState) ? newRootState : undefined;
