@@ -80,7 +80,6 @@ export default function Area({ areaState }: AreaProps) {
             featureNameInputRef={featureNameInputRef}
             featureId={featureId}
             featureName={featureName}
-            isRenaming={isRenaming}
           />
           <OpenChevron isOpen={isOpen} />
         </Collapsible.Trigger>

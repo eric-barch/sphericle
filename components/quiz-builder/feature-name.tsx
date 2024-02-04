@@ -1,34 +1,31 @@
 import { useAllFeatures } from "@/components/all-features-provider";
 import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
-import { KeyboardEvent, useCallback, useState } from "react";
+import { KeyboardEvent, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
 interface FeatureNameProps {
+  featureNameInputRef: React.RefObject<HTMLInputElement>;
   featureId: string;
   featureName: string;
-  isRenaming: boolean;
-  featureNameInputRef: React.RefObject<HTMLInputElement>;
 }
 
 export default function FeatureName({
+  featureNameInputRef,
   featureId,
   featureName,
-  isRenaming,
-  featureNameInputRef,
 }: FeatureNameProps) {
   const { allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderStateDispatch } = useQuizBuilderState();
+  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
+
+  const isRenaming = featureId === quizBuilderState.renamingFeatureId;
 
   const [input, setInput] = useState<string>(featureName);
 
-  const handleInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setInput(event.target.value);
-    },
-    [],
-  );
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(event.target.value);
+  };
 
-  const handleSubmitName = useCallback(() => {
+  const handleEnter = () => {
     allFeaturesDispatch({
       dispatchType: AllFeaturesDispatchType.RENAME,
       featureId,
@@ -39,36 +36,33 @@ export default function FeatureName({
       dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
       featureId: null,
     });
-  }, [allFeaturesDispatch, featureId, input, quizBuilderStateDispatch]);
+  };
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === "Enter") {
-        handleSubmitName();
-      }
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleEnter();
+    }
 
-      if (event.key === "Escape") {
-        event.currentTarget.blur();
-      }
-    },
-    [handleSubmitName],
-  );
+    if (event.key === "Escape") {
+      event.currentTarget.blur();
+    }
+  };
 
-  function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
+  const handleKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === " ") {
       // Prevent Accordion toggle when feature name contains spaces.
       event.preventDefault();
     }
-  }
+  };
 
-  function handleBlur() {
+  const handleBlur = () => {
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
       featureId: null,
     });
 
     setInput(featureName);
-  }
+  };
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
@@ -78,7 +72,7 @@ export default function FeatureName({
           className="bg-transparent w-full focus:outline-none"
           type="text"
           value={input}
-          onChange={handleInputChange}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
           onKeyUp={handleKeyUp}
           onBlur={handleBlur}

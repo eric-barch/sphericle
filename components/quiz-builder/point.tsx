@@ -48,7 +48,6 @@ export default function Point({ pointState }: PointProps) {
           featureNameInputRef={featureNameInputRef}
           featureId={featureId}
           featureName={featureName}
-          isRenaming={isRenaming}
         />
       </Button>
     </div>
