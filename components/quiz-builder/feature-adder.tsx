@@ -1,11 +1,7 @@
 "use client";
 
 import { useAllFeatures } from "@/components/all-features-provider";
-import {
-  isAreaState,
-  isRootState,
-  isSubfeatureState,
-} from "@/helpers/feature-type-guards";
+import { isAreaState, isRootState } from "@/helpers/feature-type-guards";
 import {
   AllFeaturesDispatchType,
   AreaState,
@@ -48,10 +44,15 @@ export default function FeatureAdder({
     parentFeatureState.featureId,
   );
 
+  const [selectParentOnInput, setSelectParentOnInput] = useState(true);
   const [featureType, setFeatureTypeRaw] = useState<FeatureType>(
     FeatureType.AREA,
   );
   const [input, setInput] = useState<string>("");
+
+  const handleBlur = useCallback((event: FocusEvent<HTMLInputElement>) => {
+    setSelectParentOnInput(true);
+  }, []);
 
   const handleSelectOption = useCallback(
     (subfeatureState: SubfeatureState) => {
@@ -63,6 +64,8 @@ export default function FeatureAdder({
 
       areaSearch.reset();
       pointSearch.reset();
+
+      setSelectParentOnInput(false);
 
       allFeaturesDispatch({
         dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE,
@@ -94,7 +97,10 @@ export default function FeatureAdder({
     (featureType: FeatureType) => {
       setFeatureTypeRaw(featureType);
 
-      if (quizBuilderState.selectedFeatureId !== parentFeatureState.featureId) {
+      if (
+        quizBuilderState.selectedFeatureId !== parentFeatureState.featureId &&
+        selectParentOnInput
+      ) {
         if (isRootState(parentFeatureState)) {
           quizBuilderStateDispatch({
             dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
@@ -118,17 +124,19 @@ export default function FeatureAdder({
       quizBuilderStateDispatch,
       input,
       pointSearch,
+      selectParentOnInput,
     ],
   );
 
   return (
-    <div className="relative">
+    <div className="relative" onBlur={handleBlur}>
       <Combobox onChange={handleSelectOption}>
         {({ activeOption }) => (
           <>
             <Input
               inputRef={featureAdderInputRef}
               parentFeatureState={parentFeatureState}
+              selectParentOnInput={selectParentOnInput}
               input={input}
               featureType={featureType}
               areaSearch={areaSearch}
@@ -153,6 +161,7 @@ export default function FeatureAdder({
 interface InputProps {
   inputRef: RefObject<HTMLInputElement>;
   parentFeatureState: ParentFeatureState;
+  selectParentOnInput: boolean;
   input: string;
   featureType: FeatureType;
   areaSearch: AreaSearch;
@@ -164,6 +173,7 @@ interface InputProps {
 function Input({
   inputRef,
   parentFeatureState,
+  selectParentOnInput,
   input,
   featureType,
   areaSearch,
@@ -190,7 +200,7 @@ function Input({
     (event: ChangeEvent<HTMLInputElement>) => {
       setInput(event.target.value);
 
-      if (!isSelected) {
+      if (!isSelected && selectParentOnInput) {
         quizBuilderStateDispatch({
           dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
           featureId: parentFeatureState.featureId,
@@ -207,6 +217,7 @@ function Input({
       pointSearch,
       setInput,
       quizBuilderStateDispatch,
+      selectParentOnInput,
       isSelected,
     ],
   );

@@ -5,7 +5,7 @@ import { isParentFeatureState } from "@/helpers/feature-type-guards";
 import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
-import { MouseEvent, useCallback, useRef } from "react";
+import { MouseEvent, useRef } from "react";
 import EditFeatureButton from "./edit-feature-button";
 import FeatureName from "./feature-name";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
@@ -22,49 +22,41 @@ export default function Area({ areaState }: AreaProps) {
   const featureNameInputRef = useRef<HTMLInputElement>();
   const featureAdderInputRef = useRef<HTMLInputElement>();
 
-  const isSelected = quizBuilderState.selectedFeatureId === areaState.featureId;
-  const isRenaming = quizBuilderState.renamingFeatureId === areaState.featureId;
-  const isOpen = quizBuilderState.openFeatureIds.has(areaState.featureId);
-  const isAdding = quizBuilderState.addingFeatureId === areaState.featureId;
+  const featureId = areaState.featureId;
+  const featureName = areaState.userDefinedName || areaState.shortName;
+  const isSelected = quizBuilderState.selectedFeatureId === featureId;
+  const isRenaming = quizBuilderState.renamingFeatureId === featureId;
+  const isOpen = quizBuilderState.openFeatureIds.has(featureId);
+  const isAdding = quizBuilderState.addingFeatureId === featureId;
 
-  const handleTriggerClick = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
+  const handleTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
+    if (!isSelected) {
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-        featureId: areaState.featureId,
+        featureId,
       });
+    } else {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+        featureId,
+        isOpen: !isOpen,
+      });
+    }
 
-      if (isSelected) {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
-          featureId: areaState.featureId,
-          isOpen: !isOpen,
-        });
-      }
+    if (isOpen !== isSelected && !isAdding) {
+      const lastFeatureState = allFeatures.get(
+        quizBuilderState.addingFeatureId,
+      );
 
-      if (isOpen !== isSelected) {
-        const lastFeatureState = allFeatures.get(
-          quizBuilderState.addingFeatureId,
-        );
-
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
-          lastFeatureState: isParentFeatureState(lastFeatureState)
-            ? lastFeatureState
-            : undefined,
-          featureId: areaState.featureId,
-        });
-      }
-    },
-    [
-      allFeatures,
-      areaState,
-      isOpen,
-      isSelected,
-      quizBuilderState,
-      quizBuilderStateDispatch,
-    ],
-  );
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+        lastFeatureState: isParentFeatureState(lastFeatureState)
+          ? lastFeatureState
+          : undefined,
+        featureId,
+      });
+    }
+  };
 
   return (
     <Collapsible.Root className="relative" open={isOpen}>
@@ -73,10 +65,10 @@ export default function Area({ areaState }: AreaProps) {
             more closely align with actual UI appearance) to receive accessible focus in correct
             order. */}
         <EditFeatureButton
-          featureId={areaState.featureId}
-          canAddSubfeature
           featureNameInputRef={featureNameInputRef}
           featureAdderInputRef={featureAdderInputRef}
+          featureId={featureId}
+          canAddSubfeature
         />
         <Collapsible.Trigger
           className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
@@ -85,10 +77,10 @@ export default function Area({ areaState }: AreaProps) {
           onClickCapture={handleTriggerClick}
         >
           <FeatureName
-            featureId={areaState.featureId}
-            featureName={areaState.userDefinedName || areaState.shortName}
-            isRenaming={isRenaming}
             featureNameInputRef={featureNameInputRef}
+            featureId={featureId}
+            featureName={featureName}
+            isRenaming={isRenaming}
           />
           <OpenChevron isOpen={isOpen} />
         </Collapsible.Trigger>

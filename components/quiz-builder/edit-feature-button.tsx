@@ -3,35 +3,38 @@ import { isParentFeatureState } from "@/helpers/feature-type-guards";
 import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
-import { RefObject, useCallback } from "react";
+import { RefObject } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
 type EditFeatureButtonProps =
   | {
-      featureId: string;
-      canAddSubfeature: true;
       featureNameInputRef: RefObject<HTMLInputElement>;
       featureAdderInputRef: RefObject<HTMLInputElement>;
+      featureId: string;
+      canAddSubfeature: true;
     }
   | {
-      featureId: string;
-      canAddSubfeature?: never;
       featureNameInputRef: RefObject<HTMLInputElement>;
       featureAdderInputRef?: never;
+      featureId: string;
+      canAddSubfeature?: never;
     };
 
 export default function EditFeatureButton({
-  featureId,
-  canAddSubfeature,
   featureNameInputRef,
   featureAdderInputRef,
+  featureId,
+  canAddSubfeature,
 }: EditFeatureButtonProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const isSelected = quizBuilderState.selectedFeatureId === featureId;
+  const isRenaming = quizBuilderState.renamingFeatureId === featureId;
+  const isOpen = quizBuilderState.openFeatureIds.has(featureId);
+  const isAdding = quizBuilderState.addingFeatureId === featureId;
 
-  const handleOpenChange = useCallback(() => {
+  const handleOpenChange = () => {
     // If DropdownMenu open state changes, it means the feature was clicked and should be selected.
     if (!isSelected) {
       quizBuilderStateDispatch({
@@ -39,60 +42,62 @@ export default function EditFeatureButton({
         featureId,
       });
     }
-  }, [featureId, isSelected, quizBuilderStateDispatch]);
+  };
 
-  const handleCloseAutoFocus = useCallback((event: Event) => {
+  const handleCloseAutoFocus = (event: Event) => {
     // Prevent DropdownMenu.Trigger from stealing focus on close.
     event.preventDefault();
-  }, []);
+  };
 
-  const handleAddSubfeature = useCallback(() => {
-    quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
-      featureId,
-      isOpen: true,
-    });
+  const handleAddSubfeature = () => {
+    if (!isOpen) {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+        featureId,
+        isOpen: true,
+      });
+    }
 
-    const lastFeatureState = allFeatures.get(quizBuilderState.addingFeatureId);
+    if (!isAdding) {
+      const lastFeatureState = allFeatures.get(
+        quizBuilderState.addingFeatureId,
+      );
 
-    quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
-      lastFeatureState: isParentFeatureState(lastFeatureState)
-        ? lastFeatureState
-        : null,
-      featureId,
-    });
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+        lastFeatureState: isParentFeatureState(lastFeatureState)
+          ? lastFeatureState
+          : null,
+        featureId,
+      });
+    }
 
     setTimeout(() => {
       featureAdderInputRef?.current?.focus();
       featureAdderInputRef?.current?.select();
     }, 0);
-  }, [
-    featureId,
-    quizBuilderState,
-    quizBuilderStateDispatch,
-    allFeatures,
-    featureAdderInputRef,
-  ]);
+  };
 
-  const handleRename = useCallback(() => {
-    quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
-      featureId,
-    });
+  const handleRename = () => {
+    if (!isRenaming) {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
+        featureId,
+      });
+    }
 
     setTimeout(() => {
       featureNameInputRef.current?.focus();
       featureNameInputRef.current?.select();
     }, 0);
-  }, [featureId, quizBuilderStateDispatch, featureNameInputRef]);
+  };
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = () => {
     allFeaturesDispatch({
       dispatchType: AllFeaturesDispatchType.DELETE,
       featureId,
     });
-  }, [featureId, allFeaturesDispatch]);
+  };
 
   return (
     <DropdownMenu.Root onOpenChange={handleOpenChange}>
