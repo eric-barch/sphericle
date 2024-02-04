@@ -83,10 +83,10 @@ function Subfeature({ subfeatureId }: SubfeatureProps) {
   }, [allFeatures, subfeatureId]);
 
   if (isAreaState(subfeatureState)) {
-    return <Area areaState={subfeatureState} />;
+    return <Area featureId={subfeatureState} />;
   }
 
   if (isPointState(subfeatureState)) {
-    return <Point pointState={subfeatureState} />;
+    return <Point featureId={subfeatureState} />;
   }
 }
