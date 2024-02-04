@@ -7,7 +7,7 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import { isRootState, isSubfeatureState } from "@/helpers/feature-type-guards";
 import { DisplayMode } from "@/types";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import Subfeatures from "./subfeatures";
 
@@ -59,8 +59,8 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
             <Subfeatures
               featureAdderInputRef={featureAdderInputRef}
               className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
-              isAdding
               parentFeatureState={rootState}
+              isAdding
             />
             <Link
               className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
@@ -70,10 +70,10 @@ export default function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
             </Link>
           </div>
           <Map
-            onLoad={handleMapLoad}
             mapId="696d0ea42431a75c"
             displayedFeature={displayedFeature}
             displayMode={DisplayMode.QUIZ_BUILDER}
+            onLoad={handleMapLoad}
           />
         </SplitPane>
       ) : null}
