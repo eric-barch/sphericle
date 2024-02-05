@@ -23,9 +23,8 @@ export default function Area({ areaState }: AreaProps) {
   const featureAdderInputRef = useRef<HTMLInputElement>();
 
   const featureId = areaState.featureId;
-  const featureName = areaState.userDefinedName || areaState.shortName;
   const isSelected = quizBuilderState.selectedFeatureId === featureId;
-  const isRenaming = quizBuilderState.renamingFeatureId === featureId;
+  const featureName = areaState?.userDefinedName || areaState.shortName;
   const isOpen = quizBuilderState.openFeatureIds.has(featureId);
   const isAdding = quizBuilderState.addingFeatureId === featureId;
 
