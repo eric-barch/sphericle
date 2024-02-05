@@ -19,14 +19,17 @@ function Area({ areaState }: AreaProps) {
   const { allFeatures } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
+  const { featureId, userDefinedName, shortName } = areaState;
+  const { selectedFeatureId, openFeatureIds, addingFeatureId } =
+    quizBuilderState;
+
+  const isSelected = featureId === selectedFeatureId;
+  const featureName = userDefinedName || shortName;
+  const isOpen = openFeatureIds.has(featureId);
+  const isAdding = featureId === addingFeatureId;
+
   const featureNameInputRef = useRef<HTMLInputElement>();
   const featureAdderInputRef = useRef<HTMLInputElement>();
-
-  const featureId = areaState.featureId;
-  const isSelected = quizBuilderState.selectedFeatureId === featureId;
-  const featureName = areaState?.userDefinedName || areaState.shortName;
-  const isOpen = quizBuilderState.openFeatureIds.has(featureId);
-  const isAdding = quizBuilderState.addingFeatureId === featureId;
 
   const handleTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (!isSelected) {

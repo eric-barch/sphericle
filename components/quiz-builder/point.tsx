@@ -14,18 +14,19 @@ interface PointProps {
 function Point({ pointState }: PointProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const featureNameInputRef = useRef<HTMLInputElement>();
+  const { featureId, userDefinedName, shortName } = pointState;
+  const { selectedFeatureId } = quizBuilderState;
 
-  const featureId = pointState.featureId;
-  const featureName = pointState.userDefinedName || pointState.shortName;
-  const isSelected = quizBuilderState.selectedFeatureId === featureId;
-  const isRenaming = quizBuilderState.renamingFeatureId === featureId;
+  const isSelected = featureId === selectedFeatureId;
+  const featureName = userDefinedName || shortName;
+
+  const featureNameInputRef = useRef<HTMLInputElement>();
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (!isSelected) {
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-        featureState: pointState,
+        featureId,
       });
     }
   };
