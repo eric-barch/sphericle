@@ -44,8 +44,10 @@ function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
   const handleMapLoad = () => {
-    setMapLoaded(true);
-    featureAdderInputRef.current?.focus();
+    if (!mapLoaded) {
+      setMapLoaded(true);
+      featureAdderInputRef.current?.focus();
+    }
   };
 
   return (
