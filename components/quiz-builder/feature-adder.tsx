@@ -50,83 +50,63 @@ function FeatureAdder({
   );
   const [input, setInput] = useState<string>("");
 
-  const handleBlur = useCallback((event: FocusEvent<HTMLInputElement>) => {
+  const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
     setSelectParentOnInput(true);
-  }, []);
+  };
 
-  const handleSelectOption = useCallback(
-    (subfeatureState: SubfeatureState) => {
-      if (featureAdderInputRef?.current) {
-        featureAdderInputRef.current.value = "";
+  const handleSelectOption = (subfeatureState: SubfeatureState) => {
+    if (featureAdderInputRef?.current) {
+      featureAdderInputRef.current.value = "";
+    }
+
+    setInput("");
+
+    areaSearch.reset();
+    pointSearch.reset();
+
+    setSelectParentOnInput(false);
+
+    allFeaturesDispatch({
+      dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE,
+      featureId: parentFeatureState.featureId,
+      subfeatureState: subfeatureState,
+    });
+
+    quizBuilderStateDispatch({
+      dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+      featureState: subfeatureState,
+    });
+
+    quizBuilderStateDispatch({
+      dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
+      featureState: null,
+    });
+  };
+
+  const setFeatureType = (featureType: FeatureType) => {
+    setFeatureTypeRaw(featureType);
+
+    if (
+      quizBuilderState.selectedFeatureId !== parentFeatureState.featureId &&
+      selectParentOnInput
+    ) {
+      if (isRootState(parentFeatureState)) {
+        quizBuilderStateDispatch({
+          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+          featureId: null,
+        });
+      } else {
+        quizBuilderStateDispatch({
+          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+          featureId: parentFeatureState.featureId,
+        });
       }
+    }
 
-      setInput("");
-
-      areaSearch.reset();
-      pointSearch.reset();
-
-      setSelectParentOnInput(false);
-
-      allFeaturesDispatch({
-        dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE,
-        featureId: parentFeatureState.featureId,
-        subfeatureState: subfeatureState,
-      });
-
-      quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-        featureState: subfeatureState,
-      });
-
-      quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
-        featureState: null,
-      });
-    },
-    [
-      allFeaturesDispatch,
-      areaSearch,
-      featureAdderInputRef,
-      parentFeatureState,
-      pointSearch,
-      quizBuilderStateDispatch,
-    ],
-  );
-
-  const setFeatureType = useCallback(
-    (featureType: FeatureType) => {
-      setFeatureTypeRaw(featureType);
-
-      if (
-        quizBuilderState.selectedFeatureId !== parentFeatureState.featureId &&
-        selectParentOnInput
-      ) {
-        if (isRootState(parentFeatureState)) {
-          quizBuilderStateDispatch({
-            dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-            featureId: null,
-          });
-        } else {
-          quizBuilderStateDispatch({
-            dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-            featureId: parentFeatureState.featureId,
-          });
-        }
-      }
-
-      if (featureType === FeatureType.POINT) {
-        pointSearch.setTerm(input);
-      }
-    },
-    [
-      parentFeatureState,
-      quizBuilderState,
-      quizBuilderStateDispatch,
-      input,
-      pointSearch,
-      selectParentOnInput,
-    ],
-  );
+    if (featureType === FeatureType.POINT) {
+      pointSearch.setTerm(input);
+    }
+  };
 
   return (
     <div className="relative" onBlur={handleBlur}>
@@ -196,62 +176,48 @@ function Input({
     }
   })();
 
-  const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setInput(event.target.value);
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInput(event.target.value);
 
-      if (!isSelected && selectParentOnInput) {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-          featureId: parentFeatureState.featureId,
-        });
-      }
+    if (!isSelected && selectParentOnInput) {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureId: parentFeatureState.featureId,
+      });
+    }
 
-      if (featureType === FeatureType.POINT) {
-        pointSearch.setTerm(event.target.value);
-      }
-    },
-    [
-      featureType,
-      parentFeatureState,
-      pointSearch,
-      setInput,
-      quizBuilderStateDispatch,
-      selectParentOnInput,
-      isSelected,
-    ],
-  );
+    if (featureType === FeatureType.POINT) {
+      pointSearch.setTerm(event.target.value);
+    }
+  };
 
-  const handleEnter = useCallback(
-    (event: KeyboardEvent<HTMLInputElement>) => {
-      if (
-        // TODO: think this condition is prone to race conditions
-        featureType === FeatureType.AREA &&
-        areaSearch.status === SearchStatus.SEARCHING
-      ) {
-        event.preventDefault();
-        return;
-      }
+  const handleEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (
+      // TODO: think this condition is prone to race conditions
+      featureType === FeatureType.AREA &&
+      areaSearch.status === SearchStatus.SEARCHING
+    ) {
+      event.preventDefault();
+      return;
+    }
 
-      if (
-        // TODO: think this condition is prone to race conditions
-        featureType === FeatureType.POINT &&
-        pointSearch.status === SearchStatus.SEARCHING
-      ) {
-        event.preventDefault();
-        return;
-      }
+    if (
+      // TODO: think this condition is prone to race conditions
+      featureType === FeatureType.POINT &&
+      pointSearch.status === SearchStatus.SEARCHING
+    ) {
+      event.preventDefault();
+      return;
+    }
 
-      if (featureType === FeatureType.AREA && input !== areaSearch.term) {
-        event.preventDefault();
-        areaSearch.setTerm(input);
-      }
-    },
-    [areaSearch, pointSearch, featureType, input],
-  );
+    if (featureType === FeatureType.AREA && input !== areaSearch.term) {
+      event.preventDefault();
+      areaSearch.setTerm(input);
+    }
+  };
 
   // override HeadlessUI Combobox Tab advance behavior
-  const handleTab = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
+  const handleTab = (event: KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault();
 
     const focusableElements = Array.from(
@@ -271,21 +237,18 @@ function Input({
         focusableElements[currentIndex + 1] || focusableElements[0];
       (nextElement as HTMLElement).focus();
     }
-  }, []);
+  };
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === "Enter") {
-        handleEnter(event);
-      }
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleEnter(event);
+    }
 
-      // override HeadlessUI Combobox Tab behavior
-      if (event.key === "Tab") {
-        handleTab(event);
-      }
-    },
-    [handleEnter, handleTab],
-  );
+    // override HeadlessUI Combobox Tab behavior
+    if (event.key === "Tab") {
+      handleTab(event);
+    }
+  };
 
   return (
     <div className="relative">
@@ -312,12 +275,12 @@ function AdvanceFeatureTypeButton({
   featureType,
   setFeatureType,
 }: AdvanceFeatureTypeButtonProps) {
-  const handleClick = useCallback(() => {
+  const handleClick = () => {
     const nextFeatureType =
       featureType === FeatureType.AREA ? FeatureType.POINT : FeatureType.AREA;
 
     setFeatureType(nextFeatureType);
-  }, [featureType, setFeatureType]);
+  };
 
   return (
     <button
