@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Home() {
+function Home() {
   return (
     <div className="flex flex-col items-center px-[10%] py-[2%] space-y-7 text-left">
       <p className="w-full">
@@ -33,3 +33,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Home;

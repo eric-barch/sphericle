@@ -1,4 +1,4 @@
-export async function GET(request: Request) {
+async function GET(request: Request) {
   const requestUrl = new URL(request.url);
 
   const query = requestUrl.searchParams.get("query");
@@ -12,3 +12,5 @@ export async function GET(request: Request) {
 
   return await fetch(url);
 }
+
+export { GET };

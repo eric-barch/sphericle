@@ -5,7 +5,7 @@ import QuizTakerStateProvider from "@/components/quiz-taker/quiz-taker-state-pro
 import useGoogleLibraries from "@/hooks/use-google-libraries";
 import { useCallback, useState } from "react";
 
-export default function TakeQuiz() {
+function TakeQuiz() {
   const [googleLibsLoaded, setGoogleLibsLoaded] = useState<boolean>(false);
 
   const handleLibsLoad = useCallback(() => {
@@ -20,3 +20,5 @@ export default function TakeQuiz() {
     </QuizTakerStateProvider>
   );
 }
+
+export default TakeQuiz;
