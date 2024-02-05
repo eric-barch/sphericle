@@ -8,7 +8,6 @@ import {
 } from "@/helpers/feature-type-guards";
 import { AllFeaturesDispatchType, ParentFeatureState } from "@/types";
 import { Reorder } from "framer-motion";
-import { useCallback, useMemo } from "react";
 import { Area } from "./area";
 import { FeatureAdder } from "./feature-adder";
 import { Point } from "./point";
@@ -28,16 +27,13 @@ function Subfeatures({
 }: SubfeaturesProps) {
   const { allFeaturesDispatch } = useAllFeatures();
 
-  const handleReorder = useCallback(
-    (subfeatureIds: string[]) => {
-      allFeaturesDispatch({
-        dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES,
-        featureState: parentFeatureState,
-        subfeatureIds,
-      });
-    },
-    [allFeaturesDispatch, parentFeatureState],
-  );
+  const handleReorder = (subfeatureIds: string[]) => {
+    allFeaturesDispatch({
+      dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES,
+      featureState: parentFeatureState,
+      subfeatureIds,
+    });
+  };
 
   return (
     <div className={`${className} space-y-1 h-full`}>

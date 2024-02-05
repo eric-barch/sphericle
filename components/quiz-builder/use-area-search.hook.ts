@@ -14,7 +14,7 @@ import {
 import booleanIntersects from "@turf/boolean-intersects";
 import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Polygon } from "geojson";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface AreaSearch {
   term: string;
@@ -57,47 +57,41 @@ function useAreaSearch(parentFeatureId: string): AreaSearch {
     setParentFeatureState(initialParentFeatureState);
   }, [allFeatures, parentFeatureId]);
 
-  const fetchSearchResults = useCallback(
-    async (searchTerm: string) => {
-      setInternalSearchTerm(searchTerm);
-      setInternalSearchStatus(SearchStatus.SEARCHING);
+  const fetchSearchResults = async (searchTerm: string) => {
+    setInternalSearchTerm(searchTerm);
+    setInternalSearchStatus(SearchStatus.SEARCHING);
 
-      let query: string = searchTerm;
+    let query: string = searchTerm;
 
-      if (isAreaState(parentFeatureState)) {
-        const { south, north, west, east } = parentFeatureState.searchBounds;
-        query = query + `&viewbox=${west},${south},${east},${north}&bounded=1`;
-      }
+    if (isAreaState(parentFeatureState)) {
+      const { south, north, west, east } = parentFeatureState.searchBounds;
+      query = query + `&viewbox=${west},${south},${east},${north}&bounded=1`;
+    }
 
-      const response = (await (
-        await fetch(`/api/search-open-street-map?query=${query}`)
-      ).json()) as OsmItem[];
+    const response = (await (
+      await fetch(`/api/search-open-street-map?query=${query}`)
+    ).json()) as OsmItem[];
 
-      const searchResults = response
-        .map((osmItem) => getAreaState(parentFeatureState, osmItem))
-        .filter((searchResult) => searchResult !== null);
+    const searchResults = response
+      .map((osmItem) => getAreaState(parentFeatureState, osmItem))
+      .filter((searchResult) => searchResult !== null);
 
-      setInternalSearchResults(searchResults);
-      setInternalSearchStatus(SearchStatus.SEARCHED);
-    },
-    [parentFeatureState],
-  );
+    setInternalSearchResults(searchResults);
+    setInternalSearchStatus(SearchStatus.SEARCHED);
+  };
 
-  const setTerm = useCallback(
-    (searchTerm: string) => {
-      setInternalSearchTerm(searchTerm);
-      if (searchTerm !== "") {
-        fetchSearchResults(searchTerm);
-      }
-    },
-    [fetchSearchResults],
-  );
+  const setTerm = (searchTerm: string) => {
+    setInternalSearchTerm(searchTerm);
+    if (searchTerm !== "") {
+      fetchSearchResults(searchTerm);
+    }
+  };
 
-  const reset = useCallback(() => {
+  const reset = () => {
     setInternalSearchTerm("");
     setInternalSearchStatus(SearchStatus.SEARCHED);
     setInternalSearchResults([]);
-  }, []);
+  };
 
   return {
     term: internalSearchTerm,

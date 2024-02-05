@@ -7,7 +7,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isRootState, isSubfeatureState } from "@/helpers/feature-type-guards";
 import { DisplayMode } from "@/types";
 import Link from "next/link";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { Subfeatures } from "./subfeatures";
 
@@ -43,10 +43,10 @@ function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
 
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
-  const handleMapLoad = useCallback(() => {
+  const handleMapLoad = () => {
     setMapLoaded(true);
     featureAdderInputRef.current?.focus();
-  }, []);
+  };
 
   return (
     <>
