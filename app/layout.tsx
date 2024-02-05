@@ -8,12 +8,12 @@ import { Toaster } from "react-hot-toast";
 
 const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: "Sphericle",
   description: "Learn the world.",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={font.className}>
@@ -26,3 +26,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     </html>
   );
 }
+
+export { metadata };
+export default RootLayout;
