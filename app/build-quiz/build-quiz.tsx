@@ -3,14 +3,14 @@
 import { QuizBuilder } from "@/components/quiz-builder";
 import { QuizBuilderStateProvider } from "@/components/quiz-builder/quiz-builder-state-provider";
 import { useGoogleLibraries } from "@/hooks/use-google-libraries";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 function BuildQuiz() {
   const [googleLibsLoaded, setGoogleLibsLoaded] = useState<boolean>(false);
 
-  const handleLibsLoad = useCallback(() => {
+  const handleLibsLoad = () => {
     setGoogleLibsLoaded(true);
-  }, []);
+  };
 
   useGoogleLibraries(handleLibsLoad);
 

@@ -3,13 +3,12 @@
 // TODO: this really needs to be refactored
 
 import {
-  useCallback,
-  useState,
+  Fragment,
+  MouseEvent,
+  ReactNode,
   useEffect,
   useRef,
-  Fragment,
-  ReactNode,
-  MouseEvent,
+  useState,
 } from "react";
 
 interface SplitPaneProps {
@@ -55,53 +54,47 @@ function SplitPane({ children }: SplitPaneProps) {
     };
   }, [children.length, prevContainerWidth, paneWidths]);
 
-  const handleMouseDown = useCallback((index: number) => {
+  const handleMouseDown = (index: number) => {
     setIsResizing(true);
     setCurrentPaneIndex(index);
-  }, []);
+  };
 
-  const handleMouseMove = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
-      if (!isResizing) return;
+  const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
+    if (!isResizing) return;
 
-      const leftPanesWidth = paneWidths
-        .slice(0, currentPaneIndex)
-        .reduce((a, b) => a + b, 0);
-      const middlePanesWidth =
-        paneWidths[currentPaneIndex] + paneWidths[currentPaneIndex + 1];
+    const leftPanesWidth = paneWidths
+      .slice(0, currentPaneIndex)
+      .reduce((a, b) => a + b, 0);
+    const middlePanesWidth =
+      paneWidths[currentPaneIndex] + paneWidths[currentPaneIndex + 1];
 
-      const newPaneWidths = [...paneWidths];
+    const newPaneWidths = [...paneWidths];
 
-      if (event.clientX < leftPanesWidth) {
-        newPaneWidths[currentPaneIndex] = 0;
-        newPaneWidths[currentPaneIndex + 1] = middlePanesWidth;
-      } else if (event.clientX > leftPanesWidth + middlePanesWidth) {
-        newPaneWidths[currentPaneIndex] = middlePanesWidth;
-        newPaneWidths[currentPaneIndex + 1] = 0;
-      } else {
-        newPaneWidths[currentPaneIndex] = event.clientX - leftPanesWidth;
-        newPaneWidths[currentPaneIndex + 1] =
-          middlePanesWidth - newPaneWidths[currentPaneIndex];
-      }
+    if (event.clientX < leftPanesWidth) {
+      newPaneWidths[currentPaneIndex] = 0;
+      newPaneWidths[currentPaneIndex + 1] = middlePanesWidth;
+    } else if (event.clientX > leftPanesWidth + middlePanesWidth) {
+      newPaneWidths[currentPaneIndex] = middlePanesWidth;
+      newPaneWidths[currentPaneIndex + 1] = 0;
+    } else {
+      newPaneWidths[currentPaneIndex] = event.clientX - leftPanesWidth;
+      newPaneWidths[currentPaneIndex + 1] =
+        middlePanesWidth - newPaneWidths[currentPaneIndex];
+    }
 
-      setPaneWidths(newPaneWidths);
-    },
-    [isResizing, paneWidths, currentPaneIndex],
-  );
+    setPaneWidths(newPaneWidths);
+  };
 
-  const handleDoubleClick = useCallback(
-    (index: number) => {
-      const newPaneWidths = [...paneWidths];
-      newPaneWidths[index] = newPaneWidths[index + 1] =
-        (paneWidths[index] + paneWidths[index + 1]) / 2;
-      setPaneWidths(newPaneWidths);
-    },
-    [paneWidths],
-  );
+  const handleDoubleClick = (index: number) => {
+    const newPaneWidths = [...paneWidths];
+    newPaneWidths[index] = newPaneWidths[index + 1] =
+      (paneWidths[index] + paneWidths[index + 1]) / 2;
+    setPaneWidths(newPaneWidths);
+  };
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = () => {
     setIsResizing(false);
-  }, []);
+  };
 
   return (
     <div

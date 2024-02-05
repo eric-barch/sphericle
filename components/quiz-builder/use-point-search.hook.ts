@@ -13,7 +13,7 @@ import {
 import booleanIntersects from "@turf/boolean-intersects";
 import { Point } from "geojson";
 import { debounce } from "lodash";
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 
 export interface PointSearch {
   term: string;
@@ -106,24 +106,21 @@ function usePointSearch(parentFeatureId: string): PointSearch {
     }, 300),
   ).current;
 
-  const setSearchTerm = useCallback(
-    (searchTerm: string) => {
-      if (searchTerm !== "") {
-        fetchSearchResults(searchTerm);
-      } else {
-        setInternalSearchTerm("");
-        setInternalSearchResults([]);
-        setInternalSearchStatus(SearchStatus.SEARCHED);
-      }
-    },
-    [fetchSearchResults],
-  );
+  const setSearchTerm = (searchTerm: string) => {
+    if (searchTerm !== "") {
+      fetchSearchResults(searchTerm);
+    } else {
+      setInternalSearchTerm("");
+      setInternalSearchResults([]);
+      setInternalSearchStatus(SearchStatus.SEARCHED);
+    }
+  };
 
-  const reset = useCallback(() => {
+  const reset = () => {
     setInternalSearchTerm("");
     setInternalSearchStatus(SearchStatus.SEARCHED);
     setInternalSearchResults([]);
-  }, []);
+  };
 
   // TODO: Feel like this should maybe be loaded at the app level
   useEffect(() => {

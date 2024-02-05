@@ -10,7 +10,7 @@ import {
   SubfeatureState,
 } from "@/types";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnswerBox } from "./answer-box";
 import { useQuizTakerState } from "./quiz-taker-state-provider";
 import { ScoreBox } from "./score-box";
@@ -53,19 +53,19 @@ function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
     setDisplayedFeature(newDisplayedFeature);
   }, [allFeatures, displayedFeature, quizTakerState]);
 
-  const handleMapLoad = useCallback(() => {
+  const handleMapLoad = () => {
     setMapIsLoaded(true);
 
     if (answerBoxInputRef.current) {
       answerBoxInputRef.current.focus();
     }
-  }, []);
+  };
 
-  const handleOpenAutoFocus = useCallback((event: Event) => {
+  const handleOpenAutoFocus = (event: Event) => {
     event.preventDefault();
-  }, []);
+  };
 
-  const handleClick = useCallback(() => {
+  const handleClick = () => {
     quizTakerStateDispatch({
       dispatchType: QuizTakerStateDispatchType.RESET,
       rootId,
@@ -77,7 +77,7 @@ function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
         answerBoxInputRef.current.focus();
       }
     }, 0);
-  }, [rootId, allFeatures, quizTakerStateDispatch]);
+  };
 
   return (
     <>
