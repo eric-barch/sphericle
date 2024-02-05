@@ -60,7 +60,7 @@ function quizBuilderStateReducer(
       const newQuizBuilderState = { ...quizBuilderState };
       const { featureState } = action;
 
-      newQuizBuilderState.featureAdderSelectedFeatureState = featureState;
+      newQuizBuilderState.featureAdderFeatureState = featureState;
 
       return newQuizBuilderState;
     }

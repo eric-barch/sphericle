@@ -99,7 +99,7 @@ function Area({ areaState }: AreaProps) {
       <Collapsible.Content>
         <Subfeatures
           className="ml-10"
-          parentFeatureState={areaState}
+          featureState={areaState}
           isAdding={isAdding}
           featureAdderInputRef={featureAdderInputRef}
         />

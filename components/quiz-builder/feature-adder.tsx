@@ -1,7 +1,6 @@
 "use client";
 
 import { useAllFeatures } from "@/components/all-features-provider";
-import { isRootState } from "@/helpers/feature-type-guards";
 import {
   AllFeaturesDispatchType,
   FeatureType,
@@ -11,24 +10,26 @@ import {
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { FocusEvent, RefObject, useState } from "react";
+import { FeatureAdderInput } from "./feature-adder-input";
+import { FeatureAdderOptions } from "./feature-adder-options";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { useFeatureSearches } from "./use-feature-searches.hook";
-import { FeatureAdderInput } from "./feature-adder-input";
 
 interface FeatureAdderProps {
-  featureAdderInputRef: RefObject<HTMLInputElement>;
-  parentFeatureState: ParentFeatureState;
+  inputRef: RefObject<HTMLInputElement>;
+  featureState: ParentFeatureState;
 }
 
-function FeatureAdder({
-  featureAdderInputRef,
-  parentFeatureState,
-}: FeatureAdderProps) {
+function FeatureAdder({ inputRef, featureState }: FeatureAdderProps) {
+  const { featureId } = featureState;
+
   const { allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
-  const { areaSearch, pointSearch } = useFeatureSearches(
-    parentFeatureState.featureId,
-  );
+  const {
+    quizBuilderState: { selectedFeatureId },
+    quizBuilderStateDispatch,
+  } = useQuizBuilderState();
+
+  const { areaSearch, pointSearch } = useFeatureSearches(featureId);
 
   const [selectParentOnInput, setSelectParentOnInput] = useState(true);
   const [featureType, setFeatureTypeRaw] = useState<FeatureType>(
@@ -37,56 +38,56 @@ function FeatureAdder({
   const [input, setInput] = useState<string>("");
 
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
+    if (selectParentOnInput) {
+      return;
+    }
+
+    /**If we blur the FeatureAdder, it means we are no longer adding multiple
+     * subfeatures to the same parent feature. The next type the user types
+     * in this field, we want to automatically select its parent. */
     setSelectParentOnInput(true);
   };
 
-  const handleSelectOption = (subfeatureState: SubfeatureState) => {
-    if (featureAdderInputRef?.current) {
-      featureAdderInputRef.current.value = "";
+  const handleSelectOption = (selectedFeatureState: SubfeatureState) => {
+    if (inputRef?.current) {
+      inputRef.current.value = "";
     }
 
     setInput("");
 
-    areaSearch.reset();
-    pointSearch.reset();
-
+    /**When adding several subfeatures to the same parent feature, we want the
+     * last added location to stay selected as the user searches for the next
+     * one. */
     setSelectParentOnInput(false);
 
     allFeaturesDispatch({
       dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE,
-      featureId: parentFeatureState.featureId,
-      subfeatureState: subfeatureState,
+      featureId,
+      subfeatureState: selectedFeatureState,
     });
 
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-      featureState: subfeatureState,
+      featureId: selectedFeatureState.featureId,
     });
 
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
       featureState: null,
     });
+
+    areaSearch.reset();
+    pointSearch.reset();
   };
 
   const setFeatureType = (featureType: FeatureType) => {
     setFeatureTypeRaw(featureType);
 
-    if (
-      quizBuilderState.selectedFeatureId !== parentFeatureState.featureId &&
-      selectParentOnInput
-    ) {
-      if (isRootState(parentFeatureState)) {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-          featureId: null,
-        });
-      } else {
-        quizBuilderStateDispatch({
-          dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-          featureId: parentFeatureState.featureId,
-        });
-      }
+    if (featureId !== selectedFeatureId && selectParentOnInput) {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureId,
+      });
     }
 
     if (featureType === FeatureType.POINT) {
@@ -100,8 +101,8 @@ function FeatureAdder({
         {({ activeOption }) => (
           <>
             <FeatureAdderInput
-              inputRef={featureAdderInputRef}
-              parentFeatureState={parentFeatureState}
+              inputRef={inputRef}
+              parentFeatureState={featureState}
               selectParentOnInput={selectParentOnInput}
               input={input}
               featureType={featureType}
@@ -110,7 +111,7 @@ function FeatureAdder({
               setInput={setInput}
               setFeatureType={setFeatureType}
             />
-            <Options
+            <FeatureAdderOptions
               activeOption={activeOption}
               input={input}
               featureType={featureType}
@@ -123,3 +124,5 @@ function FeatureAdder({
     </div>
   );
 }
+
+export { FeatureAdder };

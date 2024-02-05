@@ -47,7 +47,7 @@ export interface PointState extends FeatureState, SubfeatureState {
 }
 
 export interface QuizBuilderState {
-  featureAdderSelectedFeatureState: SubfeatureState | null;
+  featureAdderFeatureState: SubfeatureState | null;
   selectedFeatureId: string | null;
   addingFeatureId: string | null;
   renamingFeatureId: string | null;

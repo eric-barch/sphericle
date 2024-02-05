@@ -1,4 +1,20 @@
-interface OptionsProps {
+"use client";
+
+import {
+  AreaState,
+  FeatureType,
+  PointState,
+  QuizBuilderStateDispatchType,
+  SearchStatus,
+  SubfeatureState,
+} from "@/types";
+import { Combobox } from "@headlessui/react";
+import { useEffect } from "react";
+import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { AreaSearch } from "./use-area-search.hook";
+import { PointSearch } from "./use-point-search.hook";
+
+interface FeatureAdderOptionsProps {
   activeOption: SubfeatureState;
   input: string;
   featureType: FeatureType;
@@ -6,13 +22,13 @@ interface OptionsProps {
   pointSearch: PointSearch;
 }
 
-function Options({
+function FeatureAdderOptions({
   activeOption,
   input,
   featureType,
   areaSearch,
   pointSearch,
-}: OptionsProps) {
+}: FeatureAdderOptionsProps) {
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
   // TODO: This is hacky, but only way I have been able to work arond HeadlessUI Combobox bug.
@@ -23,7 +39,7 @@ function Options({
     });
   }, [quizBuilderStateDispatch, activeOption]);
 
-  const optionsPlaceholderText = useMemo(() => {
+  const optionsPlaceholderText = (() => {
     if (featureType === FeatureType.AREA) {
       if (input !== areaSearch.term) {
         return "Press Enter to Search";
@@ -45,7 +61,7 @@ function Options({
     }
 
     return null;
-  }, [areaSearch, featureType, input, pointSearch]);
+  })();
 
   if (input === "") {
     return null;
@@ -106,4 +122,4 @@ function Option({ feature }: OptionProps) {
   );
 }
 
-export { FeatureAdder };
+export { FeatureAdderOptions };

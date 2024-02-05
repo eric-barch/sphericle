@@ -13,24 +13,28 @@ import { FeatureAdder } from "./feature-adder";
 import { Point } from "./point";
 
 type SubfeaturesProps = {
-  className?: string;
-  parentFeatureState: ParentFeatureState;
-  isAdding: boolean;
   featureAdderInputRef: React.RefObject<HTMLInputElement>;
+  className?: string;
+  featureState: ParentFeatureState;
+  isAdding: boolean;
 };
 
 function Subfeatures({
-  className,
-  parentFeatureState,
-  isAdding,
   featureAdderInputRef,
+  className,
+  featureState,
+  isAdding,
 }: SubfeaturesProps) {
+  const { featureId, subfeatureIds: subfeatureIdsRaw } = featureState;
+
   const { allFeaturesDispatch } = useAllFeatures();
+
+  const subfeatureIds = Array.from(subfeatureIdsRaw);
 
   const handleReorder = (subfeatureIds: string[]) => {
     allFeaturesDispatch({
       dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES,
-      featureState: parentFeatureState,
+      featureId,
       subfeatureIds,
     });
   };
@@ -40,10 +44,10 @@ function Subfeatures({
       <Reorder.Group
         className="mt-1 space-y-1"
         axis="y"
-        values={Array.from(parentFeatureState.subfeatureIds)}
+        values={subfeatureIds}
         onReorder={handleReorder}
       >
-        {Array.from(parentFeatureState.subfeatureIds).map((subfeatureId) => (
+        {subfeatureIds.map((subfeatureId) => (
           // TODO: Fix animation
           <Reorder.Item
             key={subfeatureId}
@@ -52,14 +56,14 @@ function Subfeatures({
             value={subfeatureId}
             transition={{ duration: 0 }}
           >
-            <Subfeature subfeatureId={subfeatureId} />
+            <Subfeature featureId={subfeatureId} />
           </Reorder.Item>
         ))}
       </Reorder.Group>
       {isAdding && (
         <FeatureAdder
-          featureAdderInputRef={featureAdderInputRef}
-          parentFeatureState={parentFeatureState}
+          inputRef={featureAdderInputRef}
+          featureState={featureState}
         />
       )}
     </div>
@@ -67,23 +71,26 @@ function Subfeatures({
 }
 
 interface SubfeatureProps {
-  subfeatureId: string;
+  featureId: string;
 }
 
-function Subfeature({ subfeatureId }: SubfeatureProps) {
+function Subfeature({ featureId }: SubfeatureProps) {
   const { allFeatures } = useAllFeatures();
 
-  const subfeatureState = (() => {
-    const newSubfeatureState = allFeatures.get(subfeatureId);
-    return isSubfeatureState(newSubfeatureState) ? newSubfeatureState : null;
+  const featureState = (() => {
+    const featureState = allFeatures.get(featureId);
+
+    if (isSubfeatureState(featureState)) {
+      return featureState;
+    }
   })();
 
-  if (isAreaState(subfeatureState)) {
-    return <Area areaState={subfeatureState} />;
+  if (isAreaState(featureState)) {
+    return <Area areaState={featureState} />;
   }
 
-  if (isPointState(subfeatureState)) {
-    return <Point pointState={subfeatureState} />;
+  if (isPointState(featureState)) {
+    return <Point pointState={featureState} />;
   }
 }
 

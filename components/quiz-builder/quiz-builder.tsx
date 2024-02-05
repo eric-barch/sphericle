@@ -17,37 +17,40 @@ interface QuizBuilderProps {
 
 function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const { rootId, allFeatures } = useAllFeatures();
-  const { quizBuilderState } = useQuizBuilderState();
-
-  const featureAdderInputRef = useRef<HTMLInputElement>();
+  const {
+    quizBuilderState: { featureAdderFeatureState, selectedFeatureId },
+  } = useQuizBuilderState();
 
   const rootState = (() => {
-    const newRootState = allFeatures.get(rootId);
-    return isRootState(newRootState) ? newRootState : undefined;
+    const rootState = allFeatures.get(rootId);
+
+    if (isRootState(rootState)) {
+      return rootState;
+    }
   })();
   const displayedFeature = (() => {
-    const featureAdderSelectedFeatureState =
-      quizBuilderState.featureAdderSelectedFeatureState;
-    const selectedFeatureState = allFeatures.get(
-      quizBuilderState.selectedFeatureId,
-    );
-
-    if (featureAdderSelectedFeatureState) {
-      return featureAdderSelectedFeatureState;
+    if (featureAdderFeatureState) {
+      return featureAdderFeatureState;
     }
+
+    const selectedFeatureState = allFeatures.get(selectedFeatureId);
 
     if (isSubfeatureState(selectedFeatureState)) {
       return selectedFeatureState;
     }
   })();
 
+  const featureAdderInputRef = useRef<HTMLInputElement>();
+
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
   const handleMapLoad = () => {
-    if (!mapLoaded) {
-      setMapLoaded(true);
-      featureAdderInputRef.current?.focus();
+    if (mapLoaded) {
+      return;
     }
+
+    setMapLoaded(true);
+    featureAdderInputRef.current?.focus();
   };
 
   return (
@@ -61,7 +64,7 @@ function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
             <Subfeatures
               featureAdderInputRef={featureAdderInputRef}
               className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
-              parentFeatureState={rootState}
+              featureState={rootState}
               isAdding
             />
             <Link
