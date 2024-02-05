@@ -12,27 +12,34 @@ type EditFeatureButtonProps =
       featureAdderInputRef: RefObject<HTMLInputElement>;
       featureId: string;
       canAddSubfeature: true;
+      isSelected: boolean;
+      isRenaming: boolean;
+      isOpen: boolean;
+      isAdding: boolean;
     }
   | {
       featureNameInputRef: RefObject<HTMLInputElement>;
       featureAdderInputRef?: never;
       featureId: string;
       canAddSubfeature?: never;
+      isSelected: boolean;
+      isRenaming: boolean;
+      isOpen?: never;
+      isAdding?: never;
     };
 
 function EditFeatureButton({
   featureNameInputRef,
   featureAdderInputRef,
   featureId,
+  isSelected,
+  isRenaming,
+  isOpen,
+  isAdding,
   canAddSubfeature,
 }: EditFeatureButtonProps) {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
-
-  const isSelected = quizBuilderState.selectedFeatureId === featureId;
-  const isRenaming = quizBuilderState.renamingFeatureId === featureId;
-  const isOpen = quizBuilderState.openFeatureIds.has(featureId);
-  const isAdding = quizBuilderState.addingFeatureId === featureId;
 
   const handleOpenChange = () => {
     // If DropdownMenu open state changes, it means the feature was clicked and should be selected.

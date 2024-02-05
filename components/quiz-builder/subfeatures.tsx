@@ -77,10 +77,10 @@ interface SubfeatureProps {
 function Subfeature({ subfeatureId }: SubfeatureProps) {
   const { allFeatures } = useAllFeatures();
 
-  const subfeatureState = useMemo(() => {
+  const subfeatureState = (() => {
     const newSubfeatureState = allFeatures.get(subfeatureId);
     return isSubfeatureState(newSubfeatureState) ? newSubfeatureState : null;
-  }, [allFeatures, subfeatureId]);
+  })();
 
   if (isAreaState(subfeatureState)) {
     return <Area areaState={subfeatureState} />;

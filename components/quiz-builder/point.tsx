@@ -37,6 +37,8 @@ function Point({ pointState }: PointProps) {
       <EditFeatureButton
         featureNameInputRef={featureNameInputRef}
         featureId={featureId}
+        isSelected={isSelected}
+        isRenaming={isRenaming}
       />
       <Button
         className={`w-full p-1 cursor-pointer rounded-2xl text-left bg-gray-600 ${
