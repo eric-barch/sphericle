@@ -16,7 +16,7 @@ interface SplitPaneProps {
   children: ReactNode[];
 }
 
-export default function SplitPane({ children }: SplitPaneProps) {
+function SplitPane({ children }: SplitPaneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [prevContainerWidth, setPrevContainerWidth] = useState<number>(0);
   const [paneWidths, setPaneWidths] = useState<number[]>([]);
@@ -130,3 +130,5 @@ export default function SplitPane({ children }: SplitPaneProps) {
     </div>
   );
 }
+
+export { SplitPane };

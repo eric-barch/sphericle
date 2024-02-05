@@ -17,11 +17,7 @@ const QuizBuilderStateContext = createContext<QuizBuilderState | null>(null);
 const QuizBuilderStateDispatchContext =
   createContext<Dispatch<QuizBuilderStateDispatch> | null>(null);
 
-export default function QuizBuilderStateProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+function QuizBuilderStateProvider({ children }: { children: ReactNode }) {
   const initialQuizBuilderState = {
     featureAdderSelectedFeatureState: null,
     selectedFeatureId: null,
@@ -46,7 +42,7 @@ export default function QuizBuilderStateProvider({
   );
 }
 
-export function useQuizBuilderState(): {
+function useQuizBuilderState(): {
   quizBuilderState: QuizBuilderState;
   quizBuilderStateDispatch: Dispatch<QuizBuilderStateDispatch>;
 } {
@@ -118,3 +114,5 @@ function quizBuilderStateReducer(
     }
   }
 }
+
+export { QuizBuilderStateProvider, useQuizBuilderState };

@@ -4,7 +4,7 @@ import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Nav() {
+function Nav() {
   return (
     <NavigationMenu.Root
       className={`flex items-center sticky top-0 z-50 w-full px-6 py-3 bg-gray-900 h-16`}
@@ -33,3 +33,5 @@ export default function Nav() {
     </NavigationMenu.Root>
   );
 }
+
+export { Nav };

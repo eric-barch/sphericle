@@ -6,16 +6,16 @@ import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
 import { MouseEvent, useRef } from "react";
-import EditFeatureButton from "./edit-feature-button";
-import FeatureName from "./feature-name";
+import { EditFeatureButton } from "./edit-feature-button";
+import { FeatureName } from "./feature-name";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
-import Subfeatures from "./subfeatures";
+import { Subfeatures } from "./subfeatures";
 
 interface AreaProps {
   areaState: AreaState;
 }
 
-export default function Area({ areaState }: AreaProps) {
+function Area({ areaState }: AreaProps) {
   const { allFeatures } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
@@ -106,3 +106,5 @@ function OpenChevron({ isOpen }: OpenChevronProps) {
     </div>
   );
 }
+
+export { Area };

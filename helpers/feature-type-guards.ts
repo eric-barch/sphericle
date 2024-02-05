@@ -8,7 +8,7 @@ import {
   SubfeatureState,
 } from "@/types";
 
-export function isParentFeatureState(
+function isParentFeatureState(
   featureState: FeatureState,
 ): featureState is ParentFeatureState {
   return (
@@ -18,7 +18,7 @@ export function isParentFeatureState(
   );
 }
 
-export function isSubfeatureState(
+function isSubfeatureState(
   featureState: FeatureState,
 ): featureState is SubfeatureState {
   return (
@@ -28,20 +28,22 @@ export function isSubfeatureState(
   );
 }
 
-export function isRootState(
-  featureState: FeatureState,
-): featureState is RootState {
+function isRootState(featureState: FeatureState): featureState is RootState {
   return featureState && featureState.featureType === FeatureType.ROOT;
 }
 
-export function isAreaState(
-  featureState: FeatureState,
-): featureState is AreaState {
+function isAreaState(featureState: FeatureState): featureState is AreaState {
   return featureState && featureState.featureType === FeatureType.AREA;
 }
 
-export function isPointState(
-  featureState: FeatureState,
-): featureState is PointState {
+function isPointState(featureState: FeatureState): featureState is PointState {
   return featureState && featureState.featureType === FeatureType.POINT;
 }
+
+export {
+  isParentFeatureState,
+  isSubfeatureState,
+  isRootState,
+  isAreaState,
+  isPointState,
+};

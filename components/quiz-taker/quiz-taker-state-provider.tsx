@@ -19,11 +19,7 @@ const QuizTakerStateContext = createContext<QuizTakerState>(null);
 const QuizTakerStateDispatchContext =
   createContext<Dispatch<QuizTakerStateDispatch> | null>(null);
 
-export default function QuizTakerStateProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+function QuizTakerStateProvider({ children }: { children: ReactNode }) {
   const [quizTakerState, quizTakerStateDispatch] = useReducer(
     quizTakerStateReducer,
     initialQuizTakerState,
@@ -38,7 +34,7 @@ export default function QuizTakerStateProvider({
   );
 }
 
-export function useQuizTakerState(): {
+function useQuizTakerState(): {
   quizTakerState: QuizTakerState;
   quizTakerStateDispatch: Dispatch<QuizTakerStateDispatch>;
 } {
@@ -133,3 +129,5 @@ const initialQuizTakerState: QuizTakerState = {
   incorrectFeatureIds: new Set<string>(),
   remainingFeatureIds: new Set<string>(),
 };
+
+export { QuizTakerStateProvider, useQuizTakerState };

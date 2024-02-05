@@ -5,11 +5,9 @@ import {
   isRootState,
 } from "@/helpers/feature-type-guards";
 import {
-  AreaState,
   FeatureType,
   ParentFeatureState,
   PointState,
-  RootState,
   SearchStatus,
 } from "@/types";
 import booleanIntersects from "@turf/boolean-intersects";
@@ -25,7 +23,7 @@ export interface PointSearch {
   reset: () => void;
 }
 
-export default function usePointSearch(parentFeatureId: string): PointSearch {
+function usePointSearch(parentFeatureId: string): PointSearch {
   const { allFeatures } = useAllFeatures();
 
   const [parentFeatureState, setParentFeatureState] =
@@ -230,3 +228,5 @@ function getDisplayBounds(point: Point) {
     west: point.coordinates[0] - 0.1,
   };
 }
+
+export { usePointSearch };

@@ -9,7 +9,7 @@ interface FeatureNameProps {
   featureName: string;
 }
 
-export default function FeatureName({
+function FeatureName({
   featureNameInputRef,
   featureId,
   featureName,
@@ -83,3 +83,5 @@ export default function FeatureName({
     </div>
   );
 }
+
+export { FeatureName };

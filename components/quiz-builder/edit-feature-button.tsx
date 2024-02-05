@@ -20,7 +20,7 @@ type EditFeatureButtonProps =
       canAddSubfeature?: never;
     };
 
-export default function EditFeatureButton({
+function EditFeatureButton({
   featureNameInputRef,
   featureAdderInputRef,
   featureId,
@@ -132,3 +132,5 @@ export default function EditFeatureButton({
     </DropdownMenu.Root>
   );
 }
+
+export { EditFeatureButton };
