@@ -1,16 +1,18 @@
+"use client";
+
+import { isAreaState, isRootState } from "@/helpers/feature-type-guards";
 import {
   FeatureType,
   ParentFeatureState,
   QuizBuilderStateDispatchType,
   SearchStatus,
 } from "@/types";
-import { ChangeEvent, KeyboardEvent, RefObject } from "react";
-import { AreaSearch } from "./use-area-search.hook";
-import { PointSearch } from "./use-point-search.hook";
-import { isAreaState, isRootState } from "@/helpers/feature-type-guards";
-import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { Combobox } from "@headlessui/react";
 import { Grid2X2, MapPin } from "lucide-react";
+import { ChangeEvent, KeyboardEvent, RefObject } from "react";
+import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { AreaSearch } from "./use-area-search.hook";
+import { PointSearch } from "./use-point-search.hook";
 
 interface FeatureAdderInputProps {
   inputRef: RefObject<HTMLInputElement>;
