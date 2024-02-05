@@ -20,11 +20,16 @@ function Area({ areaState }: AreaProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const { featureId, userDefinedName, shortName } = areaState;
-  const { selectedFeatureId, openFeatureIds, addingFeatureId } =
-    quizBuilderState;
+  const {
+    selectedFeatureId,
+    openFeatureIds,
+    addingFeatureId,
+    renamingFeatureId,
+  } = quizBuilderState;
 
   const isSelected = featureId === selectedFeatureId;
   const featureName = userDefinedName || shortName;
+  const isRenaming = featureId === renamingFeatureId;
   const isOpen = openFeatureIds.has(featureId);
   const isAdding = featureId === addingFeatureId;
 
@@ -82,6 +87,7 @@ function Area({ areaState }: AreaProps) {
             featureNameInputRef={featureNameInputRef}
             featureId={featureId}
             featureName={featureName}
+            isRenaming={isRenaming}
           />
           <OpenChevron isOpen={isOpen} />
         </Collapsible.Trigger>

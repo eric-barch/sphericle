@@ -15,10 +15,11 @@ function Point({ pointState }: PointProps) {
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
   const { featureId, userDefinedName, shortName } = pointState;
-  const { selectedFeatureId } = quizBuilderState;
+  const { selectedFeatureId, renamingFeatureId } = quizBuilderState;
 
   const isSelected = featureId === selectedFeatureId;
   const featureName = userDefinedName || shortName;
+  const isRenaming = featureId === renamingFeatureId;
 
   const featureNameInputRef = useRef<HTMLInputElement>();
 
@@ -49,6 +50,7 @@ function Point({ pointState }: PointProps) {
           featureNameInputRef={featureNameInputRef}
           featureId={featureId}
           featureName={featureName}
+          isRenaming={isRenaming}
         />
       </Button>
     </div>

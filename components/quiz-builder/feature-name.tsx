@@ -7,17 +7,17 @@ interface FeatureNameProps {
   featureNameInputRef: React.RefObject<HTMLInputElement>;
   featureId: string;
   featureName: string;
+  isRenaming: boolean;
 }
 
 function FeatureName({
   featureNameInputRef,
   featureId,
   featureName,
+  isRenaming,
 }: FeatureNameProps) {
   const { allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
-
-  const isRenaming = featureId === quizBuilderState.renamingFeatureId;
+  const { quizBuilderStateDispatch } = useQuizBuilderState();
 
   const [input, setInput] = useState<string>(featureName);
 
