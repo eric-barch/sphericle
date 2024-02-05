@@ -4,7 +4,7 @@ interface LoadingSpinnerProps {
   className?: string;
 }
 
-export default function LoadingSpinner({ className }: LoadingSpinnerProps) {
+function LoadingSpinner({ className }: LoadingSpinnerProps) {
   return (
     <div
       className={`${className} flex h-full w-full justify-center items-center`}
@@ -20,3 +20,5 @@ export default function LoadingSpinner({ className }: LoadingSpinnerProps) {
     </div>
   );
 }
+
+export { LoadingSpinner };

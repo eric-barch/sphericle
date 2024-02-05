@@ -9,7 +9,6 @@ import {
   FeatureType,
   OsmItem,
   ParentFeatureState,
-  RootState,
   SearchStatus,
 } from "@/types";
 import booleanIntersects from "@turf/boolean-intersects";
@@ -25,7 +24,7 @@ export interface AreaSearch {
   reset: () => void;
 }
 
-export default function useAreaSearch(parentFeatureId: string): AreaSearch {
+function useAreaSearch(parentFeatureId: string): AreaSearch {
   const { allFeatures } = useAllFeatures();
 
   const [parentFeatureState, setParentFeatureState] =
@@ -221,3 +220,5 @@ function isPolygon(geoJson: AllGeoJSON): geoJson is Polygon {
 function isMultiPolygon(geoJson: AllGeoJSON): geoJson is MultiPolygon {
   return geoJson.type === "MultiPolygon";
 }
+
+export { useAreaSearch };

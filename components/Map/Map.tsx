@@ -20,7 +20,7 @@ interface MapProps {
   displayMode: DisplayMode;
 }
 
-export default function Map({
+function Map({
   containerRef: propContainerRef,
   padding = { top: 50, right: 50, bottom: 50, left: 50 },
   onLoad,
@@ -312,3 +312,5 @@ export default function Map({
 
   return <div className={`h-full w-full`} ref={containerRef} />;
 }
+
+export { Map };

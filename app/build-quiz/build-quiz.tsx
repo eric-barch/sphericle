@@ -1,8 +1,8 @@
 "use client";
 
-import QuizBuilder from "@/components/quiz-builder";
-import QuizBuilderStateProvider from "@/components/quiz-builder/quiz-builder-state-provider";
-import useGoogleLibraries from "@/hooks/use-google-libraries";
+import { QuizBuilder } from "@/components/quiz-builder";
+import { QuizBuilderStateProvider } from "@/components/quiz-builder/quiz-builder-state-provider";
+import { useGoogleLibraries } from "@/hooks/use-google-libraries";
 import { useCallback, useState } from "react";
 
 function BuildQuiz() {

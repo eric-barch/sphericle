@@ -61,4 +61,4 @@ const useGoogleLibraries = (onLoaded?: () => void) => {
   }, [onLoaded]);
 };
 
-export default useGoogleLibraries;
+export { useGoogleLibraries };

@@ -1,6 +1,6 @@
 import { useQuizTakerState } from "./quiz-taker-state-provider";
 
-export default function ScoreBox() {
+function ScoreBox() {
   const { quizTakerState } = useQuizTakerState();
 
   return (
@@ -30,3 +30,5 @@ export default function ScoreBox() {
     </div>
   );
 }
+
+export { ScoreBox };

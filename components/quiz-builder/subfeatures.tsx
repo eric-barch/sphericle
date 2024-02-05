@@ -9,9 +9,9 @@ import {
 import { AllFeaturesDispatchType, ParentFeatureState } from "@/types";
 import { Reorder } from "framer-motion";
 import { useCallback, useMemo } from "react";
-import Area from "./area";
-import FeatureAdder from "./feature-adder";
-import Point from "./point";
+import { Area } from "./area";
+import { FeatureAdder } from "./feature-adder";
+import { Point } from "./point";
 
 type SubfeaturesProps = {
   className?: string;
@@ -20,7 +20,7 @@ type SubfeaturesProps = {
   featureAdderInputRef: React.RefObject<HTMLInputElement>;
 };
 
-export default function Subfeatures({
+function Subfeatures({
   className,
   parentFeatureState,
   isAdding,
@@ -90,3 +90,5 @@ function Subfeature({ subfeatureId }: SubfeatureProps) {
     return <Point pointState={subfeatureState} />;
   }
 }
+
+export { Subfeatures };

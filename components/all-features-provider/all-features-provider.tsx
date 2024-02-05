@@ -25,11 +25,7 @@ const AllFeaturesContext = createContext<AllFeatures | null>(null);
 const AllFeaturesDispatchContext =
   createContext<Dispatch<AllFeaturesDispatch> | null>(null);
 
-export default function AllFeaturesProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+function AllFeaturesProvider({ children }: { children: ReactNode }) {
   const [allFeatures, allFeaturesDispatch] = useReducer(
     allFeaturesReducer,
     initialAllFeatures,
@@ -46,7 +42,7 @@ export default function AllFeaturesProvider({
 
 const rootId = crypto.randomUUID();
 
-export function useAllFeatures(): {
+function useAllFeatures(): {
   rootId: string;
   allFeatures: AllFeatures;
   allFeaturesDispatch: Dispatch<AllFeaturesDispatch>;
@@ -152,3 +148,5 @@ const initialAllFeatures = new Map<string, RootState | AreaState | PointState>([
     },
   ],
 ]);
+
+export { AllFeaturesProvider, useAllFeatures };

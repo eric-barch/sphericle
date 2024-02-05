@@ -10,11 +10,7 @@ interface AnswerBoxProps {
   disabled: boolean;
 }
 
-export default function AnswerBox({
-  displayedFeature,
-  inputRef,
-  disabled,
-}: AnswerBoxProps) {
+function AnswerBox({ displayedFeature, inputRef, disabled }: AnswerBoxProps) {
   const { allFeatures } = useAllFeatures();
   const { quizTakerState, quizTakerStateDispatch } = useQuizTakerState();
 
@@ -75,3 +71,5 @@ export default function AnswerBox({
     />
   );
 }
+
+export { AnswerBox };

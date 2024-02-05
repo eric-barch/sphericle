@@ -26,7 +26,7 @@ import {
 } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { AreaSearch } from "./use-area-search.hook";
-import useFeatureSearches from "./use-feature-searches.hook";
+import { useFeatureSearches } from "./use-feature-searches.hook";
 import { PointSearch } from "./use-point-search.hook";
 
 interface FeatureAdderProps {
@@ -34,7 +34,7 @@ interface FeatureAdderProps {
   parentFeatureState: ParentFeatureState;
 }
 
-export default function FeatureAdder({
+function FeatureAdder({
   featureAdderInputRef,
   parentFeatureState,
 }: FeatureAdderProps) {
@@ -303,7 +303,6 @@ function Input({
     </div>
   );
 }
-
 interface AdvanceFeatureTypeButtonProps {
   featureType: FeatureType;
   setFeatureType: (featureType: FeatureType) => void;
@@ -333,7 +332,6 @@ function AdvanceFeatureTypeButton({
     </button>
   );
 }
-
 interface OptionsProps {
   activeOption: SubfeatureState;
   input: string;
@@ -441,3 +439,5 @@ function Option({ feature }: OptionProps) {
     </Combobox.Option>
   );
 }
+
+export { FeatureAdder };

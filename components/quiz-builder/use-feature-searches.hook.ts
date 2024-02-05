@@ -1,7 +1,7 @@
-import useAreaSearch, { AreaSearch } from "./use-area-search.hook";
-import usePointSearch, { PointSearch } from "./use-point-search.hook";
+import { AreaSearch, useAreaSearch } from "./use-area-search.hook";
+import { PointSearch, usePointSearch } from "./use-point-search.hook";
 
-export default function useFeatureSearches(parentFeatureId: string): {
+function useFeatureSearches(parentFeatureId: string): {
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
 } {
@@ -9,3 +9,5 @@ export default function useFeatureSearches(parentFeatureId: string): {
   const pointSearch = usePointSearch(parentFeatureId);
   return { areaSearch, pointSearch };
 }
+
+export { useFeatureSearches };
