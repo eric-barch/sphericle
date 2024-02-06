@@ -56,4 +56,6 @@ export {
   isPointState,
   isRootState,
   isSubfeatureState,
+  isPolygon,
+  isMultiPolygon,
 };

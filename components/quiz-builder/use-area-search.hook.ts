@@ -3,18 +3,19 @@ import {
   isAreaState,
   isParentFeatureState,
   isRootState,
+  isPolygon,
+  isMultiPolygon,
 } from "@/helpers/type-guards";
 import {
   AreaSearch,
   AreaState,
   FeatureType,
   OsmItem,
-  ParentFeatureState,
   SearchStatus,
 } from "@/types";
 import booleanIntersects from "@turf/boolean-intersects";
 import { MultiPolygon, Polygon } from "geojson";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function useAreaSearch(parentFeatureId: string): AreaSearch {
   const { allFeatures } = useAllFeatures();
