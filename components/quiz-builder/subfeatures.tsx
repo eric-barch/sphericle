@@ -5,7 +5,7 @@ import {
   isAreaState,
   isPointState,
   isSubfeatureState,
-} from "@/helpers/feature-type-guards";
+} from "@/helpers/type-guards";
 import { AllFeaturesDispatchType, ParentFeatureState } from "@/types";
 import { Reorder } from "framer-motion";
 import { Area } from "./area";

@@ -7,6 +7,8 @@ import {
   RootState,
   SubfeatureState,
 } from "@/types";
+import { AllGeoJSON } from "@turf/helpers";
+import { MultiPolygon, Polygon } from "geojson";
 
 function isParentFeatureState(
   featureState: FeatureState,
@@ -40,10 +42,18 @@ function isPointState(featureState: FeatureState): featureState is PointState {
   return featureState && featureState.featureType === FeatureType.POINT;
 }
 
+function isPolygon(geoJson: AllGeoJSON): geoJson is Polygon {
+  return geoJson.type === "Polygon";
+}
+
+function isMultiPolygon(geoJson: AllGeoJSON): geoJson is MultiPolygon {
+  return geoJson.type === "MultiPolygon";
+}
+
 export {
-  isParentFeatureState,
-  isSubfeatureState,
-  isRootState,
   isAreaState,
+  isParentFeatureState,
   isPointState,
+  isRootState,
+  isSubfeatureState,
 };
