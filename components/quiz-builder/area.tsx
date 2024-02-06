@@ -16,19 +16,21 @@ interface AreaProps {
 }
 
 function Area({ areaState }: AreaProps) {
-  const { allFeatures } = useAllFeatures();
-  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
-
   const { featureId, userDefinedName, shortName, parentFeatureId } = areaState;
-  const {
-    selectedFeatureId,
-    openFeatureIds,
-    addingFeatureId,
-    renamingFeatureId,
-  } = quizBuilderState;
 
-  const isSelected = featureId === selectedFeatureId;
+  const { allFeatures } = useAllFeatures();
+  const {
+    quizBuilderState: {
+      selectedFeatureId,
+      openFeatureIds,
+      addingFeatureId,
+      renamingFeatureId,
+    },
+    quizBuilderStateDispatch,
+  } = useQuizBuilderState();
+
   const featureName = userDefinedName || shortName;
+  const isSelected = featureId === selectedFeatureId;
   const isRenaming = featureId === renamingFeatureId;
   const isOpen = openFeatureIds.has(featureId);
   const isAdding = featureId === addingFeatureId;
@@ -51,9 +53,7 @@ function Area({ areaState }: AreaProps) {
     }
 
     const lastFeatureState = (() => {
-      const lastFeatureState = allFeatures.get(
-        quizBuilderState.addingFeatureId,
-      );
+      const lastFeatureState = allFeatures.get(addingFeatureId);
 
       if (isParentFeatureState(lastFeatureState)) {
         return lastFeatureState;
@@ -75,41 +75,12 @@ function Area({ areaState }: AreaProps) {
     }
   };
 
-  const handleDoubleClick = () => {
-    quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-      featureId,
-    });
-
-    quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
-      featureId,
-      isOpen: true,
-    });
-
-    const lastFeatureState = (() => {
-      const lastFeatureState = allFeatures.get(
-        quizBuilderState.addingFeatureId,
-      );
-
-      if (isParentFeatureState(lastFeatureState)) {
-        return lastFeatureState;
-      }
-    })();
-
-    quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
-      lastFeatureState,
-      featureId,
-    });
-  };
-
   return (
     <Collapsible.Root className="relative" open={isOpen}>
       <div className="relative">
-        {/* EditFeatureButton must be BEFORE Collapsible.Trigger (rather than inside it, which would
-            more closely align with actual UI appearance) to receive accessible focus in correct
-            order. */}
+        {/*EditFeatureButton must be BEFORE Collapsible.Trigger (rather than
+         * inside it, which would more closely align with actual UI appearance)
+         * to receive accessible focus in correct order. */}
         <EditFeatureButton
           featureNameInputRef={featureNameInputRef}
           featureAdderInputRef={featureAdderInputRef}
@@ -125,7 +96,6 @@ function Area({ areaState }: AreaProps) {
             isSelected ? "outline outline-2 outline-red-700" : ""
           }`}
           onClick={handleTriggerClick}
-          onDoubleClick={handleDoubleClick}
         >
           <FeatureName
             featureNameInputRef={featureNameInputRef}

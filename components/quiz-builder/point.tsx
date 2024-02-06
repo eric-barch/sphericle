@@ -12,13 +12,15 @@ interface PointProps {
 }
 
 function Point({ pointState }: PointProps) {
-  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
-
   const { featureId, userDefinedName, shortName } = pointState;
-  const { selectedFeatureId, renamingFeatureId } = quizBuilderState;
 
-  const isSelected = featureId === selectedFeatureId;
+  const {
+    quizBuilderState: { selectedFeatureId, renamingFeatureId },
+    quizBuilderStateDispatch,
+  } = useQuizBuilderState();
+
   const featureName = userDefinedName || shortName;
+  const isSelected = featureId === selectedFeatureId;
   const isRenaming = featureId === renamingFeatureId;
 
   const featureNameInputRef = useRef<HTMLInputElement>();
@@ -42,9 +44,7 @@ function Point({ pointState }: PointProps) {
       />
       <Button
         className={`w-full p-1 cursor-pointer rounded-2xl text-left bg-gray-600 ${
-          featureId === quizBuilderState.selectedFeatureId
-            ? "outline outline-2 outline-red-700"
-            : ""
+          isSelected ? "outline outline-2 outline-red-700" : ""
         }`}
         onClick={handleClick}
       >
