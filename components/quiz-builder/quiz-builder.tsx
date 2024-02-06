@@ -18,7 +18,12 @@ interface QuizBuilderProps {
 function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const { rootId, allFeatures } = useAllFeatures();
   const {
-    quizBuilderState: { featureAdderFeatureState, selectedFeatureId },
+    quizBuilderState: {
+      featureAdderFeatureState,
+      selectedFeatureId,
+      addingFeatureId,
+    },
+    quizBuilderStateDispatch,
   } = useQuizBuilderState();
 
   const rootState = (() => {
@@ -39,6 +44,7 @@ function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
       return selectedFeatureState;
     }
   })();
+  const isAdding = rootId === addingFeatureId;
 
   const featureAdderInputRef = useRef<HTMLInputElement>();
 
@@ -65,7 +71,7 @@ function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
               featureAdderInputRef={featureAdderInputRef}
               className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
               featureState={rootState}
-              isAdding
+              isAdding={isAdding}
             />
             <Link
               className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
