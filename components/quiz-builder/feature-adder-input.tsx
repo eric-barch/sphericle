@@ -9,7 +9,7 @@ import {
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { Grid2X2, MapPin } from "lucide-react";
-import { ChangeEvent, KeyboardEvent, RefObject } from "react";
+import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { AreaSearch } from "./use-area-search.hook";
 import { PointSearch } from "./use-point-search.hook";
@@ -56,6 +56,11 @@ function FeatureAdderInput({
     }
   })();
 
+  const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    areaSearch.reset();
+    pointSearch.reset();
+  };
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
 
@@ -74,8 +79,7 @@ function FeatureAdderInput({
   const handleEnter = (event: KeyboardEvent<HTMLInputElement>) => {
     if (
       featureType === FeatureType.AREA &&
-      (areaSearch.status !== SearchStatus.SEARCHED ||
-        areaSearch.results.length === 0)
+      areaSearch.status !== SearchStatus.SEARCHED
     ) {
       event.preventDefault();
       return;
@@ -96,8 +100,10 @@ function FeatureAdderInput({
     }
   };
 
-  // override HeadlessUI Combobox Tab advance behavior
   const handleTab = (event: KeyboardEvent<HTMLInputElement>) => {
+    /**Override undesirable built-in HeadlessUI Combobox Tab advance behavior.
+     * Look into alternative accessible libraries, or wait for Radix to come
+     * out with one. */
     event.preventDefault();
 
     const focusableElements = Array.from(
@@ -120,13 +126,12 @@ function FeatureAdderInput({
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleEnter(event);
-    }
-
-    // override HeadlessUI Combobox Tab behavior
     if (event.key === "Tab") {
       handleTab(event);
+    }
+
+    if (event.key === "Enter") {
+      handleEnter(event);
     }
   };
 
@@ -140,6 +145,7 @@ function FeatureAdderInput({
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
         placeholder={placeholder}
         ref={inputRef}
+        onBlur={handleBlur}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
