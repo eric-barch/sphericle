@@ -23,7 +23,6 @@ function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
       selectedFeatureId,
       addingFeatureId,
     },
-    quizBuilderStateDispatch,
   } = useQuizBuilderState();
 
   const rootState = (() => {
@@ -51,6 +50,8 @@ function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
 
   const handleMapLoad = () => {
+    /**TODO: This check shouldn't really be necessary. Need to revise Map so
+     * it only fires this once. */
     if (mapLoaded) {
       return;
     }
@@ -61,10 +62,10 @@ function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
 
   return (
     <>
-      {!googleLibsLoaded || !mapLoaded ? (
+      {(!googleLibsLoaded || !mapLoaded) && (
         <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
-      ) : null}
-      {googleLibsLoaded ? (
+      )}
+      {googleLibsLoaded && (
         <SplitPane>
           <div className="relative h-full">
             <Subfeatures
@@ -87,7 +88,7 @@ function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
             onLoad={handleMapLoad}
           />
         </SplitPane>
-      ) : null}
+      )}
     </>
   );
 }
