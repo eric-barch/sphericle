@@ -80,7 +80,6 @@ function EditFeatureButton({
     }
 
     setTimeout(() => {
-      console.log("fire");
       featureAdderInputRef?.current?.focus();
       featureAdderInputRef?.current?.select();
     }, 0);
