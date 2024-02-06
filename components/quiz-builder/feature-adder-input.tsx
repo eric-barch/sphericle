@@ -2,8 +2,10 @@
 
 import { isAreaState, isRootState } from "@/helpers/type-guards";
 import {
+  AreaSearch,
   FeatureType,
   ParentFeatureState,
+  PointSearch,
   QuizBuilderStateDispatchType,
   SearchStatus,
 } from "@/types";
@@ -17,8 +19,6 @@ import {
   useRef,
 } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
-import { AreaSearch } from "./use-area-search.hook";
-import { PointSearch } from "./use-point-search.hook";
 
 interface FeatureAdderInputProps {
   featureState: ParentFeatureState;

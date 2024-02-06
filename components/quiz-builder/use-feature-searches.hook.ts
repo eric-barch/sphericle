@@ -1,5 +1,6 @@
-import { AreaSearch, useAreaSearch } from "./use-area-search.hook";
-import { PointSearch, usePointSearch } from "./use-point-search.hook";
+import { AreaSearch, PointSearch } from "@/types";
+import { useAreaSearch } from "./use-area-search.hook";
+import { usePointSearch } from "./use-point-search.hook";
 
 function useFeatureSearches(parentFeatureId: string): {
   areaSearch: AreaSearch;

@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  AreaSearch,
   AreaState,
   FeatureType,
+  PointSearch,
   PointState,
   QuizBuilderStateDispatchType,
   SearchStatus,
@@ -10,8 +12,6 @@ import {
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
-import { AreaSearch } from "./use-area-search.hook";
-import { PointSearch } from "./use-point-search.hook";
 import { useEffect } from "react";
 
 interface FeatureAdderOptionsProps {
