@@ -37,16 +37,16 @@ function Area({ areaState }: AreaProps) {
   const featureAdderInputRef = useRef<HTMLInputElement>();
 
   const handleTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
-    if (!isSelected) {
-      quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-        featureId,
-      });
-    } else {
+    if (isSelected) {
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
         featureId,
         isOpen: !isOpen,
+      });
+    } else {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        featureId,
       });
     }
 
@@ -60,7 +60,7 @@ function Area({ areaState }: AreaProps) {
       }
     })();
 
-    if (isOpen !== isSelected && !isAdding) {
+    if (isOpen !== isSelected) {
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
         lastFeatureState,
@@ -75,34 +75,34 @@ function Area({ areaState }: AreaProps) {
     }
   };
 
-  // const handleDoubleClick = () => {
-  //   quizBuilderStateDispatch({
-  //     dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-  //     featureId,
-  //   });
+  const handleDoubleClick = () => {
+    quizBuilderStateDispatch({
+      dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+      featureId,
+    });
 
-  //   quizBuilderStateDispatch({
-  //     dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
-  //     featureId,
-  //     isOpen: true,
-  //   });
+    quizBuilderStateDispatch({
+      dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+      featureId,
+      isOpen: true,
+    });
 
-  //   const lastFeatureState = (() => {
-  //     const lastFeatureState = allFeatures.get(
-  //       quizBuilderState.addingFeatureId,
-  //     );
+    const lastFeatureState = (() => {
+      const lastFeatureState = allFeatures.get(
+        quizBuilderState.addingFeatureId,
+      );
 
-  //     if (isParentFeatureState(lastFeatureState)) {
-  //       return lastFeatureState;
-  //     }
-  //   })();
+      if (isParentFeatureState(lastFeatureState)) {
+        return lastFeatureState;
+      }
+    })();
 
-  //   quizBuilderStateDispatch({
-  //     dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
-  //     lastFeatureState,
-  //     featureId,
-  //   });
-  // };
+    quizBuilderStateDispatch({
+      dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+      lastFeatureState,
+      featureId,
+    });
+  };
 
   return (
     <Collapsible.Root className="relative" open={isOpen}>
@@ -125,7 +125,7 @@ function Area({ areaState }: AreaProps) {
             isSelected ? "outline outline-2 outline-red-700" : ""
           }`}
           onClick={handleTriggerClick}
-          // onDoubleClick={handleDoubleClick}
+          onDoubleClick={handleDoubleClick}
         >
           <FeatureName
             featureNameInputRef={featureNameInputRef}

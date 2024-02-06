@@ -31,6 +31,8 @@ function FeatureAdder({ inputRef, featureState }: FeatureAdderProps) {
 
   const { areaSearch, pointSearch } = useFeatureSearches(featureId);
 
+  const isSelected = featureId === selectedFeatureId;
+
   const [selectParentOnInput, setSelectParentOnInput] = useState(true);
   const [featureType, setFeatureTypeRaw] = useState<FeatureType>(
     FeatureType.AREA,
@@ -38,12 +40,12 @@ function FeatureAdder({ inputRef, featureState }: FeatureAdderProps) {
   const [input, setInput] = useState<string>("");
 
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
-    if (selectParentOnInput) {
+    if (event.currentTarget.contains(event.relatedTarget)) {
       return;
     }
 
     /**If we blur the FeatureAdder, it means we are no longer adding multiple
-     * subfeatures to the same parent feature. The next type the user types
+     * subfeatures to the same parent feature. The next time the user types
      * in this field, we want to automatically select its parent. */
     setSelectParentOnInput(true);
   };
@@ -83,7 +85,7 @@ function FeatureAdder({ inputRef, featureState }: FeatureAdderProps) {
   const setFeatureType = (featureType: FeatureType) => {
     setFeatureTypeRaw(featureType);
 
-    if (featureId !== selectedFeatureId && selectParentOnInput) {
+    if (isSelected && selectParentOnInput) {
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
         featureId,

@@ -32,8 +32,8 @@ function FeatureAdderOptions({
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
   /**This is hacky, but the best way I've found to work around hardcoded
-   * HeadlessUI Combobox behavior. Long term, need to switch to a different
-   * accesssible component library. */
+   * HeadlessUI Combobox behavior. Long term, probably need to switch to
+   * a different accesssible component library. */
   useEffect(() => {
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
