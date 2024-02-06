@@ -102,7 +102,7 @@ function FeatureAdder({ inputRef, featureState }: FeatureAdderProps) {
           <>
             <FeatureAdderInput
               inputRef={inputRef}
-              parentFeatureState={featureState}
+              featureState={featureState}
               selectParentOnInput={selectParentOnInput}
               input={input}
               featureType={featureType}
