@@ -5,6 +5,7 @@ import {
   QuizBuilderStateDispatchType,
   AllFeaturesDispatchType,
   QuizTakerStateDispatchType,
+  SearchStatus,
 } from "./enums";
 
 export type AllFeatures = Map<string, FeatureState>;
@@ -58,6 +59,22 @@ export interface QuizTakerState {
   correctFeatureIds: Set<string>;
   incorrectFeatureIds: Set<string>;
   remainingFeatureIds: Set<string>;
+}
+
+export interface AreaSearch {
+  term: string;
+  status: SearchStatus;
+  results: AreaState[];
+  setTerm: (searchTerm: string) => void;
+  reset: () => void;
+}
+
+export interface PointSearch {
+  term: string;
+  status: SearchStatus;
+  results: PointState[];
+  setTerm: (searchTerm: string) => void;
+  reset: () => void;
 }
 
 export interface OsmItem {

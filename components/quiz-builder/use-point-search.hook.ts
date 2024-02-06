@@ -4,225 +4,172 @@ import {
   isParentFeatureState,
   isRootState,
 } from "@/helpers/feature-type-guards";
-import {
-  FeatureType,
-  ParentFeatureState,
-  PointState,
-  SearchStatus,
-} from "@/types";
+import { FeatureType, PointSearch, PointState, SearchStatus } from "@/types";
 import booleanIntersects from "@turf/boolean-intersects";
 import { Point } from "geojson";
 import { debounce } from "lodash";
-import { RefObject, useEffect, useRef, useState } from "react";
-
-export interface PointSearch {
-  term: string;
-  status: SearchStatus;
-  results: PointState[];
-  setTerm: (searchTerm: string) => void;
-  reset: () => void;
-}
+import { useCallback, useEffect, useRef, useState } from "react";
 
 function usePointSearch(parentFeatureId: string): PointSearch {
   const { allFeatures } = useAllFeatures();
 
-  const [parentFeatureState, setParentFeatureState] =
-    useState<ParentFeatureState>(() => {
-      const initialParentFeatureState = allFeatures.get(parentFeatureId);
-
-      if (
-        !initialParentFeatureState ||
-        !isParentFeatureState(initialParentFeatureState)
-      ) {
-        return null;
-      }
-
-      return initialParentFeatureState;
-    });
-  const [internalSearchTerm, setInternalSearchTerm] = useState<string>("");
-  const [internalSearchStatus, setInternalSearchStatus] =
-    useState<SearchStatus>(SearchStatus.SEARCHED);
-  const [internalSearchResults, setInternalSearchResults] = useState<
-    PointState[]
-  >([]);
-
-  useEffect(() => {
+  const parentFeatureState = (() => {
     const initialParentFeatureState = allFeatures.get(parentFeatureId);
 
-    if (!isParentFeatureState(initialParentFeatureState)) {
+    if (isParentFeatureState(initialParentFeatureState)) {
+      return initialParentFeatureState;
+    }
+  })();
+  const displayBoundsBuffer = 0.1;
+
+  const autocompleteServiceRef = useRef(window.autocompleteService);
+  const geocoderRef = useRef(window.geocoder);
+
+  const [termRaw, setTermRaw] = useState<string>("");
+  const [statusRaw, setStatusRaw] = useState<SearchStatus>(
+    SearchStatus.SEARCHED,
+  );
+  const [resultsRaw, setResultsRaw] = useState<PointState[]>([]);
+
+  // // // TODO: Feel like this should maybe be loaded at the app level
+  // useEffect(() => {
+  //   const mapsLibrary = window.google.maps;
+
+  //   if (!mapsLibrary) {
+  //     console.error("Did not find Google Maps library.");
+  //     return;
+  //   }
+
+  //   if (!autocompleteServiceRef.current) {
+  //     const placesLibrary = mapsLibrary.places;
+
+  //     if (!placesLibrary) {
+  //       console.error("Did not find Google Places library.");
+  //       return;
+  //     }
+
+  //     autocompleteServiceRef.current = new placesLibrary.AutocompleteService();
+  //   }
+
+  //   if (!geocoderRef.current) {
+  //     geocoderRef.current = new mapsLibrary.Geocoder();
+  //   }
+  // }, []);
+
+  const toPoint = async (
+    autocompletePrediction: google.maps.places.AutocompletePrediction,
+  ): Promise<Point> => {
+    const geocoderResult = (
+      await geocoderRef.current.geocode({
+        placeId: autocompletePrediction.place_id,
+      })
+    ).results[0];
+
+    const lat = geocoderResult.geometry.location.lat();
+    const lng = geocoderResult.geometry.location.lng();
+
+    const point: Point = { type: "Point", coordinates: [lng, lat] };
+
+    if (isRootState(parentFeatureState)) {
+      return point;
+    }
+
+    if (isAreaState(parentFeatureState)) {
+      const parentPolygons = parentFeatureState.polygons;
+
+      if (booleanIntersects(point, parentPolygons)) {
+        return point;
+      }
+    }
+  };
+
+  const toPointState = async (
+    autocompletePrediction: google.maps.places.AutocompletePrediction,
+  ): Promise<PointState> => {
+    const point = await toPoint(autocompletePrediction);
+
+    if (!point) {
       return;
     }
 
-    setParentFeatureState(initialParentFeatureState);
-  }, [allFeatures, parentFeatureId]);
+    const displayBounds = {
+      north: point.coordinates[1] + displayBoundsBuffer,
+      south: point.coordinates[1] - displayBoundsBuffer,
+      east: point.coordinates[0] + displayBoundsBuffer,
+      west: point.coordinates[0] - displayBoundsBuffer,
+    };
 
-  const autocompleteServiceRef =
-    useRef<google.maps.places.AutocompleteService>();
-  const geocoderRef = useRef<google.maps.Geocoder>();
+    return {
+      featureId: crypto.randomUUID(),
+      parentFeatureId: parentFeatureId,
+      googlePlacesId: autocompletePrediction.place_id,
+      longName: autocompletePrediction.description,
+      shortName: autocompletePrediction.description.split(",")[0],
+      userDefinedName: null,
+      featureType: FeatureType.POINT,
+      displayBounds,
+      point,
+    };
+  };
 
-  const fetchSearchResults = useRef(
+  const search = useCallback(
     debounce(async (searchTerm: string) => {
-      setInternalSearchTerm(searchTerm);
-      setInternalSearchStatus(SearchStatus.SEARCHING);
+      console.log("search");
 
-      if (!autocompleteServiceRef.current) {
-        throw new Error("Did not find autocompleteServiceRef.");
+      if (!autocompleteServiceRef.current || !geocoderRef.current) {
+        console.log("return");
+        return;
       }
 
-      if (!geocoderRef.current) {
-        throw new Error("Did not find geocoderRef.");
-      }
+      setTermRaw(searchTerm);
+      setStatusRaw(SearchStatus.SEARCHING);
 
-      let request: {
-        input: string;
-        locationRestriction?: google.maps.LatLngBoundsLiteral;
-      } = {
+      const request = {
         input: searchTerm,
+        locationRestriction: isAreaState(parentFeatureState)
+          ? parentFeatureState.searchBounds
+          : undefined,
       };
 
-      if (isAreaState(parentFeatureState)) {
-        request.locationRestriction = parentFeatureState.searchBounds;
-      }
+      const response =
+        await autocompleteServiceRef.current.getPlacePredictions(request);
 
-      const response = (
-        await autocompleteServiceRef.current.getPlacePredictions(request)
-      ).predictions;
-
-      const searchResults = (
+      const results = (
         await Promise.all(
-          response.map(
-            async (autocompletePrediction) =>
-              await getPointState(
-                parentFeatureState,
-                autocompletePrediction,
-                geocoderRef,
-              ),
+          response.predictions.map(
+            async (prediction) => await toPointState(prediction),
           ),
         )
-      ).filter((result): result is PointState => result !== null);
+      ).filter((result) => result);
 
-      setInternalSearchResults(searchResults);
-      setInternalSearchStatus(SearchStatus.SEARCHED);
-    }, 300),
-  ).current;
+      setResultsRaw(results);
+      setStatusRaw(SearchStatus.SEARCHED);
+    }, 500),
+    [],
+  );
 
   const setSearchTerm = (searchTerm: string) => {
+    console.log("setSearchTerm", searchTerm);
+
     if (searchTerm !== "") {
-      fetchSearchResults(searchTerm);
+      search(searchTerm);
     } else {
-      setInternalSearchTerm("");
-      setInternalSearchResults([]);
-      setInternalSearchStatus(SearchStatus.SEARCHED);
+      reset();
     }
   };
 
   const reset = () => {
-    setInternalSearchTerm("");
-    setInternalSearchStatus(SearchStatus.SEARCHED);
-    setInternalSearchResults([]);
+    setTermRaw("");
+    setStatusRaw(SearchStatus.SEARCHED);
+    setResultsRaw([]);
   };
 
-  // TODO: Feel like this should maybe be loaded at the app level
-  useEffect(() => {
-    const mapsLibrary = window.google.maps;
-
-    if (!mapsLibrary) {
-      console.error("Did not find Google Maps library.");
-      return;
-    }
-
-    if (!autocompleteServiceRef.current) {
-      const placesLibrary = mapsLibrary.places;
-
-      if (!placesLibrary) {
-        console.error("Did not find Google Places library.");
-        return;
-      }
-
-      autocompleteServiceRef.current = new placesLibrary.AutocompleteService();
-    }
-
-    if (!geocoderRef.current) {
-      geocoderRef.current = new mapsLibrary.Geocoder();
-    }
-  }, []);
-
   return {
-    term: internalSearchTerm,
-    status: internalSearchStatus,
-    results: internalSearchResults,
+    term: termRaw,
+    status: statusRaw,
+    results: resultsRaw,
     setTerm: setSearchTerm,
     reset,
-  };
-}
-
-async function getPointState(
-  parentFeature: ParentFeatureState,
-  autocompletePrediction: google.maps.places.AutocompletePrediction,
-  geocoderRef: RefObject<google.maps.Geocoder>,
-): Promise<PointState | null> {
-  const point = await getPoint(
-    parentFeature,
-    autocompletePrediction,
-    geocoderRef,
-  );
-
-  if (!point) {
-    return null;
-  }
-
-  const displayBounds = getDisplayBounds(point);
-
-  return {
-    featureId: crypto.randomUUID(),
-    parentFeatureId: parentFeature.featureId,
-    googlePlacesId: autocompletePrediction.place_id,
-    longName: autocompletePrediction.description,
-    shortName: autocompletePrediction.description,
-    userDefinedName: null,
-    featureType: FeatureType.POINT as FeatureType.POINT,
-    displayBounds,
-    point,
-  };
-}
-
-async function getPoint(
-  parentFeature: ParentFeatureState,
-  autocompletePrediction: google.maps.places.AutocompletePrediction,
-  geocoderRef: RefObject<google.maps.Geocoder>,
-): Promise<Point | null> {
-  const geocoderResult = (
-    await geocoderRef.current.geocode({
-      placeId: autocompletePrediction.place_id,
-    })
-  ).results[0];
-
-  const lat = geocoderResult.geometry.location.lat();
-  const lng = geocoderResult.geometry.location.lng();
-
-  const point: Point = { type: "Point", coordinates: [lng, lat] };
-
-  if (isRootState(parentFeature)) {
-    return point;
-  }
-
-  if (isAreaState(parentFeature)) {
-    const parentPolygons = parentFeature.polygons;
-
-    if (booleanIntersects(point, parentPolygons)) {
-      return point;
-    }
-  }
-
-  return null;
-}
-
-function getDisplayBounds(point: Point) {
-  return {
-    north: point.coordinates[1] + 0.1,
-    south: point.coordinates[1] - 0.1,
-    east: point.coordinates[0] + 0.1,
-    west: point.coordinates[0] - 0.1,
   };
 }
 

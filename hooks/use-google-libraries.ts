@@ -1,18 +1,32 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 declare global {
   interface Window {
     google: any;
     initGoogleMaps?: () => void;
+    autocompleteService?: google.maps.places.AutocompleteService;
+    geocoder?: google.maps.Geocoder;
   }
 }
 
 const useGoogleLibraries = (onLoaded?: () => void) => {
+  const [servicesLoaded, setServicesLoaded] = useState(false);
+
   useEffect(() => {
     let scriptLoaded = false;
 
     if (window.google && window.google.maps) {
-      onLoaded?.();
+      if (!window.autocompleteService) {
+        window.autocompleteService =
+          new window.google.maps.places.AutocompleteService();
+      }
+      if (!window.geocoder) {
+        window.geocoder = new window.google.maps.Geocoder();
+      }
+      if (!servicesLoaded) {
+        setServicesLoaded(true);
+        onLoaded?.();
+      }
       return;
     }
 
@@ -23,6 +37,10 @@ const useGoogleLibraries = (onLoaded?: () => void) => {
       const handleScriptLoad = () => {
         if (!scriptLoaded) {
           scriptLoaded = true;
+          window.autocompleteService =
+            new window.google.maps.places.AutocompleteService();
+          window.geocoder = new window.google.maps.Geocoder();
+          setServicesLoaded(true);
           onLoaded?.();
         }
       };
@@ -39,7 +57,7 @@ const useGoogleLibraries = (onLoaded?: () => void) => {
         key: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
         v: "weekly",
         callback: "initGoogleMaps",
-        libraries: "places", // Add this line
+        libraries: "places",
       });
 
       script.src = `https://maps.googleapis.com/maps/api/js?${params}`;
@@ -51,6 +69,10 @@ const useGoogleLibraries = (onLoaded?: () => void) => {
 
       window.initGoogleMaps = () => {
         delete window.initGoogleMaps;
+        window.autocompleteService =
+          new window.google.maps.places.AutocompleteService();
+        window.geocoder = new window.google.maps.Geocoder();
+        setServicesLoaded(true);
         onLoaded?.();
       };
 
@@ -58,7 +80,9 @@ const useGoogleLibraries = (onLoaded?: () => void) => {
     };
 
     loadGoogleMaps();
-  }, [onLoaded]);
+  }, [onLoaded, servicesLoaded]);
+
+  return { servicesLoaded };
 };
 
 export { useGoogleLibraries };
