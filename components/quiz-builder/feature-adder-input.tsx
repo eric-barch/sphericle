@@ -15,40 +15,44 @@ import { AreaSearch } from "./use-area-search.hook";
 import { PointSearch } from "./use-point-search.hook";
 
 interface FeatureAdderInputProps {
-  inputRef: RefObject<HTMLInputElement>;
-  parentFeatureState: ParentFeatureState;
+  featureState: ParentFeatureState;
+  areaSearch: AreaSearch;
+  pointSearch: PointSearch;
   selectParentOnInput: boolean;
   input: string;
   featureType: FeatureType;
-  areaSearch: AreaSearch;
-  pointSearch: PointSearch;
-  setInput: (input: string) => void;
+  inputRef: RefObject<HTMLInputElement>;
   setFeatureType: (featureType: FeatureType) => void;
+  setInput: (input: string) => void;
 }
 
 function FeatureAdderInput({
-  inputRef,
-  parentFeatureState,
+  featureState,
+  areaSearch,
+  pointSearch,
   selectParentOnInput,
   input,
   featureType,
-  areaSearch,
-  pointSearch,
-  setInput,
+  inputRef,
   setFeatureType,
+  setInput,
 }: FeatureAdderInputProps) {
-  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
+  const { featureId } = featureState;
 
-  const isSelected =
-    quizBuilderState.selectedFeatureId === parentFeatureState.featureId;
+  const {
+    quizBuilderState: { selectedFeatureId },
+    quizBuilderStateDispatch,
+  } = useQuizBuilderState();
 
+  const isSelected = featureId === selectedFeatureId;
   const placeholder = (() => {
-    if (isRootState(parentFeatureState)) {
+    if (isRootState(featureState)) {
       return `Add ${featureType.toLowerCase()} anywhere`;
-    } else if (isAreaState(parentFeatureState)) {
-      return `Add ${featureType.toLowerCase()} in ${
-        parentFeatureState.userDefinedName || parentFeatureState.shortName
-      }`;
+    } else if (isAreaState(featureState)) {
+      const featureName =
+        featureState.userDefinedName || featureState.shortName;
+
+      return `Add ${featureType.toLowerCase()} in ${featureName}`;
     }
   })();
 
@@ -58,7 +62,7 @@ function FeatureAdderInput({
     if (!isSelected && selectParentOnInput) {
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-        featureId: parentFeatureState.featureId,
+        featureId: featureState.featureId,
       });
     }
 
@@ -128,14 +132,14 @@ function FeatureAdderInput({
 
   return (
     <div className="relative">
-      <AdvanceFeatureTypeButton
+      <NextFeatureTypeButton
         featureType={featureType}
         setFeatureType={setFeatureType}
       />
       <Combobox.Input
-        ref={inputRef}
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
         placeholder={placeholder}
+        ref={inputRef}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
@@ -143,18 +147,24 @@ function FeatureAdderInput({
   );
 }
 
-interface AdvanceFeatureTypeButtonProps {
+interface NextFeatureTypeButtonProps {
   featureType: FeatureType;
   setFeatureType: (featureType: FeatureType) => void;
 }
 
-function AdvanceFeatureTypeButton({
+function NextFeatureTypeButton({
   featureType,
   setFeatureType,
-}: AdvanceFeatureTypeButtonProps) {
+}: NextFeatureTypeButtonProps) {
   const handleClick = () => {
-    const nextFeatureType =
-      featureType === FeatureType.AREA ? FeatureType.POINT : FeatureType.AREA;
+    const nextFeatureType = (() => {
+      switch (featureType) {
+        case FeatureType.AREA:
+          return FeatureType.POINT;
+        case FeatureType.POINT:
+          return FeatureType.AREA;
+      }
+    })();
 
     setFeatureType(nextFeatureType);
   };
@@ -164,11 +174,14 @@ function AdvanceFeatureTypeButton({
       className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl left-1.5 bg-gray-600 text-gray-300 "
       onClick={handleClick}
     >
-      {featureType === FeatureType.AREA ? (
-        <Grid2X2 className="w-4 h-4" />
-      ) : (
-        <MapPin className="w-4 h-4" />
-      )}
+      {(() => {
+        switch (featureType) {
+          case FeatureType.AREA:
+            return <Grid2X2 className="w-4 h-4" />;
+          case FeatureType.POINT:
+            return <MapPin className="w-4 h-4" />;
+        }
+      })()}
     </button>
   );
 }
