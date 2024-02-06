@@ -19,7 +19,7 @@ function Area({ areaState }: AreaProps) {
   const { allFeatures } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
-  const { featureId, userDefinedName, shortName } = areaState;
+  const { featureId, userDefinedName, shortName, parentFeatureId } = areaState;
   const {
     selectedFeatureId,
     openFeatureIds,
@@ -50,17 +50,27 @@ function Area({ areaState }: AreaProps) {
       });
     }
 
-    if (isOpen !== isSelected && !isAdding) {
+    const lastFeatureState = (() => {
       const lastFeatureState = allFeatures.get(
         quizBuilderState.addingFeatureId,
       );
 
+      if (isParentFeatureState(lastFeatureState)) {
+        return lastFeatureState;
+      }
+    })();
+
+    if (isOpen !== isSelected && !isAdding) {
       quizBuilderStateDispatch({
         dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
-        lastFeatureState: isParentFeatureState(lastFeatureState)
-          ? lastFeatureState
-          : undefined,
+        lastFeatureState,
         featureId,
+      });
+    } else {
+      quizBuilderStateDispatch({
+        dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+        lastFeatureState,
+        featureId: parentFeatureId,
       });
     }
   };
