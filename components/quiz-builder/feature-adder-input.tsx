@@ -9,7 +9,13 @@ import {
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { Grid2X2, MapPin } from "lucide-react";
-import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
+import {
+  ChangeEvent,
+  FocusEvent,
+  KeyboardEvent,
+  RefObject,
+  useRef,
+} from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { AreaSearch } from "./use-area-search.hook";
 import { PointSearch } from "./use-point-search.hook";
@@ -56,7 +62,14 @@ function FeatureAdderInput({
     }
   })();
 
+  const containerRef = useRef<HTMLDivElement>();
+
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    if (containerRef.current?.contains(event.relatedTarget)) {
+      event.preventDefault();
+      return;
+    }
+
     areaSearch.reset();
     pointSearch.reset();
   };
@@ -136,7 +149,7 @@ function FeatureAdderInput({
   };
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <NextFeatureTypeButton
         featureType={featureType}
         setFeatureType={setFeatureType}
