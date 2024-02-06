@@ -73,18 +73,18 @@ function FeatureAdderInput({
 
   const handleEnter = (event: KeyboardEvent<HTMLInputElement>) => {
     if (
-      // TODO: think this condition is prone to race conditions
       featureType === FeatureType.AREA &&
-      areaSearch.status === SearchStatus.SEARCHING
+      (areaSearch.status !== SearchStatus.SEARCHED ||
+        areaSearch.results.length === 0)
     ) {
       event.preventDefault();
       return;
     }
 
     if (
-      // TODO: think this condition is prone to race conditions
       featureType === FeatureType.POINT &&
-      pointSearch.status === SearchStatus.SEARCHING
+      (pointSearch.status !== SearchStatus.SEARCHED ||
+        pointSearch.results.length === 0)
     ) {
       event.preventDefault();
       return;
