@@ -3,7 +3,7 @@ import {
   isAreaState,
   isParentFeatureState,
   isRootState,
-} from "@/helpers/feature-type-guards";
+} from "@/helpers/type-guards";
 import { FeatureType, PointSearch, PointState, SearchStatus } from "@/types";
 import booleanIntersects from "@turf/boolean-intersects";
 import { Point } from "geojson";
@@ -13,10 +13,10 @@ function usePointSearch(parentFeatureId: string): PointSearch {
   const { allFeatures } = useAllFeatures();
 
   const parentFeatureState = (() => {
-    const initialParentFeatureState = allFeatures.get(parentFeatureId);
+    const parentFeatureState = allFeatures.get(parentFeatureId);
 
-    if (isParentFeatureState(initialParentFeatureState)) {
-      return initialParentFeatureState;
+    if (isParentFeatureState(parentFeatureState)) {
+      return parentFeatureState;
     }
   })();
   const displayBoundsBuffer = 0.1;
