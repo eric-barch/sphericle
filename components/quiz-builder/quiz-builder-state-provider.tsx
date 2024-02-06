@@ -17,12 +17,20 @@ const QuizBuilderStateContext = createContext<QuizBuilderState | null>(null);
 const QuizBuilderStateDispatchContext =
   createContext<Dispatch<QuizBuilderStateDispatch> | null>(null);
 
-function QuizBuilderStateProvider({ children }: { children: ReactNode }) {
+interface QuizBuilderStateProviderProps {
+  rootId: string;
+  children: ReactNode;
+}
+
+function QuizBuilderStateProvider({
+  rootId,
+  children,
+}: QuizBuilderStateProviderProps) {
   const initialQuizBuilderState = {
-    featureAdderSelectedFeatureState: null,
-    selectedFeatureId: null,
+    featureAdderFeatureState: null,
+    selectedFeatureId: rootId,
     renamingFeatureId: null,
-    addingFeatureId: null,
+    addingFeatureId: rootId,
     openFeatureIds: new Set<string>(),
   };
 

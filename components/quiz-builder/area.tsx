@@ -75,6 +75,35 @@ function Area({ areaState }: AreaProps) {
     }
   };
 
+  // const handleDoubleClick = () => {
+  //   quizBuilderStateDispatch({
+  //     dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+  //     featureId,
+  //   });
+
+  //   quizBuilderStateDispatch({
+  //     dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+  //     featureId,
+  //     isOpen: true,
+  //   });
+
+  //   const lastFeatureState = (() => {
+  //     const lastFeatureState = allFeatures.get(
+  //       quizBuilderState.addingFeatureId,
+  //     );
+
+  //     if (isParentFeatureState(lastFeatureState)) {
+  //       return lastFeatureState;
+  //     }
+  //   })();
+
+  //   quizBuilderStateDispatch({
+  //     dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+  //     lastFeatureState,
+  //     featureId,
+  //   });
+  // };
+
   return (
     <Collapsible.Root className="relative" open={isOpen}>
       <div className="relative">
@@ -95,7 +124,8 @@ function Area({ areaState }: AreaProps) {
           className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
             isSelected ? "outline outline-2 outline-red-700" : ""
           }`}
-          onClickCapture={handleTriggerClick}
+          onClick={handleTriggerClick}
+          // onDoubleClick={handleDoubleClick}
         >
           <FeatureName
             featureNameInputRef={featureNameInputRef}
