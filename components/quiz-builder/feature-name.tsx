@@ -16,7 +16,7 @@ const FeatureName = ({
   isRenaming,
 }: FeatureNameProps) => {
   const { allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderDispatch: quizBuilderStateDispatch } = useQuizBuilder();
+  const { quizBuilderDispatch } = useQuizBuilder();
 
   const [input, setInput] = useState<string>(featureName);
 
@@ -31,7 +31,7 @@ const FeatureName = ({
       name: input,
     });
 
-    quizBuilderStateDispatch({
+    quizBuilderDispatch({
       dispatchType: QuizBuilderDispatchType.SET_RENAMING,
       featureId: null,
     });
@@ -55,7 +55,7 @@ const FeatureName = ({
   };
 
   const handleBlur = () => {
-    quizBuilderStateDispatch({
+    quizBuilderDispatch({
       dispatchType: QuizBuilderDispatchType.SET_RENAMING,
       featureId: null,
     });

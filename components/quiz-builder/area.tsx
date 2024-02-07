@@ -25,7 +25,7 @@ function Area({ areaState }: AreaProps) {
       addingFeatureId,
       renamingFeatureId,
     },
-    quizBuilderDispatch: quizBuilderStateDispatch,
+    quizBuilderDispatch,
   } = useQuizBuilder();
 
   const featureName = userDefinedName || shortName;
@@ -39,13 +39,13 @@ function Area({ areaState }: AreaProps) {
 
   const handleTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (isSelected) {
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_IS_OPEN,
         featureId,
         isOpen: !isOpen,
       });
     } else {
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });
@@ -60,13 +60,13 @@ function Area({ areaState }: AreaProps) {
     })();
 
     if (isOpen !== isSelected) {
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_ADDING,
         lastFeatureState,
         featureId,
       });
     } else {
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_ADDING,
         lastFeatureState,
         featureId: parentFeatureId,

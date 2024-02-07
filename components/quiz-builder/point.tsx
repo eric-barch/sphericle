@@ -16,7 +16,7 @@ const Point = ({ pointState }: PointProps) => {
 
   const {
     quizBuilder: { selectedFeatureId, renamingFeatureId },
-    quizBuilderDispatch: quizBuilderStateDispatch,
+    quizBuilderDispatch,
   } = useQuizBuilder();
 
   const featureName = userDefinedName || shortName;
@@ -27,7 +27,7 @@ const Point = ({ pointState }: PointProps) => {
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (!isSelected) {
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });

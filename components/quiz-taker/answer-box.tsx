@@ -14,7 +14,7 @@ const AnswerBox = ({
   inputRef,
   disabled,
 }: AnswerBoxProps) => {
-  const { quizTakerDispatch: quizTakerStateDispatch } = useQuizTaker();
+  const { quizTakerDispatch } = useQuizTaker();
 
   const featureId = displayedFeature?.featureId;
   const featureName =
@@ -31,7 +31,7 @@ const AnswerBox = ({
         displayedFeature.userDefinedName || displayedFeature.shortName,
       );
 
-      quizTakerStateDispatch({
+      quizTakerDispatch({
         dispatchType: QuizTakerDispatchType.MARK_CORRECT,
         featureId,
       });
@@ -42,7 +42,7 @@ const AnswerBox = ({
         }`,
       );
 
-      quizTakerStateDispatch({
+      quizTakerDispatch({
         dispatchType: QuizTakerDispatchType.MARK_INCORRECT,
         featureId,
       });
