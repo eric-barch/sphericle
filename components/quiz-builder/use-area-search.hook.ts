@@ -14,6 +14,8 @@ import {
   SearchStatus,
 } from "@/types";
 import booleanIntersects from "@turf/boolean-intersects";
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Polygon } from "geojson";
 import { useState } from "react";
 
@@ -34,90 +36,104 @@ function useAreaSearch(parentFeatureId: string): AreaSearch {
   );
   const [resultsRaw, setResultsRaw] = useState<AreaState[]>([]);
 
-  const getPolygons = (osmItem: OsmItem): Polygon | MultiPolygon => {
-    const polygons = osmItem.geojson;
+  const flattenCoordinates = (geojson: AllGeoJSON) => {
+    if (isPolygon(geojson)) {
+      return geojson.coordinates[0];
+    } else if (isMultiPolygon(geojson)) {
+      return geojson.coordinates.flat(2);
+    }
+  };
 
-    if (!isPolygon(polygons) && !isMultiPolygon(polygons)) {
-      return null;
+  const getPolygons = (osmItem: OsmItem): Polygon | MultiPolygon => {
+    console.log("useAreaSearch getPolygons");
+
+    const geojson = osmItem.geojson;
+
+    if (!isPolygon(geojson) && !isMultiPolygon(geojson)) {
+      return;
     }
 
     if (isRootState(parentFeatureState)) {
-      return polygons;
+      return geojson;
     }
 
+    /**TODO: This is causing noticeable UI lag. Need to do a time complexity
+     * deep dive. */
     if (isAreaState(parentFeatureState)) {
       const parentPolygons = parentFeatureState.polygons;
+      const coordinates = flattenCoordinates(geojson);
 
-      if (booleanIntersects(polygons, parentPolygons)) {
-        return polygons;
+      let attempts = 0;
+
+      while (attempts < 100) {
+        const randomCoordinate =
+          coordinates[Math.floor(Math.random() * coordinates.length)];
+
+        if (booleanPointInPolygon(randomCoordinate, parentPolygons)) {
+          return geojson;
+        }
+
+        attempts++;
       }
     }
 
     return null;
   };
 
-  const getSearchBounds = (
-    osmItem: OsmItem,
-  ): google.maps.LatLngBoundsLiteral => {
-    return {
-      south: Number(osmItem.boundingbox[0]),
-      north: Number(osmItem.boundingbox[1]),
-      west: Number(osmItem.boundingbox[2]),
-      east: Number(osmItem.boundingbox[3]),
-    };
-  };
-
   const getDisplayBounds = (
     polygons: Polygon | MultiPolygon,
     searchBounds: google.maps.LatLngBoundsLiteral,
   ): google.maps.LatLngBoundsLiteral => {
-    let longitudes: number[] = [];
+    console.log("useAreaSearch getDisplayBounds");
 
-    if (polygons.type === "Polygon") {
-      longitudes = polygons.coordinates[0]
-        .map((coord) => coord[0])
-        .sort((a, b) => a - b);
-    } else if (polygons.type === "MultiPolygon") {
-      longitudes = polygons.coordinates
-        .flat(2)
-        .map((coord) => coord[0])
-        .sort((a, b) => a - b);
-    }
+    const start = Date.now();
 
     let maxGap = 0;
-    let maxGapWest = 0;
-    let maxGapEast = 0;
+    let maxGapStart = 0;
+    let maxGapEnd = 0;
 
-    for (let i = 0; i < longitudes.length; i++) {
-      const longitude = longitudes[i];
-      const nextLongitude = longitudes[i + 1];
-      const gap = nextLongitude - longitude;
+    const longitudes = flattenCoordinates(polygons)
+      .map((coord) => coord[0])
+      .sort((a, b) => a - b);
+
+    for (let i = 0; i < longitudes.length - 1; i++) {
+      const gap = longitudes[i + 1] - longitudes[i];
       if (gap > maxGap) {
         maxGap = gap;
-        maxGapWest = longitude;
-        maxGapEast = nextLongitude;
+        maxGapStart = longitudes[i];
+        maxGapEnd = longitudes[i + 1];
       }
     }
 
-    const westAntimeridianGap = longitudes[0] - -180;
-    const eastAntimeridianGap = 180 - longitudes[longitudes.length - 1];
-    const antiMeridianGap = westAntimeridianGap + eastAntimeridianGap;
+    const antiMeridianGap =
+      longitudes[0] + 180 + (180 - longitudes[longitudes.length - 1]);
 
     if (antiMeridianGap > maxGap) {
+      console.log("displayBounds", Date.now() - start);
       return searchBounds;
     } else {
+      console.log("displayBounds", Date.now() - start);
       return {
         north: searchBounds.north,
-        east: maxGapWest,
+        east: maxGapStart,
         south: searchBounds.south,
-        west: maxGapEast,
+        west: maxGapEnd,
       };
     }
   };
 
   const toAreaState = (osmItem: OsmItem): AreaState => {
+    console.log("useAreaSearch toAreaState");
+
     const polygons = getPolygons(osmItem);
-    const searchBounds = getSearchBounds(osmItem);
+
+    const searchBounds = {
+      south: Number(osmItem.boundingbox[0]),
+      north: Number(osmItem.boundingbox[1]),
+      west: Number(osmItem.boundingbox[2]),
+      east: Number(osmItem.boundingbox[3]),
+    };
+
     const displayBounds = getDisplayBounds(polygons, searchBounds);
 
     return {
@@ -127,15 +143,17 @@ function useAreaSearch(parentFeatureId: string): AreaSearch {
       openStreetMapPlaceId: osmItem.place_id,
       longName: osmItem.display_name,
       shortName: osmItem.name,
-      userDefinedName: "",
+      userDefinedName: null,
       featureType: FeatureType.AREA,
+      polygons,
       searchBounds,
       displayBounds,
-      polygons,
     };
   };
 
   const search = async (searchTerm: string) => {
+    console.log("useAreaSearch search");
+
     setTermRaw(searchTerm);
     setStatusRaw(SearchStatus.SEARCHING);
 
