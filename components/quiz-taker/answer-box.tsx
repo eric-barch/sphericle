@@ -3,11 +3,11 @@ import { QuizTakerDispatchType, SubfeatureState } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";
 
-interface AnswerBoxProps {
+type AnswerBoxProps = {
   displayedFeature: SubfeatureState;
   inputRef: RefObject<HTMLInputElement>;
   disabled: boolean;
-}
+};
 
 const AnswerBox = ({
   displayedFeature,

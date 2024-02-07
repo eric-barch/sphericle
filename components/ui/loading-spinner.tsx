@@ -1,10 +1,10 @@
 import Image from "next/image";
 
-interface LoadingSpinnerProps {
+type LoadingSpinnerProps = {
   className?: string;
-}
+};
 
-function LoadingSpinner({ className }: LoadingSpinnerProps) {
+const LoadingSpinner = ({ className }: LoadingSpinnerProps) => {
   return (
     <div
       className={`${className} flex h-full w-full justify-center items-center`}
@@ -19,6 +19,6 @@ function LoadingSpinner({ className }: LoadingSpinnerProps) {
       />
     </div>
   );
-}
+};
 
 export { LoadingSpinner };

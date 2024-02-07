@@ -10,9 +10,9 @@ import { AnswerBox } from "./answer-box";
 import { CompleteDialog } from "./complete-dialog";
 import { ScoreBox } from "./score-box";
 
-interface QuizTakerProps {
+type QuizTakerProps = {
   googleLibsLoaded: boolean;
-}
+};
 
 const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
   const { allFeatures } = useAllFeatures();

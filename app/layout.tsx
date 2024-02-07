@@ -13,7 +13,7 @@ const metadata: Metadata = {
   description: "Learn the world.",
 };
 
-function RootLayout({ children }: { children: ReactNode }) {
+const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
       <body className={font.className}>
@@ -25,7 +25,7 @@ function RootLayout({ children }: { children: ReactNode }) {
       </body>
     </html>
   );
-}
+};
 
 export { metadata };
 export default RootLayout;

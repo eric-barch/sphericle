@@ -14,7 +14,7 @@ type AreaProps = {
   areaState: AreaState;
 };
 
-function Area({ areaState }: AreaProps) {
+const Area = ({ areaState }: AreaProps) => {
   const { featureId, userDefinedName, shortName, parentFeatureId } = areaState;
 
   const { allFeatures } = useAllFeatures();
@@ -115,18 +115,18 @@ function Area({ areaState }: AreaProps) {
       </Collapsible.Content>
     </Collapsible.Root>
   );
-}
+};
 
 type OpenChevronProps = {
   isOpen: boolean;
 };
 
-function OpenChevron({ isOpen }: OpenChevronProps) {
+const OpenChevron = ({ isOpen }: OpenChevronProps) => {
   return (
     <div className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl right-1">
       <ChevronRight className={`${isOpen ? "rotate-90" : ""} w-6 h-6`} />
     </div>
   );
-}
+};
 
 export { Area };

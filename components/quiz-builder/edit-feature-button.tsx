@@ -44,7 +44,9 @@ const EditFeatureButton = ({
   } = useQuizBuilder();
 
   const handleOpenChange = () => {
-    // If DropdownMenu open state changes, it means the feature was clicked and should be selected.
+    /**If DropdownMenu open state changes, it means the feature was clicked and
+     * should be selected. If it was already open, it should be set to
+     * adding. */
     if (!isSelected) {
       quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_SELECTED,
@@ -70,30 +72,26 @@ const EditFeatureButton = ({
   };
 
   const handleCloseAutoFocus = (event: Event) => {
-    // Prevent DropdownMenu.Trigger from stealing focus on close.
+    /**Prevent DropdownMenu.Trigger from stealing focus on close. */
     event.preventDefault();
   };
 
   const handleAddSubfeature = () => {
-    if (!isOpen) {
-      quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_IS_OPEN,
-        featureId,
-        isOpen: true,
-      });
-    }
+    quizBuilderDispatch({
+      dispatchType: QuizBuilderDispatchType.SET_IS_OPEN,
+      featureId,
+      isOpen: true,
+    });
 
-    if (!isAdding) {
-      const lastFeatureState = allFeatures.get(addingFeatureId);
+    const lastFeatureState = allFeatures.get(addingFeatureId);
 
-      quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_ADDING,
-        lastFeatureState: isParentFeatureState(lastFeatureState)
-          ? lastFeatureState
-          : null,
-        featureId,
-      });
-    }
+    quizBuilderDispatch({
+      dispatchType: QuizBuilderDispatchType.SET_ADDING,
+      lastFeatureState: isParentFeatureState(lastFeatureState)
+        ? lastFeatureState
+        : null,
+      featureId,
+    });
 
     setTimeout(() => {
       featureAdderInputRef?.current?.focus();
@@ -102,12 +100,10 @@ const EditFeatureButton = ({
   };
 
   const handleRename = () => {
-    if (!isRenaming) {
-      quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_RENAMING,
-        featureId,
-      });
-    }
+    quizBuilderDispatch({
+      dispatchType: QuizBuilderDispatchType.SET_RENAMING,
+      featureId,
+    });
 
     setTimeout(() => {
       featureNameInputRef.current?.focus();

@@ -5,7 +5,7 @@ import booleanIntersects from "@turf/boolean-intersects";
 import { Point } from "geojson";
 import { useRef, useState } from "react";
 
-function usePointSearch(parentFeatureId: string): PointSearch {
+const usePointSearch = (parentFeatureId: string): PointSearch => {
   const { allFeatures } = useAllFeatures();
 
   const parentFeatureState = (() => {
@@ -140,6 +140,6 @@ function usePointSearch(parentFeatureId: string): PointSearch {
     setTerm,
     reset,
   };
-}
+};
 
 export { usePointSearch };

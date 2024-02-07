@@ -1,13 +1,14 @@
 import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Polygon } from "geojson";
 
-function isPolygon(geoJson: AllGeoJSON): geoJson is Polygon {
+const isPolygon = (geoJson: AllGeoJSON): geoJson is Polygon => {
   return geoJson.type === "Polygon";
-}
+};
 
-function isMultiPolygon(geoJson: AllGeoJSON): geoJson is MultiPolygon {
+const isMultiPolygon = (geoJson: AllGeoJSON): geoJson is MultiPolygon => {
   return geoJson.type === "MultiPolygon";
-}
+};
+
 const flattenCoordinates = (geojson: AllGeoJSON) => {
   if (isPolygon(geojson)) {
     return geojson.coordinates[0];

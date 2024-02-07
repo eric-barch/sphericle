@@ -12,13 +12,7 @@ import {
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { Grid2X2, MapPin } from "lucide-react";
-import {
-  ChangeEvent,
-  FocusEvent,
-  KeyboardEvent,
-  RefObject,
-  useRef,
-} from "react";
+import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
 
 type FeatureAdderInputProps = {
   featureState: ParentFeatureState;
