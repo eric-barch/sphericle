@@ -28,6 +28,13 @@ function Map({
   displayedFeature,
   displayMode,
 }: MapProps) {
+  /**TODO: Testing with Features that have a large number of points (e.g. the
+   * United States) there is noticeable lag on all display operations (e.g.
+   * toggling the Feature open/closed). I am pretty sure this has to do with
+   * the way features are displayed on the map, like each time it toggles open
+   * or closed, it is iterating through every point in the feature and
+   * creating a new object. Need to investigate and optimize. */
+
   const { allFeatures } = useAllFeatures();
   const { quizBuilderState } = useQuizBuilderState();
 
