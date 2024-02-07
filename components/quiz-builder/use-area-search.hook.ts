@@ -1,14 +1,6 @@
+import { flattenCoordinates, isMultiPolygon, isPolygon } from "@/helpers";
+import { isAreaState, isParentFeatureState, isRootState } from "@/helpers";
 import { useAllFeatures } from "@/providers";
-import {
-  flattenCoordinates,
-  isMultiPolygon,
-  isPolygon,
-} from "@/helpers/geojson.helpers";
-import {
-  isAreaState,
-  isParentFeatureState,
-  isRootState,
-} from "@/helpers/state.helpers";
 import {
   AreaSearch,
   AreaState,

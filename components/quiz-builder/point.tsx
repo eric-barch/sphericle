@@ -1,11 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useQuizBuilder } from "@/providers";
 import { PointState, QuizBuilderDispatchType } from "@/types";
 import { MouseEvent, useRef } from "react";
 import { EditFeatureButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
-import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 
 type PointProps = {
   pointState: PointState;

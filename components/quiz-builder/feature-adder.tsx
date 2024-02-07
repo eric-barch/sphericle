@@ -1,6 +1,6 @@
 "use client";
 
-import { useAllFeatures } from "@/providers";
+import { useAllFeatures, useQuizBuilder } from "@/providers";
 import {
   AllFeaturesDispatchType,
   FeatureType,
@@ -12,7 +12,6 @@ import { Combobox } from "@headlessui/react";
 import { FocusEvent, RefObject, useState } from "react";
 import { FeatureAdderInput } from "./feature-adder-input";
 import { FeatureAdderOptions } from "./feature-adder-options";
-import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 import { useFeatureSearches } from "./use-feature-searches.hook";
 
 type FeatureAdderProps = {
