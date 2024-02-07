@@ -8,18 +8,18 @@ import {
   SearchStatus,
 } from "./enums";
 
-export type AllFeatures = Map<string, FeatureState>;
+export type AllFeatures = Map<string, BaseFeatureState>;
 
-export interface FeatureState {
+export interface BaseFeatureState {
   featureId: string;
   featureType: FeatureType;
 }
 
-export interface ParentFeatureState extends FeatureState {
+export interface ParentFeatureState extends BaseFeatureState {
   subfeatureIds: Set<string>;
 }
 
-export interface SubfeatureState extends FeatureState {
+export interface SubfeatureState extends BaseFeatureState {
   parentFeatureId: string;
   longName: string;
   shortName: string;
@@ -27,12 +27,12 @@ export interface SubfeatureState extends FeatureState {
   displayBounds: google.maps.LatLngBoundsLiteral;
 }
 
-export interface RootState extends FeatureState, ParentFeatureState {
+export interface RootState extends BaseFeatureState, ParentFeatureState {
   featureType: FeatureType.ROOT;
 }
 
 export interface AreaState
-  extends FeatureState,
+  extends BaseFeatureState,
     ParentFeatureState,
     SubfeatureState {
   featureType: FeatureType.AREA;
@@ -41,11 +41,13 @@ export interface AreaState
   polygons: Polygon | MultiPolygon;
 }
 
-export interface PointState extends FeatureState, SubfeatureState {
+export interface PointState extends BaseFeatureState, SubfeatureState {
   featureType: FeatureType.POINT;
   googlePlacesId: string;
   point: Point;
 }
+
+export type FeatureState = RootState | AreaState | PointState;
 
 export interface QuizBuilderState {
   featureAdderFeatureState: SubfeatureState | null;

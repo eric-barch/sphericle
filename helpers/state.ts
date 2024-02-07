@@ -1,6 +1,6 @@
 import {
   AreaState,
-  FeatureState,
+  BaseFeatureState,
   FeatureType,
   ParentFeatureState,
   PointState,
@@ -11,7 +11,7 @@ import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Polygon } from "geojson";
 
 function isParentFeatureState(
-  featureState: FeatureState,
+  featureState: BaseFeatureState,
 ): featureState is ParentFeatureState {
   return (
     featureState &&
@@ -21,7 +21,7 @@ function isParentFeatureState(
 }
 
 function isSubfeatureState(
-  featureState: FeatureState,
+  featureState: BaseFeatureState,
 ): featureState is SubfeatureState {
   return (
     featureState &&
@@ -30,15 +30,21 @@ function isSubfeatureState(
   );
 }
 
-function isRootState(featureState: FeatureState): featureState is RootState {
+function isRootState(
+  featureState: BaseFeatureState,
+): featureState is RootState {
   return featureState && featureState.featureType === FeatureType.ROOT;
 }
 
-function isAreaState(featureState: FeatureState): featureState is AreaState {
+function isAreaState(
+  featureState: BaseFeatureState,
+): featureState is AreaState {
   return featureState && featureState.featureType === FeatureType.AREA;
 }
 
-function isPointState(featureState: FeatureState): featureState is PointState {
+function isPointState(
+  featureState: BaseFeatureState,
+): featureState is PointState {
   return featureState && featureState.featureType === FeatureType.POINT;
 }
 
