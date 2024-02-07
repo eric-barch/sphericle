@@ -70,8 +70,6 @@ const FeatureAdderInput = ({
       return;
     }
 
-    console.log("relatedTarget", event.relatedTarget);
-
     areaSearch.reset();
     pointSearch.reset();
   };

@@ -31,8 +31,6 @@ const AnswerBox = ({
         displayedFeature.userDefinedName || displayedFeature.shortName,
       );
 
-      console.log("attempted to send dispatch");
-
       quizTakerStateDispatch({
         dispatchType: QuizTakerDispatchType.MARK_CORRECT,
         featureId,
