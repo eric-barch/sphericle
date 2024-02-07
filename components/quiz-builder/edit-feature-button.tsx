@@ -28,7 +28,7 @@ type EditFeatureButtonProps =
       isAdding?: never;
     };
 
-function EditFeatureButton({
+const EditFeatureButton = ({
   featureNameInputRef,
   featureAdderInputRef,
   featureId,
@@ -37,7 +37,7 @@ function EditFeatureButton({
   isOpen,
   isAdding,
   canAddSubfeature,
-}: EditFeatureButtonProps) {
+}: EditFeatureButtonProps) => {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
 
@@ -138,6 +138,6 @@ function EditFeatureButton({
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
-}
+};
 
 export { EditFeatureButton };

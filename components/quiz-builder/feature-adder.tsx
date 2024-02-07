@@ -15,12 +15,12 @@ import { FeatureAdderOptions } from "./feature-adder-options";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { useFeatureSearches } from "./use-feature-searches.hook";
 
-interface FeatureAdderProps {
+type FeatureAdderProps = {
   inputRef: RefObject<HTMLInputElement>;
   featureState: ParentFeatureState;
-}
+};
 
-function FeatureAdder({ inputRef, featureState }: FeatureAdderProps) {
+const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
   const { featureId } = featureState;
 
   const { allFeaturesDispatch } = useAllFeatures();
@@ -50,7 +50,7 @@ function FeatureAdder({ inputRef, featureState }: FeatureAdderProps) {
     setSelectParentOnInput(true);
   };
 
-  const handleSelectOption = (selectedFeatureState: SubfeatureState) => {
+  const handleSelectResult = (selectedResult: SubfeatureState) => {
     if (inputRef?.current) {
       inputRef.current.value = "";
     }
@@ -65,12 +65,12 @@ function FeatureAdder({ inputRef, featureState }: FeatureAdderProps) {
     allFeaturesDispatch({
       dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE,
       featureId,
-      subfeatureState: selectedFeatureState,
+      subfeatureState: selectedResult,
     });
 
     quizBuilderStateDispatch({
       dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
-      featureId: selectedFeatureState.featureId,
+      featureId: selectedResult.featureId,
     });
 
     quizBuilderStateDispatch({
@@ -99,7 +99,7 @@ function FeatureAdder({ inputRef, featureState }: FeatureAdderProps) {
 
   return (
     <div className="relative" onBlur={handleBlur}>
-      <Combobox onChange={handleSelectOption}>
+      <Combobox onChange={handleSelectResult}>
         {({ activeOption }) => (
           <>
             <FeatureAdderInput
@@ -125,6 +125,6 @@ function FeatureAdder({ inputRef, featureState }: FeatureAdderProps) {
       </Combobox>
     </div>
   );
-}
+};
 
 export { FeatureAdder };

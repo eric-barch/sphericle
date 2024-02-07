@@ -7,11 +7,11 @@ import { EditFeatureButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
-interface PointProps {
+type PointProps = {
   pointState: PointState;
-}
+};
 
-function Point({ pointState }: PointProps) {
+const Point = ({ pointState }: PointProps) => {
   const { featureId, userDefinedName, shortName } = pointState;
 
   const {
@@ -57,6 +57,6 @@ function Point({ pointState }: PointProps) {
       </Button>
     </div>
   );
-}
+};
 
 export { Point };

@@ -11,9 +11,9 @@ import { FeatureName } from "./feature-name";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { Subfeatures } from "./subfeatures";
 
-interface AreaProps {
+type AreaProps = {
   areaState: AreaState;
-}
+};
 
 function Area({ areaState }: AreaProps) {
   const { featureId, userDefinedName, shortName, parentFeatureId } = areaState;
@@ -118,9 +118,9 @@ function Area({ areaState }: AreaProps) {
   );
 }
 
-interface OpenChevronProps {
+type OpenChevronProps = {
   isOpen: boolean;
-}
+};
 
 function OpenChevron({ isOpen }: OpenChevronProps) {
   return (

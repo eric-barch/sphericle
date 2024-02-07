@@ -11,11 +11,11 @@ import { useRef, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { Subfeatures } from "./subfeatures";
 
-interface QuizBuilderProps {
+type QuizBuilderProps = {
   googleLibsLoaded: boolean;
-}
+};
 
-function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
+const QuizBuilder = ({ googleLibsLoaded }: QuizBuilderProps) => {
   const { rootId, allFeatures } = useAllFeatures();
   const {
     quizBuilderState: {
@@ -91,6 +91,6 @@ function QuizBuilder({ googleLibsLoaded }: QuizBuilderProps) {
       )}
     </>
   );
-}
+};
 
 export { QuizBuilder };

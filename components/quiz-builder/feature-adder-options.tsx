@@ -14,21 +14,21 @@ import { Combobox } from "@headlessui/react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { useEffect } from "react";
 
-interface FeatureAdderOptionsProps {
+type FeatureAdderOptionsProps = {
   activeOption: SubfeatureState;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
   input: string;
   featureType: FeatureType;
-}
+};
 
-function FeatureAdderOptions({
+const FeatureAdderOptions = ({
   activeOption,
   areaSearch,
   pointSearch,
   input,
   featureType,
-}: FeatureAdderOptionsProps) {
+}: FeatureAdderOptionsProps) => {
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
   /**This is hacky, but the best way I've found to work around hardcoded
@@ -93,21 +93,21 @@ function FeatureAdderOptions({
       )}
     </Combobox.Options>
   );
-}
+};
 
-interface OptionsPlaceholderProps {
+type OptionsPlaceholderProps = {
   placeholder: string;
-}
+};
 
-function OptionsPlaceholder({ placeholder }: OptionsPlaceholderProps) {
+const OptionsPlaceholder = ({ placeholder }: OptionsPlaceholderProps) => {
   return <div className="pl-7 p-1">{placeholder}</div>;
-}
+};
 
-interface OptionProps {
+type OptionProps = {
   featureState: AreaState | PointState;
-}
+};
 
-function Option({ featureState }: OptionProps) {
+const Option = ({ featureState }: OptionProps) => {
   const { longName } = featureState;
 
   return (
@@ -121,6 +121,6 @@ function Option({ featureState }: OptionProps) {
       {longName}
     </Combobox.Option>
   );
-}
+};
 
 export { FeatureAdderOptions };

@@ -3,19 +3,19 @@ import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
 import { KeyboardEvent, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
-interface FeatureNameProps {
+type FeatureNameProps = {
   featureNameInputRef: React.RefObject<HTMLInputElement>;
   featureId: string;
   featureName: string;
   isRenaming: boolean;
-}
+};
 
-function FeatureName({
+const FeatureName = ({
   featureNameInputRef,
   featureId,
   featureName,
   isRenaming,
-}: FeatureNameProps) {
+}: FeatureNameProps) => {
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
@@ -82,6 +82,6 @@ function FeatureName({
       )}
     </div>
   );
-}
+};
 
 export { FeatureName };
