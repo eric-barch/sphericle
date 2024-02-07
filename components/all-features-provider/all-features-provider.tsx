@@ -1,6 +1,9 @@
 "use client";
 
-import { isParentFeatureState, isSubfeatureState } from "@/helpers/state";
+import {
+  isParentFeatureState,
+  isSubfeatureState,
+} from "@/helpers/state.helpers";
 import {
   AllFeatures,
   AllFeaturesDispatch,

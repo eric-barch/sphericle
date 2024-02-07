@@ -3,7 +3,7 @@
 import { useAllFeatures } from "@/components/all-features-provider";
 import { Map } from "@/components/map";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isSubfeatureState } from "@/helpers/state";
+import { isSubfeatureState } from "@/helpers/state.helpers";
 import {
   DisplayMode,
   QuizTakerStateDispatchType,

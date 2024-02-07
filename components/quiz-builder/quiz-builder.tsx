@@ -4,7 +4,7 @@ import { useAllFeatures } from "@/components/all-features-provider";
 import { Map } from "@/components/map";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isRootState, isSubfeatureState } from "@/helpers/state";
+import { isRootState, isSubfeatureState } from "@/helpers/state.helpers";
 import { DisplayMode } from "@/types";
 import Link from "next/link";
 import { useRef, useState } from "react";
