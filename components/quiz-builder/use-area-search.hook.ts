@@ -1,10 +1,13 @@
 import { useAllFeatures } from "@/components/all-features-provider";
 import {
+  flattenCoordinates,
+  isMultiPolygon,
+  isPolygon,
+} from "@/helpers/geojson";
+import {
   isAreaState,
   isParentFeatureState,
   isRootState,
-  isPolygon,
-  isMultiPolygon,
 } from "@/helpers/state";
 import {
   AreaSearch,
@@ -13,9 +16,7 @@ import {
   OsmItem,
   SearchStatus,
 } from "@/types";
-import booleanIntersects from "@turf/boolean-intersects";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
-import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Polygon } from "geojson";
 import { useState } from "react";
 
