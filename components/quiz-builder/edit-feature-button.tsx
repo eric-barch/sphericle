@@ -39,15 +39,31 @@ const EditFeatureButton = ({
 }: EditFeatureButtonProps) => {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const {
-    quizBuilder: quizBuilderState,
-    quizBuilderDispatch: quizBuilderStateDispatch,
+    quizBuilder: { addingFeatureId },
+    quizBuilderDispatch,
   } = useQuizBuilder();
 
   const handleOpenChange = () => {
     // If DropdownMenu open state changes, it means the feature was clicked and should be selected.
     if (!isSelected) {
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_SELECTED,
+        featureId,
+      });
+    }
+
+    if (isOpen) {
+      const lastFeatureState = (() => {
+        const lastFeatureState = allFeatures.get(addingFeatureId);
+
+        if (isParentFeatureState(lastFeatureState)) {
+          return lastFeatureState;
+        }
+      })();
+
+      quizBuilderDispatch({
+        dispatchType: QuizBuilderDispatchType.SET_ADDING,
+        lastFeatureState,
         featureId,
       });
     }
@@ -60,7 +76,7 @@ const EditFeatureButton = ({
 
   const handleAddSubfeature = () => {
     if (!isOpen) {
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_IS_OPEN,
         featureId,
         isOpen: true,
@@ -68,11 +84,9 @@ const EditFeatureButton = ({
     }
 
     if (!isAdding) {
-      const lastFeatureState = allFeatures.get(
-        quizBuilderState.addingFeatureId,
-      );
+      const lastFeatureState = allFeatures.get(addingFeatureId);
 
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_ADDING,
         lastFeatureState: isParentFeatureState(lastFeatureState)
           ? lastFeatureState
@@ -89,7 +103,7 @@ const EditFeatureButton = ({
 
   const handleRename = () => {
     if (!isRenaming) {
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_RENAMING,
         featureId,
       });
