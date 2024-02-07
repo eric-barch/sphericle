@@ -1,4 +1,4 @@
-import { useAllFeatures } from "@/components/all-features-provider";
+import { useAllFeatures } from "@/components/quiz-provider";
 import { QuizTakerStateDispatchType, SubfeatureState } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";

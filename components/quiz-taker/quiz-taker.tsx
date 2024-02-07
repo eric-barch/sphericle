@@ -1,6 +1,6 @@
 "use client";
 
-import { useAllFeatures } from "@/components/all-features-provider";
+import { useAllFeatures } from "@/components/quiz-provider";
 import { Map } from "@/components/map";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isSubfeatureState } from "@/helpers/state.helpers";
