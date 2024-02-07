@@ -8,7 +8,7 @@ import {
   isRootState,
   isSubfeatureState,
 } from "@/helpers/state";
-import { AreaState, DisplayMode, FeatureState, PointState } from "@/types";
+import { AreaState, DisplayMode, BaseFeatureState, PointState } from "@/types";
 import { RefObject, useEffect, useRef, useState } from "react";
 
 interface MapProps {
@@ -16,7 +16,7 @@ interface MapProps {
   padding?: google.maps.Padding;
   onLoad?: () => void;
   mapId: string;
-  displayedFeature: FeatureState | null;
+  displayedFeature: BaseFeatureState | null;
   displayMode: DisplayMode;
 }
 
