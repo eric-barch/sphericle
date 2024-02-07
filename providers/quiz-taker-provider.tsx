@@ -44,6 +44,7 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
         return newQuizTaker;
       }
       case QuizTakerDispatchType.MARK_CORRECT: {
+        console.log("received dispatch");
         const newQuizTaker = { ...quizTaker };
         const featureId = action.featureId || action.featureState.featureId;
 

@@ -16,6 +16,7 @@ const AnswerBox = ({
 }: AnswerBoxProps) => {
   const { quizTakerDispatch: quizTakerStateDispatch } = useQuizTaker();
 
+  const featureId = displayedFeature?.featureId;
   const featureName =
     displayedFeature?.userDefinedName || displayedFeature?.shortName;
 
@@ -30,9 +31,11 @@ const AnswerBox = ({
         displayedFeature.userDefinedName || displayedFeature.shortName,
       );
 
+      console.log("attempted to send dispatch");
+
       quizTakerStateDispatch({
         dispatchType: QuizTakerDispatchType.MARK_CORRECT,
-        featureState: displayedFeature,
+        featureId,
       });
     } else {
       toast.error(
@@ -43,7 +46,7 @@ const AnswerBox = ({
 
       quizTakerStateDispatch({
         dispatchType: QuizTakerDispatchType.MARK_INCORRECT,
-        featureState: displayedFeature,
+        featureId,
       });
     }
 
