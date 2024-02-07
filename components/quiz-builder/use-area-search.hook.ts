@@ -3,12 +3,12 @@ import {
   flattenCoordinates,
   isMultiPolygon,
   isPolygon,
-} from "@/helpers/geojson";
+} from "@/helpers/geojson.helpers";
 import {
   isAreaState,
   isParentFeatureState,
   isRootState,
-} from "@/helpers/state";
+} from "@/helpers/state.helpers";
 import {
   AreaSearch,
   AreaState,

@@ -1,4 +1,4 @@
-import { isParentFeatureState } from "@/helpers";
+import { isParentFeatureState } from "@/helpers/state.helpers";
 import { AllFeatures } from "@/types";
 
 function resetRemainingFeatureIds(

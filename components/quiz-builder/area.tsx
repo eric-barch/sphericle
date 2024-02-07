@@ -1,7 +1,7 @@
 "use client";
 
 import { useAllFeatures } from "@/components/all-features-provider";
-import { isParentFeatureState } from "@/helpers/state";
+import { isParentFeatureState } from "@/helpers/state.helpers";
 import { AreaState, QuizBuilderStateDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";

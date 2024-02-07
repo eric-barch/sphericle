@@ -1,6 +1,6 @@
 "use client";
 
-import { isAreaState, isRootState } from "@/helpers/state";
+import { isAreaState, isRootState } from "@/helpers/state.helpers";
 import {
   AreaSearch,
   FeatureType,

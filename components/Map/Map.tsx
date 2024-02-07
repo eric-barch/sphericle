@@ -7,7 +7,7 @@ import {
   isPointState,
   isRootState,
   isSubfeatureState,
-} from "@/helpers/state";
+} from "@/helpers/state.helpers";
 import { AreaState, DisplayMode, BaseFeatureState, PointState } from "@/types";
 import { RefObject, useEffect, useRef, useState } from "react";
 
