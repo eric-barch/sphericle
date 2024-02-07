@@ -15,10 +15,10 @@ const AnswerBox = ({
   inputRef,
   disabled,
 }: AnswerBoxProps) => {
-  const { userDefinedName, shortName } = displayedFeature;
   const { quizTakerDispatch: quizTakerStateDispatch } = useQuizTaker();
 
-  const featureName = userDefinedName || shortName;
+  const featureName =
+    displayedFeature?.userDefinedName || displayedFeature?.shortName;
 
   const [input, setInput] = useState<string>("");
 
