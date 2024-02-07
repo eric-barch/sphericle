@@ -1,11 +1,11 @@
 import { createContext } from "react";
 import { AllFeaturesProvider } from "./all-features-provider";
-import { QuizBuilderStateProvider } from "../quiz-builder";
+import { QuizBuilderProvider } from "../components/quiz-builder";
 
 const QuizProvider = ({ children }) => {
   return (
     <AllFeaturesProvider>
-      <QuizBuilderStateProvider>{children}</QuizBuilderStateProvider>
+      <QuizBuilderProvider>{children}</QuizBuilderProvider>
     </AllFeaturesProvider>
   );
 };

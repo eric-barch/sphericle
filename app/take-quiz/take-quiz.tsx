@@ -1,8 +1,8 @@
 "use client";
 
-import { useAllFeatures } from "@/components/quiz-provider";
+import { useAllFeatures } from "@/providers";
 import { QuizTaker } from "@/components/quiz-taker";
-import { QuizTakerStateProvider } from "@/components/quiz-taker/quiz-taker-state-provider";
+import { QuizTakerProvider } from "@/providers";
 import { useGoogleLibraries } from "@/hooks/use-google-libraries";
 import { useState } from "react";
 
@@ -17,9 +17,9 @@ function TakeQuiz() {
   useGoogleLibraries(handleLibsLoad);
 
   return (
-    <QuizTakerStateProvider rootId={rootId} allFeatures={allFeatures}>
+    <QuizTakerProvider>
       <QuizTaker googleLibsLoaded={googleLibsLoaded} />
-    </QuizTakerStateProvider>
+    </QuizTakerProvider>
   );
 }
 

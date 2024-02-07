@@ -1,6 +1,6 @@
 "use client";
 
-import { useAllFeatures } from "@/components/quiz-provider";
+import { useAllFeatures } from "@/providers";
 import {
   isAreaState,
   isPointState,

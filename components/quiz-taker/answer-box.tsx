@@ -1,8 +1,8 @@
-import { useAllFeatures } from "@/components/quiz-provider";
-import { QuizTakerStateDispatchType, SubfeatureState } from "@/types";
+import { useAllFeatures } from "@/providers";
+import { QuizTakerDispatchType, SubfeatureState } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";
-import { useQuizTakerState } from "./quiz-taker-state-provider";
+import { useQuizTaker } from "../../providers/quiz-taker-provider";
 
 interface AnswerBoxProps {
   displayedFeature: SubfeatureState;
@@ -16,7 +16,7 @@ const AnswerBox = ({
   disabled,
 }: AnswerBoxProps) => {
   const { userDefinedName, shortName } = displayedFeature;
-  const { quizTakerStateDispatch } = useQuizTakerState();
+  const { quizTakerDispatch: quizTakerStateDispatch } = useQuizTaker();
 
   const featureName = userDefinedName || shortName;
 
@@ -32,7 +32,7 @@ const AnswerBox = ({
       );
 
       quizTakerStateDispatch({
-        dispatchType: QuizTakerStateDispatchType.MARK_CORRECT,
+        dispatchType: QuizTakerDispatchType.MARK_CORRECT,
         featureState: displayedFeature,
       });
     } else {
@@ -43,7 +43,7 @@ const AnswerBox = ({
       );
 
       quizTakerStateDispatch({
-        dispatchType: QuizTakerStateDispatchType.MARK_INCORRECT,
+        dispatchType: QuizTakerDispatchType.MARK_INCORRECT,
         featureState: displayedFeature,
       });
     }

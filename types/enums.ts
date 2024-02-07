@@ -11,7 +11,7 @@ export enum AllFeaturesDispatchType {
   DELETE,
 }
 
-export enum QuizBuilderStateDispatchType {
+export enum QuizBuilderDispatchType {
   SET_FEATURE_ADDER_SELECTED,
   SET_SELECTED,
   SET_RENAMING,
@@ -19,7 +19,7 @@ export enum QuizBuilderStateDispatchType {
   SET_IS_OPEN,
 }
 
-export enum QuizTakerStateDispatchType {
+export enum QuizTakerDispatchType {
   RESET,
   MARK_CORRECT,
   MARK_INCORRECT,

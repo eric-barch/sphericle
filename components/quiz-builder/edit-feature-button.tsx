@@ -1,10 +1,10 @@
-import { useAllFeatures } from "@/components/quiz-provider";
+import { useAllFeatures } from "@/providers";
 import { isParentFeatureState } from "@/helpers/state.helpers";
-import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
+import { AllFeaturesDispatchType, QuizBuilderDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { RefObject } from "react";
-import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 
 type EditFeatureButtonProps =
   | {
@@ -39,13 +39,16 @@ const EditFeatureButton = ({
   canAddSubfeature,
 }: EditFeatureButtonProps) => {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderState, quizBuilderStateDispatch } = useQuizBuilderState();
+  const {
+    quizBuilder: quizBuilderState,
+    quizBuilderDispatch: quizBuilderStateDispatch,
+  } = useQuizBuilder();
 
   const handleOpenChange = () => {
     // If DropdownMenu open state changes, it means the feature was clicked and should be selected.
     if (!isSelected) {
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });
     }
@@ -59,7 +62,7 @@ const EditFeatureButton = ({
   const handleAddSubfeature = () => {
     if (!isOpen) {
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+        dispatchType: QuizBuilderDispatchType.SET_IS_OPEN,
         featureId,
         isOpen: true,
       });
@@ -71,7 +74,7 @@ const EditFeatureButton = ({
       );
 
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+        dispatchType: QuizBuilderDispatchType.SET_ADDING,
         lastFeatureState: isParentFeatureState(lastFeatureState)
           ? lastFeatureState
           : null,
@@ -88,7 +91,7 @@ const EditFeatureButton = ({
   const handleRename = () => {
     if (!isRenaming) {
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
+        dispatchType: QuizBuilderDispatchType.SET_RENAMING,
         featureId,
       });
     }

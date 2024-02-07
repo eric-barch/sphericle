@@ -6,12 +6,12 @@ import {
   FeatureType,
   PointSearch,
   PointState,
-  QuizBuilderStateDispatchType,
+  QuizBuilderDispatchType,
   SearchStatus,
   SubfeatureState,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
-import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 import { useEffect } from "react";
 
 type FeatureAdderOptionsProps = {
@@ -29,7 +29,7 @@ const FeatureAdderOptions = ({
   input,
   featureType,
 }: FeatureAdderOptionsProps) => {
-  const { quizBuilderStateDispatch } = useQuizBuilderState();
+  const { quizBuilderDispatch: quizBuilderStateDispatch } = useQuizBuilder();
 
   const placeholder = (() => {
     if (featureType === FeatureType.AREA) {
@@ -62,7 +62,7 @@ const FeatureAdderOptions = ({
    * a different accesssible component library. */
   useEffect(() => {
     quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
+      dispatchType: QuizBuilderDispatchType.SET_FEATURE_ADDER_SELECTED,
       featureState: activeOption,
     });
   }, [activeOption, quizBuilderStateDispatch]);

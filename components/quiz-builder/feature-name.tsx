@@ -1,7 +1,7 @@
-import { useAllFeatures } from "@/components/quiz-provider";
-import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
+import { useAllFeatures } from "@/providers";
+import { AllFeaturesDispatchType, QuizBuilderDispatchType } from "@/types";
 import { KeyboardEvent, useState } from "react";
-import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 
 type FeatureNameProps = {
   featureNameInputRef: React.RefObject<HTMLInputElement>;
@@ -17,7 +17,7 @@ const FeatureName = ({
   isRenaming,
 }: FeatureNameProps) => {
   const { allFeaturesDispatch } = useAllFeatures();
-  const { quizBuilderStateDispatch } = useQuizBuilderState();
+  const { quizBuilderDispatch: quizBuilderStateDispatch } = useQuizBuilder();
 
   const [input, setInput] = useState<string>(featureName);
 
@@ -33,7 +33,7 @@ const FeatureName = ({
     });
 
     quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
+      dispatchType: QuizBuilderDispatchType.SET_RENAMING,
       featureId: null,
     });
   };
@@ -57,7 +57,7 @@ const FeatureName = ({
 
   const handleBlur = () => {
     quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_RENAMING,
+      dispatchType: QuizBuilderDispatchType.SET_RENAMING,
       featureId: null,
     });
 

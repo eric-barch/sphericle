@@ -1,7 +1,7 @@
 "use client";
 
-import { useAllFeatures } from "@/components/quiz-provider";
-import { useQuizBuilderState } from "@/components/quiz-builder";
+import { useAllFeatures } from "@/providers";
+import { useQuizBuilder } from "@/components/quiz-builder";
 import {
   isAreaState,
   isPointState,
@@ -36,7 +36,7 @@ function Map({
    * creating a new object. Need to investigate and optimize. */
 
   const { allFeatures } = useAllFeatures();
-  const { quizBuilderState } = useQuizBuilderState();
+  const { quizBuilder: quizBuilderState } = useQuizBuilder();
 
   const defaultContainerRef = useRef<HTMLDivElement>(null);
   const containerRef = propContainerRef || defaultContainerRef;

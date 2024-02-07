@@ -1,18 +1,14 @@
 "use client";
 
-import { useAllFeatures } from "@/components/quiz-provider";
+import { useAllFeatures } from "@/providers";
 import { Map } from "@/components/map";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isSubfeatureState } from "@/helpers/state.helpers";
-import {
-  DisplayMode,
-  QuizTakerStateDispatchType,
-  SubfeatureState,
-} from "@/types";
+import { DisplayMode, QuizTakerDispatchType, SubfeatureState } from "@/types";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnswerBox } from "./answer-box";
-import { useQuizTakerState } from "./quiz-taker-state-provider";
+import { useQuizTaker } from "../../providers/quiz-taker-provider";
 import { ScoreBox } from "./score-box";
 
 interface QuizTakerProps {
@@ -22,13 +18,9 @@ interface QuizTakerProps {
 const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
   const { allFeatures } = useAllFeatures();
   const {
-    quizTakerState: {
-      remainingFeatureIds,
-      correctFeatureIds,
-      incorrectFeatureIds,
-    },
-    quizTakerStateDispatch,
-  } = useQuizTakerState();
+    quizTaker: { remainingFeatureIds, correctFeatureIds, incorrectFeatureIds },
+    quizTakerDispatch: quizTakerStateDispatch,
+  } = useQuizTaker();
 
   const displayedFeature = (() => {
     const displayedFeature = allFeatures.get(
@@ -46,7 +38,7 @@ const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
 
   const handleReset = useCallback(() => {
     quizTakerStateDispatch({
-      dispatchType: QuizTakerStateDispatchType.RESET,
+      dispatchType: QuizTakerDispatchType.RESET,
     });
 
     setTimeout(() => {

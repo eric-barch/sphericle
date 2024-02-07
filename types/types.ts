@@ -2,9 +2,9 @@ import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Point, Polygon } from "geojson";
 import {
   FeatureType,
-  QuizBuilderStateDispatchType,
+  QuizBuilderDispatchType,
   AllFeaturesDispatchType,
-  QuizTakerStateDispatchType,
+  QuizTakerDispatchType,
   SearchStatus,
 } from "./enums";
 
@@ -169,7 +169,7 @@ type DeleteDispatch = BaseAllFeaturesDispatch &
       }
   );
 
-export type QuizBuilderStateDispatch =
+export type QuizBuilderDispatch =
   | SetFeatureAdderSelectedDispatch
   | SetSelectedDispatch
   | SetAddingDispatch
@@ -177,23 +177,23 @@ export type QuizBuilderStateDispatch =
   | SetRenamingDispatch;
 
 type BaseQuizBuilderStateDispatch = {
-  dispatchType: QuizBuilderStateDispatchType;
+  dispatchType: QuizBuilderDispatchType;
 };
 
 type SetFeatureAdderSelectedDispatch = BaseQuizBuilderStateDispatch & {
-  dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED;
+  dispatchType: QuizBuilderDispatchType.SET_FEATURE_ADDER_SELECTED;
   featureState: SubfeatureState | null;
 };
 
 type SetSelectedDispatch = BaseQuizBuilderStateDispatch &
   (
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED;
+        dispatchType: QuizBuilderDispatchType.SET_SELECTED;
         featureState: SubfeatureState | null;
         featureId?: never;
       }
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED;
+        dispatchType: QuizBuilderDispatchType.SET_SELECTED;
         featureId: string | null;
         featureState?: never;
       }
@@ -202,13 +202,13 @@ type SetSelectedDispatch = BaseQuizBuilderStateDispatch &
 type SetAddingDispatch = BaseQuizBuilderStateDispatch &
   (
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_ADDING;
+        dispatchType: QuizBuilderDispatchType.SET_ADDING;
         lastFeatureState: ParentFeatureState | null;
         featureState: ParentFeatureState;
         featureId?: never;
       }
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_ADDING;
+        dispatchType: QuizBuilderDispatchType.SET_ADDING;
         lastFeatureState: ParentFeatureState | null;
         featureId: string;
         featureState?: never;
@@ -218,13 +218,13 @@ type SetAddingDispatch = BaseQuizBuilderStateDispatch &
 type SetIsOpenDispatch = BaseQuizBuilderStateDispatch &
   (
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN;
+        dispatchType: QuizBuilderDispatchType.SET_IS_OPEN;
         featureState: SubfeatureState;
         isOpen: boolean;
         featureId?: never;
       }
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN;
+        dispatchType: QuizBuilderDispatchType.SET_IS_OPEN;
         featureId: string;
         isOpen: boolean;
         featureState?: never;
@@ -234,39 +234,39 @@ type SetIsOpenDispatch = BaseQuizBuilderStateDispatch &
 type SetRenamingDispatch = BaseQuizBuilderStateDispatch &
   (
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_RENAMING;
+        dispatchType: QuizBuilderDispatchType.SET_RENAMING;
         featureState: SubfeatureState;
         featureId?: never;
       }
     | {
-        dispatchType: QuizBuilderStateDispatchType.SET_RENAMING;
+        dispatchType: QuizBuilderDispatchType.SET_RENAMING;
         featureId: string;
         featureState?: never;
       }
   );
 
-export type QuizTakerStateDispatch =
+export type QuizTakerDispatch =
   | ResetDispatch
   | MarkCorrectDispatch
   | MarkIncorrectDispatch;
 
 type BaseQuizTakerStateDispatch = {
-  dispatchType: QuizTakerStateDispatchType;
+  dispatchType: QuizTakerDispatchType;
 };
 
 type ResetDispatch = BaseQuizTakerStateDispatch & {
-  dispatchType: QuizTakerStateDispatchType.RESET;
+  dispatchType: QuizTakerDispatchType.RESET;
 };
 
 type MarkCorrectDispatch = BaseQuizTakerStateDispatch &
   (
     | {
-        dispatchType: QuizTakerStateDispatchType.MARK_CORRECT;
+        dispatchType: QuizTakerDispatchType.MARK_CORRECT;
         featureState: SubfeatureState;
         featureId?: never;
       }
     | {
-        dispatchType: QuizTakerStateDispatchType.MARK_CORRECT;
+        dispatchType: QuizTakerDispatchType.MARK_CORRECT;
         featureId: string;
         featureState?: never;
       }
@@ -275,12 +275,12 @@ type MarkCorrectDispatch = BaseQuizTakerStateDispatch &
 type MarkIncorrectDispatch = BaseQuizTakerStateDispatch &
   (
     | {
-        dispatchType: QuizTakerStateDispatchType.MARK_INCORRECT;
+        dispatchType: QuizTakerDispatchType.MARK_INCORRECT;
         featureState: SubfeatureState;
         featureId?: never;
       }
     | {
-        dispatchType: QuizTakerStateDispatchType.MARK_INCORRECT;
+        dispatchType: QuizTakerDispatchType.MARK_INCORRECT;
         featureId: string;
         featureState?: never;
       }
