@@ -31,16 +31,6 @@ const FeatureAdderOptions = ({
 }: FeatureAdderOptionsProps) => {
   const { quizBuilderStateDispatch } = useQuizBuilderState();
 
-  /**This is hacky, but the best way I've found to work around hardcoded
-   * HeadlessUI Combobox behavior. Long term, probably need to switch to
-   * a different accesssible component library. */
-  useEffect(() => {
-    quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
-      featureState: activeOption,
-    });
-  }, [activeOption, quizBuilderStateDispatch]);
-
   const placeholder = (() => {
     if (featureType === FeatureType.AREA) {
       if (input !== areaSearch.term) {
@@ -66,6 +56,16 @@ const FeatureAdderOptions = ({
       }
     }
   })();
+
+  /**This is hacky, but the best way I've found to work around hardcoded
+   * HeadlessUI Combobox behavior. Long term, probably need to switch to
+   * a different accesssible component library. */
+  useEffect(() => {
+    quizBuilderStateDispatch({
+      dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
+      featureState: activeOption,
+    });
+  }, [activeOption, quizBuilderStateDispatch]);
 
   return (
     <Combobox.Options className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-500 p-1 space-y-1">
