@@ -7,7 +7,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isRootState, isSubfeatureState } from "@/helpers/state.helpers";
 import { DisplayMode } from "@/types";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 import { Subfeatures } from "./subfeatures";
 
@@ -47,22 +47,28 @@ const QuizBuilder = ({ googleLibsLoaded }: QuizBuilderProps) => {
 
   const featureAdderInputRef = useRef<HTMLInputElement>();
 
-  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const [mapIsLoaded, setMapIsLoaded] = useState<boolean>(false);
 
   const handleMapLoad = () => {
     /**TODO: This check shouldn't really be necessary. Need to revise Map so
      * it only fires this once. */
-    if (mapLoaded) {
+    if (mapIsLoaded) {
       return;
     }
 
-    setMapLoaded(true);
+    setMapIsLoaded(true);
     featureAdderInputRef.current?.focus();
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      featureAdderInputRef.current?.focus();
+    }, 0);
+  }, []);
+
   return (
     <>
-      {(!googleLibsLoaded || !mapLoaded) && (
+      {(!googleLibsLoaded || !mapIsLoaded) && (
         <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       )}
       {googleLibsLoaded && (

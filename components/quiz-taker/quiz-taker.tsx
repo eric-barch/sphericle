@@ -10,7 +10,7 @@ import {
   SubfeatureState,
 } from "@/types";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnswerBox } from "./answer-box";
 import { useQuizTakerState } from "./quiz-taker-state-provider";
 import { ScoreBox } from "./score-box";
@@ -19,86 +19,81 @@ interface QuizTakerProps {
   googleLibsLoaded: boolean;
 }
 
-function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
-  const { rootId, allFeatures } = useAllFeatures();
-  const { quizTakerState, quizTakerStateDispatch } = useQuizTakerState();
+const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
+  const { allFeatures } = useAllFeatures();
+  const {
+    quizTakerState: {
+      remainingFeatureIds,
+      correctFeatureIds,
+      incorrectFeatureIds,
+    },
+    quizTakerStateDispatch,
+  } = useQuizTakerState();
 
-  const [mapIsLoaded, setMapIsLoaded] = useState<boolean>(false);
-  const [displayedFeature, setDisplayedFeature] =
-    useState<SubfeatureState | null>(null);
+  const displayedFeature = (() => {
+    const displayedFeature = allFeatures.get(
+      remainingFeatureIds.values().next().value,
+    );
+
+    if (isSubfeatureState(displayedFeature)) {
+      return displayedFeature;
+    }
+  })();
 
   const answerBoxInputRef = useRef<HTMLInputElement>();
 
-  useEffect(() => {
+  const [mapIsLoaded, setMapIsLoaded] = useState<boolean>(false);
+
+  const handleReset = useCallback(() => {
     quizTakerStateDispatch({
       dispatchType: QuizTakerStateDispatchType.RESET,
     });
-  }, [rootId, allFeatures, quizTakerStateDispatch]);
 
-  useEffect(() => {
-    const newDisplayedFeature = allFeatures.get(
-      quizTakerState.remainingFeatureIds.values().next().value,
-    );
-
-    if (!newDisplayedFeature || !isSubfeatureState(newDisplayedFeature)) {
-      return;
-    }
-
-    if (newDisplayedFeature.featureId === displayedFeature?.featureId) {
-      return;
-    }
-
-    setDisplayedFeature(newDisplayedFeature);
-  }, [allFeatures, displayedFeature, quizTakerState]);
+    setTimeout(() => {
+      answerBoxInputRef.current?.focus();
+    }, 0);
+  }, [quizTakerStateDispatch]);
 
   const handleMapLoad = () => {
-    setMapIsLoaded(true);
-
-    if (answerBoxInputRef.current) {
-      answerBoxInputRef.current.focus();
+    /**TODO: This check shouldn't really be necessary. Need to revise Map so
+     * it only fires this once. */
+    if (mapIsLoaded) {
+      return;
     }
+
+    setMapIsLoaded(true);
   };
 
   const handleOpenAutoFocus = (event: Event) => {
     event.preventDefault();
   };
 
-  const handleClick = () => {
-    quizTakerStateDispatch({
-      dispatchType: QuizTakerStateDispatchType.RESET,
-    });
-
-    setTimeout(() => {
-      if (answerBoxInputRef.current) {
-        answerBoxInputRef.current.focus();
-      }
-    }, 0);
-  };
+  /**Reset quiz on mount. */
+  useEffect(() => {
+    handleReset();
+  }, [handleReset]);
 
   return (
     <>
-      {!googleLibsLoaded || !mapIsLoaded ? (
+      {(!googleLibsLoaded || !mapIsLoaded) && (
         <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
-      ) : null}
-      {googleLibsLoaded ? (
+      )}
+      {googleLibsLoaded && (
         <div className="h-[calc(100vh-4rem)] relative flex justify-center align-middle content-center">
-          <Dialog.Root
-            open={quizTakerState.remainingFeatureIds.size <= 0}
-            modal={false}
-          >
+          <Dialog.Root open={remainingFeatureIds.size <= 0} modal={false}>
             <Dialog.Content
               className="fixed flex flex-col items-center p-4 bg-white text-black rounded-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40"
               onOpenAutoFocus={handleOpenAutoFocus}
             >
               <Dialog.Title>Quiz Complete!</Dialog.Title>
-              <Dialog.Description className="m-4">{`Your score: ${quizTakerState
-                ?.correctFeatureIds.size} / ${
-                quizTakerState.correctFeatureIds.size +
-                quizTakerState.incorrectFeatureIds.size
+              <Dialog.Description className="m-4">{`Your score: ${
+                correctFeatureIds.size
+              } / ${
+                correctFeatureIds.size + incorrectFeatureIds.size
               }`}</Dialog.Description>
               <Dialog.Close
                 className="p-2 rounded-3xl bg-gray-500 text-white"
-                onClick={handleClick}
+                onClick={handleReset}
               >
                 Take Again
               </Dialog.Close>
@@ -120,12 +115,12 @@ function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
           <AnswerBox
             displayedFeature={displayedFeature}
             inputRef={answerBoxInputRef}
-            disabled={quizTakerState.remainingFeatureIds.size <= 0}
+            disabled={remainingFeatureIds.size <= 0}
           />
         </div>
-      ) : null}
+      )}
     </>
   );
-}
+};
 
 export { QuizTaker };
