@@ -9,7 +9,7 @@ import {
   SubfeatureState,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
-import { FocusEvent, RefObject, useState } from "react";
+import { FocusEvent, RefObject, useRef, useState } from "react";
 import { FeatureAdderInput } from "./feature-adder-input";
 import { FeatureAdderOptions } from "./feature-adder-options";
 import { useFeatureSearches } from "./use-feature-searches.hook";
@@ -31,6 +31,8 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
   const { areaSearch, pointSearch } = useFeatureSearches(featureId);
 
   const isSelected = featureId === selectedFeatureId;
+
+  const featureAdderRef = useRef<HTMLDivElement>(null);
 
   const [selectParentOnInput, setSelectParentOnInput] = useState(true);
   const [featureType, setFeatureTypeRaw] = useState<FeatureType>(
@@ -94,11 +96,12 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
   };
 
   return (
-    <div className="relative" onBlur={handleBlur}>
+    <div ref={featureAdderRef} className="relative" onBlur={handleBlur}>
       <Combobox onChange={handleSelectResult}>
         {({ activeOption }) => (
           <>
             <FeatureAdderInput
+              featureAdderRef={featureAdderRef}
               inputRef={inputRef}
               featureState={featureState}
               selectParentOnInput={selectParentOnInput}
