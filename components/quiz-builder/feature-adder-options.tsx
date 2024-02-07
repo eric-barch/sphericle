@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuizBuilder } from "@/providers";
 import {
   AreaSearch,
   AreaState,
@@ -11,7 +12,6 @@ import {
   SubfeatureState,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
-import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 import { useEffect } from "react";
 
 type FeatureAdderOptionsProps = {

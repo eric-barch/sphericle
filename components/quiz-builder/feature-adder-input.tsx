@@ -1,6 +1,7 @@
 "use client";
 
-import { isAreaState, isRootState } from "@/helpers/state.helpers";
+import { isAreaState, isRootState } from "@/helpers";
+import { useQuizBuilder } from "@/providers";
 import {
   AreaSearch,
   FeatureType,
@@ -18,7 +19,6 @@ import {
   RefObject,
   useRef,
 } from "react";
-import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 
 type FeatureAdderInputProps = {
   featureState: ParentFeatureState;

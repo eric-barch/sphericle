@@ -1,10 +1,9 @@
-import { useAllFeatures } from "@/providers";
-import { isParentFeatureState } from "@/helpers/state.helpers";
+import { isParentFeatureState } from "@/helpers";
+import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { AllFeaturesDispatchType, QuizBuilderDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { RefObject } from "react";
-import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 
 type EditFeatureButtonProps =
   | {

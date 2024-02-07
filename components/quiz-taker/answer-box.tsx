@@ -1,8 +1,7 @@
-import { useAllFeatures } from "@/providers";
+import { useQuizTaker } from "@/providers";
 import { QuizTakerDispatchType, SubfeatureState } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";
-import { useQuizTaker } from "../../providers/quiz-taker-provider";
 
 interface AnswerBoxProps {
   displayedFeature: SubfeatureState;

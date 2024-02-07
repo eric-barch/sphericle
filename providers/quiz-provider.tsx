@@ -1,6 +1,5 @@
-import { createContext } from "react";
+import { QuizBuilderProvider } from "@/providers";
 import { AllFeaturesProvider } from "./all-features-provider";
-import { QuizBuilderProvider } from "../components/quiz-builder";
 
 const QuizProvider = ({ children }) => {
   return (

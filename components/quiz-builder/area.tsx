@@ -1,14 +1,13 @@
 "use client";
 
-import { useAllFeatures } from "@/providers";
-import { isParentFeatureState } from "@/helpers/state.helpers";
+import { isParentFeatureState } from "@/helpers";
+import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { AreaState, QuizBuilderDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
 import { MouseEvent, useRef } from "react";
 import { EditFeatureButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
-import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 import { Subfeatures } from "./subfeatures";
 
 type AreaProps = {

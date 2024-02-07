@@ -1,14 +1,13 @@
 "use client";
 
-import { useAllFeatures } from "@/providers";
 import { Map } from "@/components/map";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isRootState, isSubfeatureState } from "@/helpers/state.helpers";
+import { isRootState, isSubfeatureState } from "@/helpers";
+import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { DisplayMode } from "@/types";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 import { Subfeatures } from "./subfeatures";
 
 type QuizBuilderProps = {

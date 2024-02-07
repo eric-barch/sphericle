@@ -1,14 +1,13 @@
 "use client";
 
-import { useAllFeatures } from "@/providers";
-import { useQuizBuilder } from "@/components/quiz-builder";
 import {
   isAreaState,
   isPointState,
   isRootState,
   isSubfeatureState,
-} from "@/helpers/state.helpers";
-import { AreaState, DisplayMode, BaseFeatureState, PointState } from "@/types";
+} from "@/helpers";
+import { useAllFeatures, useQuizBuilder } from "@/providers";
+import { AreaState, BaseFeatureState, DisplayMode, PointState } from "@/types";
 import { RefObject, useEffect, useRef, useState } from "react";
 
 interface MapProps {

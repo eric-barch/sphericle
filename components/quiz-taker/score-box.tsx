@@ -1,4 +1,4 @@
-import { useQuizTaker } from "../../providers/quiz-taker-provider";
+import { useQuizTaker } from "@/providers";
 
 const ScoreBox = () => {
   const {

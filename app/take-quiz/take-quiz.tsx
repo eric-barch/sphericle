@@ -1,9 +1,8 @@
 "use client";
 
-import { useAllFeatures } from "@/providers";
 import { QuizTaker } from "@/components/quiz-taker";
-import { QuizTakerProvider } from "@/providers";
 import { useGoogleLibraries } from "@/hooks/use-google-libraries";
+import { QuizTakerProvider, useAllFeatures } from "@/providers";
 import { useState } from "react";
 
 function TakeQuiz() {

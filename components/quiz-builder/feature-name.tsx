@@ -1,7 +1,6 @@
-import { useAllFeatures } from "@/providers";
+import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { AllFeaturesDispatchType, QuizBuilderDispatchType } from "@/types";
 import { KeyboardEvent, useState } from "react";
-import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 
 type FeatureNameProps = {
   featureNameInputRef: React.RefObject<HTMLInputElement>;

@@ -1,14 +1,13 @@
 "use client";
 
-import { useAllFeatures } from "@/providers";
 import { Map } from "@/components/map";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isSubfeatureState } from "@/helpers/state.helpers";
-import { DisplayMode, QuizTakerDispatchType, SubfeatureState } from "@/types";
+import { isSubfeatureState } from "@/helpers";
+import { useAllFeatures, useQuizTaker } from "@/providers";
+import { DisplayMode, QuizTakerDispatchType } from "@/types";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnswerBox } from "./answer-box";
-import { useQuizTaker } from "../../providers/quiz-taker-provider";
 import { ScoreBox } from "./score-box";
 
 interface QuizTakerProps {
