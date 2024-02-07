@@ -1,2 +1,2 @@
 export * from "./quiz-builder";
-export * from "./quiz-builder-state-provider";
+export * from "../../providers/quiz-builder-provider";

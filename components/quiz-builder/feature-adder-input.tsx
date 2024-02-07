@@ -6,7 +6,7 @@ import {
   FeatureType,
   ParentFeatureState,
   PointSearch,
-  QuizBuilderStateDispatchType,
+  QuizBuilderDispatchType,
   SearchStatus,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
@@ -18,7 +18,7 @@ import {
   RefObject,
   useRef,
 } from "react";
-import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 
 type FeatureAdderInputProps = {
   featureState: ParentFeatureState;
@@ -46,9 +46,9 @@ const FeatureAdderInput = ({
   const { featureId } = featureState;
 
   const {
-    quizBuilderState: { selectedFeatureId },
-    quizBuilderStateDispatch,
-  } = useQuizBuilderState();
+    quizBuilder: { selectedFeatureId },
+    quizBuilderDispatch: quizBuilderStateDispatch,
+  } = useQuizBuilder();
 
   const isSelected = featureId === selectedFeatureId;
   const placeholder = (() => {
@@ -79,7 +79,7 @@ const FeatureAdderInput = ({
 
     if (!isSelected && selectParentOnInput) {
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
         featureId: featureState.featureId,
       });
     }

@@ -1,4 +1,4 @@
-import { useAllFeatures } from "@/components/quiz-provider";
+import { useAllFeatures } from "@/providers";
 import {
   isAreaState,
   isParentFeatureState,

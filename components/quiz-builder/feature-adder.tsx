@@ -1,18 +1,18 @@
 "use client";
 
-import { useAllFeatures } from "@/components/quiz-provider";
+import { useAllFeatures } from "@/providers";
 import {
   AllFeaturesDispatchType,
   FeatureType,
   ParentFeatureState,
-  QuizBuilderStateDispatchType,
+  QuizBuilderDispatchType,
   SubfeatureState,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { FocusEvent, RefObject, useState } from "react";
 import { FeatureAdderInput } from "./feature-adder-input";
 import { FeatureAdderOptions } from "./feature-adder-options";
-import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 import { useFeatureSearches } from "./use-feature-searches.hook";
 
 type FeatureAdderProps = {
@@ -25,9 +25,9 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
 
   const { allFeaturesDispatch } = useAllFeatures();
   const {
-    quizBuilderState: { selectedFeatureId },
-    quizBuilderStateDispatch,
-  } = useQuizBuilderState();
+    quizBuilder: { selectedFeatureId },
+    quizBuilderDispatch: quizBuilderStateDispatch,
+  } = useQuizBuilder();
 
   const { areaSearch, pointSearch } = useFeatureSearches(featureId);
 
@@ -66,12 +66,12 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
     });
 
     quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+      dispatchType: QuizBuilderDispatchType.SET_SELECTED,
       featureId: selectedResult.featureId,
     });
 
     quizBuilderStateDispatch({
-      dispatchType: QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED,
+      dispatchType: QuizBuilderDispatchType.SET_FEATURE_ADDER_SELECTED,
       featureState: null,
     });
 
@@ -84,7 +84,7 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
 
     if (isSelected && selectParentOnInput) {
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });
     }

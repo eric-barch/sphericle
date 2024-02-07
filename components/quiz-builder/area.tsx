@@ -1,14 +1,14 @@
 "use client";
 
-import { useAllFeatures } from "@/components/quiz-provider";
+import { useAllFeatures } from "@/providers";
 import { isParentFeatureState } from "@/helpers/state.helpers";
-import { AreaState, QuizBuilderStateDispatchType } from "@/types";
+import { AreaState, QuizBuilderDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
 import { MouseEvent, useRef } from "react";
 import { EditFeatureButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
-import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 import { Subfeatures } from "./subfeatures";
 
 type AreaProps = {
@@ -20,14 +20,14 @@ function Area({ areaState }: AreaProps) {
 
   const { allFeatures } = useAllFeatures();
   const {
-    quizBuilderState: {
+    quizBuilder: {
       selectedFeatureId,
       openFeatureIds,
       addingFeatureId,
       renamingFeatureId,
     },
-    quizBuilderStateDispatch,
-  } = useQuizBuilderState();
+    quizBuilderDispatch: quizBuilderStateDispatch,
+  } = useQuizBuilder();
 
   const featureName = userDefinedName || shortName;
   const isSelected = featureId === selectedFeatureId;
@@ -41,13 +41,13 @@ function Area({ areaState }: AreaProps) {
   const handleTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (isSelected) {
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_IS_OPEN,
+        dispatchType: QuizBuilderDispatchType.SET_IS_OPEN,
         featureId,
         isOpen: !isOpen,
       });
     } else {
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });
     }
@@ -62,13 +62,13 @@ function Area({ areaState }: AreaProps) {
 
     if (isOpen !== isSelected) {
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+        dispatchType: QuizBuilderDispatchType.SET_ADDING,
         lastFeatureState,
         featureId,
       });
     } else {
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_ADDING,
+        dispatchType: QuizBuilderDispatchType.SET_ADDING,
         lastFeatureState,
         featureId: parentFeatureId,
       });

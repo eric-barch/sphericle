@@ -1,11 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { PointState, QuizBuilderStateDispatchType } from "@/types";
+import { PointState, QuizBuilderDispatchType } from "@/types";
 import { MouseEvent, useRef } from "react";
 import { EditFeatureButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
-import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 
 type PointProps = {
   pointState: PointState;
@@ -15,9 +15,9 @@ const Point = ({ pointState }: PointProps) => {
   const { featureId, userDefinedName, shortName } = pointState;
 
   const {
-    quizBuilderState: { selectedFeatureId, renamingFeatureId },
-    quizBuilderStateDispatch,
-  } = useQuizBuilderState();
+    quizBuilder: { selectedFeatureId, renamingFeatureId },
+    quizBuilderDispatch: quizBuilderStateDispatch,
+  } = useQuizBuilder();
 
   const featureName = userDefinedName || shortName;
   const isSelected = featureId === selectedFeatureId;
@@ -28,7 +28,7 @@ const Point = ({ pointState }: PointProps) => {
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (!isSelected) {
       quizBuilderStateDispatch({
-        dispatchType: QuizBuilderStateDispatchType.SET_SELECTED,
+        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });
     }

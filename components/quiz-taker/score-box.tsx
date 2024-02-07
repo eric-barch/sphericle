@@ -1,13 +1,9 @@
-import { useQuizTakerState } from "./quiz-taker-state-provider";
+import { useQuizTaker } from "../../providers/quiz-taker-provider";
 
 const ScoreBox = () => {
   const {
-    quizTakerState: {
-      correctFeatureIds,
-      incorrectFeatureIds,
-      remainingFeatureIds,
-    },
-  } = useQuizTakerState();
+    quizTaker: { correctFeatureIds, incorrectFeatureIds, remainingFeatureIds },
+  } = useQuizTaker();
 
   return (
     <div className="absolute top-5 right-5 rounded-3xl z-10 bg-gray-500 bg-opacity-80 p-3">

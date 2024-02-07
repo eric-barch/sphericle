@@ -1,6 +1,6 @@
 "use client";
 
-import { useAllFeatures } from "@/components/quiz-provider";
+import { useAllFeatures } from "@/providers";
 import { Map } from "@/components/map";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -8,7 +8,7 @@ import { isRootState, isSubfeatureState } from "@/helpers/state.helpers";
 import { DisplayMode } from "@/types";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useQuizBuilderState } from "./quiz-builder-state-provider";
+import { useQuizBuilder } from "../../providers/quiz-builder-provider";
 import { Subfeatures } from "./subfeatures";
 
 type QuizBuilderProps = {
@@ -18,12 +18,12 @@ type QuizBuilderProps = {
 const QuizBuilder = ({ googleLibsLoaded }: QuizBuilderProps) => {
   const { rootId, allFeatures } = useAllFeatures();
   const {
-    quizBuilderState: {
+    quizBuilder: {
       featureAdderFeatureState,
       selectedFeatureId,
       addingFeatureId,
     },
-  } = useQuizBuilderState();
+  } = useQuizBuilder();
 
   const rootState = (() => {
     const rootState = allFeatures.get(rootId);

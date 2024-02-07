@@ -1,5 +1,5 @@
 import { Nav } from "@/components/nav";
-import { QuizProvider } from "@/components/quiz-provider";
+import { QuizProvider } from "@/providers";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
