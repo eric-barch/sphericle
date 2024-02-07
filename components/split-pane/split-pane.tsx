@@ -1,7 +1,5 @@
 "use client";
 
-// TODO: this really needs to be refactored
-
 import {
   Fragment,
   MouseEvent,
@@ -17,6 +15,7 @@ type SplitPaneProps = {
 
 const SplitPane = ({ children }: SplitPaneProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+
   const [prevContainerWidth, setPrevContainerWidth] = useState<number>(0);
   const [paneWidths, setPaneWidths] = useState<number[]>([]);
   const [isResizing, setIsResizing] = useState(false);
@@ -55,8 +54,10 @@ const SplitPane = ({ children }: SplitPaneProps) => {
 
   const handleDoubleClick = (index: number) => {
     const newPaneWidths = [...paneWidths];
+
     newPaneWidths[index] = newPaneWidths[index + 1] =
       (paneWidths[index] + paneWidths[index + 1]) / 2;
+
     setPaneWidths(newPaneWidths);
   };
 
@@ -65,28 +66,32 @@ const SplitPane = ({ children }: SplitPaneProps) => {
   };
 
   useEffect(() => {
-    if (containerRef.current) {
-      const newContainerWidth = containerRef.current.offsetWidth;
-      setPaneWidths(
-        Array.from(
-          { length: children.length },
-          () => newContainerWidth / children.length,
-        ),
-      );
-      setPrevContainerWidth(newContainerWidth);
+    if (!containerRef.current) {
+      return;
     }
+
+    const newContainerWidth = containerRef.current.offsetWidth;
+
+    setPaneWidths(
+      Array.from(
+        { length: children.length },
+        () => newContainerWidth / children.length,
+      ),
+    );
+    setPrevContainerWidth(newContainerWidth);
   }, [children.length]);
 
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {
-        const newContainerWidth = containerRef.current.offsetWidth;
-        const paneRatios = paneWidths.map(
-          (width) => width / prevContainerWidth,
-        );
-        setPaneWidths(paneRatios.map((ratio) => ratio * newContainerWidth));
-        setPrevContainerWidth(newContainerWidth);
+        return;
       }
+
+      const newContainerWidth = containerRef.current.offsetWidth;
+      const paneRatios = paneWidths.map((width) => width / prevContainerWidth);
+
+      setPaneWidths(paneRatios.map((ratio) => ratio * newContainerWidth));
+      setPrevContainerWidth(newContainerWidth);
     };
 
     window.addEventListener("resize", handleResize);
