@@ -12,20 +12,21 @@ import {
   useContext,
   useReducer,
 } from "react";
+import { useAllFeatures } from "../quiz-provider/all-features-provider";
 
 const QuizBuilderStateContext = createContext<QuizBuilderState>(null);
 const QuizBuilderStateDispatchContext =
   createContext<Dispatch<QuizBuilderStateDispatch>>(null);
 
 type QuizBuilderStateProviderProps = {
-  rootId: string;
   children: ReactNode;
 };
 
 const QuizBuilderStateProvider = ({
-  rootId,
   children,
 }: QuizBuilderStateProviderProps) => {
+  const { rootId } = useAllFeatures();
+
   const quizBuilderStateReducer = (
     quizBuilderState: QuizBuilderState,
     action: QuizBuilderStateDispatch,

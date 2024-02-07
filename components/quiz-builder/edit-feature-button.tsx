@@ -1,4 +1,4 @@
-import { useAllFeatures } from "@/components/all-features-provider";
+import { useAllFeatures } from "@/components/quiz-provider";
 import { isParentFeatureState } from "@/helpers/state.helpers";
 import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";

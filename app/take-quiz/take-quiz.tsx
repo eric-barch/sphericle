@@ -1,6 +1,6 @@
 "use client";
 
-import { useAllFeatures } from "@/components/all-features-provider";
+import { useAllFeatures } from "@/components/quiz-provider";
 import { QuizTaker } from "@/components/quiz-taker";
 import { QuizTakerStateProvider } from "@/components/quiz-taker/quiz-taker-state-provider";
 import { useGoogleLibraries } from "@/hooks/use-google-libraries";

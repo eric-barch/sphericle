@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  AllFeatures,
   QuizTakerState,
   QuizTakerStateDispatch,
   QuizTakerStateDispatchType,
@@ -13,6 +12,7 @@ import {
   useContext,
   useReducer,
 } from "react";
+import { useAllFeatures } from "../quiz-provider";
 import { resetRemainingFeatureIds } from "./quiz-taker.helpers";
 
 const QuizTakerStateContext = createContext<QuizTakerState>(null);
@@ -20,16 +20,12 @@ const QuizTakerStateDispatchContext =
   createContext<Dispatch<QuizTakerStateDispatch> | null>(null);
 
 type QuizTakerStateProviderProps = {
-  rootId: string;
-  allFeatures: AllFeatures;
   children: ReactNode;
 };
 
-const QuizTakerStateProvider = ({
-  rootId,
-  allFeatures,
-  children,
-}: QuizTakerStateProviderProps) => {
+const QuizTakerStateProvider = ({ children }: QuizTakerStateProviderProps) => {
+  const { rootId, allFeatures } = useAllFeatures();
+
   const quizTakerStateReducer = (
     quizTakerState: QuizTakerState,
     action: QuizTakerStateDispatch,

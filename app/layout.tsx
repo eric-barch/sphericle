@@ -1,5 +1,5 @@
-import { AllFeaturesProvider } from "@/components/all-features-provider";
 import { Nav } from "@/components/nav";
+import { QuizProvider } from "@/components/quiz-provider";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
@@ -19,7 +19,7 @@ function RootLayout({ children }: { children: ReactNode }) {
       <body className={font.className}>
         <Nav />
         <main className="h-[calc(100vh-4rem)] overflow-auto custom-scrollbar">
-          <AllFeaturesProvider>{children}</AllFeaturesProvider>
+          <QuizProvider>{children}</QuizProvider>
           <Toaster containerStyle={{ marginTop: "4rem" }} />
         </main>
       </body>

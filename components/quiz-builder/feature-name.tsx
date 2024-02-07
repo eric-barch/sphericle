@@ -1,4 +1,4 @@
-import { useAllFeatures } from "@/components/all-features-provider";
+import { useAllFeatures } from "@/components/quiz-provider";
 import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
 import { KeyboardEvent, useState } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useAllFeatures } from "@/components/all-features-provider";
+import { useAllFeatures } from "@/components/quiz-provider";
 import { useQuizBuilderState } from "@/components/quiz-builder";
 import {
   isAreaState,
