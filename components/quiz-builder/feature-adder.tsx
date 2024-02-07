@@ -25,7 +25,7 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
   const { allFeaturesDispatch } = useAllFeatures();
   const {
     quizBuilder: { selectedFeatureId },
-    quizBuilderDispatch: quizBuilderStateDispatch,
+    quizBuilderDispatch,
   } = useQuizBuilder();
 
   const { areaSearch, pointSearch } = useFeatureSearches(featureId);
@@ -66,12 +66,12 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
       subfeatureState: selectedResult,
     });
 
-    quizBuilderStateDispatch({
+    quizBuilderDispatch({
       dispatchType: QuizBuilderDispatchType.SET_SELECTED,
       featureId: selectedResult.featureId,
     });
 
-    quizBuilderStateDispatch({
+    quizBuilderDispatch({
       dispatchType: QuizBuilderDispatchType.SET_FEATURE_ADDER_SELECTED,
       featureState: null,
     });
@@ -84,7 +84,7 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
     setFeatureTypeRaw(featureType);
 
     if (isSelected && selectParentOnInput) {
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });

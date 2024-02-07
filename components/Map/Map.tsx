@@ -35,7 +35,7 @@ function Map({
    * creating a new object. Need to investigate and optimize. */
 
   const { allFeatures } = useAllFeatures();
-  const { quizBuilder: quizBuilderState } = useQuizBuilder();
+  const { quizBuilder } = useQuizBuilder();
 
   const defaultContainerRef = useRef<HTMLDivElement>(null);
   const containerRef = propContainerRef || defaultContainerRef;
@@ -248,9 +248,7 @@ function Map({
           setBounds(displayedFeature.displayBounds);
 
           if (isAreaState(displayedFeature)) {
-            if (
-              quizBuilderState.openFeatureIds.has(displayedFeature.featureId)
-            ) {
+            if (quizBuilder.openFeatureIds.has(displayedFeature.featureId)) {
               setEmptyAreas([displayedFeature]);
               setFilledAreas(null);
               setMarkedPoints(null);
@@ -266,9 +264,7 @@ function Map({
           }
         } else if (isAreaState(parentFeature)) {
           if (isAreaState(displayedFeature)) {
-            if (
-              quizBuilderState.openFeatureIds.has(displayedFeature.featureId)
-            ) {
+            if (quizBuilder.openFeatureIds.has(displayedFeature.featureId)) {
               setBounds(displayedFeature.displayBounds);
               setEmptyAreas([displayedFeature]);
               setFilledAreas(null);
@@ -314,7 +310,7 @@ function Map({
         }
         break;
     }
-  }, [allFeatures, displayedFeature, displayMode, quizBuilderState]);
+  }, [allFeatures, displayedFeature, displayMode, quizBuilder]);
 
   return <div className={`h-full w-full`} ref={containerRef} />;
 }

@@ -176,16 +176,16 @@ export type QuizBuilderDispatch =
   | SetIsOpenDispatch
   | SetRenamingDispatch;
 
-type BaseQuizBuilderStateDispatch = {
+type BaseQuizBuilderDispatch = {
   dispatchType: QuizBuilderDispatchType;
 };
 
-type SetFeatureAdderSelectedDispatch = BaseQuizBuilderStateDispatch & {
+type SetFeatureAdderSelectedDispatch = BaseQuizBuilderDispatch & {
   dispatchType: QuizBuilderDispatchType.SET_FEATURE_ADDER_SELECTED;
   featureState: SubfeatureState | null;
 };
 
-type SetSelectedDispatch = BaseQuizBuilderStateDispatch &
+type SetSelectedDispatch = BaseQuizBuilderDispatch &
   (
     | {
         dispatchType: QuizBuilderDispatchType.SET_SELECTED;
@@ -199,7 +199,7 @@ type SetSelectedDispatch = BaseQuizBuilderStateDispatch &
       }
   );
 
-type SetAddingDispatch = BaseQuizBuilderStateDispatch &
+type SetAddingDispatch = BaseQuizBuilderDispatch &
   (
     | {
         dispatchType: QuizBuilderDispatchType.SET_ADDING;
@@ -215,7 +215,7 @@ type SetAddingDispatch = BaseQuizBuilderStateDispatch &
       }
   );
 
-type SetIsOpenDispatch = BaseQuizBuilderStateDispatch &
+type SetIsOpenDispatch = BaseQuizBuilderDispatch &
   (
     | {
         dispatchType: QuizBuilderDispatchType.SET_IS_OPEN;
@@ -231,7 +231,7 @@ type SetIsOpenDispatch = BaseQuizBuilderStateDispatch &
       }
   );
 
-type SetRenamingDispatch = BaseQuizBuilderStateDispatch &
+type SetRenamingDispatch = BaseQuizBuilderDispatch &
   (
     | {
         dispatchType: QuizBuilderDispatchType.SET_RENAMING;
@@ -250,15 +250,15 @@ export type QuizTakerDispatch =
   | MarkCorrectDispatch
   | MarkIncorrectDispatch;
 
-type BaseQuizTakerStateDispatch = {
+type BaseQuizTakerDispatch = {
   dispatchType: QuizTakerDispatchType;
 };
 
-type ResetDispatch = BaseQuizTakerStateDispatch & {
+type ResetDispatch = BaseQuizTakerDispatch & {
   dispatchType: QuizTakerDispatchType.RESET;
 };
 
-type MarkCorrectDispatch = BaseQuizTakerStateDispatch &
+type MarkCorrectDispatch = BaseQuizTakerDispatch &
   (
     | {
         dispatchType: QuizTakerDispatchType.MARK_CORRECT;
@@ -272,7 +272,7 @@ type MarkCorrectDispatch = BaseQuizTakerStateDispatch &
       }
   );
 
-type MarkIncorrectDispatch = BaseQuizTakerStateDispatch &
+type MarkIncorrectDispatch = BaseQuizTakerDispatch &
   (
     | {
         dispatchType: QuizTakerDispatchType.MARK_INCORRECT;

@@ -5,11 +5,10 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isSubfeatureState } from "@/helpers";
 import { useAllFeatures, useQuizTaker } from "@/providers";
 import { DisplayMode, QuizTakerDispatchType } from "@/types";
-import * as Dialog from "@radix-ui/react-dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnswerBox } from "./answer-box";
-import { ScoreBox } from "./score-box";
 import { CompleteDialog } from "./complete-dialog";
+import { ScoreBox } from "./score-box";
 
 interface QuizTakerProps {
   googleLibsLoaded: boolean;
@@ -19,7 +18,7 @@ const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
   const { allFeatures } = useAllFeatures();
   const {
     quizTaker: { remainingFeatureIds },
-    quizTakerDispatch: quizTakerStateDispatch,
+    quizTakerDispatch,
   } = useQuizTaker();
 
   const displayedFeature = (() => {
@@ -38,14 +37,14 @@ const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
   const [mapIsLoaded, setMapIsLoaded] = useState<boolean>(false);
 
   const handleReset = useCallback(() => {
-    quizTakerStateDispatch({
+    quizTakerDispatch({
       dispatchType: QuizTakerDispatchType.RESET,
     });
 
     setTimeout(() => {
       answerBoxInputRef.current?.focus();
     }, 0);
-  }, [quizTakerStateDispatch]);
+  }, [quizTakerDispatch]);
 
   const handleMapLoad = () => {
     /**TODO: This check shouldn't really be necessary. Need to revise Map so

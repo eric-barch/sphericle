@@ -49,7 +49,7 @@ const FeatureAdderInput = ({
 
   const {
     quizBuilder: { selectedFeatureId },
-    quizBuilderDispatch: quizBuilderStateDispatch,
+    quizBuilderDispatch,
   } = useQuizBuilder();
 
   const isSelected = featureId === selectedFeatureId;
@@ -78,7 +78,7 @@ const FeatureAdderInput = ({
     setInput(event.target.value);
 
     if (!isSelected && selectParentOnInput) {
-      quizBuilderStateDispatch({
+      quizBuilderDispatch({
         dispatchType: QuizBuilderDispatchType.SET_SELECTED,
         featureId: featureState.featureId,
       });
