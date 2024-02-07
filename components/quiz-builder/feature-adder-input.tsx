@@ -27,6 +27,7 @@ type FeatureAdderInputProps = {
   selectParentOnInput: boolean;
   input: string;
   featureType: FeatureType;
+  featureAdderRef: RefObject<HTMLDivElement>;
   inputRef: RefObject<HTMLInputElement>;
   setFeatureType: (featureType: FeatureType) => void;
   setInput: (input: string) => void;
@@ -39,6 +40,7 @@ const FeatureAdderInput = ({
   selectParentOnInput,
   input,
   featureType,
+  featureAdderRef,
   inputRef,
   setFeatureType,
   setInput,
@@ -62,13 +64,13 @@ const FeatureAdderInput = ({
     }
   })();
 
-  const containerRef = useRef<HTMLDivElement>();
-
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
-    if (containerRef.current?.contains(event.relatedTarget)) {
+    if (featureAdderRef.current?.contains(event.relatedTarget)) {
       event.preventDefault();
       return;
     }
+
+    console.log("relatedTarget", event.relatedTarget);
 
     areaSearch.reset();
     pointSearch.reset();
@@ -149,7 +151,7 @@ const FeatureAdderInput = ({
   };
 
   return (
-    <div ref={containerRef} className="relative">
+    <div className="relative">
       <NextFeatureTypeButton
         featureType={featureType}
         setFeatureType={setFeatureType}
