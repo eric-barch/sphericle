@@ -20,7 +20,7 @@ import {
 } from "react";
 import { useQuizBuilderState } from "./quiz-builder-state-provider";
 
-interface FeatureAdderInputProps {
+type FeatureAdderInputProps = {
   featureState: ParentFeatureState;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
@@ -30,9 +30,9 @@ interface FeatureAdderInputProps {
   inputRef: RefObject<HTMLInputElement>;
   setFeatureType: (featureType: FeatureType) => void;
   setInput: (input: string) => void;
-}
+};
 
-function FeatureAdderInput({
+const FeatureAdderInput = ({
   featureState,
   areaSearch,
   pointSearch,
@@ -42,7 +42,7 @@ function FeatureAdderInput({
   inputRef,
   setFeatureType,
   setInput,
-}: FeatureAdderInputProps) {
+}: FeatureAdderInputProps) => {
   const { featureId } = featureState;
 
   const {
@@ -164,17 +164,17 @@ function FeatureAdderInput({
       />
     </div>
   );
-}
+};
 
-interface NextFeatureTypeButtonProps {
+type NextFeatureTypeButtonProps = {
   featureType: FeatureType;
   setFeatureType: (featureType: FeatureType) => void;
-}
+};
 
-function NextFeatureTypeButton({
+const NextFeatureTypeButton = ({
   featureType,
   setFeatureType,
-}: NextFeatureTypeButtonProps) {
+}: NextFeatureTypeButtonProps) => {
   const handleClick = () => {
     const nextFeatureType = (() => {
       switch (featureType) {
@@ -203,6 +203,6 @@ function NextFeatureTypeButton({
       })()}
     </button>
   );
-}
+};
 
 export { FeatureAdderInput };

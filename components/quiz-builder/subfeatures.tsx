@@ -15,12 +15,12 @@ type SubfeaturesProps = {
   isAdding: boolean;
 };
 
-function Subfeatures({
+const Subfeatures = ({
   featureAdderInputRef,
   className,
   featureState,
   isAdding,
-}: SubfeaturesProps) {
+}: SubfeaturesProps) => {
   const { featureId, subfeatureIds: subfeatureIdsRaw } = featureState;
 
   const { allFeaturesDispatch } = useAllFeatures();
@@ -64,13 +64,13 @@ function Subfeatures({
       )}
     </div>
   );
-}
+};
 
-interface SubfeatureProps {
+type SubfeatureProps = {
   featureId: string;
-}
+};
 
-function Subfeature({ featureId }: SubfeatureProps) {
+const Subfeature = ({ featureId }: SubfeatureProps) => {
   const { allFeatures } = useAllFeatures();
 
   const featureState = (() => {
@@ -88,6 +88,6 @@ function Subfeature({ featureId }: SubfeatureProps) {
   if (isPointState(featureState)) {
     return <Point pointState={featureState} />;
   }
-}
+};
 
 export { Subfeatures };

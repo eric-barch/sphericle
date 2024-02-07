@@ -13,19 +13,19 @@ import {
   useReducer,
 } from "react";
 
-const QuizBuilderStateContext = createContext<QuizBuilderState | null>(null);
+const QuizBuilderStateContext = createContext<QuizBuilderState>(null);
 const QuizBuilderStateDispatchContext =
-  createContext<Dispatch<QuizBuilderStateDispatch> | null>(null);
+  createContext<Dispatch<QuizBuilderStateDispatch>>(null);
 
-interface QuizBuilderStateProviderProps {
+type QuizBuilderStateProviderProps = {
   rootId: string;
   children: ReactNode;
-}
+};
 
-function QuizBuilderStateProvider({
+const QuizBuilderStateProvider = ({
   rootId,
   children,
-}: QuizBuilderStateProviderProps) {
+}: QuizBuilderStateProviderProps) => {
   const initialQuizBuilderState = {
     featureAdderFeatureState: null,
     selectedFeatureId: rootId,
@@ -48,21 +48,21 @@ function QuizBuilderStateProvider({
       </QuizBuilderStateDispatchContext.Provider>
     </QuizBuilderStateContext.Provider>
   );
-}
+};
 
-function useQuizBuilderState(): {
+const useQuizBuilderState = (): {
   quizBuilderState: QuizBuilderState;
   quizBuilderStateDispatch: Dispatch<QuizBuilderStateDispatch>;
-} {
+} => {
   const quizBuilderState = useContext(QuizBuilderStateContext);
   const quizBuilderStateDispatch = useContext(QuizBuilderStateDispatchContext);
   return { quizBuilderState, quizBuilderStateDispatch };
-}
+};
 
-function quizBuilderStateReducer(
+const quizBuilderStateReducer = (
   quizBuilderState: QuizBuilderState,
   action: QuizBuilderStateDispatch,
-) {
+) => {
   switch (action.dispatchType) {
     case QuizBuilderStateDispatchType.SET_FEATURE_ADDER_SELECTED: {
       const newQuizBuilderState = { ...quizBuilderState };
@@ -121,6 +121,6 @@ function quizBuilderStateReducer(
       return newQuizBuilderState;
     }
   }
-}
+};
 
 export { QuizBuilderStateProvider, useQuizBuilderState };
