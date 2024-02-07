@@ -10,76 +10,77 @@ import {
 
 export type AllFeatures = Map<string, BaseFeatureState>;
 
-export interface BaseFeatureState {
+export type BaseFeatureState = {
   featureId: string;
   featureType: FeatureType;
-}
+};
 
-export interface ParentFeatureState extends BaseFeatureState {
+export type ParentFeatureState = BaseFeatureState & {
   subfeatureIds: Set<string>;
-}
+};
 
-export interface SubfeatureState extends BaseFeatureState {
+export type SubfeatureState = BaseFeatureState & {
   parentFeatureId: string;
   longName: string;
   shortName: string;
   userDefinedName: string | null;
   displayBounds: google.maps.LatLngBoundsLiteral;
-}
+};
 
-export interface RootState extends BaseFeatureState, ParentFeatureState {
-  featureType: FeatureType.ROOT;
-}
+export type RootState = BaseFeatureState &
+  ParentFeatureState & {
+    featureType: FeatureType.ROOT;
+  };
 
-export interface AreaState
-  extends BaseFeatureState,
-    ParentFeatureState,
-    SubfeatureState {
-  featureType: FeatureType.AREA;
-  openStreetMapPlaceId: number;
-  searchBounds: google.maps.LatLngBoundsLiteral;
-  polygons: Polygon | MultiPolygon;
-}
+export type AreaState = BaseFeatureState &
+  ParentFeatureState &
+  SubfeatureState & {
+    featureType: FeatureType.AREA;
+    openStreetMapPlaceId: number;
+    searchBounds: google.maps.LatLngBoundsLiteral;
+    polygons: Polygon | MultiPolygon;
+  };
 
-export interface PointState extends BaseFeatureState, SubfeatureState {
-  featureType: FeatureType.POINT;
-  googlePlacesId: string;
-  point: Point;
-}
+export type PointState = BaseFeatureState &
+  SubfeatureState & {
+    featureType: FeatureType.POINT;
+    googlePlacesId: string;
+    point: Point;
+  };
 
 export type FeatureState = RootState | AreaState | PointState;
 
-export interface QuizBuilderState {
+export type QuizBuilderState = {
   featureAdderFeatureState: SubfeatureState | null;
   selectedFeatureId: string | null;
   addingFeatureId: string | null;
   renamingFeatureId: string | null;
   openFeatureIds: Set<string>;
-}
+};
 
-export interface QuizTakerState {
+export type QuizTakerState = {
   correctFeatureIds: Set<string>;
   incorrectFeatureIds: Set<string>;
   remainingFeatureIds: Set<string>;
-}
+};
 
-export interface AreaSearch {
+export type AreaSearch = {
   term: string;
   status: SearchStatus;
   results: AreaState[];
   setTerm: (searchTerm: string) => void;
   reset: () => void;
-}
+};
 
-export interface PointSearch {
+export type PointSearch = {
   term: string;
   status: SearchStatus;
   results: PointState[];
   setTerm: (searchTerm: string) => void;
   reset: () => void;
-}
+};
 
-export interface OsmItem {
+export type OsmItem = {
   place_id: number;
   licence: string;
   osm_type: string;
@@ -95,7 +96,7 @@ export interface OsmItem {
   display_name: string;
   boundingbox: number[];
   geojson: AllGeoJSON;
-}
+};
 
 export type AllFeaturesDispatch =
   | AddSubfeatureDispatch

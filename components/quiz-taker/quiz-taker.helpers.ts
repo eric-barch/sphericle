@@ -1,13 +1,13 @@
 import { isParentFeatureState } from "@/helpers";
 import { AllFeatures } from "@/types";
 
-function resetRemainingFeatureIds(
+const resetRemainingFeatureIds = (
   rootId: string,
   allFeatures: AllFeatures,
-): Set<string> {
+): Set<string> => {
   const remainingFeatureIds = new Set<string>();
 
-  function addDirectChildren(featureId: string) {
+  const addDirectChildren = (featureId: string) => {
     const featureState = allFeatures.get(featureId);
 
     if (featureState && isParentFeatureState(featureState)) {
@@ -30,11 +30,11 @@ function resetRemainingFeatureIds(
         addDirectChildren(subfeatureId);
       });
     }
-  }
+  };
 
   addDirectChildren(rootId);
 
   return remainingFeatureIds;
-}
+};
 
 export { resetRemainingFeatureIds };

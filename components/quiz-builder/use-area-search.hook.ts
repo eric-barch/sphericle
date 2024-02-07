@@ -12,7 +12,7 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { MultiPolygon, Polygon } from "geojson";
 import { useState } from "react";
 
-function useAreaSearch(parentFeatureId: string): AreaSearch {
+const useAreaSearch = (parentFeatureId: string): AreaSearch => {
   const { allFeatures } = useAllFeatures();
 
   const parentFeatureState = (() => {
@@ -40,8 +40,8 @@ function useAreaSearch(parentFeatureId: string): AreaSearch {
       return geojson;
     }
 
-    /**TODO: This is causing noticeable UI lag. Need to do a time complexity
-     * deep dive. */
+    /**TODO: This is working fine but not perfect. It will sometimes return
+     * early. */
     if (isAreaState(parentFeatureState)) {
       const parentPolygons = parentFeatureState.polygons;
       const coordinates = flattenCoordinates(geojson);
@@ -173,6 +173,6 @@ function useAreaSearch(parentFeatureId: string): AreaSearch {
     setTerm,
     reset,
   };
-}
+};
 
 export { useAreaSearch };

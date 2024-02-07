@@ -11,11 +11,11 @@ import {
   useState,
 } from "react";
 
-interface SplitPaneProps {
+type SplitPaneProps = {
   children: ReactNode[];
-}
+};
 
-function SplitPane({ children }: SplitPaneProps) {
+const SplitPane = ({ children }: SplitPaneProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [prevContainerWidth, setPrevContainerWidth] = useState<number>(0);
   const [paneWidths, setPaneWidths] = useState<number[]>([]);
@@ -122,6 +122,6 @@ function SplitPane({ children }: SplitPaneProps) {
       ))}
     </div>
   );
-}
+};
 
 export { SplitPane };

@@ -10,23 +10,23 @@ import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { AreaState, BaseFeatureState, DisplayMode, PointState } from "@/types";
 import { RefObject, useEffect, useRef, useState } from "react";
 
-interface MapProps {
+type MapProps = {
   containerRef?: RefObject<HTMLDivElement>;
   padding?: google.maps.Padding;
   onLoad?: () => void;
   mapId: string;
   displayedFeature: BaseFeatureState | null;
   displayMode: DisplayMode;
-}
+};
 
-function Map({
+const Map = ({
   containerRef: propContainerRef,
   padding = { top: 50, right: 50, bottom: 50, left: 50 },
   onLoad,
   mapId,
   displayedFeature,
   displayMode,
-}: MapProps) {
+}: MapProps) => {
   /**TODO: Testing with Features that have a large number of points (e.g. the
    * United States) there is noticeable lag on all display operations (e.g.
    * toggling the Feature open/closed). I am pretty sure this has to do with
@@ -313,6 +313,6 @@ function Map({
   }, [allFeatures, displayedFeature, displayMode, quizBuilder]);
 
   return <div className={`h-full w-full`} ref={containerRef} />;
-}
+};
 
 export { Map };
