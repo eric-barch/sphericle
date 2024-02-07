@@ -5,7 +5,7 @@ import {
   isRootState,
   isPolygon,
   isMultiPolygon,
-} from "@/helpers/type-guards";
+} from "@/helpers/state";
 import {
   AreaSearch,
   AreaState,
@@ -36,17 +36,7 @@ function useAreaSearch(parentFeatureId: string): AreaSearch {
   );
   const [resultsRaw, setResultsRaw] = useState<AreaState[]>([]);
 
-  const flattenCoordinates = (geojson: AllGeoJSON) => {
-    if (isPolygon(geojson)) {
-      return geojson.coordinates[0];
-    } else if (isMultiPolygon(geojson)) {
-      return geojson.coordinates.flat(2);
-    }
-  };
-
   const getPolygons = (osmItem: OsmItem): Polygon | MultiPolygon => {
-    console.log("useAreaSearch getPolygons");
-
     const geojson = osmItem.geojson;
 
     if (!isPolygon(geojson) && !isMultiPolygon(geojson)) {
@@ -76,18 +66,12 @@ function useAreaSearch(parentFeatureId: string): AreaSearch {
         attempts++;
       }
     }
-
-    return null;
   };
 
   const getDisplayBounds = (
     polygons: Polygon | MultiPolygon,
     searchBounds: google.maps.LatLngBoundsLiteral,
   ): google.maps.LatLngBoundsLiteral => {
-    console.log("useAreaSearch getDisplayBounds");
-
-    const start = Date.now();
-
     let maxGap = 0;
     let maxGapStart = 0;
     let maxGapEnd = 0;
@@ -109,10 +93,8 @@ function useAreaSearch(parentFeatureId: string): AreaSearch {
       longitudes[0] + 180 + (180 - longitudes[longitudes.length - 1]);
 
     if (antiMeridianGap > maxGap) {
-      console.log("displayBounds", Date.now() - start);
       return searchBounds;
     } else {
-      console.log("displayBounds", Date.now() - start);
       return {
         north: searchBounds.north,
         east: maxGapStart,
@@ -123,9 +105,11 @@ function useAreaSearch(parentFeatureId: string): AreaSearch {
   };
 
   const toAreaState = (osmItem: OsmItem): AreaState => {
-    console.log("useAreaSearch toAreaState");
-
     const polygons = getPolygons(osmItem);
+
+    if (!polygons) {
+      return;
+    }
 
     const searchBounds = {
       south: Number(osmItem.boundingbox[0]),
@@ -152,8 +136,6 @@ function useAreaSearch(parentFeatureId: string): AreaSearch {
   };
 
   const search = async (searchTerm: string) => {
-    console.log("useAreaSearch search");
-
     setTermRaw(searchTerm);
     setStatusRaw(SearchStatus.SEARCHING);
 

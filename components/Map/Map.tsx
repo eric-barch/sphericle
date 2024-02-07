@@ -7,7 +7,7 @@ import {
   isPointState,
   isRootState,
   isSubfeatureState,
-} from "@/helpers/type-guards";
+} from "@/helpers/state";
 import { AreaState, DisplayMode, FeatureState, PointState } from "@/types";
 import { RefObject, useEffect, useRef, useState } from "react";
 

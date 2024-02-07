@@ -1,11 +1,7 @@
 "use client";
 
 import { useAllFeatures } from "@/components/all-features-provider";
-import {
-  isAreaState,
-  isPointState,
-  isSubfeatureState,
-} from "@/helpers/type-guards";
+import { isAreaState, isPointState, isSubfeatureState } from "@/helpers/state";
 import { AllFeaturesDispatchType, ParentFeatureState } from "@/types";
 import { Reorder } from "framer-motion";
 import { Area } from "./area";
