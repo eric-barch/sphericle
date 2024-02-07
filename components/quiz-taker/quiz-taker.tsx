@@ -9,6 +9,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnswerBox } from "./answer-box";
 import { ScoreBox } from "./score-box";
+import { CompleteDialog } from "./complete-dialog";
 
 interface QuizTakerProps {
   googleLibsLoaded: boolean;
@@ -17,7 +18,7 @@ interface QuizTakerProps {
 const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
   const { allFeatures } = useAllFeatures();
   const {
-    quizTaker: { remainingFeatureIds, correctFeatureIds, incorrectFeatureIds },
+    quizTaker: { remainingFeatureIds },
     quizTakerDispatch: quizTakerStateDispatch,
   } = useQuizTaker();
 
@@ -30,6 +31,7 @@ const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
       return displayedFeature;
     }
   })();
+  const isComplete = remainingFeatureIds.size === 0;
 
   const answerBoxInputRef = useRef<HTMLInputElement>();
 
@@ -55,10 +57,6 @@ const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
     setMapIsLoaded(true);
   };
 
-  const handleOpenAutoFocus = (event: Event) => {
-    event.preventDefault();
-  };
-
   /**Reset quiz on mount. */
   useEffect(() => {
     handleReset();
@@ -71,25 +69,7 @@ const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
       )}
       {googleLibsLoaded && (
         <div className="h-[calc(100vh-4rem)] relative flex justify-center align-middle content-center">
-          <Dialog.Root open={remainingFeatureIds.size <= 0} modal={false}>
-            <Dialog.Content
-              className="fixed flex flex-col items-center p-4 bg-white text-black rounded-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40"
-              onOpenAutoFocus={handleOpenAutoFocus}
-            >
-              <Dialog.Title>Quiz Complete!</Dialog.Title>
-              <Dialog.Description className="m-4">{`Your score: ${
-                correctFeatureIds.size
-              } / ${
-                correctFeatureIds.size + incorrectFeatureIds.size
-              }`}</Dialog.Description>
-              <Dialog.Close
-                className="p-2 rounded-3xl bg-gray-500 text-white"
-                onClick={handleReset}
-              >
-                Take Again
-              </Dialog.Close>
-            </Dialog.Content>
-          </Dialog.Root>
+          <CompleteDialog handleReset={handleReset} />
           <ScoreBox />
           <Map
             onLoad={handleMapLoad}
@@ -106,7 +86,7 @@ const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
           <AnswerBox
             displayedFeature={displayedFeature}
             inputRef={answerBoxInputRef}
-            disabled={remainingFeatureIds.size <= 0}
+            disabled={isComplete}
           />
         </div>
       )}
