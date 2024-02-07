@@ -250,22 +250,38 @@ export type QuizTakerStateDispatch =
   | MarkCorrectDispatch
   | MarkIncorrectDispatch;
 
-interface BaseQuizTakerStateDispatch {
+type BaseQuizTakerStateDispatch = {
   dispatchType: QuizTakerStateDispatchType;
-}
+};
 
-interface ResetDispatch extends BaseQuizTakerStateDispatch {
+type ResetDispatch = BaseQuizTakerStateDispatch & {
   dispatchType: QuizTakerStateDispatchType.RESET;
-  rootId: string;
-  allFeatures: AllFeatures;
-}
+};
 
-interface MarkCorrectDispatch extends BaseQuizTakerStateDispatch {
-  dispatchType: QuizTakerStateDispatchType.MARK_CORRECT;
-  featureState: SubfeatureState;
-}
+type MarkCorrectDispatch = BaseQuizTakerStateDispatch &
+  (
+    | {
+        dispatchType: QuizTakerStateDispatchType.MARK_CORRECT;
+        featureState: SubfeatureState;
+        featureId?: never;
+      }
+    | {
+        dispatchType: QuizTakerStateDispatchType.MARK_CORRECT;
+        featureId: string;
+        featureState?: never;
+      }
+  );
 
-interface MarkIncorrectDispatch extends BaseQuizTakerStateDispatch {
-  dispatchType: QuizTakerStateDispatchType.MARK_INCORRECT;
-  featureState: SubfeatureState;
-}
+type MarkIncorrectDispatch = BaseQuizTakerStateDispatch &
+  (
+    | {
+        dispatchType: QuizTakerStateDispatchType.MARK_INCORRECT;
+        featureState: SubfeatureState;
+        featureId?: never;
+      }
+    | {
+        dispatchType: QuizTakerStateDispatchType.MARK_INCORRECT;
+        featureId: string;
+        featureState?: never;
+      }
+  );

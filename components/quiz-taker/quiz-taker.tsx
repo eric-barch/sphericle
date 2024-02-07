@@ -32,8 +32,6 @@ function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
   useEffect(() => {
     quizTakerStateDispatch({
       dispatchType: QuizTakerStateDispatchType.RESET,
-      rootId,
-      allFeatures,
     });
   }, [rootId, allFeatures, quizTakerStateDispatch]);
 
@@ -68,8 +66,6 @@ function QuizTaker({ googleLibsLoaded }: QuizTakerProps) {
   const handleClick = () => {
     quizTakerStateDispatch({
       dispatchType: QuizTakerStateDispatchType.RESET,
-      rootId,
-      allFeatures,
     });
 
     setTimeout(() => {
