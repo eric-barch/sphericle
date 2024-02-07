@@ -51,10 +51,7 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
   };
 
   const handleSelectResult = (selectedResult: SubfeatureState) => {
-    if (inputRef?.current) {
-      inputRef.current.value = "";
-    }
-
+    inputRef.current.value = "";
     setInput("");
 
     /**When adding several subfeatures to the same parent feature, we want the
