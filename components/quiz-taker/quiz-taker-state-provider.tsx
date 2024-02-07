@@ -1,6 +1,6 @@
 "use client";
 
-import { isParentFeatureState } from "@/helpers/type-guards";
+import { isParentFeatureState } from "@/helpers/state";
 import {
   AllFeatures,
   QuizTakerState,

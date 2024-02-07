@@ -3,7 +3,7 @@ import {
   isAreaState,
   isParentFeatureState,
   isRootState,
-} from "@/helpers/type-guards";
+} from "@/helpers/state";
 import { FeatureType, PointSearch, PointState, SearchStatus } from "@/types";
 import booleanIntersects from "@turf/boolean-intersects";
 import { Point } from "geojson";

@@ -1,5 +1,5 @@
 import { useAllFeatures } from "@/components/all-features-provider";
-import { isParentFeatureState } from "@/helpers/type-guards";
+import { isParentFeatureState } from "@/helpers/state";
 import { AllFeaturesDispatchType, QuizBuilderStateDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";

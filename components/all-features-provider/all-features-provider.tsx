@@ -1,6 +1,6 @@
 "use client";
 
-import { isParentFeatureState, isSubfeatureState } from "@/helpers/type-guards";
+import { isParentFeatureState, isSubfeatureState } from "@/helpers/state";
 import {
   AllFeatures,
   AllFeaturesDispatch,
