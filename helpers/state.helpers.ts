@@ -1,20 +1,20 @@
 import {
   AreaState,
   BaseFeature,
-  Child,
+  ChildFeature,
   FeatureType,
-  Parent,
+  ParentFeature,
   PointState,
   Root,
 } from "@/types";
 
-const isParent = (feature: BaseFeature): feature is Parent => {
+const isParent = (feature: BaseFeature): feature is ParentFeature => {
   return (
     feature?.type === FeatureType.ROOT || feature?.type === FeatureType.AREA
   );
 };
 
-const isChild = (feature: BaseFeature): feature is Child => {
+const isChild = (feature: BaseFeature): feature is ChildFeature => {
   return (
     feature?.type === FeatureType.AREA || feature?.type === FeatureType.POINT
   );

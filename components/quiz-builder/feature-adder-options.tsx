@@ -9,13 +9,13 @@ import {
   PointState,
   QuizBuilderDispatchType,
   SearchStatus,
-  Child,
+  ChildFeature,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { useEffect } from "react";
 
 type FeatureAdderOptionsProps = {
-  activeOption: Child;
+  activeOption: ChildFeature;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
   input: string;

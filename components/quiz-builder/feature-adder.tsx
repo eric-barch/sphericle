@@ -4,9 +4,9 @@ import { useAllFeatures, useQuizBuilder } from "@/providers";
 import {
   AllFeaturesDispatchType,
   FeatureType,
-  Parent,
+  ParentFeature,
   QuizBuilderDispatchType,
-  Child,
+  ChildFeature,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { FocusEvent, RefObject, useRef, useState } from "react";
@@ -16,7 +16,7 @@ import { useFeatureSearches } from "../../hooks/use-feature-searches.hook";
 
 type FeatureAdderProps = {
   inputRef: RefObject<HTMLInputElement>;
-  featureState: Parent;
+  featureState: ParentFeature;
 };
 
 const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
@@ -51,7 +51,7 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
     setSelectParentOnInput(true);
   };
 
-  const handleSelectResult = (selectedResult: Child) => {
+  const handleSelectResult = (selectedResult: ChildFeature) => {
     inputRef.current.value = "";
     setInput("");
 
