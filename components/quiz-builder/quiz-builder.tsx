@@ -5,6 +5,7 @@ import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   isAreaState as isArea,
+  isParentFeatureState as isParentFeature,
   isRootState as isRoot,
   isSubfeatureState as isSubfeature,
 } from "@/helpers";
@@ -72,7 +73,13 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
   }, [featureAdderFeature, selectedFeatureId, allFeatures]);
   const displayedFeatureParent = useMemo(() => {
     if (isSubfeature(displayedFeature)) {
-      return allFeatures.get(displayedFeature.parentFeatureId);
+      const displayedFeatureParent = allFeatures.get(
+        displayedFeature.parentFeatureId,
+      );
+
+      if (isParentFeature(displayedFeatureParent)) {
+        return displayedFeatureParent;
+      }
     }
   }, [displayedFeature, allFeatures]);
   const displayedFeatureIsOpen = openFeatureIds.has(
@@ -101,12 +108,6 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
     }
   }, [displayedFeature, displayedFeatureIsOpen, displayedFeatureParent, map]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      featureAdderInputRef.current?.focus();
-    }, 0);
-  }, []);
-
   return (
     <>
       {(!servicesReady || !tilesLoaded) && (
@@ -134,15 +135,13 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
           restriction={RESTRICTION}
           gestureHandling="greedy"
           defaultBounds={INITIAL_BOUNDS}
-          // onCameraChanged={handleCameraChange}
           onTilesLoaded={() => setTilesLoaded(true)}
-          // {...camera}
         >
           {isArea(displayedFeatureParent) && !displayedFeatureIsOpen && (
             <Polygon
               polygons={displayedFeatureParent.polygons}
               strokeWeight={1.5}
-              strokeColor="#ff0000"
+              strokeColor="#b91c1c"
               fillOpacity={0}
             />
           )}
@@ -150,8 +149,8 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
             <Polygon
               polygons={displayedFeature.polygons}
               strokeWeight={1.5}
-              strokeColor="#ff0000"
-              fillColor="#ff0000"
+              strokeColor="#b91c1c"
+              fillColor="#b91c1c"
               fillOpacity={displayedFeatureIsOpen ? 0 : 0.2}
             />
           )}
