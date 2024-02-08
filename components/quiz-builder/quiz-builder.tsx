@@ -3,16 +3,15 @@
 import { Polygon } from "@/components/map/polygon";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isAreaState, isRootState, isSubfeatureState } from "@/helpers";
-import { useAllFeatures, useQuizBuilder } from "@/providers";
 import {
-  Map,
-  MapCameraChangedEvent,
-  MapCameraProps,
-  useMap,
-} from "@vis.gl/react-google-maps";
+  isAreaState as isArea,
+  isRootState as isRoot,
+  isSubfeatureState as isSubfeature,
+} from "@/helpers";
+import { useAllFeatures, useQuizBuilder } from "@/providers";
+import { Map, useMap } from "@vis.gl/react-google-maps";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Subfeatures } from "./subfeatures";
 
 const INITIAL_BOUNDS = {
@@ -20,11 +19,6 @@ const INITIAL_BOUNDS = {
   south: -85,
   west: -180,
   east: 180,
-};
-
-const INITIAL_CAMERA = {
-  center: { lat: 0, lng: 0 },
-  zoom: 1,
 };
 
 const RESTRICTION = {
@@ -45,7 +39,7 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
   const { rootId, allFeatures } = useAllFeatures();
   const {
     quizBuilder: {
-      featureAdderFeatureState,
+      featureAdderFeature,
       selectedFeatureId,
       addingFeatureId,
       openFeatureIds,
@@ -53,84 +47,59 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
   } = useQuizBuilder();
   const map = useMap();
 
-  const rootState = (() => {
-    const rootState = allFeatures.get(rootId);
+  const root = useMemo(() => {
+    const root = allFeatures.get(rootId);
 
-    if (isRootState(rootState)) {
-      return rootState;
+    if (isRoot(root)) {
+      return root;
     }
-  })();
-  const rootIsAdding = rootId === addingFeatureId;
+  }, [rootId, allFeatures]);
+  const rootIsAdding = useMemo(
+    () => rootId === addingFeatureId,
+    [rootId, addingFeatureId],
+  );
 
-  const displayedFeature = (() => {
-    if (featureAdderFeatureState) {
-      return featureAdderFeatureState;
+  const displayedFeature = useMemo(() => {
+    if (featureAdderFeature) {
+      return featureAdderFeature;
     }
 
-    const selectedFeatureState = allFeatures.get(selectedFeatureId);
+    const selectedFeature = allFeatures.get(selectedFeatureId);
 
-    if (isSubfeatureState(selectedFeatureState)) {
-      return selectedFeatureState;
+    if (isSubfeature(selectedFeature)) {
+      return selectedFeature;
     }
-  })();
+  }, [featureAdderFeature, selectedFeatureId, allFeatures]);
+  const displayedFeatureParent = useMemo(() => {
+    if (isSubfeature(displayedFeature)) {
+      return allFeatures.get(displayedFeature.parentFeatureId);
+    }
+  }, [displayedFeature, allFeatures]);
   const displayedFeatureIsOpen = openFeatureIds.has(
     displayedFeature?.featureId,
   );
-  const displayedFeaturePolygons = (() => {
-    if (isAreaState(displayedFeature) && !displayedFeatureIsOpen) {
-      return displayedFeature.polygons;
-    }
-  })();
-  const parentFeaturePolygons = (() => {
-    if (isAreaState(displayedFeature) && displayedFeatureIsOpen) {
-      return displayedFeature?.polygons;
-    }
-
-    const parentFeatureState = allFeatures.get(
-      displayedFeature?.parentFeatureId,
-    );
-
-    if (isAreaState(parentFeatureState)) {
-      return parentFeatureState.polygons;
-    }
-  })();
 
   const [tilesLoaded, setTilesLoaded] = useState(false);
-  const [camera, setCamera] = useState<MapCameraProps>(INITIAL_CAMERA);
 
   const featureAdderInputRef = useRef<HTMLInputElement>();
 
-  const handleCameraChange = (event: MapCameraChangedEvent) => {
-    setCamera(event.detail);
-  };
-
   useEffect(() => {
-    console.log("displayedFeature", displayedFeature?.shortName);
+    if (isArea(displayedFeature)) {
+      if (!displayedFeatureIsOpen) {
+        if (isArea(displayedFeatureParent)) {
+          map.fitBounds(displayedFeatureParent.displayBounds);
+        }
 
-    if (isAreaState(displayedFeature) && displayedFeatureIsOpen) {
-      console.log("setBounds", displayedFeature?.shortName);
-      map.fitBounds(displayedFeature.displayBounds);
-      // setCamera({
-      //   center: displayedFeature.center,
-      //   zoom: displayedFeature.zoom,
-      // });
-      return;
+        if (isRoot(displayedFeatureParent)) {
+          map.fitBounds(displayedFeature.displayBounds);
+        }
+      }
+
+      if (displayedFeatureIsOpen) {
+        map.fitBounds(displayedFeature.displayBounds);
+      }
     }
-
-    const parentFeatureState = allFeatures.get(
-      displayedFeature?.parentFeatureId,
-    );
-
-    if (isAreaState(parentFeatureState)) {
-      console.log("setBounds", parentFeatureState?.shortName);
-      map.fitBounds(parentFeatureState.displayBounds);
-      // setCamera({
-      //   center: parentFeatureState.center,
-      //   zoom: parentFeatureState.zoom,
-      // });
-      return;
-    }
-  }, [displayedFeature, allFeatures, displayedFeatureIsOpen, map]);
+  }, [displayedFeature, displayedFeatureIsOpen, displayedFeatureParent, map]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -148,7 +117,7 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
           <Subfeatures
             featureAdderInputRef={featureAdderInputRef}
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
-            featureState={rootState}
+            featureState={root}
             isAdding={rootIsAdding}
           />
           <Link
@@ -169,21 +138,21 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
           onTilesLoaded={() => setTilesLoaded(true)}
           // {...camera}
         >
-          {parentFeaturePolygons && (
+          {isArea(displayedFeatureParent) && !displayedFeatureIsOpen && (
             <Polygon
-              polygons={parentFeaturePolygons}
+              polygons={displayedFeatureParent.polygons}
               strokeWeight={1.5}
               strokeColor="#ff0000"
               fillOpacity={0}
             />
           )}
-          {displayedFeaturePolygons && (
+          {isArea(displayedFeature) && (
             <Polygon
-              polygons={displayedFeaturePolygons}
+              polygons={displayedFeature.polygons}
               strokeWeight={1.5}
-              strokeColor="#b91c1c"
-              fillColor="#b91c1c"
-              fillOpacity={0.2}
+              strokeColor="#ff0000"
+              fillColor="#ff0000"
+              fillOpacity={displayedFeatureIsOpen ? 0 : 0.2}
             />
           )}
         </Map>

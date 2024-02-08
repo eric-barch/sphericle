@@ -51,7 +51,7 @@ export type PointState = BaseFeatureState &
 export type FeatureState = RootState | AreaState | PointState;
 
 export type QuizBuilderState = {
-  featureAdderFeatureState: SubfeatureState | null;
+  featureAdderFeature: SubfeatureState | null;
   selectedFeatureId: string | null;
   addingFeatureId: string | null;
   renamingFeatureId: string | null;
