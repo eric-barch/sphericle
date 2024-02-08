@@ -8,20 +8,20 @@ import { Area } from "./area";
 import { FeatureAdder } from "./feature-adder";
 import { Point } from "./point";
 
-type SubfeaturesProps = {
+type ChildFeatureProps = {
   featureAdderInputRef: React.RefObject<HTMLInputElement>;
   className?: string;
-  featureState: Parent;
+  parent: Parent;
   isAdding: boolean;
 };
 
-const Subfeatures = ({
+const ChildFeatures = ({
   featureAdderInputRef,
   className,
-  featureState,
+  parent,
   isAdding,
-}: SubfeaturesProps) => {
-  const { id: featureId, childIds: subfeatureIdsRaw } = featureState;
+}: ChildFeatureProps) => {
+  const { id: featureId, childIds: subfeatureIdsRaw } = parent;
 
   const { allFeaturesDispatch } = useAllFeatures();
 
@@ -57,10 +57,7 @@ const Subfeatures = ({
         ))}
       </Reorder.Group>
       {isAdding && (
-        <FeatureAdder
-          inputRef={featureAdderInputRef}
-          featureState={featureState}
-        />
+        <FeatureAdder inputRef={featureAdderInputRef} featureState={parent} />
       )}
     </div>
   );
@@ -90,4 +87,4 @@ const Subfeature = ({ featureId }: SubfeatureProps) => {
   }
 };
 
-export { Subfeatures };
+export { ChildFeatures };

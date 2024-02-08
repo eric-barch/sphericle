@@ -8,7 +8,7 @@ import { ChevronRight } from "lucide-react";
 import { MouseEvent, useRef } from "react";
 import { EditFeatureButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
-import { Subfeatures } from "./subfeatures";
+import { ChildFeatures } from "./child-features";
 
 type AreaProps = {
   areaState: AreaState;
@@ -111,9 +111,9 @@ const Area = ({ areaState }: AreaProps) => {
         </Collapsible.Trigger>
       </div>
       <Collapsible.Content>
-        <Subfeatures
+        <ChildFeatures
           className="ml-10"
-          featureState={areaState}
+          parent={areaState}
           isAdding={isAdding}
           featureAdderInputRef={featureAdderInputRef}
         />
