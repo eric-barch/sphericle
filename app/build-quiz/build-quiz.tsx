@@ -1,6 +1,7 @@
 "use client";
 
 import { Polygon } from "@/components/map-drawings";
+import { ChildFeatures } from "@/components/quiz-builder/child-features";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
@@ -8,7 +9,6 @@ import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChildFeatures } from "@/components/quiz-builder/child-features";
 
 const DEFAULT_CENTER = {
   lat: 0,
@@ -31,12 +31,7 @@ const BuildQuiz = () => {
   const { rootId, allFeatures } = useAllFeatures();
 
   const {
-    quizBuilder: {
-      searchResult: featureAdderFeature,
-      selectedId,
-      addingId,
-      openIds,
-    },
+    quizBuilder: { searchResult, selectedId, addingId, openIds },
   } = useQuizBuilder();
 
   const map = useMap();
@@ -49,11 +44,11 @@ const BuildQuiz = () => {
   const rootIsAdding = useMemo(() => rootId === addingId, [rootId, addingId]);
 
   const displayedFeature = useMemo(() => {
-    if (featureAdderFeature) return featureAdderFeature;
+    if (searchResult) return searchResult;
 
     const selectedFeature = allFeatures.get(selectedId);
     return isChild(selectedFeature) && selectedFeature;
-  }, [featureAdderFeature, selectedId, allFeatures]);
+  }, [searchResult, selectedId, allFeatures]);
 
   const displayedFeatureParent = useMemo(() => {
     if (!isChild(displayedFeature)) return;
@@ -76,8 +71,8 @@ const BuildQuiz = () => {
         }
 
         if (isRoot(displayedFeatureParent)) {
-          /**This is horrible, but only way I've been able to prevent fitBounds
-           * from occasionally ending early over long zooms the first time it's
+          /**TODO: Only way I've been able to prevent fitBounds from
+           * occasionally ending early over long zooms the first time it's
            * called. */
           map.fitBounds(displayedFeature.displayBounds);
 
@@ -123,7 +118,7 @@ const BuildQuiz = () => {
           restriction={RESTRICTION}
           onTilesLoaded={() => setTilesLoaded(true)}
         >
-          {isArea(displayedFeatureParent) && !displayedFeatureIsOpen && (
+          {!displayedFeatureIsOpen && isArea(displayedFeatureParent) && (
             <Polygon
               polygons={displayedFeatureParent.polygon}
               strokeWeight={1.5}
