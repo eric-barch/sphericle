@@ -6,6 +6,10 @@
   outline: 2px solid #ffffff;
 }
 
+.gm-style div {
+  border: none !important;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 10px;
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Map } from "@/components/map";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isSubfeatureState } from "@/helpers";
 import { useAllFeatures, useQuizTaker } from "@/providers";
@@ -9,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnswerBox } from "./answer-box";
 import { CompleteDialog } from "./complete-dialog";
 import { ScoreBox } from "./score-box";
+import { Map } from "@vis.gl/react-google-maps";
 
 type QuizTakerProps = {
   googleLibsLoaded: boolean;
@@ -70,18 +70,7 @@ const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
         <div className="h-[calc(100vh-4rem)] relative flex justify-center align-middle content-center">
           <CompleteDialog handleReset={handleReset} />
           <ScoreBox />
-          <Map
-            onLoad={handleMapLoad}
-            padding={{
-              top: 50,
-              bottom: 110,
-              left: 50,
-              right: 50,
-            }}
-            mapId="8777b9e5230900fc"
-            displayedFeature={displayedFeature}
-            displayMode={DisplayMode.QUIZ_TAKER}
-          />
+          <Map mapId="8777b9e5230900fc" />
           <AnswerBox
             displayedFeature={displayedFeature}
             inputRef={answerBoxInputRef}

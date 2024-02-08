@@ -20,6 +20,7 @@
     "@turf/boolean-within": "^6.5.0",
     "@types/google.maps": "^3.54.10",
     "@types/lodash": "^4.14.202",
+    "@vis.gl/react-google-maps": "^0.6.0",
     "class-variance-authority": "^0.7.0",
     "framer-motion": "^10.16.16",
     "lodash": "^4.17.21",
