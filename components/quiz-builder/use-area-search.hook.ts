@@ -143,8 +143,6 @@ const useAreaSearch = (parentFeatureId: string): AreaSearch => {
       await fetch(`/api/search-open-street-map?query=${query}`)
     ).json()) as OsmItem[];
 
-    console.log("response", response);
-
     const results = response
       .map((osmItem) => toAreaState(osmItem))
       .filter((searchResult) => searchResult);
