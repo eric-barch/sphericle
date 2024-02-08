@@ -1,8 +1,8 @@
 "use client";
 
-import { isAreaState, isPointState, isSubfeatureState } from "@/helpers";
+import { isArea, isPoint, isChild } from "@/helpers";
 import { useAllFeatures } from "@/providers";
-import { AllFeaturesDispatchType, ParentFeature } from "@/types";
+import { AllFeaturesDispatchType, Parent } from "@/types";
 import { Reorder } from "framer-motion";
 import { Area } from "./area";
 import { FeatureAdder } from "./feature-adder";
@@ -11,7 +11,7 @@ import { Point } from "./point";
 type SubfeaturesProps = {
   featureAdderInputRef: React.RefObject<HTMLInputElement>;
   className?: string;
-  featureState: ParentFeature;
+  featureState: Parent;
   isAdding: boolean;
 };
 
@@ -76,16 +76,16 @@ const Subfeature = ({ featureId }: SubfeatureProps) => {
   const featureState = (() => {
     const featureState = allFeatures.get(featureId);
 
-    if (isSubfeatureState(featureState)) {
+    if (isChild(featureState)) {
       return featureState;
     }
   })();
 
-  if (isAreaState(featureState)) {
+  if (isArea(featureState)) {
     return <Area areaState={featureState} />;
   }
 
-  if (isPointState(featureState)) {
+  if (isPoint(featureState)) {
     return <Point pointState={featureState} />;
   }
 };

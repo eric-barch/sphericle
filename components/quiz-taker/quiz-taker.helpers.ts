@@ -1,4 +1,4 @@
-import { isParentFeatureState } from "@/helpers";
+import { isParent } from "@/helpers";
 import { AllFeatures } from "@/types";
 
 const resetRemainingFeatureIds = (
@@ -10,7 +10,7 @@ const resetRemainingFeatureIds = (
   const addDirectChildren = (featureId: string) => {
     const featureState = allFeatures.get(featureId);
 
-    if (featureState && isParentFeatureState(featureState)) {
+    if (featureState && isParent(featureState)) {
       const shuffledSubfeatureIds = [...featureState.childIds];
 
       // Fisher-Yates shuffle for randomness

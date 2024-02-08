@@ -1,51 +1,41 @@
 import {
   AreaState,
   BaseFeature,
+  Child,
   FeatureType,
-  ParentFeature,
+  Parent,
   PointState,
   Root,
-  ChildFeature,
 } from "@/types";
 
-const isParentFeatureState = (
-  featureState: BaseFeature,
-): featureState is ParentFeature => {
+const isParent = (feature: BaseFeature): feature is Parent => {
   return (
-    featureState &&
-    (featureState.type === FeatureType.ROOT ||
-      featureState.type === FeatureType.AREA)
+    feature?.type === FeatureType.ROOT || feature?.type === FeatureType.AREA
   );
 };
 
-const isSubfeatureState = (
-  featureState: BaseFeature,
-): featureState is ChildFeature => {
+const isChild = (feature: BaseFeature): feature is Child => {
   return (
-    featureState &&
-    (featureState.type === FeatureType.AREA ||
-      featureState.type === FeatureType.POINT)
+    feature?.type === FeatureType.AREA || feature?.type === FeatureType.POINT
   );
 };
 
-const isRootState = (featureState: BaseFeature): featureState is Root => {
-  return featureState && featureState.type === FeatureType.ROOT;
+const isRoot = (feature: BaseFeature): feature is Root => {
+  return feature?.type === FeatureType.ROOT;
 };
 
-const isAreaState = (featureState: BaseFeature): featureState is AreaState => {
-  return featureState && featureState.type === FeatureType.AREA;
+const isArea = (feature: BaseFeature): feature is AreaState => {
+  return feature?.type === FeatureType.AREA;
 };
 
-const isPointState = (
-  featureState: BaseFeature,
-): featureState is PointState => {
-  return featureState && featureState.type === FeatureType.POINT;
+const isPoint = (feature: BaseFeature): feature is PointState => {
+  return feature?.type === FeatureType.POINT;
 };
 
 export {
-  isAreaState,
-  isParentFeatureState,
-  isPointState,
-  isRootState,
-  isSubfeatureState,
+  isArea as isArea,
+  isChild as isChild,
+  isParent as isParent,
+  isPoint as isPoint,
+  isRoot as isRoot,
 };

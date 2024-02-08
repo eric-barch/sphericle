@@ -1,4 +1,4 @@
-import { isParentFeatureState } from "@/helpers";
+import { isParent } from "@/helpers";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { AllFeaturesDispatchType, QuizBuilderDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -58,7 +58,7 @@ const EditFeatureButton = ({
       const lastFeatureState = (() => {
         const lastFeatureState = allFeatures.get(addingFeatureId);
 
-        if (isParentFeatureState(lastFeatureState)) {
+        if (isParent(lastFeatureState)) {
           return lastFeatureState;
         }
       })();
@@ -87,9 +87,7 @@ const EditFeatureButton = ({
 
     quizBuilderDispatch({
       type: QuizBuilderDispatchType.SET_ADDING,
-      lastFeature: isParentFeatureState(lastFeatureState)
-        ? lastFeatureState
-        : null,
+      lastFeature: isParent(lastFeatureState) ? lastFeatureState : null,
       featureId,
     });
 

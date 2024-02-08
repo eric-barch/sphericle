@@ -1,14 +1,14 @@
 "use client";
 
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isSubfeatureState } from "@/helpers";
+import { isChild } from "@/helpers";
 import { useAllFeatures, useQuizTaker } from "@/providers";
-import { DisplayMode, QuizTakerDispatchType } from "@/types";
+import { QuizTakerDispatchType } from "@/types";
+import { Map } from "@vis.gl/react-google-maps";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnswerBox } from "./answer-box";
 import { CompleteDialog } from "./complete-dialog";
 import { ScoreBox } from "./score-box";
-import { Map } from "@vis.gl/react-google-maps";
 
 type QuizTakerProps = {
   googleLibsLoaded: boolean;
@@ -26,7 +26,7 @@ const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
       remainingFeatureIds.values().next().value,
     );
 
-    if (isSubfeatureState(displayedFeature)) {
+    if (isChild(displayedFeature)) {
       return displayedFeature;
     }
   })();

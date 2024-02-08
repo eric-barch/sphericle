@@ -1,6 +1,6 @@
 "use client";
 
-import { isParentFeatureState } from "@/helpers";
+import { isParent } from "@/helpers";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { AreaState, QuizBuilderDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
@@ -59,7 +59,7 @@ const Area = ({ areaState }: AreaProps) => {
     const lastFeatureState = (() => {
       const lastFeatureState = allFeatures.get(addingFeatureId);
 
-      if (isParentFeatureState(lastFeatureState)) {
+      if (isParent(lastFeatureState)) {
         return lastFeatureState;
       }
     })();

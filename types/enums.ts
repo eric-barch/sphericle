@@ -30,8 +30,3 @@ export enum SearchStatus {
   SEARCHING,
   SEARCHED,
 }
-
-export enum DisplayMode {
-  QUIZ_BUILDER,
-  QUIZ_TAKER,
-}
