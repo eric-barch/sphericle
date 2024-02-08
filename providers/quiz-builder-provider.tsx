@@ -29,42 +29,42 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
     quizBuilder: QuizBuilderState,
     action: QuizBuilderDispatch,
   ) => {
-    switch (action.dispatchType) {
+    switch (action.type) {
       case QuizBuilderDispatchType.SET_SELECTED: {
         const newQuizBuilder = { ...quizBuilder };
-        const featureId = action.featureId || action.featureState?.featureId;
+        const featureId = action.featureId || action.feature?.id;
 
-        newQuizBuilder.selectedFeatureId = featureId;
+        newQuizBuilder.selectedId = featureId;
 
         return newQuizBuilder;
       }
       case QuizBuilderDispatchType.SET_ADDING: {
         const newQuizBuilder = { ...quizBuilder };
         const { lastFeatureState } = action;
-        const featureId = action.featureId || action.featureState.featureId;
+        const featureId = action.featureId || action.feature.id;
 
         if (
-          lastFeatureState?.subfeatureIds.size <= 0 &&
-          lastFeatureState?.featureId !== featureId
+          lastFeatureState?.childIds.size <= 0 &&
+          lastFeatureState?.id !== featureId
         ) {
-          newQuizBuilder.openFeatureIds.delete(lastFeatureState.featureId);
+          newQuizBuilder.openIds.delete(lastFeatureState.id);
         }
 
-        newQuizBuilder.addingFeatureId = featureId;
+        newQuizBuilder.addingId = featureId;
 
         return newQuizBuilder;
       }
       case QuizBuilderDispatchType.SET_RENAMING: {
         const newQuizBuilder = { ...quizBuilder };
-        const featureId = action.featureId || action.featureState?.featureId;
+        const featureId = action.featureId || action.feature?.id;
 
-        newQuizBuilder.renamingFeatureId = featureId;
+        newQuizBuilder.renamingId = featureId;
 
         return newQuizBuilder;
       }
-      case QuizBuilderDispatchType.SET_FEATURE_ADDER_SELECTED: {
+      case QuizBuilderDispatchType.SET_FEATURE_ADDER: {
         const newQuizBuilder = { ...quizBuilder };
-        const { featureState } = action;
+        const { feature: featureState } = action;
 
         newQuizBuilder.featureAdderFeature = featureState;
 
@@ -73,12 +73,12 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
       case QuizBuilderDispatchType.SET_IS_OPEN: {
         const newQuizBuilder = { ...quizBuilder };
         const { isOpen } = action;
-        const featureId = action.featureId || action.featureState?.featureId;
+        const featureId = action.featureId || action.feature?.id;
 
         if (isOpen) {
-          newQuizBuilder.openFeatureIds.add(featureId);
+          newQuizBuilder.openIds.add(featureId);
         } else {
-          newQuizBuilder.openFeatureIds.delete(featureId);
+          newQuizBuilder.openIds.delete(featureId);
         }
 
         return newQuizBuilder;

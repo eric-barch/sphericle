@@ -8,60 +8,60 @@ import {
   SearchStatus,
 } from "./enums";
 
-export type AllFeatures = Map<string, BaseFeatureState>;
+export type AllFeatures = Map<string, Feature>;
 
-export type BaseFeatureState = {
-  featureId: string;
-  featureType: FeatureType;
+export type Feature = Root | AreaState | PointState;
+
+export type BaseFeature = {
+  id: string;
+  type: FeatureType;
 };
 
-export type ParentFeatureState = BaseFeatureState & {
-  subfeatureIds: Set<string>;
+export type ParentFeature = BaseFeature & {
+  childIds: Set<string>;
 };
 
-export type SubfeatureState = BaseFeatureState & {
-  parentFeatureId: string;
+export type ChildFeature = BaseFeature & {
+  parentId: string;
   longName: string;
   shortName: string;
   userDefinedName: string | null;
   displayBounds: google.maps.LatLngBoundsLiteral;
 };
 
-export type RootState = BaseFeatureState &
-  ParentFeatureState & {
-    featureType: FeatureType.ROOT;
+export type Root = BaseFeature &
+  ParentFeature & {
+    type: FeatureType.ROOT;
   };
 
-export type AreaState = BaseFeatureState &
-  ParentFeatureState &
-  SubfeatureState & {
-    featureType: FeatureType.AREA;
-    openStreetMapPlaceId: number;
+export type AreaState = BaseFeature &
+  ParentFeature &
+  ChildFeature & {
+    type: FeatureType.AREA;
+    osmId: number;
     searchBounds: google.maps.LatLngBoundsLiteral;
-    polygons: Polygon | MultiPolygon;
+    polygon: Polygon | MultiPolygon;
   };
 
-export type PointState = BaseFeatureState &
-  SubfeatureState & {
-    featureType: FeatureType.POINT;
-    googlePlacesId: string;
+export type PointState = BaseFeature &
+  ChildFeature & {
+    type: FeatureType.POINT;
+    googleId: string;
     point: Point;
   };
 
-export type FeatureState = RootState | AreaState | PointState;
-
 export type QuizBuilderState = {
-  featureAdderFeature: SubfeatureState | null;
-  selectedFeatureId: string | null;
-  addingFeatureId: string | null;
-  renamingFeatureId: string | null;
-  openFeatureIds: Set<string>;
+  featureAdderFeature: ChildFeature | null;
+  selectedId: string | null;
+  addingId: string | null;
+  renamingId: string | null;
+  openIds: Set<string>;
 };
 
 export type QuizTakerState = {
-  correctFeatureIds: Set<string>;
-  incorrectFeatureIds: Set<string>;
-  remainingFeatureIds: Set<string>;
+  correctIds: Set<string>;
+  incorrectIds: Set<string>;
+  remainingIds: Set<string>;
 };
 
 export type AreaSearch = {
@@ -80,7 +80,7 @@ export type PointSearch = {
   reset: () => void;
 };
 
-export type OsmItem = {
+export type OsmResult = {
   place_id: number;
   licence: string;
   osm_type: string;
@@ -98,191 +98,184 @@ export type OsmItem = {
   geojson: AllGeoJSON;
 };
 
-export type AllFeaturesDispatch =
-  | AddSubfeatureDispatch
-  | SetSubfeaturesDispatch
-  | RenameDispatch
-  | DeleteDispatch;
+export type AllFeaturesDispatch = AddChild | SetChildren | Rename | Delete;
 
 type BaseAllFeaturesDispatch = {
-  dispatchType: AllFeaturesDispatchType;
+  type: AllFeaturesDispatchType;
 };
 
-type AddSubfeatureDispatch = BaseAllFeaturesDispatch &
+type AddChild = BaseAllFeaturesDispatch &
   (
     | {
-        dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE;
-        featureState: ParentFeatureState;
-        subfeatureState: SubfeatureState;
+        type: AllFeaturesDispatchType.ADD_CHILD;
+        feature: ParentFeature;
+        childFeature: ChildFeature;
         featureId?: never;
       }
     | {
-        dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE;
+        type: AllFeaturesDispatchType.ADD_CHILD;
         featureId: string;
-        subfeatureState: SubfeatureState;
-        featureState?: never;
+        childFeature: ChildFeature;
+        feature?: never;
       }
   );
 
-type SetSubfeaturesDispatch = BaseAllFeaturesDispatch &
+type SetChildren = BaseAllFeaturesDispatch &
   (
     | {
-        dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES;
-        featureState: ParentFeatureState;
-        subfeatureIds: string[];
+        type: AllFeaturesDispatchType.SET_CHILDREN;
+        feature: ParentFeature;
+        childFeatureIds: string[];
         featureId?: never;
       }
     | {
-        dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES;
+        type: AllFeaturesDispatchType.SET_CHILDREN;
         featureId: string;
-        subfeatureIds: string[];
-        featureState?: never;
+        childFeatureIds: string[];
+        feature?: never;
       }
   );
 
-type RenameDispatch = BaseAllFeaturesDispatch &
+type Rename = BaseAllFeaturesDispatch &
   (
     | {
-        dispatchType: AllFeaturesDispatchType.RENAME;
-        featureState: SubfeatureState;
+        type: AllFeaturesDispatchType.RENAME;
+        feature: ChildFeature;
         name: string;
         featureId?: never;
       }
     | {
-        dispatchType: AllFeaturesDispatchType.RENAME;
+        type: AllFeaturesDispatchType.RENAME;
         featureId: string;
         name: string;
-        featureState?: never;
+        feature?: never;
       }
   );
 
-type DeleteDispatch = BaseAllFeaturesDispatch &
+type Delete = BaseAllFeaturesDispatch &
   (
     | {
-        dispatchType: AllFeaturesDispatchType.DELETE;
-        featureState: SubfeatureState;
+        type: AllFeaturesDispatchType.DELETE;
+        feature: ChildFeature;
         featureId?: never;
       }
     | {
-        dispatchType: AllFeaturesDispatchType.DELETE;
+        type: AllFeaturesDispatchType.DELETE;
         featureId: string;
-        featureState?: never;
+        feature?: never;
       }
   );
 
 export type QuizBuilderDispatch =
-  | SetFeatureAdderSelectedDispatch
-  | SetSelectedDispatch
-  | SetAddingDispatch
-  | SetIsOpenDispatch
-  | SetRenamingDispatch;
+  | SetFeatureAdder
+  | SetSelected
+  | SetAdding
+  | SetRenaming
+  | SetIsOpen;
 
 type BaseQuizBuilderDispatch = {
-  dispatchType: QuizBuilderDispatchType;
+  type: QuizBuilderDispatchType;
 };
 
-type SetFeatureAdderSelectedDispatch = BaseQuizBuilderDispatch & {
-  dispatchType: QuizBuilderDispatchType.SET_FEATURE_ADDER_SELECTED;
-  featureState: SubfeatureState | null;
+type SetFeatureAdder = BaseQuizBuilderDispatch & {
+  type: QuizBuilderDispatchType.SET_FEATURE_ADDER;
+  feature: ChildFeature | null;
 };
 
-type SetSelectedDispatch = BaseQuizBuilderDispatch &
+type SetSelected = BaseQuizBuilderDispatch &
   (
     | {
-        dispatchType: QuizBuilderDispatchType.SET_SELECTED;
-        featureState: SubfeatureState | null;
+        type: QuizBuilderDispatchType.SET_SELECTED;
+        feature: ChildFeature | null;
         featureId?: never;
       }
     | {
-        dispatchType: QuizBuilderDispatchType.SET_SELECTED;
+        type: QuizBuilderDispatchType.SET_SELECTED;
         featureId: string | null;
-        featureState?: never;
+        feature?: never;
       }
   );
 
-type SetAddingDispatch = BaseQuizBuilderDispatch &
+type SetAdding = BaseQuizBuilderDispatch &
   (
     | {
-        dispatchType: QuizBuilderDispatchType.SET_ADDING;
-        lastFeatureState: ParentFeatureState | null;
-        featureState: ParentFeatureState;
+        type: QuizBuilderDispatchType.SET_ADDING;
+        lastFeature: ParentFeature | null;
+        feature: ParentFeature;
         featureId?: never;
       }
     | {
-        dispatchType: QuizBuilderDispatchType.SET_ADDING;
-        lastFeatureState: ParentFeatureState | null;
+        type: QuizBuilderDispatchType.SET_ADDING;
+        lastFeature: ParentFeature | null;
         featureId: string;
-        featureState?: never;
+        feature?: never;
       }
   );
 
-type SetIsOpenDispatch = BaseQuizBuilderDispatch &
+type SetIsOpen = BaseQuizBuilderDispatch &
   (
     | {
-        dispatchType: QuizBuilderDispatchType.SET_IS_OPEN;
-        featureState: SubfeatureState;
+        type: QuizBuilderDispatchType.SET_IS_OPEN;
+        feature: ChildFeature;
         isOpen: boolean;
         featureId?: never;
       }
     | {
-        dispatchType: QuizBuilderDispatchType.SET_IS_OPEN;
+        type: QuizBuilderDispatchType.SET_IS_OPEN;
         featureId: string;
         isOpen: boolean;
-        featureState?: never;
+        feature?: never;
       }
   );
 
-type SetRenamingDispatch = BaseQuizBuilderDispatch &
+type SetRenaming = BaseQuizBuilderDispatch &
   (
     | {
-        dispatchType: QuizBuilderDispatchType.SET_RENAMING;
-        featureState: SubfeatureState;
+        type: QuizBuilderDispatchType.SET_RENAMING;
+        feature: ChildFeature;
         featureId?: never;
       }
     | {
-        dispatchType: QuizBuilderDispatchType.SET_RENAMING;
+        type: QuizBuilderDispatchType.SET_RENAMING;
         featureId: string;
-        featureState?: never;
+        feature?: never;
       }
   );
 
-export type QuizTakerDispatch =
-  | ResetDispatch
-  | MarkCorrectDispatch
-  | MarkIncorrectDispatch;
+export type QuizTakerDispatch = Reset | MarkCorrect | MarkIncorrect;
 
 type BaseQuizTakerDispatch = {
-  dispatchType: QuizTakerDispatchType;
+  type: QuizTakerDispatchType;
 };
 
-type ResetDispatch = BaseQuizTakerDispatch & {
-  dispatchType: QuizTakerDispatchType.RESET;
+type Reset = BaseQuizTakerDispatch & {
+  type: QuizTakerDispatchType.RESET;
 };
 
-type MarkCorrectDispatch = BaseQuizTakerDispatch &
+type MarkCorrect = BaseQuizTakerDispatch &
   (
     | {
-        dispatchType: QuizTakerDispatchType.MARK_CORRECT;
-        featureState: SubfeatureState;
+        type: QuizTakerDispatchType.MARK_CORRECT;
+        feature: ChildFeature;
         featureId?: never;
       }
     | {
-        dispatchType: QuizTakerDispatchType.MARK_CORRECT;
+        type: QuizTakerDispatchType.MARK_CORRECT;
         featureId: string;
-        featureState?: never;
+        feature?: never;
       }
   );
 
-type MarkIncorrectDispatch = BaseQuizTakerDispatch &
+type MarkIncorrect = BaseQuizTakerDispatch &
   (
     | {
-        dispatchType: QuizTakerDispatchType.MARK_INCORRECT;
-        featureState: SubfeatureState;
+        type: QuizTakerDispatchType.MARK_INCORRECT;
+        feature: ChildFeature;
         featureId?: never;
       }
     | {
-        dispatchType: QuizTakerDispatchType.MARK_INCORRECT;
+        type: QuizTakerDispatchType.MARK_INCORRECT;
         featureId: string;
-        featureState?: never;
+        feature?: never;
       }
   );

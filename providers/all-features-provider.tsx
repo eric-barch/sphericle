@@ -5,7 +5,7 @@ import {
   AllFeatures,
   AllFeaturesDispatch,
   AllFeaturesDispatchType,
-  FeatureState,
+  Feature,
   FeatureType,
 } from "@/types";
 import {
@@ -31,12 +31,12 @@ const AllFeaturesProvider = ({ children }: AllFeaturesProviderProps) => {
     allFeatures: AllFeatures,
     action: AllFeaturesDispatch,
   ): AllFeatures => {
-    switch (action.dispatchType) {
-      case AllFeaturesDispatchType.ADD_SUBFEATURE: {
+    switch (action.type) {
+      case AllFeaturesDispatchType.ADD_CHILD: {
         const newAllFeatures = new Map(allFeatures);
-        const featureId = action.featureId || action.featureState.featureId;
+        const featureId = action.featureId || action.feature.id;
         const { subfeatureState } = action;
-        const subfeatureId = subfeatureState.featureId;
+        const subfeatureId = subfeatureState.id;
         const newFeatureState = newAllFeatures.get(featureId);
 
         if (!isParentFeatureState(newFeatureState)) {
@@ -44,15 +44,15 @@ const AllFeaturesProvider = ({ children }: AllFeaturesProviderProps) => {
           return;
         }
 
-        newFeatureState.subfeatureIds.add(subfeatureId);
+        newFeatureState.childIds.add(subfeatureId);
         newAllFeatures.set(featureId, newFeatureState);
         newAllFeatures.set(subfeatureId, subfeatureState);
 
         return newAllFeatures;
       }
-      case AllFeaturesDispatchType.SET_SUBFEATURES: {
+      case AllFeaturesDispatchType.SET_CHILDREN: {
         const newAllFeatures = new Map(allFeatures);
-        const featureId = action.featureId || action.featureState.featureId;
+        const featureId = action.featureId || action.feature.id;
         const { subfeatureIds } = action;
         const newFeatureState = newAllFeatures.get(featureId);
 
@@ -61,13 +61,13 @@ const AllFeaturesProvider = ({ children }: AllFeaturesProviderProps) => {
           return;
         }
 
-        newFeatureState.subfeatureIds = new Set(subfeatureIds);
+        newFeatureState.childIds = new Set(subfeatureIds);
 
         return newAllFeatures;
       }
       case AllFeaturesDispatchType.RENAME: {
         const newAllFeatures = new Map(allFeatures);
-        const featureId = action.featureId || action.featureState.featureId;
+        const featureId = action.featureId || action.feature.id;
         const { name } = action;
         const newFeatureState = newAllFeatures.get(featureId);
 
@@ -82,7 +82,7 @@ const AllFeaturesProvider = ({ children }: AllFeaturesProviderProps) => {
       }
       case AllFeaturesDispatchType.DELETE: {
         const newAllFeatures = new Map(allFeatures);
-        const featureId = action.featureId || action.featureState.featureId;
+        const featureId = action.featureId || action.feature.id;
         const newFeatureState = newAllFeatures.get(featureId);
 
         if (!isSubfeatureState(newFeatureState)) {
@@ -90,16 +90,14 @@ const AllFeaturesProvider = ({ children }: AllFeaturesProviderProps) => {
           return;
         }
 
-        const newParentFeature = newAllFeatures.get(
-          newFeatureState.parentFeatureId,
-        );
+        const newParentFeature = newAllFeatures.get(newFeatureState.parentId);
 
         if (!isParentFeatureState(newParentFeature)) {
           console.error("newParentFeature must be a ParentFeatureState.");
           return;
         }
 
-        newParentFeature.subfeatureIds.delete(featureId);
+        newParentFeature.childIds.delete(featureId);
         newAllFeatures.delete(featureId);
 
         return newAllFeatures;
@@ -107,13 +105,13 @@ const AllFeaturesProvider = ({ children }: AllFeaturesProviderProps) => {
     }
   };
 
-  const initialAllFeatures = new Map<string, FeatureState>([
+  const initialAllFeatures = new Map<string, Feature>([
     [
       rootId,
       {
-        featureId: rootId,
-        subfeatureIds: new Set<string>(),
-        featureType: FeatureType.ROOT,
+        id: rootId,
+        childIds: new Set<string>(),
+        type: FeatureType.ROOT,
       },
     ],
   ]);

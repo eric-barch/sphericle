@@ -9,13 +9,13 @@ import {
   PointState,
   QuizBuilderDispatchType,
   SearchStatus,
-  SubfeatureState,
+  ChildFeature,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { useEffect } from "react";
 
 type FeatureAdderOptionsProps = {
-  activeOption: SubfeatureState;
+  activeOption: ChildFeature;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
   input: string;
@@ -62,8 +62,8 @@ const FeatureAdderOptions = ({
    * a different accesssible component library. */
   useEffect(() => {
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_FEATURE_ADDER_SELECTED,
-      featureState: activeOption,
+      type: QuizBuilderDispatchType.SET_FEATURE_ADDER,
+      feature: activeOption,
     });
   }, [activeOption, quizBuilderDispatch]);
 
@@ -76,17 +76,11 @@ const FeatureAdderOptions = ({
           switch (featureType) {
             case FeatureType.AREA:
               return areaSearch.results.map((featureState: AreaState) => (
-                <Option
-                  key={featureState.featureId}
-                  featureState={featureState}
-                />
+                <Option key={featureState.id} featureState={featureState} />
               ));
             case FeatureType.POINT:
               return pointSearch.results.map((featureState: PointState) => (
-                <Option
-                  key={featureState.featureId}
-                  featureState={featureState}
-                />
+                <Option key={featureState.id} featureState={featureState} />
               ));
           }
         })()

@@ -2,7 +2,7 @@
 
 import { isAreaState, isPointState, isSubfeatureState } from "@/helpers";
 import { useAllFeatures } from "@/providers";
-import { AllFeaturesDispatchType, ParentFeatureState } from "@/types";
+import { AllFeaturesDispatchType, ParentFeature } from "@/types";
 import { Reorder } from "framer-motion";
 import { Area } from "./area";
 import { FeatureAdder } from "./feature-adder";
@@ -11,7 +11,7 @@ import { Point } from "./point";
 type SubfeaturesProps = {
   featureAdderInputRef: React.RefObject<HTMLInputElement>;
   className?: string;
-  featureState: ParentFeatureState;
+  featureState: ParentFeature;
   isAdding: boolean;
 };
 
@@ -21,7 +21,7 @@ const Subfeatures = ({
   featureState,
   isAdding,
 }: SubfeaturesProps) => {
-  const { featureId, subfeatureIds: subfeatureIdsRaw } = featureState;
+  const { id: featureId, childIds: subfeatureIdsRaw } = featureState;
 
   const { allFeaturesDispatch } = useAllFeatures();
 
@@ -29,9 +29,9 @@ const Subfeatures = ({
 
   const handleReorder = (subfeatureIds: string[]) => {
     allFeaturesDispatch({
-      dispatchType: AllFeaturesDispatchType.SET_SUBFEATURES,
+      type: AllFeaturesDispatchType.SET_CHILDREN,
       featureId,
-      subfeatureIds,
+      childFeatureIds: subfeatureIds,
     });
   };
 

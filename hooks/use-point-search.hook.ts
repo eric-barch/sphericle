@@ -48,7 +48,7 @@ const usePointSearch = (parentFeatureId: string): PointSearch => {
     }
 
     if (isAreaState(parentFeatureState)) {
-      const parentPolygons = parentFeatureState.polygons;
+      const parentPolygons = parentFeatureState.polygon;
 
       if (booleanIntersects(point, parentPolygons)) {
         return point;
@@ -73,13 +73,13 @@ const usePointSearch = (parentFeatureId: string): PointSearch => {
     };
 
     return {
-      featureId: crypto.randomUUID(),
-      parentFeatureId: parentFeatureId,
-      googlePlacesId: autocompletePrediction.place_id,
+      id: crypto.randomUUID(),
+      parentId: parentFeatureId,
+      googleId: autocompletePrediction.place_id,
       longName: autocompletePrediction.description,
       shortName: autocompletePrediction.description.split(",")[0],
       userDefinedName: null,
-      featureType: FeatureType.POINT,
+      type: FeatureType.POINT,
       displayBounds,
       point,
     };

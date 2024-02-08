@@ -12,10 +12,13 @@ type PointProps = {
 };
 
 const Point = ({ pointState }: PointProps) => {
-  const { featureId, userDefinedName, shortName } = pointState;
+  const { id: featureId, userDefinedName, shortName } = pointState;
 
   const {
-    quizBuilder: { selectedFeatureId, renamingFeatureId },
+    quizBuilder: {
+      selectedId: selectedFeatureId,
+      renamingId: renamingFeatureId,
+    },
     quizBuilderDispatch,
   } = useQuizBuilder();
 
@@ -28,7 +31,7 @@ const Point = ({ pointState }: PointProps) => {
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (!isSelected) {
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
+        type: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });
     }

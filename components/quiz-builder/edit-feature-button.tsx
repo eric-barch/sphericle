@@ -39,7 +39,7 @@ const EditFeatureButton = ({
 }: EditFeatureButtonProps) => {
   const { allFeatures, allFeaturesDispatch } = useAllFeatures();
   const {
-    quizBuilder: { addingFeatureId },
+    quizBuilder: { addingId: addingFeatureId },
     quizBuilderDispatch,
   } = useQuizBuilder();
 
@@ -49,7 +49,7 @@ const EditFeatureButton = ({
      * adding. */
     if (!isSelected) {
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
+        type: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });
     }
@@ -64,8 +64,8 @@ const EditFeatureButton = ({
       })();
 
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_ADDING,
-        lastFeatureState,
+        type: QuizBuilderDispatchType.SET_ADDING,
+        lastFeature: lastFeatureState,
         featureId,
       });
     }
@@ -78,7 +78,7 @@ const EditFeatureButton = ({
 
   const handleAddSubfeature = () => {
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_IS_OPEN,
+      type: QuizBuilderDispatchType.SET_IS_OPEN,
       featureId,
       isOpen: true,
     });
@@ -86,8 +86,8 @@ const EditFeatureButton = ({
     const lastFeatureState = allFeatures.get(addingFeatureId);
 
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_ADDING,
-      lastFeatureState: isParentFeatureState(lastFeatureState)
+      type: QuizBuilderDispatchType.SET_ADDING,
+      lastFeature: isParentFeatureState(lastFeatureState)
         ? lastFeatureState
         : null,
       featureId,
@@ -101,7 +101,7 @@ const EditFeatureButton = ({
 
   const handleRename = () => {
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_RENAMING,
+      type: QuizBuilderDispatchType.SET_RENAMING,
       featureId,
     });
 
@@ -113,7 +113,7 @@ const EditFeatureButton = ({
 
   const handleDelete = () => {
     allFeaturesDispatch({
-      dispatchType: AllFeaturesDispatchType.DELETE,
+      type: AllFeaturesDispatchType.DELETE,
       featureId,
     });
   };

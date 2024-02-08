@@ -4,9 +4,9 @@ import { useAllFeatures, useQuizBuilder } from "@/providers";
 import {
   AllFeaturesDispatchType,
   FeatureType,
-  ParentFeatureState,
+  ParentFeature,
   QuizBuilderDispatchType,
-  SubfeatureState,
+  ChildFeature,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { FocusEvent, RefObject, useRef, useState } from "react";
@@ -16,15 +16,15 @@ import { useFeatureSearches } from "../../hooks/use-feature-searches.hook";
 
 type FeatureAdderProps = {
   inputRef: RefObject<HTMLInputElement>;
-  featureState: ParentFeatureState;
+  featureState: ParentFeature;
 };
 
 const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
-  const { featureId } = featureState;
+  const { id: featureId } = featureState;
 
   const { allFeaturesDispatch } = useAllFeatures();
   const {
-    quizBuilder: { selectedFeatureId },
+    quizBuilder: { selectedId: selectedFeatureId },
     quizBuilderDispatch,
   } = useQuizBuilder();
 
@@ -51,7 +51,7 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
     setSelectParentOnInput(true);
   };
 
-  const handleSelectResult = (selectedResult: SubfeatureState) => {
+  const handleSelectResult = (selectedResult: ChildFeature) => {
     inputRef.current.value = "";
     setInput("");
 
@@ -61,19 +61,19 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
     setSelectParentOnInput(false);
 
     allFeaturesDispatch({
-      dispatchType: AllFeaturesDispatchType.ADD_SUBFEATURE,
+      type: AllFeaturesDispatchType.ADD_CHILD,
       featureId,
-      subfeatureState: selectedResult,
+      childFeature: selectedResult,
     });
 
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_SELECTED,
-      featureId: selectedResult.featureId,
+      type: QuizBuilderDispatchType.SET_SELECTED,
+      featureId: selectedResult.id,
     });
 
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_FEATURE_ADDER_SELECTED,
-      featureState: null,
+      type: QuizBuilderDispatchType.SET_FEATURE_ADDER,
+      feature: null,
     });
 
     areaSearch.reset();
@@ -85,7 +85,7 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
 
     if (isSelected && selectParentOnInput) {
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
+        type: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });
     }

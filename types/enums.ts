@@ -5,14 +5,14 @@ export enum FeatureType {
 }
 
 export enum AllFeaturesDispatchType {
-  ADD_SUBFEATURE,
-  SET_SUBFEATURES,
+  ADD_CHILD,
+  SET_CHILDREN,
   RENAME,
   DELETE,
 }
 
 export enum QuizBuilderDispatchType {
-  SET_FEATURE_ADDER_SELECTED,
+  SET_FEATURE_ADDER,
   SET_SELECTED,
   SET_RENAMING,
   SET_ADDING,

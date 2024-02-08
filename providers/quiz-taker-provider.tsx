@@ -30,13 +30,13 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
     quizTaker: QuizTakerState,
     action: QuizTakerDispatch,
   ): QuizTakerState => {
-    switch (action.dispatchType) {
+    switch (action.type) {
       case QuizTakerDispatchType.RESET: {
         const newQuizTaker = { ...quizTaker };
 
-        newQuizTaker.correctFeatureIds.clear();
-        newQuizTaker.incorrectFeatureIds.clear();
-        newQuizTaker.remainingFeatureIds = resetRemainingFeatureIds(
+        newQuizTaker.correctIds.clear();
+        newQuizTaker.incorrectIds.clear();
+        newQuizTaker.remainingIds = resetRemainingFeatureIds(
           rootId,
           allFeatures,
         );
@@ -45,19 +45,19 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
       }
       case QuizTakerDispatchType.MARK_CORRECT: {
         const newQuizTaker = { ...quizTaker };
-        const featureId = action.featureId || action.featureState.featureId;
+        const featureId = action.featureId || action.feature.id;
 
-        newQuizTaker.remainingFeatureIds.delete(featureId);
-        newQuizTaker.correctFeatureIds.add(featureId);
+        newQuizTaker.remainingIds.delete(featureId);
+        newQuizTaker.correctIds.add(featureId);
 
         return newQuizTaker;
       }
       case QuizTakerDispatchType.MARK_INCORRECT: {
         const newQuizTaker = { ...quizTaker };
-        const featureId = action.featureId || action.featureState.featureId;
+        const featureId = action.featureId || action.feature.id;
 
-        newQuizTaker.remainingFeatureIds.delete(featureId);
-        newQuizTaker.incorrectFeatureIds.add(featureId);
+        newQuizTaker.remainingIds.delete(featureId);
+        newQuizTaker.incorrectIds.add(featureId);
 
         return newQuizTaker;
       }
@@ -65,9 +65,9 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
   };
 
   const initialQuizTaker: QuizTakerState = {
-    correctFeatureIds: new Set<string>(),
-    incorrectFeatureIds: new Set<string>(),
-    remainingFeatureIds: new Set<string>(),
+    correctIds: new Set<string>(),
+    incorrectIds: new Set<string>(),
+    remainingIds: new Set<string>(),
   };
 
   const [quizTaker, quizTakerDispatch] = useReducer(

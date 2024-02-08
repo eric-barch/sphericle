@@ -5,7 +5,7 @@ import { useQuizBuilder } from "@/providers";
 import {
   AreaSearch,
   FeatureType,
-  ParentFeatureState,
+  ParentFeature,
   PointSearch,
   QuizBuilderDispatchType,
   SearchStatus,
@@ -15,7 +15,7 @@ import { Grid2X2, MapPin } from "lucide-react";
 import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
 
 type FeatureAdderInputProps = {
-  featureState: ParentFeatureState;
+  featureState: ParentFeature;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
   selectParentOnInput: boolean;
@@ -39,10 +39,10 @@ const FeatureAdderInput = ({
   setFeatureType,
   setInput,
 }: FeatureAdderInputProps) => {
-  const { featureId } = featureState;
+  const { id: featureId } = featureState;
 
   const {
-    quizBuilder: { selectedFeatureId },
+    quizBuilder: { selectedId: selectedFeatureId },
     quizBuilderDispatch,
   } = useQuizBuilder();
 
@@ -73,8 +73,8 @@ const FeatureAdderInput = ({
 
     if (!isSelected && selectParentOnInput) {
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
-        featureId: featureState.featureId,
+        type: QuizBuilderDispatchType.SET_SELECTED,
+        featureId: featureState.id,
       });
     }
 

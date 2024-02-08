@@ -17,7 +17,7 @@ type QuizTakerProps = {
 const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
   const { allFeatures } = useAllFeatures();
   const {
-    quizTaker: { remainingFeatureIds },
+    quizTaker: { remainingIds: remainingFeatureIds },
     quizTakerDispatch,
   } = useQuizTaker();
 
@@ -38,7 +38,7 @@ const QuizTaker = ({ googleLibsLoaded }: QuizTakerProps) => {
 
   const handleReset = useCallback(() => {
     quizTakerDispatch({
-      dispatchType: QuizTakerDispatchType.RESET,
+      type: QuizTakerDispatchType.RESET,
     });
 
     setTimeout(() => {

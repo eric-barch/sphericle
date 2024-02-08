@@ -8,7 +8,11 @@ type CompleteDialogProps = {
 
 const CompleteDialog = ({ handleReset }: CompleteDialogProps) => {
   const {
-    quizTaker: { correctFeatureIds, incorrectFeatureIds, remainingFeatureIds },
+    quizTaker: {
+      correctIds: correctFeatureIds,
+      incorrectIds: incorrectFeatureIds,
+      remainingIds: remainingFeatureIds,
+    },
   } = useQuizTaker();
 
   const [isOpen, setIsOpen] = useState(false);
