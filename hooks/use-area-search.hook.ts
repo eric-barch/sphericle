@@ -1,5 +1,5 @@
 import { flattenCoordinates, isMultiPolygon, isPolygon } from "@/helpers";
-import { isAreaState, isParentFeatureState, isRootState } from "@/helpers";
+import { isArea, isParent, isRoot } from "@/helpers";
 import { useAllFeatures } from "@/providers";
 import {
   AreaSearch,
@@ -18,7 +18,7 @@ const useAreaSearch = (parentFeatureId: string): AreaSearch => {
   const parentFeatureState = (() => {
     const parentFeatureState = allFeatures.get(parentFeatureId);
 
-    if (isParentFeatureState(parentFeatureState)) {
+    if (isParent(parentFeatureState)) {
       return parentFeatureState;
     }
   })();
@@ -36,13 +36,13 @@ const useAreaSearch = (parentFeatureId: string): AreaSearch => {
       return;
     }
 
-    if (isRootState(parentFeatureState)) {
+    if (isRoot(parentFeatureState)) {
       return geojson;
     }
 
     /**TODO: This is working fine but not perfect. It will sometimes return
      * early. */
-    if (isAreaState(parentFeatureState)) {
+    if (isArea(parentFeatureState)) {
       const parentPolygons = parentFeatureState.polygon;
       const coordinates = flattenCoordinates(geojson);
 
@@ -134,7 +134,7 @@ const useAreaSearch = (parentFeatureId: string): AreaSearch => {
 
     let query = searchTerm;
 
-    if (isAreaState(parentFeatureState)) {
+    if (isArea(parentFeatureState)) {
       const { south, north, west, east } = parentFeatureState.searchBounds;
       query = query + `&viewbox=${west},${south},${east},${north}&bounded=1`;
     }

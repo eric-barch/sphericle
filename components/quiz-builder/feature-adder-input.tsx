@@ -1,11 +1,11 @@
 "use client";
 
-import { isAreaState, isRootState } from "@/helpers";
+import { isArea, isRoot } from "@/helpers";
 import { useQuizBuilder } from "@/providers";
 import {
   AreaSearch,
   FeatureType,
-  ParentFeature,
+  Parent,
   PointSearch,
   QuizBuilderDispatchType,
   SearchStatus,
@@ -15,7 +15,7 @@ import { Grid2X2, MapPin } from "lucide-react";
 import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
 
 type FeatureAdderInputProps = {
-  featureState: ParentFeature;
+  featureState: Parent;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
   selectParentOnInput: boolean;
@@ -48,9 +48,9 @@ const FeatureAdderInput = ({
 
   const isSelected = featureId === selectedFeatureId;
   const placeholder = (() => {
-    if (isRootState(featureState)) {
+    if (isRoot(featureState)) {
       return `Add ${featureType.toLowerCase()} anywhere`;
-    } else if (isAreaState(featureState)) {
+    } else if (isArea(featureState)) {
       const featureName =
         featureState.userDefinedName || featureState.shortName;
 

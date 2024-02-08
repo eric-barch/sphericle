@@ -1,4 +1,4 @@
-import { isAreaState, isParentFeatureState, isRootState } from "@/helpers";
+import { isArea, isParent, isRoot } from "@/helpers";
 import { useAutocompleteService } from "@/hooks/use-autocomplete-service.hook";
 import { useGeocodingService } from "@/hooks/use-geocoding-service.hook";
 import { useAllFeatures } from "@/providers";
@@ -15,7 +15,7 @@ const usePointSearch = (parentFeatureId: string): PointSearch => {
   const parentFeatureState = (() => {
     const parentFeatureState = allFeatures.get(parentFeatureId);
 
-    if (isParentFeatureState(parentFeatureState)) {
+    if (isParent(parentFeatureState)) {
       return parentFeatureState;
     }
   })();
@@ -43,11 +43,11 @@ const usePointSearch = (parentFeatureId: string): PointSearch => {
 
     const point: Point = { type: "Point", coordinates: [lng, lat] };
 
-    if (isRootState(parentFeatureState)) {
+    if (isRoot(parentFeatureState)) {
       return point;
     }
 
-    if (isAreaState(parentFeatureState)) {
+    if (isArea(parentFeatureState)) {
       const parentPolygons = parentFeatureState.polygon;
 
       if (booleanIntersects(point, parentPolygons)) {
@@ -91,7 +91,7 @@ const usePointSearch = (parentFeatureId: string): PointSearch => {
 
     const request = {
       input: searchTerm,
-      locationRestriction: isAreaState(parentFeatureState)
+      locationRestriction: isArea(parentFeatureState)
         ? parentFeatureState.searchBounds
         : undefined,
     };

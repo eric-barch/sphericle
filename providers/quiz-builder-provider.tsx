@@ -40,14 +40,11 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
       }
       case QuizBuilderDispatchType.SET_ADDING: {
         const newQuizBuilder = { ...quizBuilder };
-        const { lastFeatureState } = action;
+        const { lastFeature } = action;
         const featureId = action.featureId || action.feature.id;
 
-        if (
-          lastFeatureState?.childIds.size <= 0 &&
-          lastFeatureState?.id !== featureId
-        ) {
-          newQuizBuilder.openIds.delete(lastFeatureState.id);
+        if (lastFeature?.childIds.size <= 0 && lastFeature?.id !== featureId) {
+          newQuizBuilder.openIds.delete(lastFeature.id);
         }
 
         newQuizBuilder.addingId = featureId;
@@ -87,11 +84,11 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
   };
 
   const initialQuizBuilder = {
-    selectedFeatureId: rootId,
-    addingFeatureId: rootId,
-    renamingFeatureId: null,
-    featureAdderFeatureState: null,
-    openFeatureIds: new Set<string>(),
+    selectedId: rootId,
+    addingId: rootId,
+    renamingId: null,
+    featureAdderFeature: null,
+    openIds: new Set<string>(),
   };
 
   const [quizBuilder, quizBuilderDispatch] = useReducer(

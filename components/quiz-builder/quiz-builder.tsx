@@ -4,11 +4,11 @@ import { Polygon } from "@/components/map-drawings/polygon";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
-  isAreaState as isArea,
-  isParentFeatureState as isParentFeature,
-  isPointState as isPoint,
-  isRootState as isRoot,
-  isSubfeatureState as isSubfeature,
+  isArea as isArea,
+  isParent as isParentFeature,
+  isPoint as isPoint,
+  isRoot as isRoot,
+  isChild as isSubfeature,
 } from "@/helpers";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";

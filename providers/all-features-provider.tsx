@@ -1,6 +1,6 @@
 "use client";
 
-import { isParentFeatureState, isSubfeatureState } from "@/helpers";
+import { isParent, isChild } from "@/helpers";
 import {
   AllFeatures,
   AllFeaturesDispatch,
@@ -35,33 +35,33 @@ const AllFeaturesProvider = ({ children }: AllFeaturesProviderProps) => {
       case AllFeaturesDispatchType.ADD_CHILD: {
         const newAllFeatures = new Map(allFeatures);
         const featureId = action.featureId || action.feature.id;
-        const { subfeatureState } = action;
-        const subfeatureId = subfeatureState.id;
+        const { childFeature } = action;
+        const childFeatureId = childFeature.id;
         const newFeatureState = newAllFeatures.get(featureId);
 
-        if (!isParentFeatureState(newFeatureState)) {
+        if (!isParent(newFeatureState)) {
           console.error("newFeatureState must be a ParentFeatureState.");
           return;
         }
 
-        newFeatureState.childIds.add(subfeatureId);
+        newFeatureState.childIds.add(childFeatureId);
         newAllFeatures.set(featureId, newFeatureState);
-        newAllFeatures.set(subfeatureId, subfeatureState);
+        newAllFeatures.set(childFeatureId, childFeature);
 
         return newAllFeatures;
       }
       case AllFeaturesDispatchType.SET_CHILDREN: {
         const newAllFeatures = new Map(allFeatures);
         const featureId = action.featureId || action.feature.id;
-        const { subfeatureIds } = action;
+        const { childFeatureIds } = action;
         const newFeatureState = newAllFeatures.get(featureId);
 
-        if (!isParentFeatureState(newFeatureState)) {
+        if (!isParent(newFeatureState)) {
           console.error("newFeatureState must be a ParentFeatureState.");
           return;
         }
 
-        newFeatureState.childIds = new Set(subfeatureIds);
+        newFeatureState.childIds = new Set(childFeatureIds);
 
         return newAllFeatures;
       }
@@ -71,7 +71,7 @@ const AllFeaturesProvider = ({ children }: AllFeaturesProviderProps) => {
         const { name } = action;
         const newFeatureState = newAllFeatures.get(featureId);
 
-        if (!isSubfeatureState(newFeatureState)) {
+        if (!isChild(newFeatureState)) {
           console.error("newFeatureState must be a SubfeatureState.");
           return;
         }
@@ -85,14 +85,14 @@ const AllFeaturesProvider = ({ children }: AllFeaturesProviderProps) => {
         const featureId = action.featureId || action.feature.id;
         const newFeatureState = newAllFeatures.get(featureId);
 
-        if (!isSubfeatureState(newFeatureState)) {
+        if (!isChild(newFeatureState)) {
           console.error("newFeatureState must be a SubfeatureState.");
           return;
         }
 
         const newParentFeature = newAllFeatures.get(newFeatureState.parentId);
 
-        if (!isParentFeatureState(newParentFeature)) {
+        if (!isParent(newParentFeature)) {
           console.error("newParentFeature must be a ParentFeatureState.");
           return;
         }
