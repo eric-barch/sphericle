@@ -12,7 +12,7 @@ import { Combobox } from "@headlessui/react";
 import { FocusEvent, RefObject, useRef, useState } from "react";
 import { FeatureAdderInput } from "./feature-adder-input";
 import { FeatureAdderOptions } from "./feature-adder-options";
-import { useFeatureSearches } from "./use-feature-searches.hook";
+import { useFeatureSearches } from "../../hooks/use-feature-searches.hook";
 
 type FeatureAdderProps = {
   inputRef: RefObject<HTMLInputElement>;

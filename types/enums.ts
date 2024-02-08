@@ -26,6 +26,7 @@ export enum QuizTakerDispatchType {
 }
 
 export enum SearchStatus {
+  INITIALIZED,
   SEARCHING,
   SEARCHED,
 }
