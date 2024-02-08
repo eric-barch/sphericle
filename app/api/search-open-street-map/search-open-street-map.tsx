@@ -10,7 +10,9 @@ async function GET(request: Request) {
     (viewbox ? `&viewbox=${viewbox}` : "") +
     (bounded ? `&bounded=${bounded}` : "");
 
-  return await fetch(url);
+  const response = await fetch(url);
+
+  return response;
 }
 
 export { GET };

@@ -17,9 +17,6 @@ const usePointSearch = (parentFeatureId: string): PointSearch => {
   })();
   const displayBoundsBuffer = 0.1;
 
-  const autocompleteServiceRef = useRef(window.autocompleteService);
-  const geocoderRef = useRef(window.geocoder);
-
   const [debounceTimeoutId, setDebounceTimeoutId] =
     useState<NodeJS.Timeout>(null);
   const [termRaw, setTermRaw] = useState<string>("");
