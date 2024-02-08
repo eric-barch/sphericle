@@ -16,12 +16,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Subfeatures } from "./subfeatures";
 
-const INITIAL_BOUNDS = {
-  north: 85,
-  south: -85,
-  west: -180,
-  east: 180,
+const DEFAULT_CENTER = {
+  lat: 0,
+  lng: 0,
 };
+
+const DEFAULT_ZOOM = 1;
 
 const RESTRICTION = {
   latLngBounds: {
@@ -99,7 +99,14 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
         }
 
         if (isRoot(displayedFeatureParent)) {
+          /**This is horrible, but only way I've been able to prevent fitBounds
+           * from occasionally ending early over long zooms the first time it's
+           * called. */
           map.fitBounds(displayedFeature.displayBounds);
+
+          setTimeout(() => {
+            map.fitBounds(displayedFeature.displayBounds);
+          }, 0);
         }
       }
 
@@ -132,10 +139,11 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
         <Map
           className="h-full w-full outline-none border-none"
           mapId="696d0ea42431a75c"
-          disableDefaultUI
-          restriction={RESTRICTION}
           gestureHandling="greedy"
-          defaultBounds={INITIAL_BOUNDS}
+          disableDefaultUI
+          defaultCenter={DEFAULT_CENTER}
+          defaultZoom={DEFAULT_ZOOM}
+          restriction={RESTRICTION}
           onTilesLoaded={() => setTilesLoaded(true)}
         >
           {isArea(displayedFeatureParent) && !displayedFeatureIsOpen && (
