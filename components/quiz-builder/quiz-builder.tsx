@@ -2,13 +2,30 @@
 
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isRootState, isSubfeatureState } from "@/helpers";
+import {
+  isAreaState,
+  isParentFeatureState,
+  isRootState,
+  isSubfeatureState,
+} from "@/helpers";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
-import { DisplayMode } from "@/types";
+import { Map } from "@vis.gl/react-google-maps";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Subfeatures } from "./subfeatures";
-import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import { Polygon } from "@/components/map/polygon";
+
+const INITIAL_CENTER = { lat: 0, lng: 0 };
+const INITIAL_ZOOM = 2;
+const RESTRICTION = {
+  latLngBounds: {
+    east: 180,
+    west: -180,
+    north: 85,
+    south: -85,
+  },
+  strictBounds: true,
+};
 
 type QuizBuilderProps = {
   servicesReady: boolean;
@@ -31,6 +48,7 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
       return rootState;
     }
   })();
+  const isAdding = rootId === addingFeatureId;
   const displayedFeature = (() => {
     if (featureAdderFeatureState) {
       return featureAdderFeatureState;
@@ -42,18 +60,18 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
       return selectedFeatureState;
     }
   })();
-  const isAdding = rootId === addingFeatureId;
-  const INITIAL_CENTER = { lat: 0, lng: 0 };
-  const INITIAL_ZOOM = 2;
-  const RESTRICTION = {
-    latLngBounds: {
-      east: 180,
-      west: -180,
-      north: 85,
-      south: -85,
-    },
-    strictBounds: true,
-  };
+  const displayedFeatureParent = (() => {
+    const parentFeatureState = allFeatures.get(
+      displayedFeature?.parentFeatureId,
+    );
+
+    if (isAreaState(parentFeatureState)) {
+      console.log("parentFeatureState", parentFeatureState);
+      return parentFeatureState;
+    }
+  })();
+
+  const [tilesLoaded, setTilesLoaded] = useState(false);
 
   const featureAdderInputRef = useRef<HTMLInputElement>();
 
@@ -65,7 +83,7 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
 
   return (
     <>
-      {!servicesReady && (
+      {(!servicesReady || !tilesLoaded) && (
         <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       )}
       <SplitPane>
@@ -90,7 +108,17 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
           defaultZoom={INITIAL_ZOOM}
           restriction={RESTRICTION}
           disableDefaultUI={true}
-        />
+          onTilesLoaded={() => setTilesLoaded(true)}
+        >
+          {displayedFeatureParent && (
+            <Polygon
+              polygons={displayedFeatureParent.polygons}
+              strokeWeight={2}
+              strokeColor="#ff0000"
+              fillOpacity={0}
+            />
+          )}
+        </Map>
       </SplitPane>
     </>
   );
