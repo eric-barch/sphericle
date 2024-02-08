@@ -1,16 +1,17 @@
 "use client";
 
-import { Polygon } from "@/components/map/polygon";
+import { Polygon } from "@/components/map-drawings/polygon";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   isAreaState as isArea,
   isParentFeatureState as isParentFeature,
+  isPointState as isPoint,
   isRootState as isRoot,
   isSubfeatureState as isSubfeature,
 } from "@/helpers";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
-import { Map, useMap } from "@vis.gl/react-google-maps";
+import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Subfeatures } from "./subfeatures";
@@ -152,6 +153,14 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
               strokeColor="#b91c1c"
               fillColor="#b91c1c"
               fillOpacity={displayedFeatureIsOpen ? 0 : 0.2}
+            />
+          )}
+          {isPoint(displayedFeature) && (
+            <Marker
+              position={{
+                lng: displayedFeature.point.coordinates[0],
+                lat: displayedFeature.point.coordinates[1],
+              }}
             />
           )}
         </Map>
