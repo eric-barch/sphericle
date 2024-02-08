@@ -11,7 +11,7 @@ const resetRemainingFeatureIds = (
     const featureState = allFeatures.get(featureId);
 
     if (featureState && isParentFeatureState(featureState)) {
-      const shuffledSubfeatureIds = [...featureState.subfeatureIds];
+      const shuffledSubfeatureIds = [...featureState.childIds];
 
       // Fisher-Yates shuffle for randomness
       for (let i = shuffledSubfeatureIds.length - 1; i > 0; i--) {

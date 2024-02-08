@@ -2,7 +2,11 @@ import { useQuizTaker } from "@/providers";
 
 const ScoreBox = () => {
   const {
-    quizTaker: { correctFeatureIds, incorrectFeatureIds, remainingFeatureIds },
+    quizTaker: {
+      correctIds: correctFeatureIds,
+      incorrectIds: incorrectFeatureIds,
+      remainingIds: remainingFeatureIds,
+    },
   } = useQuizTaker();
 
   return (

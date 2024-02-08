@@ -26,13 +26,13 @@ const FeatureName = ({
 
   const handleEnter = () => {
     allFeaturesDispatch({
-      dispatchType: AllFeaturesDispatchType.RENAME,
+      type: AllFeaturesDispatchType.RENAME,
       featureId,
       name: input,
     });
 
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_RENAMING,
+      type: QuizBuilderDispatchType.SET_RENAMING,
       featureId: null,
     });
   };
@@ -56,7 +56,7 @@ const FeatureName = ({
 
   const handleBlur = () => {
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_RENAMING,
+      type: QuizBuilderDispatchType.SET_RENAMING,
       featureId: null,
     });
 

@@ -42,9 +42,9 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
   const {
     quizBuilder: {
       featureAdderFeature,
-      selectedFeatureId,
-      addingFeatureId,
-      openFeatureIds,
+      selectedId: selectedFeatureId,
+      addingId: addingFeatureId,
+      openIds: openFeatureIds,
     },
   } = useQuizBuilder();
   const map = useMap();
@@ -74,18 +74,14 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
   }, [featureAdderFeature, selectedFeatureId, allFeatures]);
   const displayedFeatureParent = useMemo(() => {
     if (isSubfeature(displayedFeature)) {
-      const displayedFeatureParent = allFeatures.get(
-        displayedFeature.parentFeatureId,
-      );
+      const displayedFeatureParent = allFeatures.get(displayedFeature.parentId);
 
       if (isParentFeature(displayedFeatureParent)) {
         return displayedFeatureParent;
       }
     }
   }, [displayedFeature, allFeatures]);
-  const displayedFeatureIsOpen = openFeatureIds.has(
-    displayedFeature?.featureId,
-  );
+  const displayedFeatureIsOpen = openFeatureIds.has(displayedFeature?.id);
 
   const [tilesLoaded, setTilesLoaded] = useState(false);
 
@@ -148,7 +144,7 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
         >
           {isArea(displayedFeatureParent) && !displayedFeatureIsOpen && (
             <Polygon
-              polygons={displayedFeatureParent.polygons}
+              polygons={displayedFeatureParent.polygon}
               strokeWeight={1.5}
               strokeColor="#b91c1c"
               fillOpacity={0}
@@ -156,7 +152,7 @@ const QuizBuilder = ({ servicesReady }: QuizBuilderProps) => {
           )}
           {isArea(displayedFeature) && (
             <Polygon
-              polygons={displayedFeature.polygons}
+              polygons={displayedFeature.polygon}
               strokeWeight={1.5}
               strokeColor="#b91c1c"
               fillColor="#b91c1c"

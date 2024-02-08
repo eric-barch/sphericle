@@ -5,7 +5,7 @@ import {
   AreaSearch,
   AreaState,
   FeatureType,
-  OsmItem,
+  OsmResult,
   SearchStatus,
 } from "@/types";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
@@ -29,7 +29,7 @@ const useAreaSearch = (parentFeatureId: string): AreaSearch => {
   );
   const [resultsRaw, setResultsRaw] = useState<AreaState[]>([]);
 
-  const getPolygons = (osmItem: OsmItem): Polygon | MultiPolygon => {
+  const getPolygons = (osmItem: OsmResult): Polygon | MultiPolygon => {
     const geojson = osmItem.geojson;
 
     if (!isPolygon(geojson) && !isMultiPolygon(geojson)) {
@@ -43,7 +43,7 @@ const useAreaSearch = (parentFeatureId: string): AreaSearch => {
     /**TODO: This is working fine but not perfect. It will sometimes return
      * early. */
     if (isAreaState(parentFeatureState)) {
-      const parentPolygons = parentFeatureState.polygons;
+      const parentPolygons = parentFeatureState.polygon;
       const coordinates = flattenCoordinates(geojson);
 
       let attempts = 0;
@@ -97,7 +97,7 @@ const useAreaSearch = (parentFeatureId: string): AreaSearch => {
     }
   };
 
-  const toAreaState = (osmItem: OsmItem): AreaState => {
+  const toAreaState = (osmItem: OsmResult): AreaState => {
     const polygons = getPolygons(osmItem);
 
     if (!polygons) {
@@ -114,15 +114,15 @@ const useAreaSearch = (parentFeatureId: string): AreaSearch => {
     const displayBounds = getDisplayBounds(polygons, searchBounds);
 
     return {
-      featureId: crypto.randomUUID(),
-      parentFeatureId,
-      subfeatureIds: new Set<string>(),
-      openStreetMapPlaceId: osmItem.place_id,
+      id: crypto.randomUUID(),
+      parentId: parentFeatureId,
+      childIds: new Set<string>(),
+      osmId: osmItem.place_id,
       longName: osmItem.display_name,
       shortName: osmItem.name,
       userDefinedName: null,
-      featureType: FeatureType.AREA,
-      polygons,
+      type: FeatureType.AREA,
+      polygon: polygons,
       searchBounds,
       displayBounds,
     };
@@ -141,7 +141,7 @@ const useAreaSearch = (parentFeatureId: string): AreaSearch => {
 
     const response = (await (
       await fetch(`/api/search-open-street-map?query=${query}`)
-    ).json()) as OsmItem[];
+    ).json()) as OsmResult[];
 
     const results = response
       .map((osmItem) => toAreaState(osmItem))

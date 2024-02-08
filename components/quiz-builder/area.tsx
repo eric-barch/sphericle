@@ -15,15 +15,20 @@ type AreaProps = {
 };
 
 const Area = ({ areaState }: AreaProps) => {
-  const { featureId, userDefinedName, shortName, parentFeatureId } = areaState;
+  const {
+    id: featureId,
+    userDefinedName,
+    shortName,
+    parentId: parentFeatureId,
+  } = areaState;
 
   const { allFeatures } = useAllFeatures();
   const {
     quizBuilder: {
-      selectedFeatureId,
-      openFeatureIds,
-      addingFeatureId,
-      renamingFeatureId,
+      selectedId: selectedFeatureId,
+      openIds: openFeatureIds,
+      addingId: addingFeatureId,
+      renamingId: renamingFeatureId,
     },
     quizBuilderDispatch,
   } = useQuizBuilder();
@@ -40,13 +45,13 @@ const Area = ({ areaState }: AreaProps) => {
   const handleTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (isSelected) {
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_IS_OPEN,
+        type: QuizBuilderDispatchType.SET_IS_OPEN,
         featureId,
         isOpen: !isOpen,
       });
     } else {
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
+        type: QuizBuilderDispatchType.SET_SELECTED,
         featureId,
       });
     }
@@ -61,14 +66,14 @@ const Area = ({ areaState }: AreaProps) => {
 
     if (isOpen !== isSelected) {
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_ADDING,
-        lastFeatureState,
+        type: QuizBuilderDispatchType.SET_ADDING,
+        lastFeature: lastFeatureState,
         featureId,
       });
     } else {
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_ADDING,
-        lastFeatureState,
+        type: QuizBuilderDispatchType.SET_ADDING,
+        lastFeature: lastFeatureState,
         featureId: parentFeatureId,
       });
     }
