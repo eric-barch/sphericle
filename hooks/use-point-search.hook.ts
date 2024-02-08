@@ -1,11 +1,15 @@
 import { isAreaState, isParentFeatureState, isRootState } from "@/helpers";
+import { useAutocompleteService } from "@/hooks/use-autocomplete-service.hook";
+import { useGeocodingService } from "@/hooks/use-geocoding-service.hook";
 import { useAllFeatures } from "@/providers";
 import { FeatureType, PointSearch, PointState, SearchStatus } from "@/types";
 import booleanIntersects from "@turf/boolean-intersects";
 import { Point } from "geojson";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 const usePointSearch = (parentFeatureId: string): PointSearch => {
+  const { autocompleteService } = useAutocompleteService();
+  const { geocodingService } = useGeocodingService();
   const { allFeatures } = useAllFeatures();
 
   const parentFeatureState = (() => {
@@ -21,7 +25,7 @@ const usePointSearch = (parentFeatureId: string): PointSearch => {
     useState<NodeJS.Timeout>(null);
   const [termRaw, setTermRaw] = useState<string>("");
   const [statusRaw, setStatusRaw] = useState<SearchStatus>(
-    SearchStatus.SEARCHED,
+    SearchStatus.INITIALIZED,
   );
   const [resultsRaw, setResultsRaw] = useState<PointState[]>([]);
 
@@ -29,7 +33,7 @@ const usePointSearch = (parentFeatureId: string): PointSearch => {
     autocompletePrediction: google.maps.places.AutocompletePrediction,
   ): Promise<Point> => {
     const geocoderResult = (
-      await geocoderRef.current.geocode({
+      await geocodingService.geocode({
         placeId: autocompletePrediction.place_id,
       })
     ).results[0];
@@ -92,8 +96,7 @@ const usePointSearch = (parentFeatureId: string): PointSearch => {
         : undefined,
     };
 
-    const response =
-      await autocompleteServiceRef.current.getPlacePredictions(request);
+    const response = await autocompleteService.getPlacePredictions(request);
 
     const results = (
       await Promise.all(
