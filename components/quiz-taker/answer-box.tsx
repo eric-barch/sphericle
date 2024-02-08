@@ -1,10 +1,10 @@
 import { useQuizTaker } from "@/providers";
-import { QuizTakerDispatchType, Child } from "@/types";
+import { QuizTakerDispatchType, ChildFeature } from "@/types";
 import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
 import toast from "react-hot-toast";
 
 type AnswerBoxProps = {
-  displayedFeature: Child;
+  displayedFeature: ChildFeature;
   inputRef: RefObject<HTMLInputElement>;
   disabled: boolean;
 };

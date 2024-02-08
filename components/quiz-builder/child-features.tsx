@@ -2,7 +2,7 @@
 
 import { isArea, isPoint, isChild } from "@/helpers";
 import { useAllFeatures } from "@/providers";
-import { AllFeaturesDispatchType, Parent } from "@/types";
+import { AllFeaturesDispatchType, ParentFeature } from "@/types";
 import { Reorder } from "framer-motion";
 import { Area } from "./area";
 import { FeatureAdder } from "./feature-adder";
@@ -11,7 +11,7 @@ import { Point } from "./point";
 type ChildFeatureProps = {
   featureAdderInputRef: React.RefObject<HTMLInputElement>;
   className?: string;
-  parent: Parent;
+  parent: ParentFeature;
   isAdding: boolean;
 };
 

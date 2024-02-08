@@ -63,7 +63,7 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
         const newQuizBuilder = { ...quizBuilder };
         const { feature: featureState } = action;
 
-        newQuizBuilder.featureAdderFeature = featureState;
+        newQuizBuilder.searchResult = featureState;
 
         return newQuizBuilder;
       }

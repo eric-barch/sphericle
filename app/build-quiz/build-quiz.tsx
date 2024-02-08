@@ -31,7 +31,12 @@ const BuildQuiz = () => {
   const { rootId, allFeatures } = useAllFeatures();
 
   const {
-    quizBuilder: { featureAdderFeature, selectedId, addingId, openIds },
+    quizBuilder: {
+      searchResult: featureAdderFeature,
+      selectedId,
+      addingId,
+      openIds,
+    },
   } = useQuizBuilder();
 
   const map = useMap();

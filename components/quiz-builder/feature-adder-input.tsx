@@ -5,7 +5,7 @@ import { useQuizBuilder } from "@/providers";
 import {
   AreaSearch,
   FeatureType,
-  Parent,
+  ParentFeature,
   PointSearch,
   QuizBuilderDispatchType,
   SearchStatus,
@@ -15,7 +15,7 @@ import { Grid2X2, MapPin } from "lucide-react";
 import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
 
 type FeatureAdderInputProps = {
-  featureState: Parent;
+  featureState: ParentFeature;
   areaSearch: AreaSearch;
   pointSearch: PointSearch;
   selectParentOnInput: boolean;

@@ -17,11 +17,11 @@ export type BaseFeature = {
   type: FeatureType;
 };
 
-export type Parent = BaseFeature & {
+export type ParentFeature = BaseFeature & {
   childIds: Set<string>;
 };
 
-export type Child = BaseFeature & {
+export type ChildFeature = BaseFeature & {
   parentId: string;
   longName: string;
   shortName: string;
@@ -30,13 +30,13 @@ export type Child = BaseFeature & {
 };
 
 export type Root = BaseFeature &
-  Parent & {
+  ParentFeature & {
     type: FeatureType.ROOT;
   };
 
 export type AreaState = BaseFeature &
-  Parent &
-  Child & {
+  ParentFeature &
+  ChildFeature & {
     type: FeatureType.AREA;
     osmId: number;
     searchBounds: google.maps.LatLngBoundsLiteral;
@@ -44,14 +44,14 @@ export type AreaState = BaseFeature &
   };
 
 export type PointState = BaseFeature &
-  Child & {
+  ChildFeature & {
     type: FeatureType.POINT;
     googleId: string;
     point: Point;
   };
 
 export type QuizBuilderState = {
-  featureAdderFeature: Child | null;
+  searchResult: ChildFeature | null;
   selectedId: string | null;
   addingId: string | null;
   renamingId: string | null;
@@ -108,14 +108,14 @@ type AddChild = BaseAllFeaturesDispatch &
   (
     | {
         type: AllFeaturesDispatchType.ADD_CHILD;
-        feature: Parent;
-        childFeature: Child;
+        feature: ParentFeature;
+        childFeature: ChildFeature;
         featureId?: never;
       }
     | {
         type: AllFeaturesDispatchType.ADD_CHILD;
         featureId: string;
-        childFeature: Child;
+        childFeature: ChildFeature;
         feature?: never;
       }
   );
@@ -124,7 +124,7 @@ type SetChildren = BaseAllFeaturesDispatch &
   (
     | {
         type: AllFeaturesDispatchType.SET_CHILDREN;
-        feature: Parent;
+        feature: ParentFeature;
         childFeatureIds: string[];
         featureId?: never;
       }
@@ -140,7 +140,7 @@ type Rename = BaseAllFeaturesDispatch &
   (
     | {
         type: AllFeaturesDispatchType.RENAME;
-        feature: Child;
+        feature: ChildFeature;
         name: string;
         featureId?: never;
       }
@@ -156,7 +156,7 @@ type Delete = BaseAllFeaturesDispatch &
   (
     | {
         type: AllFeaturesDispatchType.DELETE;
-        feature: Child;
+        feature: ChildFeature;
         featureId?: never;
       }
     | {
@@ -179,14 +179,14 @@ type BaseQuizBuilderDispatch = {
 
 type SetFeatureAdder = BaseQuizBuilderDispatch & {
   type: QuizBuilderDispatchType.SET_FEATURE_ADDER;
-  feature: Child | null;
+  feature: ChildFeature | null;
 };
 
 type SetSelected = BaseQuizBuilderDispatch &
   (
     | {
         type: QuizBuilderDispatchType.SET_SELECTED;
-        feature: Child | null;
+        feature: ChildFeature | null;
         featureId?: never;
       }
     | {
@@ -200,13 +200,13 @@ type SetAdding = BaseQuizBuilderDispatch &
   (
     | {
         type: QuizBuilderDispatchType.SET_ADDING;
-        lastFeature: Parent | null;
-        feature: Parent;
+        lastFeature: ParentFeature | null;
+        feature: ParentFeature;
         featureId?: never;
       }
     | {
         type: QuizBuilderDispatchType.SET_ADDING;
-        lastFeature: Parent | null;
+        lastFeature: ParentFeature | null;
         featureId: string;
         feature?: never;
       }
@@ -216,7 +216,7 @@ type SetIsOpen = BaseQuizBuilderDispatch &
   (
     | {
         type: QuizBuilderDispatchType.SET_IS_OPEN;
-        feature: Child;
+        feature: ChildFeature;
         isOpen: boolean;
         featureId?: never;
       }
@@ -232,7 +232,7 @@ type SetRenaming = BaseQuizBuilderDispatch &
   (
     | {
         type: QuizBuilderDispatchType.SET_RENAMING;
-        feature: Child;
+        feature: ChildFeature;
         featureId?: never;
       }
     | {
@@ -256,7 +256,7 @@ type MarkCorrect = BaseQuizTakerDispatch &
   (
     | {
         type: QuizTakerDispatchType.MARK_CORRECT;
-        feature: Child;
+        feature: ChildFeature;
         featureId?: never;
       }
     | {
@@ -270,7 +270,7 @@ type MarkIncorrect = BaseQuizTakerDispatch &
   (
     | {
         type: QuizTakerDispatchType.MARK_INCORRECT;
-        feature: Child;
+        feature: ChildFeature;
         featureId?: never;
       }
     | {
