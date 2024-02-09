@@ -3,36 +3,30 @@
 import { useAllFeatures, useQuizBuilder } from "@/providers";
 import {
   AllFeaturesDispatchType,
+  ChildFeature,
   FeatureType,
   ParentFeature,
   QuizBuilderDispatchType,
-  ChildFeature,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { FocusEvent, RefObject, useRef, useState } from "react";
+import { useFeatureSearches } from "../../hooks/use-feature-searches.hook";
 import { FeatureAdderInput } from "./feature-adder-input";
 import { FeatureAdderOptions } from "./feature-adder-options";
-import { useFeatureSearches } from "../../hooks/use-feature-searches.hook";
 
 type FeatureAdderProps = {
   inputRef: RefObject<HTMLInputElement>;
-  featureState: ParentFeature;
+  feature: ParentFeature;
 };
 
-const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
-  const { id: featureId } = featureState;
+const FeatureAdder = (props: FeatureAdderProps) => {
+  const { inputRef, feature } = props;
 
   const { allFeaturesDispatch } = useAllFeatures();
-  const {
-    quizBuilder: { selectedId: selectedFeatureId },
-    quizBuilderDispatch,
-  } = useQuizBuilder();
+  const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
+  const { areaSearch, pointSearch } = useFeatureSearches(feature.id);
 
-  const { areaSearch, pointSearch } = useFeatureSearches(featureId);
-
-  const isSelected = featureId === selectedFeatureId;
-
-  const featureAdderRef = useRef<HTMLDivElement>(null);
+  const isSelected = feature.id === quizBuilder.selectedId;
 
   const [selectParentOnInput, setSelectParentOnInput] = useState(true);
   const [featureType, setFeatureTypeRaw] = useState<FeatureType>(
@@ -40,14 +34,15 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
   );
   const [input, setInput] = useState<string>("");
 
+  const featureAdderRef = useRef<HTMLDivElement>(null);
+
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
     if (event.currentTarget.contains(event.relatedTarget)) {
       return;
     }
 
-    /**If we blur the FeatureAdder, it means we are no longer adding multiple
-     * subfeatures to the same parent feature. The next time the user types
-     * in this field, we want to automatically select its parent. */
+    /**User is done adding features at this level. Select its parent on next
+     * input change. */
     setSelectParentOnInput(true);
   };
 
@@ -55,14 +50,13 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
     inputRef.current.value = "";
     setInput("");
 
-    /**When adding several subfeatures to the same parent feature, we want the
-     * last added location to stay selected as the user searches for the next
-     * one. */
+    /**User is adding multiple features at this level. Cancel parent selection
+     * on next input change. */
     setSelectParentOnInput(false);
 
     allFeaturesDispatch({
       type: AllFeaturesDispatchType.ADD_CHILD,
-      featureId,
+      featureId: feature.id,
       childFeature: selectedResult,
     });
 
@@ -86,7 +80,7 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
     if (isSelected && selectParentOnInput) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_SELECTED,
-        featureId,
+        featureId: feature.id,
       });
     }
 
@@ -101,9 +95,9 @@ const FeatureAdder = ({ inputRef, featureState }: FeatureAdderProps) => {
         {({ activeOption }) => (
           <>
             <FeatureAdderInput
-              featureAdderRef={featureAdderRef}
               inputRef={inputRef}
-              featureState={featureState}
+              featureAdderRef={featureAdderRef}
+              featureState={feature}
               selectParentOnInput={selectParentOnInput}
               input={input}
               featureType={featureType}
