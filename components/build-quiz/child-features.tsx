@@ -51,7 +51,7 @@ const ChildFeatures = (props: ChildFeaturesProps) => {
         ))}
       </Reorder.Group>
       {isAdding && (
-        <FeatureAdder inputRef={featureAdderInputRef} featureState={parent} />
+        <FeatureAdder inputRef={featureAdderInputRef} feature={parent} />
       )}
     </div>
   );
