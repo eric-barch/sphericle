@@ -2,18 +2,12 @@
 
 import { ChildFeatures } from "@/components/build-quiz/child-features";
 import { Polygon } from "@/components/map";
-import {
-  DEFAULT_BOUNDS,
-  DEFAULT_CENTER,
-  DEFAULT_ZOOM,
-  RESTRICTION,
-} from "@/components/map/constants";
+import { DEFAULT_BOUNDS, RESTRICTION } from "@/components/map/constants";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
-import { set } from "lodash";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -27,67 +21,49 @@ const BuildQuiz = () => {
     if (isRoot(root)) return root;
   })();
 
-  const rootIsAdding = useMemo(
-    () => rootId === quizBuilder.addingId,
-    [rootId, quizBuilder.addingId],
-  );
+  const rootIsAdding = rootId === quizBuilder.addingId;
 
-  const displayedFeature = useMemo(() => {
+  const displayed = (() => {
     if (quizBuilder.searchResult) return quizBuilder.searchResult;
-    const selectedFeature = allFeatures.get(quizBuilder.selectedId);
-    if (isChild(selectedFeature)) return selectedFeature;
-  }, [allFeatures, quizBuilder.searchResult, quizBuilder.selectedId]);
+    const selected = allFeatures.get(quizBuilder.selectedId);
+    if (isChild(selected)) return selected;
+  })();
 
-  const displayedFeatureParent = useMemo(() => {
-    if (!isChild(displayedFeature)) return;
-    const displayedFeatureParent = allFeatures.get(displayedFeature.parentId);
-    if (isParent(displayedFeatureParent)) return displayedFeatureParent;
-  }, [allFeatures, displayedFeature]);
+  const displayedParent = (() => {
+    if (!isChild(displayed)) return;
+    const displayedParent = allFeatures.get(displayed.parentId);
+    if (isParent(displayedParent)) return displayedParent;
+  })();
 
-  const displayedFeatureIsOpen = quizBuilder.openIds.has(displayedFeature?.id);
-
-  const featureAdderInputRef = useRef<HTMLInputElement>();
+  const displayedIsOpen = quizBuilder.openIds.has(displayed?.id);
 
   const [tilesLoaded, setTilesLoaded] = useState(false);
   const [isIdle, setIsIdle] = useState(false);
 
   useEffect(() => {
+    /**Must check if map is idle before fitting bounds. */
+    if (!isIdle) return;
+
     let bounds: google.maps.LatLngBoundsLiteral;
 
-    if (isArea(displayedFeature)) {
-      if (displayedFeatureIsOpen) {
-        bounds = displayedFeature.displayBounds;
-      }
+    if (isArea(displayed)) {
+      if (displayedIsOpen) bounds = displayed.displayBounds;
 
-      if (!displayedFeatureIsOpen) {
-        if (isArea(displayedFeatureParent)) {
-          bounds = displayedFeatureParent.displayBounds;
-        }
-
-        if (isRoot(displayedFeatureParent)) {
-          bounds = displayedFeature.displayBounds;
-        }
+      if (!displayedIsOpen) {
+        if (isArea(displayedParent)) bounds = displayedParent.displayBounds;
+        if (isRoot(displayedParent)) bounds = displayed.displayBounds;
       }
     }
 
-    if (isPoint(displayedFeature)) {
-      if (isArea(displayedFeatureParent)) {
-        bounds = displayedFeatureParent.displayBounds;
-      }
-
-      if (isRoot(displayedFeatureParent)) {
-        bounds = displayedFeature.displayBounds;
-      }
+    if (isPoint(displayed)) {
+      if (isArea(displayedParent)) bounds = displayedParent.displayBounds;
+      if (isRoot(displayedParent)) bounds = displayed.displayBounds;
     }
 
-    if (bounds) map?.fitBounds(bounds);
-  }, [
-    displayedFeature,
-    displayedFeatureIsOpen,
-    displayedFeatureParent,
-    isIdle,
-    map,
-  ]);
+    if (bounds) {
+      map?.fitBounds(bounds);
+    }
+  }, [displayed, displayedIsOpen, displayedParent, isIdle, map]);
 
   return (
     <>
@@ -98,7 +74,6 @@ const BuildQuiz = () => {
         <div className="relative h-full">
           <ChildFeatures
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
-            adderInputRef={featureAdderInputRef}
             parent={root}
             isAdding={rootIsAdding}
           />
@@ -115,33 +90,33 @@ const BuildQuiz = () => {
           gestureHandling="greedy"
           disableDefaultUI
           restriction={RESTRICTION}
-          defaultBounds={displayedFeature?.displayBounds || DEFAULT_BOUNDS}
+          defaultBounds={displayed?.displayBounds || DEFAULT_BOUNDS}
           onTilesLoaded={() => setTilesLoaded(true)}
           onBoundsChanged={() => setIsIdle(false)}
           onIdle={() => setIsIdle(true)}
         >
-          {!displayedFeatureIsOpen && isArea(displayedFeatureParent) && (
+          {!displayedIsOpen && isArea(displayedParent) && (
             <Polygon
-              polygon={displayedFeatureParent.polygon}
+              polygon={displayedParent.polygon}
               strokeWeight={1.5}
               strokeColor="#b91c1c"
               fillOpacity={0}
             />
           )}
-          {isArea(displayedFeature) && (
+          {isArea(displayed) && (
             <Polygon
-              polygon={displayedFeature.polygon}
+              polygon={displayed.polygon}
               strokeWeight={1.5}
               strokeColor="#b91c1c"
               fillColor="#b91c1c"
-              fillOpacity={displayedFeatureIsOpen ? 0 : 0.2}
+              fillOpacity={displayedIsOpen ? 0 : 0.2}
             />
           )}
-          {isPoint(displayedFeature) && (
+          {isPoint(displayed) && (
             <Marker
               position={{
-                lng: displayedFeature.point.coordinates[0],
-                lat: displayedFeature.point.coordinates[1],
+                lng: displayed.point.coordinates[0],
+                lat: displayed.point.coordinates[1],
               }}
             />
           )}
