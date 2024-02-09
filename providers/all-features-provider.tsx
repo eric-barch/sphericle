@@ -53,7 +53,7 @@ const AllFeaturesProvider = ({ children }: AllFeaturesProviderProps) => {
       case AllFeaturesDispatchType.SET_CHILDREN: {
         const newAllFeatures = new Map(allFeatures);
         const featureId = action.featureId || action.feature.id;
-        const { childFeatureIds } = action;
+        const { childIds: childFeatureIds } = action;
         const newFeatureState = newAllFeatures.get(featureId);
 
         if (!isParent(newFeatureState)) {

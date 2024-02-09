@@ -1,7 +1,7 @@
 "use client";
 
 import { Polygon } from "@/components/map-drawings";
-import { ChildFeatures } from "@/components/quiz-builder/child-features";
+import { ChildFeatures } from "@/components/build-quiz/child-features";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
@@ -97,9 +97,9 @@ const BuildQuiz = () => {
         <div className="relative h-full">
           <ChildFeatures
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
+            featureAdderInputRef={featureAdderInputRef}
             parent={root}
             isAdding={rootIsAdding}
-            featureAdderInputRef={featureAdderInputRef}
           />
           <Link
             className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"

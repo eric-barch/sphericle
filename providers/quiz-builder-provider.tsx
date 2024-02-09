@@ -87,7 +87,7 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
     selectedId: rootId,
     addingId: rootId,
     renamingId: null,
-    featureAdderFeature: null,
+    searchResult: null,
     openIds: new Set<string>(),
   };
 
