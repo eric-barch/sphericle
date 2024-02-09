@@ -30,42 +30,38 @@ const Area = (props: AreaProps) => {
   const adderInputRef = useRef<HTMLInputElement>();
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    if (isSelected) {
-      quizBuilderDispatch({
-        type: QuizBuilderDispatchType.SET_IS_OPEN,
-        featureId: area.id,
-        isOpen: !isOpen,
-      });
-    } else {
+    if (!isSelected) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_SELECTED,
         featureId: area.id,
       });
     }
 
-    const lastAdding = (() => {
-      const lastAdding = allFeatures.get(quizBuilder.addingId);
-      if (isArea(lastAdding)) return lastAdding;
-    })();
+    if (isSelected) {
+      if (!isAdding) {
+        quizBuilderDispatch({
+          type: QuizBuilderDispatchType.SET_IS_OPEN,
+          featureId: area.id,
+          isOpen: true,
+        });
 
-    if (isOpen && !isSelected) {
-      quizBuilderDispatch({
-        type: QuizBuilderDispatchType.SET_ADDING,
-        lastAdding,
-        featureId: area.id,
-      });
-    } else if (!isOpen && isSelected) {
-      quizBuilderDispatch({
-        type: QuizBuilderDispatchType.SET_ADDING,
-        lastAdding,
-        featureId: area.id,
-      });
-    } else {
-      quizBuilderDispatch({
-        type: QuizBuilderDispatchType.SET_ADDING,
-        lastAdding,
-        featureId: area.parentId,
-      });
+        const lastAdding = (() => {
+          const lastAdding = allFeatures.get(quizBuilder.addingId);
+          if (isArea(lastAdding)) return lastAdding;
+        })();
+
+        quizBuilderDispatch({
+          type: QuizBuilderDispatchType.SET_ADDING,
+          lastAdding,
+          featureId: area.id,
+        });
+      } else {
+        quizBuilderDispatch({
+          type: QuizBuilderDispatchType.SET_IS_OPEN,
+          featureId: area.id,
+          isOpen: !isOpen,
+        });
+      }
     }
   };
 
