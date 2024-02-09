@@ -14,7 +14,7 @@ import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
 import { useAllFeatures, useQuizTaker } from "@/providers";
 import { QuizTakerDispatchType } from "@/types";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const TakeQuiz = () => {
   const { allFeatures } = useAllFeatures();
@@ -29,17 +29,19 @@ const TakeQuiz = () => {
     if (isChild(displayedFeature)) return displayedFeature;
   })();
 
-  const displayedFeatureParent = (() => {
+  const displayedFeatureParent = useMemo(() => {
     if (!isChild(displayedFeature)) return;
     const displayedFeatureParent = allFeatures.get(displayedFeature.parentId);
     if (isParent(displayedFeatureParent)) return displayedFeatureParent;
-  })();
+  }, [allFeatures, displayedFeature]);
 
   const isComplete = quizTaker.remainingIds.size === 0;
 
   const answerBoxRef = useRef<HTMLInputElement>();
 
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [tilesLoaded, setTilesLoaded] = useState<boolean>(false);
+  const [isIdle, setIsIdle] = useState<boolean>(false);
 
   const handleReset = useCallback(() => {
     quizTakerDispatch({
@@ -51,17 +53,38 @@ const TakeQuiz = () => {
     }, 0);
   }, [quizTakerDispatch]);
 
+  const handleTilesLoaded = () => {
+    console.log("tiles loaded");
+    setMapLoaded(true);
+    setTilesLoaded(true);
+  };
+
+  const handleBoundsChanged = () => {
+    console.log("bounds changed");
+    setIsIdle(false);
+    setTilesLoaded(false);
+  };
+
+  const handleIdle = () => {
+    console.log("idle");
+    setIsIdle(true);
+  };
+
   useEffect(() => {
-    if (!map) return;
+    if (!isIdle || !tilesLoaded) return;
 
     if (isArea(displayedFeatureParent)) {
-      map.fitBounds(displayedFeatureParent.displayBounds, 100);
+      setTimeout(() => {
+        map.fitBounds(displayedFeatureParent.displayBounds, 100);
+      }, 0);
     }
 
     if (isRoot(displayedFeatureParent)) {
-      map.fitBounds(displayedFeature.displayBounds, 100);
+      setTimeout(() => {
+        map.fitBounds(displayedFeature.displayBounds, 100);
+      }, 0);
     }
-  }, [map, displayedFeature, displayedFeatureParent]);
+  }, [map, displayedFeature, displayedFeatureParent, isIdle, tilesLoaded]);
 
   /**Reset quiz on mount. */
   useEffect(() => {
@@ -70,7 +93,7 @@ const TakeQuiz = () => {
 
   return (
     <>
-      {!tilesLoaded && (
+      {!mapLoaded && (
         <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       )}
       {
@@ -85,7 +108,9 @@ const TakeQuiz = () => {
             defaultCenter={DEFAULT_CENTER}
             defaultZoom={DEFAULT_ZOOM}
             restriction={RESTRICTION}
-            onTilesLoaded={() => setTilesLoaded(true)}
+            onTilesLoaded={handleTilesLoaded}
+            onBoundsChanged={handleBoundsChanged}
+            onIdle={handleIdle}
           >
             {isArea(displayedFeatureParent) && (
               <Polygon
