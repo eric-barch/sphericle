@@ -30,7 +30,7 @@ const ChildFeatures = (props: ChildFeaturesProps) => {
   };
 
   return (
-    <div className={className + " space-y-1 h-full"}>
+    <div className={cn(className, "space-y-1 h-full")}>
       <Reorder.Group
         className="mt-1 space-y-1"
         axis="y"
@@ -67,17 +67,17 @@ const ChildFeature = (props: ChildFeatureProps) => {
 
   const { allFeatures } = useAllFeatures();
 
-  const featureState = useMemo(() => {
-    const featureState = allFeatures.get(featureId);
-    if (isChild(featureState)) return featureState;
+  const feature = useMemo(() => {
+    const feature = allFeatures.get(featureId);
+    if (isChild(feature)) return feature;
   }, [allFeatures, featureId]);
 
-  if (isArea(featureState)) {
-    return <Area areaState={featureState} />;
+  if (isArea(feature)) {
+    return <Area areaState={feature} />;
   }
 
-  if (isPoint(featureState)) {
-    return <Point pointState={featureState} />;
+  if (isPoint(feature)) {
+    return <Point pointState={feature} />;
   }
 };
 

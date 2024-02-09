@@ -1,7 +1,7 @@
 "use client";
 
-import { Polygon } from "@/components/map-drawings";
 import { ChildFeatures } from "@/components/build-quiz/child-features";
+import { Polygon } from "@/components/map-drawings";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
@@ -120,7 +120,7 @@ const BuildQuiz = () => {
         >
           {!displayedFeatureIsOpen && isArea(displayedFeatureParent) && (
             <Polygon
-              polygons={displayedFeatureParent.polygon}
+              polygon={displayedFeatureParent.polygon}
               strokeWeight={1.5}
               strokeColor="#b91c1c"
               fillOpacity={0}
@@ -128,7 +128,7 @@ const BuildQuiz = () => {
           )}
           {isArea(displayedFeature) && (
             <Polygon
-              polygons={displayedFeature.polygon}
+              polygon={displayedFeature.polygon}
               strokeWeight={1.5}
               strokeColor="#b91c1c"
               fillColor="#b91c1c"
