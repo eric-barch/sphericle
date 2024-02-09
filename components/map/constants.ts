@@ -1,11 +1,8 @@
-const RESTRICTION = {
-  latLngBounds: {
-    north: 85,
-    south: -85,
-    west: -180,
-    east: 180,
-  },
-  strictBounds: true,
+const DEFAULT_BOUNDS = {
+  north: 85,
+  south: -85,
+  west: -180,
+  east: 180,
 };
 
 const DEFAULT_CENTER = {
@@ -15,4 +12,9 @@ const DEFAULT_CENTER = {
 
 const DEFAULT_ZOOM = 1;
 
-export { RESTRICTION, DEFAULT_CENTER, DEFAULT_ZOOM };
+const RESTRICTION = {
+  latLngBounds: DEFAULT_BOUNDS,
+  strictBounds: true,
+};
+
+export { DEFAULT_BOUNDS, DEFAULT_CENTER, DEFAULT_ZOOM, RESTRICTION };

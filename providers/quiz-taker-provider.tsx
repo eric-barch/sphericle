@@ -40,6 +40,9 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
           rootId,
           allFeatures,
         );
+        newQuizTaker.currentId = newQuizTaker.remainingIds
+          .values()
+          .next().value;
 
         return newQuizTaker;
       }
@@ -49,6 +52,9 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
 
         newQuizTaker.remainingIds.delete(featureId);
         newQuizTaker.correctIds.add(featureId);
+        newQuizTaker.currentId = newQuizTaker.remainingIds
+          .values()
+          .next().value;
 
         return newQuizTaker;
       }
@@ -58,6 +64,9 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
 
         newQuizTaker.remainingIds.delete(featureId);
         newQuizTaker.incorrectIds.add(featureId);
+        newQuizTaker.currentId = newQuizTaker.remainingIds
+          .values()
+          .next().value;
 
         return newQuizTaker;
       }
@@ -65,6 +74,7 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
   };
 
   const initialQuizTaker: QuizTakerState = {
+    currentId: null,
     correctIds: new Set<string>(),
     incorrectIds: new Set<string>(),
     remainingIds: new Set<string>(),

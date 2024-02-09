@@ -1,78 +1,91 @@
 import { useQuizTaker } from "@/providers";
 import { QuizTakerDispatchType, ChildFeature } from "@/types";
-import { ChangeEvent, KeyboardEvent, RefObject, useState } from "react";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  RefObject,
+  forwardRef,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
 
 type AnswerBoxProps = {
   displayedFeature: ChildFeature;
-  inputRef: RefObject<HTMLInputElement>;
   disabled: boolean;
 };
 
-const AnswerBox = ({
-  displayedFeature,
-  inputRef,
-  disabled,
-}: AnswerBoxProps) => {
-  const { quizTakerDispatch } = useQuizTaker();
+const AnswerBox = forwardRef(
+  (props: AnswerBoxProps, ref: RefObject<HTMLInputElement>) => {
+    const { displayedFeature, disabled } = props;
 
-  const featureId = displayedFeature?.id;
-  const featureName =
-    displayedFeature?.userDefinedName || displayedFeature?.shortName;
+    const { quizTakerDispatch } = useQuizTaker();
 
-  const [input, setInput] = useState<string>("");
+    const featureId = displayedFeature?.id;
+    const featureName =
+      displayedFeature?.userDefinedName || displayedFeature?.shortName;
 
-  const checkAnswer = () => {
-    const normalizedAnswer = featureName.trim().toLowerCase();
-    const normalizedInput = input.trim().toLowerCase();
+    const [input, setInput] = useState<string>("");
 
-    if (normalizedAnswer === normalizedInput) {
-      toast.success(
-        displayedFeature.userDefinedName || displayedFeature.shortName,
-      );
+    const checkAnswer = () => {
+      const normalizedAnswer = featureName.trim().toLowerCase();
+      const normalizedInput = input.trim().toLowerCase();
 
-      quizTakerDispatch({
-        type: QuizTakerDispatchType.MARK_CORRECT,
-        featureId,
-      });
-    } else {
-      toast.error(
-        `You said: ${input}\nCorrect answer: ${
-          displayedFeature.userDefinedName || displayedFeature.shortName
-        }`,
-      );
+      if (normalizedAnswer === normalizedInput) {
+        toast.success(
+          displayedFeature.userDefinedName || displayedFeature.shortName,
+        );
 
-      quizTakerDispatch({
-        type: QuizTakerDispatchType.MARK_INCORRECT,
-        featureId,
-      });
-    }
+        quizTakerDispatch({
+          type: QuizTakerDispatchType.MARK_CORRECT,
+          featureId,
+        });
+      } else {
+        toast.error(
+          `You said: ${input}\nCorrect answer: ${
+            displayedFeature.userDefinedName || displayedFeature.shortName
+          }`,
+        );
 
-    inputRef.current.value = "";
-    setInput("");
-  };
+        quizTakerDispatch({
+          type: QuizTakerDispatchType.MARK_INCORRECT,
+          featureId,
+        });
+      }
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setInput(event.currentTarget.value);
-  };
+      ref.current.value = "";
+      setInput("");
+    };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      event.stopPropagation();
-      checkAnswer();
-    }
-  };
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+      setInput(event.currentTarget.value);
+    };
 
-  return (
-    <input
-      ref={inputRef}
-      disabled={disabled}
-      className="w-1/2 p-1 rounded-3xl text-left bg-white text-black border-2 border-gray-600 px-5 focus:outline-none absolute bottom-9"
-      onChange={handleInputChange}
-      onKeyDown={handleKeyDown}
-    />
-  );
-};
+    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+        checkAnswer();
+      }
+    };
+
+    useEffect(() => {
+      ref.current?.focus();
+    }, [ref]);
+
+    return (
+      <input
+        ref={ref}
+        disabled={disabled}
+        className="z-10 w-1/2 p-1 rounded-3xl text-left bg-white text-black border-2 border-gray-600 px-5 focus:outline-none absolute bottom-9"
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+      />
+    );
+  },
+);
+
+AnswerBox.displayName = "AnswerBox";
 
 export { AnswerBox };
