@@ -40,7 +40,7 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
       }
       case QuizBuilderDispatchType.SET_ADDING: {
         const newQuizBuilder = { ...quizBuilder };
-        const { lastFeature } = action;
+        const { lastAdding: lastFeature } = action;
         const featureId = action.featureId || action.feature.id;
 
         if (lastFeature?.childIds.size <= 0 && lastFeature?.id !== featureId) {
