@@ -12,9 +12,7 @@ type EditFeatureButtonProps =
       featureId: string;
       canAddSubfeature: true;
       isSelected: boolean;
-      isRenaming: boolean;
       isOpen: boolean;
-      isAdding: boolean;
     }
   | {
       nameInputRef: RefObject<HTMLInputElement>;
@@ -27,24 +25,21 @@ type EditFeatureButtonProps =
       isAdding?: never;
     };
 
-const EditFeatureButton = ({
-  nameInputRef: featureNameInputRef,
-  adderInputRef: featureAdderInputRef,
-  featureId,
-  isSelected,
-  isRenaming,
-  isOpen,
-  isAdding,
-  canAddSubfeature,
-}: EditFeatureButtonProps) => {
-  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+const EditFeatureButton = (props: EditFeatureButtonProps) => {
   const {
-    quizBuilder: { addingId: addingFeatureId },
-    quizBuilderDispatch,
-  } = useQuizBuilder();
+    nameInputRef,
+    adderInputRef,
+    featureId,
+    isSelected,
+    isOpen,
+    canAddSubfeature,
+  } = props;
+
+  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+  const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
 
   const handleOpenChange = () => {
-    /**If DropdownMenu open state changes, it means the feature was clicked and
+    /**If DropdownMenu open state changes, the feature was clicked and
      * should be selected. If it was already open, it should be set to
      * adding. */
     if (!isSelected) {
@@ -55,17 +50,14 @@ const EditFeatureButton = ({
     }
 
     if (isOpen) {
-      const lastFeatureState = (() => {
-        const lastFeatureState = allFeatures.get(addingFeatureId);
-
-        if (isParent(lastFeatureState)) {
-          return lastFeatureState;
-        }
+      const lastAdding = (() => {
+        const lastAdding = allFeatures.get(quizBuilder.addingId);
+        if (isParent(lastAdding)) return lastAdding;
       })();
 
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_ADDING,
-        lastFeature: lastFeatureState,
+        lastAdding,
         featureId,
       });
     }
@@ -83,17 +75,20 @@ const EditFeatureButton = ({
       isOpen: true,
     });
 
-    const lastFeatureState = allFeatures.get(addingFeatureId);
+    const lastAdding = (() => {
+      const lastAdding = allFeatures.get(quizBuilder.addingId);
+      if (isParent(lastAdding)) return lastAdding;
+    })();
 
     quizBuilderDispatch({
       type: QuizBuilderDispatchType.SET_ADDING,
-      lastFeature: isParent(lastFeatureState) ? lastFeatureState : null,
+      lastAdding,
       featureId,
     });
 
     setTimeout(() => {
-      featureAdderInputRef?.current?.focus();
-      featureAdderInputRef?.current?.select();
+      adderInputRef?.current?.focus();
+      adderInputRef?.current?.select();
     }, 0);
   };
 
@@ -104,8 +99,8 @@ const EditFeatureButton = ({
     });
 
     setTimeout(() => {
-      featureNameInputRef.current?.focus();
-      featureNameInputRef.current?.select();
+      nameInputRef.current?.focus();
+      nameInputRef.current?.select();
     }, 0);
   };
 

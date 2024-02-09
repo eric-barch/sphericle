@@ -200,13 +200,13 @@ type SetAdding = BaseQuizBuilderDispatch &
   (
     | {
         type: QuizBuilderDispatchType.SET_ADDING;
-        lastFeature: ParentFeature | null;
+        lastAdding: ParentFeature | null;
         feature: ParentFeature;
         featureId?: never;
       }
     | {
         type: QuizBuilderDispatchType.SET_ADDING;
-        lastFeature: ParentFeature | null;
+        lastAdding: ParentFeature | null;
         featureId: string;
         feature?: never;
       }

@@ -51,13 +51,13 @@ const Area = (props: AreaProps) => {
     if (isOpen !== isSelected) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_ADDING,
-        lastFeature: lastAdding,
+        lastAdding: lastAdding,
         featureId: area.id,
       });
     } else {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_ADDING,
-        lastFeature: lastAdding,
+        lastAdding: lastAdding,
         featureId: area.parentId,
       });
     }
