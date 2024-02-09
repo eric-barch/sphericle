@@ -1,58 +1,52 @@
 "use client";
 
-import { isArea, isPoint, isChild } from "@/helpers";
+import { isArea, isChild, isPoint } from "@/helpers";
+import { cn } from "@/lib/utils";
 import { useAllFeatures } from "@/providers";
 import { AllFeaturesDispatchType, ParentFeature } from "@/types";
 import { Reorder } from "framer-motion";
+import { RefObject, useMemo } from "react";
 import { Area } from "./area";
 import { FeatureAdder } from "./feature-adder";
 import { Point } from "./point";
 
-type ChildFeatureProps = {
-  featureAdderInputRef: React.RefObject<HTMLInputElement>;
+type ChildFeaturesProps = {
   className?: string;
   parent: ParentFeature;
   isAdding: boolean;
+  featureAdderInputRef: RefObject<HTMLInputElement>;
 };
 
-const ChildFeatures = ({
-  featureAdderInputRef,
-  className,
-  parent,
-  isAdding,
-}: ChildFeatureProps) => {
-  const { id: featureId, childIds: subfeatureIdsRaw } = parent;
+const ChildFeatures = (props: ChildFeaturesProps) => {
+  const { className, parent, isAdding, featureAdderInputRef } = props;
 
   const { allFeaturesDispatch } = useAllFeatures();
-
-  const subfeatureIds = Array.from(subfeatureIdsRaw);
-
-  const handleReorder = (subfeatureIds: string[]) => {
+  const handleReorder = (childIds: string[]) => {
     allFeaturesDispatch({
       type: AllFeaturesDispatchType.SET_CHILDREN,
-      featureId,
-      childFeatureIds: subfeatureIds,
+      featureId: parent.id,
+      childIds,
     });
   };
 
   return (
-    <div className={`${className} space-y-1 h-full`}>
+    <div className={className + " space-y-1 h-full"}>
       <Reorder.Group
         className="mt-1 space-y-1"
         axis="y"
-        values={subfeatureIds}
+        values={Array.from(parent.childIds)}
         onReorder={handleReorder}
       >
-        {subfeatureIds.map((subfeatureId) => (
-          // TODO: Fix animation
+        {Array.from(parent.childIds).map((childId) => (
           <Reorder.Item
-            key={subfeatureId}
+            key={childId}
             layout="position"
             layoutScroll
-            value={subfeatureId}
+            value={childId}
+            /**TODO: Fix animation and delete this prop. */
             transition={{ duration: 0 }}
           >
-            <Subfeature featureId={subfeatureId} />
+            <ChildFeature featureId={childId} />
           </Reorder.Item>
         ))}
       </Reorder.Group>
@@ -62,21 +56,21 @@ const ChildFeatures = ({
     </div>
   );
 };
+ChildFeatures.displayName = "ChildFeatures";
 
-type SubfeatureProps = {
+type ChildFeatureProps = {
   featureId: string;
 };
 
-const Subfeature = ({ featureId }: SubfeatureProps) => {
+const ChildFeature = (props: ChildFeatureProps) => {
+  const { featureId } = props;
+
   const { allFeatures } = useAllFeatures();
 
-  const featureState = (() => {
+  const featureState = useMemo(() => {
     const featureState = allFeatures.get(featureId);
-
-    if (isChild(featureState)) {
-      return featureState;
-    }
-  })();
+    if (isChild(featureState)) return featureState;
+  }, [allFeatures, featureId]);
 
   if (isArea(featureState)) {
     return <Area areaState={featureState} />;

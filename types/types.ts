@@ -125,13 +125,13 @@ type SetChildren = BaseAllFeaturesDispatch &
     | {
         type: AllFeaturesDispatchType.SET_CHILDREN;
         feature: ParentFeature;
-        childFeatureIds: string[];
+        childIds: string[];
         featureId?: never;
       }
     | {
         type: AllFeaturesDispatchType.SET_CHILDREN;
         featureId: string;
-        childFeatureIds: string[];
+        childIds: string[];
         feature?: never;
       }
   );
