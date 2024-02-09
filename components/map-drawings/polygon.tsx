@@ -23,7 +23,7 @@ type PolygonEventProps = {
 };
 
 type PolygonCustomProps = {
-  polygons?: GeoJsonPolygon | MultiPolygon;
+  polygon?: GeoJsonPolygon | MultiPolygon;
 };
 
 export type PolygonProps = google.maps.PolygonOptions &
@@ -40,7 +40,7 @@ function usePolygon(props: PolygonProps) {
     onDragEnd,
     onMouseOver,
     onMouseOut,
-    polygons,
+    polygon: geoJsonPolygon,
     ...polygonOptions
   } = props;
   /**Avoid triggering the below useEffect when callbacks change if the user
@@ -67,20 +67,20 @@ function usePolygon(props: PolygonProps) {
   const map = useContext(GoogleMapsContext)?.map;
 
   useMemo(() => {
-    if (!polygons || !geometryLibrary) {
+    if (!geoJsonPolygon || !geometryLibrary) {
       return;
     }
 
-    if (isPolygon(polygons)) {
-      const paths = polygons.coordinates[0].map(
+    if (isPolygon(geoJsonPolygon)) {
+      const paths = geoJsonPolygon.coordinates[0].map(
         (position) => new google.maps.LatLng(position[1], position[0]),
       );
 
       polygon.setPaths(paths);
     }
 
-    if (isMultiPolygon(polygons)) {
-      const paths = polygons.coordinates.map((polygon) =>
+    if (isMultiPolygon(geoJsonPolygon)) {
+      const paths = geoJsonPolygon.coordinates.map((polygon) =>
         polygon[0].map(
           (position) => new google.maps.LatLng(position[1], position[0]),
         ),
@@ -88,7 +88,7 @@ function usePolygon(props: PolygonProps) {
 
       polygon.setPaths(paths);
     }
-  }, [polygon, polygons, geometryLibrary]);
+  }, [polygon, geoJsonPolygon, geometryLibrary]);
 
   /** Instantiate polygon and attach to map. */
   useEffect(() => {
