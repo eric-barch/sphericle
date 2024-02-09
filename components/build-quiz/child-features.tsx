@@ -73,7 +73,7 @@ const ChildFeature = (props: ChildFeatureProps) => {
   }, [allFeatures, featureId]);
 
   if (isArea(feature)) {
-    return <Area areaState={feature} />;
+    return <Area area={feature} />;
   }
 
   if (isPoint(feature)) {

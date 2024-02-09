@@ -6,38 +6,25 @@ import { AreaState, QuizBuilderDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
 import { MouseEvent, useRef } from "react";
+import { ChildFeatures } from "./child-features";
 import { EditFeatureButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
-import { ChildFeatures } from "./child-features";
 
 type AreaProps = {
-  areaState: AreaState;
+  area: AreaState;
 };
 
-const Area = ({ areaState }: AreaProps) => {
-  const {
-    id: featureId,
-    userDefinedName,
-    shortName,
-    parentId: parentFeatureId,
-  } = areaState;
+const Area = (props: AreaProps) => {
+  const { area } = props;
 
   const { allFeatures } = useAllFeatures();
-  const {
-    quizBuilder: {
-      selectedId: selectedFeatureId,
-      openIds: openFeatureIds,
-      addingId: addingFeatureId,
-      renamingId: renamingFeatureId,
-    },
-    quizBuilderDispatch,
-  } = useQuizBuilder();
+  const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
 
-  const featureName = userDefinedName || shortName;
-  const isSelected = featureId === selectedFeatureId;
-  const isRenaming = featureId === renamingFeatureId;
-  const isOpen = openFeatureIds.has(featureId);
-  const isAdding = featureId === addingFeatureId;
+  const name = area.userDefinedName || area.shortName;
+  const isSelected = area.id === quizBuilder.selectedId;
+  const isRenaming = area.id === quizBuilder.renamingId;
+  const isAdding = area.id === quizBuilder.addingId;
+  const isOpen = quizBuilder.openIds.has(area.id);
 
   const featureNameInputRef = useRef<HTMLInputElement>();
   const featureAdderInputRef = useRef<HTMLInputElement>();
@@ -46,35 +33,32 @@ const Area = ({ areaState }: AreaProps) => {
     if (isSelected) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_IS_OPEN,
-        featureId,
+        featureId: area.id,
         isOpen: !isOpen,
       });
     } else {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_SELECTED,
-        featureId,
+        featureId: area.id,
       });
     }
 
-    const lastFeatureState = (() => {
-      const lastFeatureState = allFeatures.get(addingFeatureId);
-
-      if (isParent(lastFeatureState)) {
-        return lastFeatureState;
-      }
+    const lastAdding = (() => {
+      const lastAdding = allFeatures.get(quizBuilder.addingId);
+      if (isParent(lastAdding)) return lastAdding;
     })();
 
     if (isOpen !== isSelected) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_ADDING,
-        lastFeature: lastFeatureState,
-        featureId,
+        lastFeature: lastAdding,
+        featureId: area.id,
       });
     } else {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_ADDING,
-        lastFeature: lastFeatureState,
-        featureId: parentFeatureId,
+        lastFeature: lastAdding,
+        featureId: area.parentId,
       });
     }
   };
@@ -82,13 +66,10 @@ const Area = ({ areaState }: AreaProps) => {
   return (
     <Collapsible.Root className="relative" open={isOpen}>
       <div className="relative">
-        {/*EditFeatureButton must be BEFORE Collapsible.Trigger (rather than
-         * inside it, which would more closely align with actual UI appearance)
-         * to receive accessible focus in correct order. */}
         <EditFeatureButton
           featureNameInputRef={featureNameInputRef}
           featureAdderInputRef={featureAdderInputRef}
-          featureId={featureId}
+          featureId={area.id}
           canAddSubfeature
           isSelected={isSelected}
           isRenaming={isRenaming}
@@ -96,15 +77,15 @@ const Area = ({ areaState }: AreaProps) => {
           isAdding={isAdding}
         />
         <Collapsible.Trigger
-          className={`w-full p-1 bg-gray-600 rounded-2xl text-left ${
-            isSelected ? "outline outline-2 outline-red-700" : ""
+          className={`w-full p-1 bg-gray-600 rounded-2xl text-left${
+            isSelected && " outline outline-2 outline-red-700"
           }`}
           onClick={handleTriggerClick}
         >
           <FeatureName
             featureNameInputRef={featureNameInputRef}
-            featureId={featureId}
-            featureName={featureName}
+            featureId={area.id}
+            featureName={name}
             isRenaming={isRenaming}
           />
           <OpenChevron isOpen={isOpen} />
@@ -113,7 +94,7 @@ const Area = ({ areaState }: AreaProps) => {
       <Collapsible.Content>
         <ChildFeatures
           className="ml-10"
-          parent={areaState}
+          parent={area}
           isAdding={isAdding}
           featureAdderInputRef={featureAdderInputRef}
         />
@@ -126,10 +107,12 @@ type OpenChevronProps = {
   isOpen: boolean;
 };
 
-const OpenChevron = ({ isOpen }: OpenChevronProps) => {
+const OpenChevron = (props: OpenChevronProps) => {
+  const { isOpen } = props;
+
   return (
     <div className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl right-1">
-      <ChevronRight className={`${isOpen ? "rotate-90" : ""} w-6 h-6`} />
+      <ChevronRight className={`w-6 h-6${isOpen && " rotate-90"}`} />
     </div>
   );
 };
