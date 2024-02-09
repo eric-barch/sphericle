@@ -13,7 +13,7 @@ import {
   useReducer,
 } from "react";
 import { useAllFeatures } from ".";
-import { resetRemainingFeatureIds } from "../components/quiz-taker/quiz-taker.helpers";
+import { resetRemainingFeatureIds } from "../components/take-quiz/quiz-taker.helpers";
 
 const QuizTakerContext = createContext<QuizTakerState>(null);
 const QuizTakerDispatchContext =
