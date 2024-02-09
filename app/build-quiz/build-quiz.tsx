@@ -3,6 +3,7 @@
 import { ChildFeatures } from "@/components/build-quiz/child-features";
 import { Polygon } from "@/components/map";
 import {
+  DEFAULT_BOUNDS,
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
   RESTRICTION,
@@ -12,6 +13,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
+import { set } from "lodash";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -33,7 +35,7 @@ const BuildQuiz = () => {
   const displayedFeature = useMemo(() => {
     if (quizBuilder.searchResult) return quizBuilder.searchResult;
     const selectedFeature = allFeatures.get(quizBuilder.selectedId);
-    return isChild(selectedFeature) && selectedFeature;
+    if (isChild(selectedFeature)) return selectedFeature;
   }, [allFeatures, quizBuilder.searchResult, quizBuilder.selectedId]);
 
   const displayedFeatureParent = useMemo(() => {
@@ -44,29 +46,41 @@ const BuildQuiz = () => {
 
   const displayedFeatureIsOpen = quizBuilder.openIds.has(displayedFeature?.id);
 
+  const featureAdderInputRef = useRef<HTMLInputElement>();
+
   const [tilesLoaded, setTilesLoaded] = useState(false);
   const [isIdle, setIsIdle] = useState(false);
 
-  const featureAdderInputRef = useRef<HTMLInputElement>();
-
   useEffect(() => {
-    if (!isIdle) return;
+    let bounds: google.maps.LatLngBoundsLiteral;
 
     if (isArea(displayedFeature)) {
+      if (displayedFeatureIsOpen) {
+        bounds = displayedFeature.displayBounds;
+      }
+
       if (!displayedFeatureIsOpen) {
         if (isArea(displayedFeatureParent)) {
-          map.fitBounds(displayedFeatureParent.displayBounds);
+          bounds = displayedFeatureParent.displayBounds;
         }
 
         if (isRoot(displayedFeatureParent)) {
-          map.fitBounds(displayedFeature.displayBounds);
+          bounds = displayedFeature.displayBounds;
         }
       }
+    }
 
-      if (displayedFeatureIsOpen) {
-        map.fitBounds(displayedFeature.displayBounds);
+    if (isPoint(displayedFeature)) {
+      if (isArea(displayedFeatureParent)) {
+        bounds = displayedFeatureParent.displayBounds;
+      }
+
+      if (isRoot(displayedFeatureParent)) {
+        bounds = displayedFeature.displayBounds;
       }
     }
+
+    if (bounds) map?.fitBounds(bounds);
   }, [
     displayedFeature,
     displayedFeatureIsOpen,
@@ -100,9 +114,8 @@ const BuildQuiz = () => {
           mapId="696d0ea42431a75c"
           gestureHandling="greedy"
           disableDefaultUI
-          defaultCenter={DEFAULT_CENTER}
-          defaultZoom={DEFAULT_ZOOM}
           restriction={RESTRICTION}
+          defaultBounds={displayedFeature?.displayBounds || DEFAULT_BOUNDS}
           onTilesLoaded={() => setTilesLoaded(true)}
           onBoundsChanged={() => setIsIdle(false)}
           onIdle={() => setIsIdle(true)}

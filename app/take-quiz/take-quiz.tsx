@@ -19,10 +19,10 @@ const TakeQuiz = () => {
   const { quizTaker, quizTakerDispatch } = useQuizTaker();
   const map = useMap();
 
-  const displayedFeature = useMemo(() => {
+  const displayedFeature = (() => {
     const displayedFeature = allFeatures.get(quizTaker.currentId);
     if (isChild(displayedFeature)) return displayedFeature;
-  }, [allFeatures, quizTaker.currentId]);
+  })();
 
   const displayedFeatureParent = (() => {
     if (!isChild(displayedFeature)) return;
@@ -47,7 +47,7 @@ const TakeQuiz = () => {
     }, 0);
   }, [quizTakerDispatch]);
 
-  /**Set Map bounds when displayedFeature changes. */
+  /**Update Map bounds when displayedFeature changes. */
   useEffect(() => {
     const bounds = isArea(displayedFeatureParent)
       ? displayedFeatureParent.displayBounds
@@ -88,14 +88,6 @@ const TakeQuiz = () => {
         onBoundsChanged={() => setIsIdle(false)}
         onIdle={() => setIsIdle(true)}
       >
-        {isArea(displayedFeatureParent) && (
-          <Polygon
-            polygon={displayedFeatureParent.polygon}
-            strokeWeight={1.5}
-            strokeColor="#b91c1c"
-            fillOpacity={0}
-          />
-        )}
         {isArea(displayedFeature) && (
           <Polygon
             polygon={displayedFeature.polygon}
