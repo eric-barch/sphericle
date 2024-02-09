@@ -6,7 +6,7 @@ import { AnswerBox } from "@/components/take-quiz/answer-box";
 import { CompleteDialog } from "@/components/take-quiz/complete-dialog";
 import { ScoreBox } from "@/components/take-quiz/score-box";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isArea, isChild, isParent, isPoint } from "@/helpers";
+import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
 import { useAllFeatures, useQuizTaker } from "@/providers";
 import { QuizTakerDispatchType } from "@/types";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
@@ -30,7 +30,7 @@ const TakeQuiz = () => {
     if (isParent(displayedFeatureParent)) return displayedFeatureParent;
   })();
 
-  const isComplete = quizTaker.remainingIds.size === 0;
+  const quizIsComplete = quizTaker.remainingIds.size === 0;
 
   const answerBoxRef = useRef<HTMLInputElement>();
 
@@ -47,18 +47,25 @@ const TakeQuiz = () => {
     }, 0);
   }, [quizTakerDispatch]);
 
-  /**Update Map bounds when displayedFeature changes. */
   useEffect(() => {
-    const bounds = isArea(displayedFeatureParent)
-      ? displayedFeatureParent.displayBounds
-      : displayedFeature?.displayBounds;
+    /**Must check if map is idle before fitting bounds. */
+    if (!isIdle) return;
 
-    setTimeout(() => {
+    let bounds: google.maps.LatLngBoundsLiteral;
+
+    if (isArea(displayedFeatureParent)) {
+      bounds = displayedFeatureParent.displayBounds;
+    }
+
+    if (isRoot(displayedFeatureParent)) {
+      bounds = displayedFeature?.displayBounds;
+    }
+
+    if (bounds) {
       map?.fitBounds(bounds, PADDING);
-    }, 0);
+    }
   }, [displayedFeature, displayedFeatureParent, isIdle, map, tilesLoaded]);
 
-  /**Reset quiz on mount. */
   useEffect(() => {
     handleReset();
   }, [handleReset]);
@@ -73,7 +80,7 @@ const TakeQuiz = () => {
           <AnswerBox
             ref={answerBoxRef}
             displayedFeature={displayedFeature}
-            disabled={isComplete}
+            disabled={quizIsComplete}
           />
         </>
       )}
