@@ -45,11 +45,12 @@ const BuildQuiz = () => {
   const displayedFeatureIsOpen = quizBuilder.openIds.has(displayedFeature?.id);
 
   const [tilesLoaded, setTilesLoaded] = useState(false);
+  const [isIdle, setIsIdle] = useState(false);
 
   const featureAdderInputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    if (!map) return;
+    if (!isIdle) return;
 
     if (isArea(displayedFeature)) {
       if (!displayedFeatureIsOpen) {
@@ -66,7 +67,13 @@ const BuildQuiz = () => {
         map.fitBounds(displayedFeature.displayBounds);
       }
     }
-  }, [displayedFeature, displayedFeatureIsOpen, displayedFeatureParent, map]);
+  }, [
+    displayedFeature,
+    displayedFeatureIsOpen,
+    displayedFeatureParent,
+    isIdle,
+    map,
+  ]);
 
   return (
     <>
@@ -74,7 +81,7 @@ const BuildQuiz = () => {
         <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       )}
       <SplitPane>
-        <div className="relative h-full mb-3">
+        <div className="relative h-full">
           <ChildFeatures
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
             adderInputRef={featureAdderInputRef}
@@ -97,6 +104,8 @@ const BuildQuiz = () => {
           defaultZoom={DEFAULT_ZOOM}
           restriction={RESTRICTION}
           onTilesLoaded={() => setTilesLoaded(true)}
+          onBoundsChanged={() => setIsIdle(false)}
+          onIdle={() => setIsIdle(true)}
         >
           {!displayedFeatureIsOpen && isArea(displayedFeatureParent) && (
             <Polygon
