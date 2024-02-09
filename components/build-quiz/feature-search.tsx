@@ -14,19 +14,19 @@ import { FocusEvent, RefObject, useRef, useState } from "react";
 import { AdderInput } from "./adder-input";
 import { AdderOptions } from "./adder-options";
 
-type FeatureAdderProps = {
+type FeatureSearch = {
   inputRef: RefObject<HTMLInputElement>;
-  feature: ParentFeature;
+  parent: ParentFeature;
 };
 
-const FeatureAdder = (props: FeatureAdderProps) => {
-  const { inputRef, feature } = props;
+const FeatureSearch = (props: FeatureSearch) => {
+  const { inputRef, parent } = props;
 
   const { allFeaturesDispatch } = useAllFeatures();
   const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
-  const { areaSearch, pointSearch } = useFeatureSearches(feature.id);
+  const { areaSearch, pointSearch } = useFeatureSearches(parent.id);
 
-  const isSelected = feature.id === quizBuilder.selectedId;
+  const parentIsSelected = parent.id === quizBuilder.selectedId;
 
   const [selectParentOnInput, setSelectParentOnInput] = useState(true);
   const [featureType, setFeatureTypeRaw] = useState<FeatureType>(
@@ -34,19 +34,17 @@ const FeatureAdder = (props: FeatureAdderProps) => {
   );
   const [input, setInput] = useState<string>("");
 
-  const featureAdderRef = useRef<HTMLDivElement>(null);
+  const featureSearchRef = useRef<HTMLDivElement>(null);
 
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
-    if (event.currentTarget.contains(event.relatedTarget)) {
-      return;
-    }
+    if (event.currentTarget.contains(event.relatedTarget)) return;
 
     /**User is done adding features at this level. Select its parent on next
      * input change. */
     setSelectParentOnInput(true);
   };
 
-  const handleSelectResult = (selectedResult: ChildFeature) => {
+  const handleSelectOption = (selectedOption: ChildFeature) => {
     if (inputRef) {
       inputRef.current.value = "";
     }
@@ -59,13 +57,13 @@ const FeatureAdder = (props: FeatureAdderProps) => {
 
     allFeaturesDispatch({
       type: AllFeaturesDispatchType.ADD_CHILD,
-      featureId: feature.id,
-      childFeature: selectedResult,
+      featureId: parent.id,
+      childFeature: selectedOption,
     });
 
     quizBuilderDispatch({
       type: QuizBuilderDispatchType.SET_SELECTED,
-      featureId: selectedResult.id,
+      featureId: selectedOption.id,
     });
 
     quizBuilderDispatch({
@@ -80,10 +78,10 @@ const FeatureAdder = (props: FeatureAdderProps) => {
   const setFeatureType = (featureType: FeatureType) => {
     setFeatureTypeRaw(featureType);
 
-    if (isSelected && selectParentOnInput) {
+    if (parentIsSelected && selectParentOnInput) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_SELECTED,
-        featureId: feature.id,
+        featureId: parent.id,
       });
     }
 
@@ -93,14 +91,14 @@ const FeatureAdder = (props: FeatureAdderProps) => {
   };
 
   return (
-    <div ref={featureAdderRef} className="relative" onBlur={handleBlur}>
-      <Combobox onChange={handleSelectResult}>
+    <div ref={featureSearchRef} className="relative" onBlur={handleBlur}>
+      <Combobox onChange={handleSelectOption}>
         {({ activeOption }) => (
           <>
             <AdderInput
               ref={inputRef}
-              featureAdderRef={featureAdderRef}
-              feature={feature}
+              featureAdderRef={featureSearchRef}
+              feature={parent}
               selectParentOnInput={selectParentOnInput}
               input={input}
               featureType={featureType}
@@ -123,4 +121,4 @@ const FeatureAdder = (props: FeatureAdderProps) => {
   );
 };
 
-export { FeatureAdder };
+export { FeatureSearch };
