@@ -30,17 +30,17 @@ const BuildQuiz = () => {
     [rootId, quizBuilder.addingId],
   );
 
-  const displayedFeature = (() => {
+  const displayedFeature = useMemo(() => {
     if (quizBuilder.searchResult) return quizBuilder.searchResult;
     const selectedFeature = allFeatures.get(quizBuilder.selectedId);
     return isChild(selectedFeature) && selectedFeature;
-  })();
+  }, [allFeatures, quizBuilder.searchResult, quizBuilder.selectedId]);
 
-  const displayedFeatureParent = (() => {
+  const displayedFeatureParent = useMemo(() => {
     if (!isChild(displayedFeature)) return;
     const displayedFeatureParent = allFeatures.get(displayedFeature.parentId);
     if (isParent(displayedFeatureParent)) return displayedFeatureParent;
-  })();
+  }, [allFeatures, displayedFeature]);
 
   const displayedFeatureIsOpen = quizBuilder.openIds.has(displayedFeature?.id);
 

@@ -5,6 +5,7 @@ import {
   useImperativeHandle,
   useMemo,
   useRef,
+  useState,
 } from "react";
 
 import { GoogleMapsContext, useMapsLibrary } from "@vis.gl/react-google-maps";
@@ -66,7 +67,32 @@ function usePolygon(props: PolygonProps) {
 
   const map = useContext(GoogleMapsContext)?.map;
 
-  useMemo(() => {
+  const [isIdle, setIsIdle] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    const handleIdle = () => setIsIdle(true);
+    const handleBoundsChanged = () => setIsIdle(false);
+
+    // Add event listeners
+    const idleListener = google.maps.event.addListener(map, "idle", handleIdle);
+    const boundsChangedListener = google.maps.event.addListener(
+      map,
+      "bounds_changed",
+      handleBoundsChanged,
+    );
+
+    // Cleanup: remove event listeners when the component unmounts
+    return () => {
+      google.maps.event.removeListener(idleListener);
+      google.maps.event.removeListener(boundsChangedListener);
+    };
+  }, [map]);
+
+  useEffect(() => {
     if (!geoJsonPolygon || !geometryLibrary) {
       return;
     }
@@ -92,10 +118,7 @@ function usePolygon(props: PolygonProps) {
 
   /** Instantiate polygon and attach to map. */
   useEffect(() => {
-    if (!map) {
-      if (map === undefined)
-        console.error("<Polygon> has to be inside a Map component.");
-
+    if (!map || !isIdle) {
       return;
     }
 
@@ -104,7 +127,7 @@ function usePolygon(props: PolygonProps) {
     return () => {
       polygon.setMap(null);
     };
-  }, [map, polygon]);
+  }, [map, polygon, isIdle]);
 
   /** Attach and re-attach event handlers when properties change. */
   useEffect(() => {

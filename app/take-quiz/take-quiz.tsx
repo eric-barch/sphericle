@@ -24,11 +24,11 @@ const TakeQuiz = () => {
     if (isChild(displayedFeature)) return displayedFeature;
   }, [allFeatures, quizTaker.currentId]);
 
-  const displayedFeatureParent = useMemo(() => {
+  const displayedFeatureParent = (() => {
     if (!isChild(displayedFeature)) return;
     const displayedFeatureParent = allFeatures.get(displayedFeature.parentId);
     if (isParent(displayedFeatureParent)) return displayedFeatureParent;
-  }, [allFeatures, displayedFeature]);
+  })();
 
   const isComplete = quizTaker.remainingIds.size === 0;
 
@@ -47,6 +47,7 @@ const TakeQuiz = () => {
     }, 0);
   }, [quizTakerDispatch]);
 
+  /**Set Map bounds when displayedFeature changes. */
   useEffect(() => {
     const bounds = isArea(displayedFeatureParent)
       ? displayedFeatureParent.displayBounds
