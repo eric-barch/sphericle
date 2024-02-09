@@ -59,7 +59,13 @@ const Area = (props: AreaProps) => {
         quizBuilderDispatch({
           type: QuizBuilderDispatchType.SET_IS_OPEN,
           featureId: area.id,
-          isOpen: !isOpen,
+          isOpen: false,
+        });
+
+        quizBuilderDispatch({
+          type: QuizBuilderDispatchType.SET_ADDING,
+          lastAdding: area,
+          featureId: area.parentId,
         });
       }
     }
