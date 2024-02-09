@@ -97,7 +97,7 @@ const BuildQuiz = () => {
         <div className="relative h-full">
           <ChildFeatures
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
-            featureAdderInputRef={featureAdderInputRef}
+            adderInputRef={featureAdderInputRef}
             parent={root}
             isAdding={rootIsAdding}
           />
