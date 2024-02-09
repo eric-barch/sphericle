@@ -14,46 +14,29 @@ import {
 import { Combobox } from "@headlessui/react";
 import { useEffect } from "react";
 
-type FeatureAdderOptionsProps = {
+type AdderOptionsProps = {
   activeOption: ChildFeature;
-  areaSearch: AreaSearch;
-  pointSearch: PointSearch;
   input: string;
   featureType: FeatureType;
+  areaSearch: AreaSearch;
+  pointSearch: PointSearch;
 };
 
-const FeatureAdderOptions = ({
-  activeOption,
-  areaSearch,
-  pointSearch,
-  input,
-  featureType,
-}: FeatureAdderOptionsProps) => {
+const AdderOptions = (props: AdderOptionsProps) => {
+  const { activeOption, input, featureType, areaSearch, pointSearch } = props;
+
   const { quizBuilderDispatch } = useQuizBuilder();
 
   const placeholder = (() => {
     if (featureType === FeatureType.AREA) {
-      if (input !== areaSearch.term) {
-        return "Press Enter to Search";
-      }
-
-      if (areaSearch.status === SearchStatus.SEARCHING) {
-        return "Searching...";
-      }
-
-      if (!areaSearch.results || areaSearch.results.length === 0) {
-        return "No results found.";
-      }
+      if (input !== areaSearch.term) return "Press Enter to Search";
+      if (areaSearch.status === SearchStatus.SEARCHING) return "Searching...";
+      if (areaSearch.results?.length === 0) return "No results found.";
     }
 
     if (featureType === FeatureType.POINT) {
-      if (pointSearch.status === SearchStatus.SEARCHING) {
-        return "Searching...";
-      }
-
-      if (!pointSearch.results || pointSearch.results.length === 0) {
-        return "No results found.";
-      }
+      if (pointSearch.status === SearchStatus.SEARCHING) return "Searching...";
+      if (pointSearch.results?.length === 0) return "No results found.";
     }
   })();
 
@@ -70,17 +53,17 @@ const FeatureAdderOptions = ({
   return (
     <Combobox.Options className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-500 p-1 space-y-1">
       {placeholder ? (
-        <OptionsPlaceholder placeholder={placeholder} />
+        <div className="pl-7 p-1">{placeholder}</div>
       ) : (
         (() => {
           switch (featureType) {
             case FeatureType.AREA:
-              return areaSearch.results.map((featureState: AreaState) => (
-                <Option key={featureState.id} featureState={featureState} />
+              return areaSearch.results.map((area: AreaState) => (
+                <Option key={area.id} feature={area} />
               ));
             case FeatureType.POINT:
-              return pointSearch.results.map((featureState: PointState) => (
-                <Option key={featureState.id} featureState={featureState} />
+              return pointSearch.results.map((point: PointState) => (
+                <Option key={point.id} feature={point} />
               ));
           }
         })()
@@ -89,32 +72,24 @@ const FeatureAdderOptions = ({
   );
 };
 
-type OptionsPlaceholderProps = {
-  placeholder: string;
-};
-
-const OptionsPlaceholder = ({ placeholder }: OptionsPlaceholderProps) => {
-  return <div className="pl-7 p-1">{placeholder}</div>;
-};
-
 type OptionProps = {
-  featureState: AreaState | PointState;
+  feature: AreaState | PointState;
 };
 
-const Option = ({ featureState }: OptionProps) => {
-  const { longName } = featureState;
+const Option = (props: OptionProps) => {
+  const { feature } = props;
 
   return (
     <Combobox.Option
-      value={featureState}
+      value={feature}
       as="div"
       className={({ active }) =>
         `p-1 pl-7 rounded-2xl cursor-pointer ${active ? "bg-gray-600" : ""}`
       }
     >
-      {longName}
+      {feature.longName}
     </Combobox.Option>
   );
 };
 
-export { FeatureAdderOptions };
+export { AdderOptions };

@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeatureSearches } from "@/hooks/use-feature-searches.hook";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
 import {
   AllFeaturesDispatchType,
@@ -10,9 +11,8 @@ import {
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { FocusEvent, RefObject, useRef, useState } from "react";
-import { useFeatureSearches } from "../../hooks/use-feature-searches.hook";
 import { AdderInput } from "./adder-input";
-import { FeatureAdderOptions } from "./feature-adder-options";
+import { AdderOptions } from "./adder-options";
 
 type FeatureAdderProps = {
   inputRef: RefObject<HTMLInputElement>;
@@ -106,7 +106,7 @@ const FeatureAdder = (props: FeatureAdderProps) => {
               setInput={setInput}
               setFeatureType={setFeatureType}
             />
-            <FeatureAdderOptions
+            <AdderOptions
               activeOption={activeOption}
               input={input}
               featureType={featureType}
