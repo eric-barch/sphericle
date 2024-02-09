@@ -7,8 +7,8 @@ import { RefObject } from "react";
 
 type EditFeatureButtonProps =
   | {
-      featureNameInputRef: RefObject<HTMLInputElement>;
-      featureAdderInputRef: RefObject<HTMLInputElement>;
+      nameInputRef: RefObject<HTMLInputElement>;
+      adderInputRef: RefObject<HTMLInputElement>;
       featureId: string;
       canAddSubfeature: true;
       isSelected: boolean;
@@ -17,8 +17,8 @@ type EditFeatureButtonProps =
       isAdding: boolean;
     }
   | {
-      featureNameInputRef: RefObject<HTMLInputElement>;
-      featureAdderInputRef?: never;
+      nameInputRef: RefObject<HTMLInputElement>;
+      adderInputRef?: never;
       featureId: string;
       canAddSubfeature?: never;
       isSelected: boolean;
@@ -28,8 +28,8 @@ type EditFeatureButtonProps =
     };
 
 const EditFeatureButton = ({
-  featureNameInputRef,
-  featureAdderInputRef,
+  nameInputRef: featureNameInputRef,
+  adderInputRef: featureAdderInputRef,
   featureId,
   isSelected,
   isRenaming,

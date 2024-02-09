@@ -26,10 +26,10 @@ const Area = (props: AreaProps) => {
   const isAdding = area.id === quizBuilder.addingId;
   const isOpen = quizBuilder.openIds.has(area.id);
 
-  const featureNameInputRef = useRef<HTMLInputElement>();
-  const featureAdderInputRef = useRef<HTMLInputElement>();
+  const nameInputRef = useRef<HTMLInputElement>();
+  const adderInputRef = useRef<HTMLInputElement>();
 
-  const handleTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (isSelected) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_IS_OPEN,
@@ -67,8 +67,8 @@ const Area = (props: AreaProps) => {
     <Collapsible.Root className="relative" open={isOpen}>
       <div className="relative">
         <EditFeatureButton
-          featureNameInputRef={featureNameInputRef}
-          featureAdderInputRef={featureAdderInputRef}
+          nameInputRef={nameInputRef}
+          adderInputRef={adderInputRef}
           featureId={area.id}
           canAddSubfeature
           isSelected={isSelected}
@@ -80,12 +80,12 @@ const Area = (props: AreaProps) => {
           className={`w-full p-1 bg-gray-600 rounded-2xl text-left${
             isSelected && " outline outline-2 outline-red-700"
           }`}
-          onClick={handleTriggerClick}
+          onClick={handleClick}
         >
           <FeatureName
-            featureNameInputRef={featureNameInputRef}
+            nameInputRef={nameInputRef}
             featureId={area.id}
-            featureName={name}
+            name={name}
             isRenaming={isRenaming}
           />
           <OpenChevron isOpen={isOpen} />
@@ -96,7 +96,7 @@ const Area = (props: AreaProps) => {
           className="ml-10"
           parent={area}
           isAdding={isAdding}
-          featureAdderInputRef={featureAdderInputRef}
+          adderInputRef={adderInputRef}
         />
       </Collapsible.Content>
     </Collapsible.Root>

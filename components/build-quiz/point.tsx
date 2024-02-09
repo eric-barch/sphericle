@@ -8,31 +8,25 @@ import { EditFeatureButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
 
 type PointProps = {
-  pointState: PointState;
+  point: PointState;
 };
 
-const Point = ({ pointState }: PointProps) => {
-  const { id: featureId, userDefinedName, shortName } = pointState;
+const Point = (props: PointProps) => {
+  const { point } = props;
 
-  const {
-    quizBuilder: {
-      selectedId: selectedFeatureId,
-      renamingId: renamingFeatureId,
-    },
-    quizBuilderDispatch,
-  } = useQuizBuilder();
+  const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
 
-  const featureName = userDefinedName || shortName;
-  const isSelected = featureId === selectedFeatureId;
-  const isRenaming = featureId === renamingFeatureId;
+  const name = point.userDefinedName || point.shortName;
+  const isSelected = point.id === quizBuilder.selectedId;
+  const isRenaming = point.id === quizBuilder.renamingId;
 
-  const featureNameInputRef = useRef<HTMLInputElement>();
+  const nameInputRef = useRef<HTMLInputElement>();
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (!isSelected) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_SELECTED,
-        featureId,
+        featureId: point.id,
       });
     }
   };
@@ -40,22 +34,22 @@ const Point = ({ pointState }: PointProps) => {
   return (
     <div className="relative">
       <EditFeatureButton
-        featureNameInputRef={featureNameInputRef}
-        featureId={featureId}
+        nameInputRef={nameInputRef}
+        featureId={point.id}
         isSelected={isSelected}
         isRenaming={isRenaming}
       />
       <Button
-        className={`w-full p-1 cursor-pointer rounded-2xl text-left bg-gray-600 ${
-          isSelected ? "outline outline-2 outline-red-700" : ""
+        className={`w-full p-1 cursor-pointer rounded-2xl text-left bg-gray-600${
+          isSelected && " outline outline-2 outline-red-700"
         }`}
         onClick={handleClick}
       >
         <FeatureName
-          featureNameInputRef={featureNameInputRef}
-          featureId={featureId}
-          featureName={featureName}
+          featureId={point.id}
+          name={name}
           isRenaming={isRenaming}
+          nameInputRef={nameInputRef}
         />
       </Button>
     </div>

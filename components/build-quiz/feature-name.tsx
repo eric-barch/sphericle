@@ -3,16 +3,16 @@ import { AllFeaturesDispatchType, QuizBuilderDispatchType } from "@/types";
 import { KeyboardEvent, useState } from "react";
 
 type FeatureNameProps = {
-  featureNameInputRef: React.RefObject<HTMLInputElement>;
+  nameInputRef: React.RefObject<HTMLInputElement>;
   featureId: string;
-  featureName: string;
+  name: string;
   isRenaming: boolean;
 };
 
 const FeatureName = ({
-  featureNameInputRef,
+  nameInputRef: featureNameInputRef,
   featureId,
-  featureName,
+  name: featureName,
   isRenaming,
 }: FeatureNameProps) => {
   const { allFeaturesDispatch } = useAllFeatures();

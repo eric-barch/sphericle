@@ -14,11 +14,16 @@ type ChildFeaturesProps = {
   className?: string;
   parent: ParentFeature;
   isAdding: boolean;
-  featureAdderInputRef: RefObject<HTMLInputElement>;
+  adderInputRef: RefObject<HTMLInputElement>;
 };
 
 const ChildFeatures = (props: ChildFeaturesProps) => {
-  const { className, parent, isAdding, featureAdderInputRef } = props;
+  const {
+    className,
+    parent,
+    isAdding,
+    adderInputRef: featureAdderInputRef,
+  } = props;
 
   const { allFeaturesDispatch } = useAllFeatures();
   const handleReorder = (childIds: string[]) => {
@@ -77,7 +82,7 @@ const ChildFeature = (props: ChildFeatureProps) => {
   }
 
   if (isPoint(feature)) {
-    return <Point pointState={feature} />;
+    return <Point point={feature} />;
   }
 };
 
