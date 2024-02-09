@@ -3,27 +3,29 @@
 import { isArea, isChild, isPoint } from "@/helpers";
 import { cn } from "@/lib/utils";
 import { useAllFeatures } from "@/providers";
-import { AllFeaturesDispatchType, ParentFeature } from "@/types";
+import { AllFeaturesDispatchType, ParentFeature, Root } from "@/types";
 import { Reorder } from "framer-motion";
 import { RefObject, useMemo } from "react";
 import { Area } from "./area";
 import { FeatureAdder } from "./feature-adder";
 import { Point } from "./point";
 
-type ChildFeaturesProps = {
-  className?: string;
-  parent: ParentFeature;
-  isAdding: boolean;
-  adderInputRef: RefObject<HTMLInputElement>;
-};
+type ChildFeaturesProps =
+  | {
+      className?: string;
+      parent: ParentFeature;
+      isAdding: boolean;
+      featureSearchRef: RefObject<HTMLInputElement>;
+    }
+  | {
+      className?: string;
+      parent: Root;
+      isAdding: boolean;
+      featureSearchRef?: never;
+    };
 
 const ChildFeatures = (props: ChildFeaturesProps) => {
-  const {
-    className,
-    parent,
-    isAdding,
-    adderInputRef: featureAdderInputRef,
-  } = props;
+  const { className, parent, isAdding, featureSearchRef } = props;
 
   const { allFeaturesDispatch } = useAllFeatures();
   const handleReorder = (childIds: string[]) => {
@@ -56,7 +58,7 @@ const ChildFeatures = (props: ChildFeaturesProps) => {
         ))}
       </Reorder.Group>
       {isAdding && (
-        <FeatureAdder inputRef={featureAdderInputRef} feature={parent} />
+        <FeatureAdder inputRef={featureSearchRef} feature={parent} />
       )}
     </div>
   );

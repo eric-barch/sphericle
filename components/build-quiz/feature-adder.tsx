@@ -47,7 +47,10 @@ const FeatureAdder = (props: FeatureAdderProps) => {
   };
 
   const handleSelectResult = (selectedResult: ChildFeature) => {
-    inputRef.current.value = "";
+    if (inputRef) {
+      inputRef.current.value = "";
+    }
+
     setInput("");
 
     /**User is adding multiple features at this level. Cancel parent selection
