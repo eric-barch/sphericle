@@ -74,7 +74,7 @@ const BuildQuiz = () => {
         <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       )}
       <SplitPane>
-        <div className="relative h-full">
+        <div className="relative h-full mb-3">
           <ChildFeatures
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
             adderInputRef={featureAdderInputRef}

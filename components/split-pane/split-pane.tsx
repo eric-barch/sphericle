@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
   Fragment,
   MouseEvent,
@@ -10,10 +11,13 @@ import {
 } from "react";
 
 type SplitPaneProps = {
+  className?: string;
   children: ReactNode[];
 };
 
-const SplitPane = ({ children }: SplitPaneProps) => {
+const SplitPane = (props: SplitPaneProps) => {
+  const { className, children } = props;
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [prevContainerWidth, setPrevContainerWidth] = useState<number>(0);
@@ -103,7 +107,7 @@ const SplitPane = ({ children }: SplitPaneProps) => {
 
   return (
     <div
-      className="flex flex-grow relative"
+      className={cn(className, "flex flex-grow relative")}
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
