@@ -41,7 +41,7 @@ const Point = (props: PointProps) => {
       />
       <Button
         className={`w-full p-1 cursor-pointer rounded-2xl text-left bg-gray-600${
-          isSelected && " outline outline-2 outline-red-700"
+          isSelected ? " outline outline-2 outline-red-700" : ""
         }`}
         onClick={handleClick}
       >
