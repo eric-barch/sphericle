@@ -11,7 +11,7 @@ import {
 import { Combobox } from "@headlessui/react";
 import { FocusEvent, RefObject, useRef, useState } from "react";
 import { useFeatureSearches } from "../../hooks/use-feature-searches.hook";
-import { FeatureAdderInput } from "./feature-adder-input";
+import { AdderInput } from "./adder-input";
 import { FeatureAdderOptions } from "./feature-adder-options";
 
 type FeatureAdderProps = {
@@ -94,10 +94,10 @@ const FeatureAdder = (props: FeatureAdderProps) => {
       <Combobox onChange={handleSelectResult}>
         {({ activeOption }) => (
           <>
-            <FeatureAdderInput
-              inputRef={inputRef}
+            <AdderInput
+              ref={inputRef}
               featureAdderRef={featureAdderRef}
-              featureState={feature}
+              feature={feature}
               selectParentOnInput={selectParentOnInput}
               input={input}
               featureType={featureType}
