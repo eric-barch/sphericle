@@ -1,7 +1,12 @@
 "use client";
 
 import { ChildFeatures } from "@/components/build-quiz/child-features";
-import { Polygon } from "@/components/map-drawings";
+import { Polygon } from "@/components/map";
+import {
+  DEFAULT_CENTER,
+  DEFAULT_ZOOM,
+  RESTRICTION,
+} from "@/components/map/constants";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
@@ -10,60 +15,42 @@ import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const DEFAULT_CENTER = {
-  lat: 0,
-  lng: 0,
-};
-
-const DEFAULT_ZOOM = 1;
-
-const RESTRICTION = {
-  latLngBounds: {
-    north: 85,
-    south: -85,
-    west: -180,
-    east: 180,
-  },
-  strictBounds: true,
-};
-
 const BuildQuiz = () => {
   const { rootId, allFeatures } = useAllFeatures();
-
-  const {
-    quizBuilder: { searchResult, selectedId, addingId, openIds },
-  } = useQuizBuilder();
-
+  const { quizBuilder } = useQuizBuilder();
   const map = useMap();
 
-  const root = useMemo(() => {
+  const root = (() => {
     const root = allFeatures.get(rootId);
     if (isRoot(root)) return root;
-  }, [rootId, allFeatures]);
+  })();
 
-  const rootIsAdding = useMemo(() => rootId === addingId, [rootId, addingId]);
+  const rootIsAdding = useMemo(
+    () => rootId === quizBuilder.addingId,
+    [rootId, quizBuilder.addingId],
+  );
 
-  const displayedFeature = useMemo(() => {
-    if (searchResult) return searchResult;
-
-    const selectedFeature = allFeatures.get(selectedId);
+  const displayedFeature = (() => {
+    if (quizBuilder.searchResult) return quizBuilder.searchResult;
+    const selectedFeature = allFeatures.get(quizBuilder.selectedId);
     return isChild(selectedFeature) && selectedFeature;
-  }, [searchResult, selectedId, allFeatures]);
+  })();
 
-  const displayedFeatureParent = useMemo(() => {
+  const displayedFeatureParent = (() => {
     if (!isChild(displayedFeature)) return;
-
     const displayedFeatureParent = allFeatures.get(displayedFeature.parentId);
     if (isParent(displayedFeatureParent)) return displayedFeatureParent;
-  }, [displayedFeature, allFeatures]);
+  })();
 
-  const displayedFeatureIsOpen = openIds.has(displayedFeature?.id);
+  const displayedFeatureIsOpen = quizBuilder.openIds.has(displayedFeature?.id);
 
   const [tilesLoaded, setTilesLoaded] = useState(false);
 
   const featureAdderInputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
+    if (!map) return;
+
     if (isArea(displayedFeature)) {
       if (!displayedFeatureIsOpen) {
         if (isArea(displayedFeatureParent)) {
@@ -71,14 +58,7 @@ const BuildQuiz = () => {
         }
 
         if (isRoot(displayedFeatureParent)) {
-          /**TODO: Only way I've been able to prevent fitBounds from
-           * occasionally ending early over long zooms the first time it's
-           * called. */
           map.fitBounds(displayedFeature.displayBounds);
-
-          setTimeout(() => {
-            map.fitBounds(displayedFeature.displayBounds);
-          }, 0);
         }
       }
 
