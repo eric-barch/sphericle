@@ -59,6 +59,7 @@ export type QuizBuilderState = {
 };
 
 export type QuizTakerState = {
+  currentId: string;
   correctIds: Set<string>;
   incorrectIds: Set<string>;
   remainingIds: Set<string>;
