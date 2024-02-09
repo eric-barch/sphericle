@@ -1,5 +1,6 @@
 "use client";
 
+import { Polygon } from "@/components/map";
 import {
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
@@ -9,10 +10,10 @@ import { AnswerBox } from "@/components/take-quiz/answer-box";
 import { CompleteDialog } from "@/components/take-quiz/complete-dialog";
 import { ScoreBox } from "@/components/take-quiz/score-box";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isArea, isChild, isParent, isRoot } from "@/helpers";
+import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
 import { useAllFeatures, useQuizTaker } from "@/providers";
 import { QuizTakerDispatchType } from "@/types";
-import { Map, useMap } from "@vis.gl/react-google-maps";
+import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const TakeQuiz = () => {
@@ -54,11 +55,11 @@ const TakeQuiz = () => {
     if (!map) return;
 
     if (isArea(displayedFeatureParent)) {
-      map.fitBounds(displayedFeatureParent.displayBounds);
+      map.fitBounds(displayedFeatureParent.displayBounds, 100);
     }
 
     if (isRoot(displayedFeatureParent)) {
-      map.fitBounds(displayedFeature.displayBounds);
+      map.fitBounds(displayedFeature.displayBounds, 100);
     }
   }, [map, displayedFeature, displayedFeatureParent]);
 
@@ -85,7 +86,33 @@ const TakeQuiz = () => {
             defaultZoom={DEFAULT_ZOOM}
             restriction={RESTRICTION}
             onTilesLoaded={() => setTilesLoaded(true)}
-          ></Map>
+          >
+            {isArea(displayedFeatureParent) && (
+              <Polygon
+                polygon={displayedFeatureParent.polygon}
+                strokeWeight={1.5}
+                strokeColor="#b91c1c"
+                fillOpacity={0}
+              />
+            )}
+            {isArea(displayedFeature) && (
+              <Polygon
+                polygon={displayedFeature.polygon}
+                strokeWeight={1.5}
+                strokeColor="#b91c1c"
+                fillColor="#b91c1c"
+                fillOpacity={0.2}
+              />
+            )}
+            {isPoint(displayedFeature) && (
+              <Marker
+                position={{
+                  lng: displayedFeature.point.coordinates[0],
+                  lat: displayedFeature.point.coordinates[1],
+                }}
+              />
+            )}
+          </Map>
           <AnswerBox
             displayedFeature={displayedFeature}
             inputRef={answerBoxRef}
