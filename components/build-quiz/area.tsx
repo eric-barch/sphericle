@@ -1,11 +1,11 @@
 "use client";
 
-import { isArea, isParent } from "@/helpers";
+import { isArea } from "@/helpers";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
 import { AreaState, QuizBuilderDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
-import { MouseEvent, useRef } from "react";
+import { useRef } from "react";
 import { ChildFeatures } from "./child-features";
 import { EditFeatureButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
@@ -29,14 +29,7 @@ const Area = (props: AreaProps) => {
   const nameInputRef = useRef<HTMLInputElement>();
   const adderInputRef = useRef<HTMLInputElement>();
 
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    if (!isSelected) {
-      quizBuilderDispatch({
-        type: QuizBuilderDispatchType.SET_SELECTED,
-        featureId: area.id,
-      });
-    }
-
+  const handleClick = () => {
     if (isSelected) {
       if (!isAdding) {
         quizBuilderDispatch({
@@ -68,6 +61,11 @@ const Area = (props: AreaProps) => {
           featureId: area.parentId,
         });
       }
+    } else {
+      quizBuilderDispatch({
+        type: QuizBuilderDispatchType.SET_SELECTED,
+        featureId: area.id,
+      });
     }
   };
 

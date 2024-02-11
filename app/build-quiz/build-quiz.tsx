@@ -7,14 +7,13 @@ import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
-import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
+import { Map, Marker } from "@vis.gl/react-google-maps";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useState } from "react";
 
 const BuildQuiz = () => {
   const { rootId, allFeatures } = useAllFeatures();
   const { quizBuilder } = useQuizBuilder();
-  const map = useMap();
 
   const root = (() => {
     const root = allFeatures.get(rootId);
@@ -38,32 +37,6 @@ const BuildQuiz = () => {
   const displayedIsOpen = quizBuilder.openIds.has(displayed?.id);
 
   const [tilesLoaded, setTilesLoaded] = useState(false);
-  const [isIdle, setIsIdle] = useState(false);
-
-  useEffect(() => {
-    /**Must check if map is idle before fitting bounds. */
-    if (!isIdle) return;
-
-    let bounds: google.maps.LatLngBoundsLiteral;
-
-    if (isArea(displayed)) {
-      if (displayedIsOpen) bounds = displayed.displayBounds;
-
-      if (!displayedIsOpen) {
-        if (isArea(displayedParent)) bounds = displayedParent.displayBounds;
-        if (isRoot(displayedParent)) bounds = displayed.displayBounds;
-      }
-    }
-
-    if (isPoint(displayed)) {
-      if (isArea(displayedParent)) bounds = displayedParent.displayBounds;
-      if (isRoot(displayedParent)) bounds = displayed.displayBounds;
-    }
-
-    if (bounds) {
-      map?.fitBounds(bounds);
-    }
-  }, [displayed, displayedIsOpen, displayedParent, isIdle, map]);
 
   return (
     <>
@@ -92,8 +65,6 @@ const BuildQuiz = () => {
           restriction={RESTRICTION}
           defaultBounds={displayed?.displayBounds || DEFAULT_BOUNDS}
           onTilesLoaded={() => setTilesLoaded(true)}
-          onBoundsChanged={() => setIsIdle(false)}
-          onIdle={() => setIsIdle(true)}
         >
           {!displayedIsOpen && isArea(displayedParent) && (
             <Polygon
