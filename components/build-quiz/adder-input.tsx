@@ -12,15 +12,10 @@ import {
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { Grid2X2, MapPin } from "lucide-react";
-import {
-  ChangeEvent,
-  FocusEvent,
-  KeyboardEvent,
-  RefObject,
-  forwardRef,
-} from "react";
+import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
 
 type AdderInputProps = {
+  inputRef: RefObject<HTMLInputElement>;
   feature: ParentFeature;
   selectParentOnInput: boolean;
   input: string;
@@ -32,138 +27,139 @@ type AdderInputProps = {
   setInput: (input: string) => void;
 };
 
-const AdderInput = forwardRef(
-  (props: AdderInputProps, ref: RefObject<HTMLInputElement>) => {
-    const {
-      feature,
-      selectParentOnInput,
-      input,
-      featureType,
-      featureAdderRef,
-      areaSearch,
-      pointSearch,
-      setFeatureType,
-      setInput,
-    } = props;
+const AdderInput = (props: AdderInputProps) => {
+  const {
+    /**TODO: Would like to wrap entire component in forwardRef rather than
+     * passing this inputRef prop, but in previous attempt the upstream ref
+     * was always undefined. */
+    inputRef,
+    feature,
+    selectParentOnInput,
+    input,
+    featureType,
+    featureAdderRef,
+    areaSearch,
+    pointSearch,
+    setFeatureType,
+    setInput,
+  } = props;
 
-    const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
+  const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
 
-    const isSelected = feature.id === quizBuilder.selectedId;
-    const name = (() => {
-      if (isRoot(feature)) return "root";
-      if (isArea(feature)) return feature.userDefinedName || feature.shortName;
-    })();
-    const placeholder = (() => {
-      if (isRoot(feature)) return `Add ${featureType.toLowerCase()} anywhere`;
-      if (isArea(feature)) return `Add ${featureType.toLowerCase()} in ${name}`;
-    })();
+  const isSelected = feature.id === quizBuilder.selectedId;
+  const name = (() => {
+    if (isRoot(feature)) return "root";
+    if (isArea(feature)) return feature.userDefinedName || feature.shortName;
+  })();
+  const placeholder = (() => {
+    if (isRoot(feature)) return `Add ${featureType.toLowerCase()} anywhere`;
+    if (isArea(feature)) return `Add ${featureType.toLowerCase()} in ${name}`;
+  })();
 
-    const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
-      if (featureAdderRef.current?.contains(event.relatedTarget)) {
-        /**Prevent losing input when focus moves between subcomponents of
-         * Adder. Necessary to work around built-in HeadlessUI Combobox
-         * behavior. */
-        event.preventDefault();
-        return;
-      }
-
-      areaSearch.reset();
-      pointSearch.reset();
-    };
-
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-      setInput(event.target.value);
-
-      if (!isSelected && selectParentOnInput) {
-        quizBuilderDispatch({
-          type: QuizBuilderDispatchType.SET_SELECTED,
-          featureId: feature.id,
-        });
-      }
-
-      if (featureType === FeatureType.POINT) {
-        pointSearch.setTerm(event.target.value);
-      }
-    };
-
-    const handleEnter = (event: KeyboardEvent<HTMLInputElement>) => {
-      if (
-        featureType === FeatureType.AREA &&
-        areaSearch.status !== SearchStatus.SEARCHED
-      ) {
-        event.preventDefault();
-        return;
-      }
-
-      if (
-        featureType === FeatureType.POINT &&
-        (pointSearch.status !== SearchStatus.SEARCHED ||
-          pointSearch.results.length === 0)
-      ) {
-        event.preventDefault();
-        return;
-      }
-
-      if (featureType === FeatureType.AREA && input !== areaSearch.term) {
-        event.preventDefault();
-        areaSearch.setTerm(input);
-      }
-    };
-
-    const handleTab = (event: KeyboardEvent<HTMLInputElement>) => {
-      /**Override undesirable built-in HeadlessUI Combobox Tab advance behavior.
-       * Look into alternative accessible libraries, or wait for Radix to come
-       * out with one. */
+  const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    if (featureAdderRef.current?.contains(event.relatedTarget)) {
+      /**Prevent losing input when focus moves between subcomponents of
+       * Adder. Necessary to work around built-in HeadlessUI Combobox
+       * behavior. */
       event.preventDefault();
+      return;
+    }
 
-      const focusableElements = Array.from(
-        document.querySelectorAll(
-          'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])',
-        ),
-      );
-      const currentIndex = focusableElements.indexOf(event.currentTarget);
+    areaSearch.reset();
+    pointSearch.reset();
+  };
 
-      if (event.shiftKey) {
-        const previousElement =
-          focusableElements[currentIndex - 1] ||
-          focusableElements[focusableElements.length - 1];
-        (previousElement as HTMLElement).focus();
-      } else {
-        const nextElement =
-          focusableElements[currentIndex + 1] || focusableElements[0];
-        (nextElement as HTMLElement).focus();
-      }
-    };
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInput(event.target.value);
 
-    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === "Tab") {
-        handleTab(event);
-      }
+    if (!isSelected && selectParentOnInput) {
+      quizBuilderDispatch({
+        type: QuizBuilderDispatchType.SET_SELECTED,
+        featureId: feature.id,
+      });
+    }
 
-      if (event.key === "Enter") {
-        handleEnter(event);
-      }
-    };
+    if (featureType === FeatureType.POINT) {
+      pointSearch.setTerm(event.target.value);
+    }
+  };
 
-    return (
-      <div className="relative">
-        <ChangeFeatureTypeButton
-          featureType={featureType}
-          setFeatureType={setFeatureType}
-        />
-        <Combobox.Input
-          ref={ref}
-          className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
-          placeholder={placeholder}
-          onBlur={handleBlur}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-        />
-      </div>
+  const handleEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (
+      featureType === FeatureType.AREA &&
+      areaSearch.status !== SearchStatus.SEARCHED
+    ) {
+      event.preventDefault();
+      return;
+    }
+
+    if (
+      featureType === FeatureType.POINT &&
+      (pointSearch.status !== SearchStatus.SEARCHED ||
+        pointSearch.results.length === 0)
+    ) {
+      event.preventDefault();
+      return;
+    }
+
+    if (featureType === FeatureType.AREA && input !== areaSearch.term) {
+      event.preventDefault();
+      areaSearch.setTerm(input);
+    }
+  };
+
+  const handleTab = (event: KeyboardEvent<HTMLInputElement>) => {
+    /**Override undesirable built-in HeadlessUI Combobox Tab advance behavior.
+     * Look into alternative accessible libraries, or wait for Radix to come
+     * out with one. */
+    event.preventDefault();
+
+    const focusableElements = Array.from(
+      document.querySelectorAll(
+        'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])',
+      ),
     );
-  },
-);
+    const currentIndex = focusableElements.indexOf(event.currentTarget);
 
+    if (event.shiftKey) {
+      const previousElement =
+        focusableElements[currentIndex - 1] ||
+        focusableElements[focusableElements.length - 1];
+      (previousElement as HTMLElement).focus();
+    } else {
+      const nextElement =
+        focusableElements[currentIndex + 1] || focusableElements[0];
+      (nextElement as HTMLElement).focus();
+    }
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Tab") {
+      handleTab(event);
+    }
+
+    if (event.key === "Enter") {
+      handleEnter(event);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <ChangeFeatureTypeButton
+        featureType={featureType}
+        setFeatureType={setFeatureType}
+      />
+      <Combobox.Input
+        ref={inputRef}
+        className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
+        placeholder={placeholder}
+        onBlur={handleBlur}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+      />
+    </div>
+  );
+};
 AdderInput.displayName = "FeatureAdderInput";
 
 type ChangeFeatureTypeButtonProps = {

@@ -7,13 +7,14 @@ import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
 import { useAllFeatures, useQuizBuilder } from "@/providers";
-import { Map, Marker } from "@vis.gl/react-google-maps";
+import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const BuildQuiz = () => {
   const { rootId, allFeatures } = useAllFeatures();
   const { quizBuilder } = useQuizBuilder();
+  const map = useMap();
 
   const root = (() => {
     const root = allFeatures.get(rootId);
@@ -28,15 +29,38 @@ const BuildQuiz = () => {
     if (isChild(selected)) return selected;
   })();
 
+  const displayedIsOpen = quizBuilder.openIds.has(displayed?.id);
+
   const displayedParent = (() => {
     if (!isChild(displayed)) return;
     const displayedParent = allFeatures.get(displayed.parentId);
     if (isParent(displayedParent)) return displayedParent;
   })();
 
-  const displayedIsOpen = quizBuilder.openIds.has(displayed?.id);
-
   const [tilesLoaded, setTilesLoaded] = useState(false);
+
+  /**TODO: fitBounds cancels early sometimes. Seems to be only on the first
+   * call, if the zoom is large enough to cause the map to "cut" rather
+   * than animate the zoom smoothly. */
+  useEffect(() => {
+    let bounds: google.maps.LatLngBoundsLiteral;
+
+    if (displayedIsOpen) {
+      bounds = displayed?.displayBounds;
+    } else {
+      if (isArea(displayedParent)) {
+        bounds = displayedParent.displayBounds;
+      }
+
+      if (isRoot(displayedParent)) {
+        bounds = displayed?.displayBounds;
+      }
+    }
+
+    if (bounds) {
+      map?.fitBounds(bounds);
+    }
+  }, [displayed, displayedIsOpen, displayedParent, map, tilesLoaded]);
 
   return (
     <>

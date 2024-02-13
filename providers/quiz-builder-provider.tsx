@@ -67,7 +67,7 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
 
         return newQuizBuilder;
       }
-      case QuizBuilderDispatchType.SET_IS_OPEN: {
+     case QuizBuilderDispatchType.SET_IS_OPEN: {
         const newQuizBuilder = { ...quizBuilder };
         const { isOpen } = action;
         const featureId = action.featureId || action.feature?.id;
