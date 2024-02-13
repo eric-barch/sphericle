@@ -34,7 +34,7 @@ const FeatureSearch = (props: FeatureSearch) => {
   );
   const [input, setInput] = useState<string>("");
 
-  const featureSearchRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
     if (event.currentTarget.contains(event.relatedTarget)) return;
@@ -45,7 +45,10 @@ const FeatureSearch = (props: FeatureSearch) => {
   };
 
   const handleSelectOption = (selectedOption: ChildFeature) => {
+    console.log("handleSelectOption", selectedOption);
+
     if (inputRef) {
+      console.log('inputRef = ""');
       inputRef.current.value = "";
     }
 
@@ -91,13 +94,13 @@ const FeatureSearch = (props: FeatureSearch) => {
   };
 
   return (
-    <div ref={featureSearchRef} className="relative" onBlur={handleBlur}>
+    <div ref={searchRef} className="relative" onBlur={handleBlur}>
       <Combobox onChange={handleSelectOption}>
         {({ activeOption }) => (
           <>
             <AdderInput
-              ref={inputRef}
-              featureAdderRef={featureSearchRef}
+              inputRef={inputRef}
+              featureAdderRef={searchRef}
               feature={parent}
               selectParentOnInput={selectParentOnInput}
               input={input}
