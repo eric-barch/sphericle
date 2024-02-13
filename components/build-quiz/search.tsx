@@ -11,15 +11,15 @@ import {
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { FocusEvent, RefObject, useRef, useState } from "react";
-import { AdderInput } from "./adder-input";
-import { AdderOptions } from "./adder-options";
+import { SearchInput } from "./search-input";
+import { SearchOptions } from "./search-options";
 
-type FeatureSearch = {
+type SearchProps = {
   inputRef: RefObject<HTMLInputElement>;
   parent: ParentFeature;
 };
 
-const FeatureSearch = (props: FeatureSearch) => {
+const Search = (props: SearchProps) => {
   const { inputRef, parent } = props;
 
   const { allFeaturesDispatch } = useAllFeatures();
@@ -98,7 +98,7 @@ const FeatureSearch = (props: FeatureSearch) => {
       <Combobox onChange={handleSelectOption}>
         {({ activeOption }) => (
           <>
-            <AdderInput
+            <SearchInput
               inputRef={inputRef}
               featureAdderRef={searchRef}
               feature={parent}
@@ -110,7 +110,7 @@ const FeatureSearch = (props: FeatureSearch) => {
               setInput={setInput}
               setFeatureType={setFeatureType}
             />
-            <AdderOptions
+            <SearchOptions
               activeOption={activeOption}
               input={input}
               featureType={featureType}
@@ -124,4 +124,4 @@ const FeatureSearch = (props: FeatureSearch) => {
   );
 };
 
-export { FeatureSearch };
+export { Search };

@@ -7,7 +7,7 @@ import { AllFeaturesDispatchType, ParentFeature, Root } from "@/types";
 import { Reorder } from "framer-motion";
 import { RefObject, useMemo } from "react";
 import { Area } from "./area";
-import { FeatureSearch } from "./feature-search";
+import { Search } from "./search";
 import { Point } from "./point";
 
 type ChildFeaturesProps =
@@ -57,9 +57,7 @@ const ChildFeatures = (props: ChildFeaturesProps) => {
           </Reorder.Item>
         ))}
       </Reorder.Group>
-      {isAdding && (
-        <FeatureSearch inputRef={featureSearchRef} parent={parent} />
-      )}
+      {isAdding && <Search inputRef={featureSearchRef} parent={parent} />}
     </div>
   );
 };
