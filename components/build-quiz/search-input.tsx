@@ -14,7 +14,7 @@ import { Combobox } from "@headlessui/react";
 import { Grid2X2, MapPin } from "lucide-react";
 import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
 
-type AdderInputProps = {
+type SearchInputProps = {
   inputRef: RefObject<HTMLInputElement>;
   feature: ParentFeature;
   selectParentOnInput: boolean;
@@ -27,7 +27,7 @@ type AdderInputProps = {
   setInput: (input: string) => void;
 };
 
-const AdderInput = (props: AdderInputProps) => {
+const SearchInput = (props: SearchInputProps) => {
   const {
     /**TODO: Would like to wrap entire component in forwardRef rather than
      * passing this inputRef prop, but in previous attempt the upstream ref
@@ -160,7 +160,7 @@ const AdderInput = (props: AdderInputProps) => {
     </div>
   );
 };
-AdderInput.displayName = "FeatureAdderInput";
+SearchInput.displayName = "FeatureAdderInput";
 
 type ChangeFeatureTypeButtonProps = {
   featureType: FeatureType;
@@ -194,4 +194,4 @@ const ChangeFeatureTypeButton = ({
   );
 };
 
-export { AdderInput };
+export { SearchInput };

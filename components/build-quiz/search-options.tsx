@@ -14,7 +14,7 @@ import {
 import { Combobox } from "@headlessui/react";
 import { useEffect } from "react";
 
-type AdderOptionsProps = {
+type SearchOptionsProps = {
   activeOption: ChildFeature;
   input: string;
   featureType: FeatureType;
@@ -22,7 +22,7 @@ type AdderOptionsProps = {
   pointSearch: PointSearch;
 };
 
-const AdderOptions = (props: AdderOptionsProps) => {
+const SearchOptions = (props: SearchOptionsProps) => {
   const { activeOption, input, featureType, areaSearch, pointSearch } = props;
 
   const { quizBuilderDispatch } = useQuizBuilder();
@@ -92,4 +92,4 @@ const Option = (props: OptionProps) => {
   );
 };
 
-export { AdderOptions };
+export { SearchOptions };
