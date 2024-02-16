@@ -58,7 +58,7 @@ const EditFeatureButton = (props: EditFeatureButtonProps) => {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_ADDING,
         lastAdding,
-        featureId,
+        nextAddingId: featureId,
       });
     }
   };
@@ -83,7 +83,7 @@ const EditFeatureButton = (props: EditFeatureButtonProps) => {
     quizBuilderDispatch({
       type: QuizBuilderDispatchType.SET_ADDING,
       lastAdding,
-      featureId,
+      nextAddingId: featureId,
     });
 
     setTimeout(() => {

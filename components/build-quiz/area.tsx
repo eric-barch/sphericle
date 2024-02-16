@@ -46,7 +46,7 @@ const Area = (props: AreaProps) => {
         quizBuilderDispatch({
           type: QuizBuilderDispatchType.SET_ADDING,
           lastAdding,
-          featureId: area.id,
+          nextAddingId: area.id,
         });
       } else {
         quizBuilderDispatch({
@@ -58,7 +58,7 @@ const Area = (props: AreaProps) => {
         quizBuilderDispatch({
           type: QuizBuilderDispatchType.SET_ADDING,
           lastAdding: area,
-          featureId: area.parentId,
+          nextAddingId: area.parentId,
         });
       }
     } else {
