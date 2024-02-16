@@ -2,15 +2,20 @@ import { useQuiz, useQuizBuilder } from "@/providers";
 import { QuizDispatchType, QuizBuilderDispatchType } from "@/types";
 import { KeyboardEvent, useState } from "react";
 
-type FeatureNameProps = {
-  nameInputRef: React.RefObject<HTMLInputElement>;
+/**TODO: Would really like to refactor this to use forwardRef
+ * so I don't have to use stupid prop names like 'inpurRef'.
+ * It should just be the reserved 'ref'. First attempt to do
+ * this was unsuccessful and reverted just to keep the app
+ * working. */
+type NameProps = {
+  inputRef: React.RefObject<HTMLInputElement>;
   featureId: string;
   name: string;
   isRenaming: boolean;
 };
 
-const FeatureName = (props: FeatureNameProps) => {
-  const { nameInputRef, featureId, name, isRenaming } = props;
+const Name = (props: NameProps) => {
+  const { inputRef, featureId, name, isRenaming } = props;
 
   const { quizDispatch } = useQuiz();
   const { quizBuilderDispatch } = useQuizBuilder();
@@ -60,7 +65,7 @@ const FeatureName = (props: FeatureNameProps) => {
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
       {isRenaming ? (
         <input
-          ref={nameInputRef}
+          ref={inputRef}
           className="bg-transparent w-full focus:outline-none"
           type="text"
           value={input}
@@ -76,4 +81,4 @@ const FeatureName = (props: FeatureNameProps) => {
   );
 };
 
-export { FeatureName };
+export { Name };
