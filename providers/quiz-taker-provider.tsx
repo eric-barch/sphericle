@@ -12,8 +12,8 @@ import {
   useContext,
   useReducer,
 } from "react";
-import { useQuiz } from "./all-features-provider";
-import { resetRemainingFeatureIds } from "../components/take-quiz/quiz-taker.helpers";
+import { useQuiz } from "./quiz-provider";
+import { getNewQuizSequence } from "../components/take-quiz/quiz-taker.helpers";
 
 const QuizTakerContext = createContext<QuizTakerState>(null);
 const QuizTakerDispatchContext =
@@ -28,15 +28,15 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
 
   const quizTakerReducer = (
     quizTaker: QuizTakerState,
-    action: QuizTakerDispatch,
+    dispatch: QuizTakerDispatch,
   ): QuizTakerState => {
-    switch (action.type) {
+    switch (dispatch.type) {
       case QuizTakerDispatchType.RESET: {
         const newQuizTaker = { ...quizTaker };
 
         newQuizTaker.correctIds.clear();
         newQuizTaker.incorrectIds.clear();
-        newQuizTaker.remainingIds = resetRemainingFeatureIds(earthId, quiz);
+        newQuizTaker.remainingIds = getNewQuizSequence(earthId, quiz);
         newQuizTaker.currentId = newQuizTaker.remainingIds
           .values()
           .next().value;
@@ -45,7 +45,8 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
       }
       case QuizTakerDispatchType.MARK_CORRECT: {
         const newQuizTaker = { ...quizTaker };
-        const featureId = action.featureId || action.feature.id;
+
+        const featureId = dispatch.featureId || dispatch.feature.id;
 
         newQuizTaker.remainingIds.delete(featureId);
         newQuizTaker.correctIds.add(featureId);
@@ -57,7 +58,8 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
       }
       case QuizTakerDispatchType.MARK_INCORRECT: {
         const newQuizTaker = { ...quizTaker };
-        const featureId = action.featureId || action.feature.id;
+
+        const featureId = dispatch.featureId || dispatch.feature.id;
 
         newQuizTaker.remainingIds.delete(featureId);
         newQuizTaker.incorrectIds.add(featureId);

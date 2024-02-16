@@ -1,40 +1,34 @@
 import { isParent } from "@/helpers";
 import { QuizState } from "@/types";
 
-const resetRemainingFeatureIds = (
-  rootId: string,
-  allFeatures: QuizState,
-): Set<string> => {
-  const remainingFeatureIds = new Set<string>();
+const getNewQuizSequence = (rootId: string, quiz: QuizState): Set<string> => {
+  const quizSequence = new Set<string>();
 
-  const addDirectChildren = (featureId: string) => {
-    const featureState = allFeatures.get(featureId);
+  const addImmediateChildren = (featureId: string) => {
+    const feature = quiz.get(featureId);
 
-    if (featureState && isParent(featureState)) {
-      const shuffledSubfeatureIds = [...featureState.childIds];
+    if (feature && isParent(feature)) {
+      const childIds = [...feature.childIds];
 
-      // Fisher-Yates shuffle for randomness
-      for (let i = shuffledSubfeatureIds.length - 1; i > 0; i--) {
+      /**Fisher-Yates shuffle */
+      for (let i = childIds.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [shuffledSubfeatureIds[i], shuffledSubfeatureIds[j]] = [
-          shuffledSubfeatureIds[j],
-          shuffledSubfeatureIds[i],
-        ];
+        [childIds[i], childIds[j]] = [childIds[j], childIds[i]];
       }
 
-      shuffledSubfeatureIds.forEach((subfeatureId) => {
-        remainingFeatureIds.add(subfeatureId);
+      childIds.forEach((subfeatureId) => {
+        quizSequence.add(subfeatureId);
       });
 
-      shuffledSubfeatureIds.forEach((subfeatureId) => {
-        addDirectChildren(subfeatureId);
+      childIds.forEach((subfeatureId) => {
+        addImmediateChildren(subfeatureId);
       });
     }
   };
 
-  addDirectChildren(rootId);
+  addImmediateChildren(rootId);
 
-  return remainingFeatureIds;
+  return quizSequence;
 };
 
-export { resetRemainingFeatureIds };
+export { getNewQuizSequence };
