@@ -1,9 +1,9 @@
 "use client";
 
 import { useFeatureSearches } from "@/hooks/use-feature-searches.hook";
-import { useAllFeatures, useQuizBuilder } from "@/providers";
+import { useQuiz, useQuizBuilder } from "@/providers";
 import {
-  AllFeaturesDispatchType,
+  QuizDispatchType,
   ChildFeature,
   FeatureType,
   ParentFeature,
@@ -22,7 +22,7 @@ type SearchProps = {
 const Search = (props: SearchProps) => {
   const { inputRef, parent } = props;
 
-  const { allFeaturesDispatch } = useAllFeatures();
+  const { quizDispatch } = useQuiz();
   const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
   const { areaSearch, pointSearch } = useFeatureSearches(parent.id);
 
@@ -58,10 +58,10 @@ const Search = (props: SearchProps) => {
      * on next input change. */
     setSelectParentOnInput(false);
 
-    allFeaturesDispatch({
-      type: AllFeaturesDispatchType.ADD_CHILD,
-      featureId: parent.id,
-      childFeature: selectedOption,
+    quizDispatch({
+      type: QuizDispatchType.ADD_CHILD,
+      parentId: parent.id,
+      child: selectedOption,
     });
 
     quizBuilderDispatch({

@@ -1,9 +1,9 @@
 import { isParent } from "@/helpers";
-import { AllFeatures } from "@/types";
+import { QuizState } from "@/types";
 
 const resetRemainingFeatureIds = (
   rootId: string,
-  allFeatures: AllFeatures,
+  allFeatures: QuizState,
 ): Set<string> => {
   const remainingFeatureIds = new Set<string>();
 

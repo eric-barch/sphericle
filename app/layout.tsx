@@ -1,7 +1,11 @@
 "use client";
 
 import { Nav } from "@/components/nav";
-import { QuizProvider } from "@/providers";
+import {
+  QuizProvider,
+  QuizBuilderProvider,
+  QuizTakerProvider,
+} from "@/providers";
 import "@/styles/globals.css";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import type { Metadata } from "next";
@@ -23,7 +27,12 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
           <Nav />
           <main className="h-[calc(100vh-4rem)] overflow-auto custom-scrollbar">
-            <QuizProvider>{children}</QuizProvider>
+            <QuizProvider>
+              <QuizTakerProvider>
+                <QuizBuilderProvider>{children}</QuizBuilderProvider>
+              </QuizTakerProvider>
+            </QuizProvider>
+
             <Toaster containerStyle={{ marginTop: "4rem" }} />
           </main>
         </APIProvider>

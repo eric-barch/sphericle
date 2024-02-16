@@ -2,8 +2,8 @@
 
 import { isArea, isChild, isPoint } from "@/helpers";
 import { cn } from "@/lib/utils";
-import { useAllFeatures } from "@/providers";
-import { AllFeaturesDispatchType, ParentFeature, Root } from "@/types";
+import { useQuiz } from "@/providers";
+import { QuizDispatchType, ParentFeature, EarthState } from "@/types";
 import { Reorder } from "framer-motion";
 import { RefObject, useMemo } from "react";
 import { Area } from "./area";
@@ -19,7 +19,7 @@ type ChildFeaturesProps =
     }
   | {
       className?: string;
-      parent: Root;
+      parent: EarthState;
       isAdding: boolean;
       featureSearchRef?: never;
     };
@@ -27,11 +27,11 @@ type ChildFeaturesProps =
 const ChildFeatures = (props: ChildFeaturesProps) => {
   const { className, parent, isAdding, featureSearchRef } = props;
 
-  const { allFeaturesDispatch } = useAllFeatures();
+  const { quizDispatch } = useQuiz();
   const handleReorder = (childIds: string[]) => {
-    allFeaturesDispatch({
-      type: AllFeaturesDispatchType.SET_CHILDREN,
-      featureId: parent.id,
+    quizDispatch({
+      type: QuizDispatchType.SET_CHILDREN,
+      parentId: parent.id,
       childIds,
     });
   };
@@ -70,7 +70,7 @@ type ChildFeatureProps = {
 const ChildFeature = (props: ChildFeatureProps) => {
   const { featureId } = props;
 
-  const { allFeatures } = useAllFeatures();
+  const { quiz: allFeatures } = useQuiz();
 
   const feature = useMemo(() => {
     const feature = allFeatures.get(featureId);

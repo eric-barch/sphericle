@@ -1,7 +1,7 @@
 import { isArea, isParent, isRoot } from "@/helpers";
 import { useAutocompleteService } from "@/hooks/use-autocomplete-service.hook";
 import { useGeocodingService } from "@/hooks/use-geocoding-service.hook";
-import { useAllFeatures } from "@/providers";
+import { useQuiz } from "@/providers";
 import { FeatureType, PointSearch, PointState, SearchStatus } from "@/types";
 import booleanIntersects from "@turf/boolean-intersects";
 import { Point } from "geojson";
@@ -10,10 +10,10 @@ import { useState } from "react";
 const usePointSearch = (parentFeatureId: string): PointSearch => {
   const { autocompleteService } = useAutocompleteService();
   const { geocodingService } = useGeocodingService();
-  const { allFeatures } = useAllFeatures();
+  const { quiz } = useQuiz();
 
   const parentFeatureState = (() => {
-    const parentFeatureState = allFeatures.get(parentFeatureId);
+    const parentFeatureState = quiz.get(parentFeatureId);
 
     if (isParent(parentFeatureState)) {
       return parentFeatureState;

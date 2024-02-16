@@ -12,7 +12,7 @@ import {
   useContext,
   useReducer,
 } from "react";
-import { useAllFeatures } from ".";
+import { useQuiz } from "./all-features-provider";
 import { resetRemainingFeatureIds } from "../components/take-quiz/quiz-taker.helpers";
 
 const QuizTakerContext = createContext<QuizTakerState>(null);
@@ -24,7 +24,7 @@ type QuizTakerProviderProps = {
 };
 
 const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
-  const { rootId, allFeatures } = useAllFeatures();
+  const { earthId, quiz } = useQuiz();
 
   const quizTakerReducer = (
     quizTaker: QuizTakerState,
@@ -36,10 +36,7 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
 
         newQuizTaker.correctIds.clear();
         newQuizTaker.incorrectIds.clear();
-        newQuizTaker.remainingIds = resetRemainingFeatureIds(
-          rootId,
-          allFeatures,
-        );
+        newQuizTaker.remainingIds = resetRemainingFeatureIds(earthId, quiz);
         newQuizTaker.currentId = newQuizTaker.remainingIds
           .values()
           .next().value;

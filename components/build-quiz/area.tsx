@@ -1,7 +1,7 @@
 "use client";
 
 import { isArea } from "@/helpers";
-import { useAllFeatures, useQuizBuilder } from "@/providers";
+import { useQuiz, useQuizBuilder } from "@/providers";
 import { AreaState, QuizBuilderDispatchType } from "@/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
@@ -17,7 +17,7 @@ type AreaProps = {
 const Area = (props: AreaProps) => {
   const { area } = props;
 
-  const { allFeatures } = useAllFeatures();
+  const { quiz } = useQuiz();
   const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
 
   const name = area.userDefinedName || area.shortName;
@@ -39,7 +39,7 @@ const Area = (props: AreaProps) => {
         });
 
         const lastAdding = (() => {
-          const lastAdding = allFeatures.get(quizBuilder.addingId);
+          const lastAdding = quiz.get(quizBuilder.addingId);
           if (isArea(lastAdding)) return lastAdding;
         })();
 

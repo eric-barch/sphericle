@@ -6,26 +6,26 @@ import { DEFAULT_BOUNDS, RESTRICTION } from "@/components/map/constants";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
-import { useAllFeatures, useQuizBuilder } from "@/providers";
+import { useQuiz, useQuizBuilder } from "@/providers";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const BuildQuiz = () => {
-  const { rootId, allFeatures } = useAllFeatures();
+  const { earthId, quiz } = useQuiz();
   const { quizBuilder } = useQuizBuilder();
   const map = useMap();
 
   const root = (() => {
-    const root = allFeatures.get(rootId);
+    const root = quiz.get(earthId);
     if (isRoot(root)) return root;
   })();
 
-  const rootIsAdding = rootId === quizBuilder.addingId;
+  const isAdding = earthId === quizBuilder.addingId;
 
   const displayed = (() => {
     if (quizBuilder.searchResult) return quizBuilder.searchResult;
-    const selected = allFeatures.get(quizBuilder.selectedId);
+    const selected = quiz.get(quizBuilder.selectedId);
     if (isChild(selected)) return selected;
   })();
 
@@ -33,14 +33,14 @@ const BuildQuiz = () => {
 
   const displayedParent = (() => {
     if (!isChild(displayed)) return;
-    const displayedParent = allFeatures.get(displayed.parentId);
+    const displayedParent = quiz.get(displayed.parentId);
     if (isParent(displayedParent)) return displayedParent;
   })();
 
   const [tilesLoaded, setTilesLoaded] = useState(false);
 
   /**TODO: fitBounds cancels early sometimes. Seems to be only on the first
-   * call, if the zoom is large enough to cause the map to "cut" rather
+   * call if the zoom is large enough to cause the map to "cut" rather
    * than animate the zoom smoothly. */
   useEffect(() => {
     let bounds: google.maps.LatLngBoundsLiteral;
@@ -72,7 +72,7 @@ const BuildQuiz = () => {
           <ChildFeatures
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
             parent={root}
-            isAdding={rootIsAdding}
+            isAdding={isAdding}
           />
           <Link
             className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"

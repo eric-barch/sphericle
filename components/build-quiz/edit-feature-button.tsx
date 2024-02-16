@@ -1,6 +1,6 @@
 import { isParent } from "@/helpers";
-import { useAllFeatures, useQuizBuilder } from "@/providers";
-import { AllFeaturesDispatchType, QuizBuilderDispatchType } from "@/types";
+import { useQuiz, useQuizBuilder } from "@/providers";
+import { QuizDispatchType, QuizBuilderDispatchType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { RefObject } from "react";
@@ -35,7 +35,7 @@ const EditFeatureButton = (props: EditFeatureButtonProps) => {
     canAddSubfeature,
   } = props;
 
-  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+  const { quiz, quizDispatch } = useQuiz();
   const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
 
   const handleOpenChange = () => {
@@ -51,7 +51,7 @@ const EditFeatureButton = (props: EditFeatureButtonProps) => {
 
     if (isOpen) {
       const lastAdding = (() => {
-        const lastAdding = allFeatures.get(quizBuilder.addingId);
+        const lastAdding = quiz.get(quizBuilder.addingId);
         if (isParent(lastAdding)) return lastAdding;
       })();
 
@@ -76,7 +76,7 @@ const EditFeatureButton = (props: EditFeatureButtonProps) => {
     });
 
     const lastAdding = (() => {
-      const lastAdding = allFeatures.get(quizBuilder.addingId);
+      const lastAdding = quiz.get(quizBuilder.addingId);
       if (isParent(lastAdding)) return lastAdding;
     })();
 
@@ -105,8 +105,8 @@ const EditFeatureButton = (props: EditFeatureButtonProps) => {
   };
 
   const handleDelete = () => {
-    allFeaturesDispatch({
-      type: AllFeaturesDispatchType.DELETE,
+    quizDispatch({
+      type: QuizDispatchType.DELETE,
       featureId,
     });
   };
