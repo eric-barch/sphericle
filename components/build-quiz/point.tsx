@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useQuizBuilder } from "@/providers";
 import { PointState, QuizBuilderDispatchType } from "@/types";
-import { MouseEvent, useRef } from "react";
+import { useRef } from "react";
 import { MenuButton } from "./edit-feature-button";
 import { Name } from "./feature-name";
 
@@ -20,9 +20,9 @@ const Point = (props: PointProps) => {
   const isSelected = point.id === quizBuilder.selectedId;
   const isRenaming = point.id === quizBuilder.renamingId;
 
-  const nameInputRef = useRef<HTMLInputElement>();
+  const nameRef = useRef<HTMLInputElement>();
 
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleClick = () => {
     if (!isSelected) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_SELECTED,
@@ -34,7 +34,7 @@ const Point = (props: PointProps) => {
   return (
     <div className="relative">
       <MenuButton
-        nameRef={nameInputRef}
+        nameRef={nameRef}
         featureId={point.id}
         isSelected={isSelected}
         isRenaming={isRenaming}
@@ -49,7 +49,7 @@ const Point = (props: PointProps) => {
           featureId={point.id}
           name={name}
           isRenaming={isRenaming}
-          inputRef={nameInputRef}
+          inputRef={nameRef}
         />
       </Button>
     </div>
