@@ -8,20 +8,16 @@ import {
   SearchStatus,
 } from "./enums";
 
-export type QuizState = Map<string, BaseFeature>;
-
-export type Feature = EarthState | AreaState | PointState;
-
-export type BaseFeature = {
+type BaseFeature = {
   id: string;
   type: FeatureType;
 };
 
-export type ParentFeature = BaseFeature & {
+type BaseParentFeature = BaseFeature & {
   childIds: Set<string>;
 };
 
-export type ChildFeature = BaseFeature & {
+type BaseChildFeature = BaseFeature & {
   parentId: string;
   longName: string;
   shortName: string;
@@ -30,13 +26,13 @@ export type ChildFeature = BaseFeature & {
 };
 
 export type EarthState = BaseFeature &
-  ParentFeature & {
-    type: FeatureType.ROOT;
+  BaseParentFeature & {
+    type: FeatureType.EARTH;
   };
 
 export type AreaState = BaseFeature &
-  ParentFeature &
-  ChildFeature & {
+  BaseParentFeature &
+  BaseChildFeature & {
     type: FeatureType.AREA;
     osmId: number;
     searchBounds: google.maps.LatLngBoundsLiteral;
@@ -44,68 +40,21 @@ export type AreaState = BaseFeature &
   };
 
 export type PointState = BaseFeature &
-  ChildFeature & {
+  BaseChildFeature & {
     type: FeatureType.POINT;
     googleId: string;
     point: Point;
   };
 
-export type QuizBuilderState = {
-  searchResult: ChildFeature | null;
-  selectedId: string | null;
-  addingId: string | null;
-  renamingId: string | null;
-  openIds: Set<string>;
-};
+export type Feature = EarthState | AreaState | PointState;
+export type ParentFeature = EarthState | AreaState;
+export type ChildFeature = AreaState | PointState;
 
-export type QuizTakerState = {
-  currentId: string;
-  correctIds: Set<string>;
-  incorrectIds: Set<string>;
-  remainingIds: Set<string>;
-};
-
-export type AreaSearch = {
-  term: string;
-  status: SearchStatus;
-  results: AreaState[];
-  setTerm: (searchTerm: string) => void;
-  reset: () => void;
-};
-
-export type PointSearch = {
-  term: string;
-  status: SearchStatus;
-  results: PointState[];
-  setTerm: (searchTerm: string) => void;
-  reset: () => void;
-};
-
-export type OsmResult = {
-  place_id: number;
-  licence: string;
-  osm_type: string;
-  osm_id: number;
-  lat: string;
-  lon: string;
-  class: string;
-  type: string;
-  place_rank: number;
-  importance: number;
-  addresstype: string;
-  name: string;
-  display_name: string;
-  boundingbox: number[];
-  geojson: AllGeoJSON;
-};
-
-export type QuizDispatch = AddChild | SetChildren | Rename | Delete;
-
-type BaseAllFeaturesDispatch = {
+type BaseQuizDispatch = {
   type: QuizDispatchType;
 };
 
-type AddChild = BaseAllFeaturesDispatch &
+type AddChild = BaseQuizDispatch &
   (
     | {
         type: QuizDispatchType.ADD_CHILD;
@@ -121,7 +70,7 @@ type AddChild = BaseAllFeaturesDispatch &
       }
   );
 
-type SetChildren = BaseAllFeaturesDispatch &
+type SetChildren = BaseQuizDispatch &
   (
     | {
         type: QuizDispatchType.SET_CHILDREN;
@@ -137,7 +86,7 @@ type SetChildren = BaseAllFeaturesDispatch &
       }
   );
 
-type Rename = BaseAllFeaturesDispatch &
+type Rename = BaseQuizDispatch &
   (
     | {
         type: QuizDispatchType.RENAME;
@@ -153,7 +102,7 @@ type Rename = BaseAllFeaturesDispatch &
       }
   );
 
-type Delete = BaseAllFeaturesDispatch &
+type Delete = BaseQuizDispatch &
   (
     | {
         type: QuizDispatchType.DELETE;
@@ -167,19 +116,16 @@ type Delete = BaseAllFeaturesDispatch &
       }
   );
 
-export type QuizBuilderDispatch =
-  | SetFeatureAdder
-  | SetSelected
-  | SetAdding
-  | SetRenaming
-  | SetIsOpen;
+export type QuizState = Map<string, Feature>;
+
+export type QuizDispatch = AddChild | SetChildren | Rename | Delete;
 
 type BaseQuizBuilderDispatch = {
   type: QuizBuilderDispatchType;
 };
 
-type SetFeatureAdder = BaseQuizBuilderDispatch & {
-  type: QuizBuilderDispatchType.SET_FEATURE_ADDER;
+type SetSearchOption = BaseQuizBuilderDispatch & {
+  type: QuizBuilderDispatchType.SET_SEARCH_OPTION;
   feature: ChildFeature | null;
 };
 
@@ -243,7 +189,20 @@ type SetRenaming = BaseQuizBuilderDispatch &
       }
   );
 
-export type QuizTakerDispatch = Reset | MarkCorrect | MarkIncorrect;
+export type QuizBuilderState = {
+  searchResult: ChildFeature | null;
+  selectedId: string | null;
+  addingId: string | null;
+  renamingId: string | null;
+  openIds: Set<string>;
+};
+
+export type QuizBuilderDispatch =
+  | SetSearchOption
+  | SetSelected
+  | SetAdding
+  | SetRenaming
+  | SetIsOpen;
 
 type BaseQuizTakerDispatch = {
   type: QuizTakerDispatchType;
@@ -280,3 +239,46 @@ type MarkIncorrect = BaseQuizTakerDispatch &
         feature?: never;
       }
   );
+
+export type QuizTakerState = {
+  currentId: string;
+  correctIds: Set<string>;
+  incorrectIds: Set<string>;
+  remainingIds: Set<string>;
+};
+
+export type QuizTakerDispatch = Reset | MarkCorrect | MarkIncorrect;
+
+export type AreaSearch = {
+  term: string;
+  status: SearchStatus;
+  results: AreaState[];
+  setTerm: (searchTerm: string) => void;
+  reset: () => void;
+};
+
+export type PointSearch = {
+  term: string;
+  status: SearchStatus;
+  results: PointState[];
+  setTerm: (searchTerm: string) => void;
+  reset: () => void;
+};
+
+export type OsmResult = {
+  place_id: number;
+  licence: string;
+  osm_type: string;
+  osm_id: number;
+  lat: string;
+  lon: string;
+  class: string;
+  type: string;
+  place_rank: number;
+  importance: number;
+  addresstype: string;
+  name: string;
+  display_name: string;
+  boundingbox: number[];
+  geojson: AllGeoJSON;
+};

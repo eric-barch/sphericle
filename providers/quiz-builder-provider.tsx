@@ -59,7 +59,7 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
 
         return newQuizBuilder;
       }
-      case QuizBuilderDispatchType.SET_FEATURE_ADDER: {
+      case QuizBuilderDispatchType.SET_SEARCH_OPTION: {
         const newQuizBuilder = { ...quizBuilder };
         const { feature: featureState } = action;
 

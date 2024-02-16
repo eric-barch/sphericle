@@ -70,7 +70,7 @@ const Search = (props: SearchProps) => {
     });
 
     quizBuilderDispatch({
-      type: QuizBuilderDispatchType.SET_FEATURE_ADDER,
+      type: QuizBuilderDispatchType.SET_SEARCH_OPTION,
       feature: null,
     });
 

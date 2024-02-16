@@ -9,13 +9,13 @@ import {
   PointState,
   QuizBuilderDispatchType,
   SearchStatus,
-  ChildFeature,
+  BaseChildFeature,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { useEffect } from "react";
 
 type SearchOptionsProps = {
-  activeOption: ChildFeature;
+  activeOption: BaseChildFeature;
   input: string;
   featureType: FeatureType;
   areaSearch: AreaSearch;
@@ -45,7 +45,7 @@ const SearchOptions = (props: SearchOptionsProps) => {
    * a different accesssible component library. */
   useEffect(() => {
     quizBuilderDispatch({
-      type: QuizBuilderDispatchType.SET_FEATURE_ADDER,
+      type: QuizBuilderDispatchType.SET_SEARCH_OPTION,
       feature: activeOption,
     });
   }, [activeOption, quizBuilderDispatch]);

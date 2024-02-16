@@ -1,4 +1,4 @@
-import { isArea, isParent, isRoot } from "@/helpers";
+import { isArea, isParent, isEarth } from "@/helpers";
 import { useAutocompleteService } from "@/hooks/use-autocomplete-service.hook";
 import { useGeocodingService } from "@/hooks/use-geocoding-service.hook";
 import { useQuiz } from "@/providers";
@@ -43,7 +43,7 @@ const usePointSearch = (parentFeatureId: string): PointSearch => {
 
     const point: Point = { type: "Point", coordinates: [lng, lat] };
 
-    if (isRoot(parentFeatureState)) {
+    if (isEarth(parentFeatureState)) {
       return point;
     }
 
