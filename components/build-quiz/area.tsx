@@ -100,7 +100,7 @@ const Area = (props: AreaProps) => {
           className="ml-10"
           parent={area}
           isAdding={isAdding}
-          featureSearchRef={adderInputRef}
+          searchRef={adderInputRef}
         />
       </Collapsible.Content>
     </Collapsible.Root>
