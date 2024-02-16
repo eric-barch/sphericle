@@ -1,5 +1,5 @@
-import { useAllFeatures, useQuizBuilder } from "@/providers";
-import { AllFeaturesDispatchType, QuizBuilderDispatchType } from "@/types";
+import { useQuiz, useQuizBuilder } from "@/providers";
+import { QuizDispatchType, QuizBuilderDispatchType } from "@/types";
 import { KeyboardEvent, useState } from "react";
 
 type FeatureNameProps = {
@@ -12,14 +12,14 @@ type FeatureNameProps = {
 const FeatureName = (props: FeatureNameProps) => {
   const { nameInputRef, featureId, name, isRenaming } = props;
 
-  const { allFeaturesDispatch } = useAllFeatures();
+  const { quizDispatch } = useQuiz();
   const { quizBuilderDispatch } = useQuizBuilder();
 
   const [input, setInput] = useState<string>(name);
 
   const handleEnter = () => {
-    allFeaturesDispatch({
-      type: AllFeaturesDispatchType.RENAME,
+    quizDispatch({
+      type: QuizDispatchType.RENAME,
       featureId,
       name: input,
     });

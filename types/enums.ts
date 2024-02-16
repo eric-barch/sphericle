@@ -4,7 +4,7 @@ export enum FeatureType {
   POINT = "POINT",
 }
 
-export enum AllFeaturesDispatchType {
+export enum QuizDispatchType {
   ADD_CHILD,
   SET_CHILDREN,
   RENAME,

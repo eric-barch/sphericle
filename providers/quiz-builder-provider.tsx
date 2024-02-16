@@ -12,7 +12,7 @@ import {
   useContext,
   useReducer,
 } from "react";
-import { useAllFeatures } from "./all-features-provider";
+import { useQuiz } from "./all-features-provider";
 
 const QuizBuilderContext = createContext<QuizBuilderState>(null);
 const QuizBuilderDispatchContext =
@@ -23,7 +23,7 @@ type QuizBuilderProviderProps = {
 };
 
 const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
-  const { rootId } = useAllFeatures();
+  const { earthId } = useQuiz();
 
   const quizBuilderReducer = (
     quizBuilder: QuizBuilderState,
@@ -67,7 +67,7 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
 
         return newQuizBuilder;
       }
-     case QuizBuilderDispatchType.SET_IS_OPEN: {
+      case QuizBuilderDispatchType.SET_IS_OPEN: {
         const newQuizBuilder = { ...quizBuilder };
         const { isOpen } = action;
         const featureId = action.featureId || action.feature?.id;
@@ -84,8 +84,8 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
   };
 
   const initialQuizBuilder = {
-    selectedId: rootId,
-    addingId: rootId,
+    selectedId: earthId,
+    addingId: earthId,
     renamingId: null,
     searchResult: null,
     openIds: new Set<string>(),

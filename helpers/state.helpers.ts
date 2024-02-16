@@ -5,7 +5,7 @@ import {
   FeatureType,
   ParentFeature,
   PointState,
-  Root,
+  EarthState,
 } from "@/types";
 
 const isParent = (feature: BaseFeature): feature is ParentFeature => {
@@ -20,7 +20,7 @@ const isChild = (feature: BaseFeature): feature is ChildFeature => {
   );
 };
 
-const isRoot = (feature: BaseFeature): feature is Root => {
+const isRoot = (feature: BaseFeature): feature is EarthState => {
   return feature?.type === FeatureType.ROOT;
 };
 

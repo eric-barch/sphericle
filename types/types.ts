@@ -3,14 +3,14 @@ import { MultiPolygon, Point, Polygon } from "geojson";
 import {
   FeatureType,
   QuizBuilderDispatchType,
-  AllFeaturesDispatchType,
+  QuizDispatchType,
   QuizTakerDispatchType,
   SearchStatus,
 } from "./enums";
 
-export type AllFeatures = Map<string, BaseFeature>;
+export type QuizState = Map<string, BaseFeature>;
 
-export type Feature = Root | AreaState | PointState;
+export type Feature = EarthState | AreaState | PointState;
 
 export type BaseFeature = {
   id: string;
@@ -29,7 +29,7 @@ export type ChildFeature = BaseFeature & {
   displayBounds: google.maps.LatLngBoundsLiteral;
 };
 
-export type Root = BaseFeature &
+export type EarthState = BaseFeature &
   ParentFeature & {
     type: FeatureType.ROOT;
   };
@@ -99,54 +99,54 @@ export type OsmResult = {
   geojson: AllGeoJSON;
 };
 
-export type AllFeaturesDispatch = AddChild | SetChildren | Rename | Delete;
+export type QuizDispatch = AddChild | SetChildren | Rename | Delete;
 
 type BaseAllFeaturesDispatch = {
-  type: AllFeaturesDispatchType;
+  type: QuizDispatchType;
 };
 
 type AddChild = BaseAllFeaturesDispatch &
   (
     | {
-        type: AllFeaturesDispatchType.ADD_CHILD;
-        feature: ParentFeature;
-        childFeature: ChildFeature;
-        featureId?: never;
+        type: QuizDispatchType.ADD_CHILD;
+        parent: ParentFeature;
+        child: ChildFeature;
+        parentId?: never;
       }
     | {
-        type: AllFeaturesDispatchType.ADD_CHILD;
-        featureId: string;
-        childFeature: ChildFeature;
-        feature?: never;
+        type: QuizDispatchType.ADD_CHILD;
+        parentId: string;
+        child: ChildFeature;
+        parent?: never;
       }
   );
 
 type SetChildren = BaseAllFeaturesDispatch &
   (
     | {
-        type: AllFeaturesDispatchType.SET_CHILDREN;
-        feature: ParentFeature;
+        type: QuizDispatchType.SET_CHILDREN;
+        parent: ParentFeature;
         childIds: string[];
-        featureId?: never;
+        parentId?: never;
       }
     | {
-        type: AllFeaturesDispatchType.SET_CHILDREN;
-        featureId: string;
+        type: QuizDispatchType.SET_CHILDREN;
+        parentId: string;
         childIds: string[];
-        feature?: never;
+        parent?: never;
       }
   );
 
 type Rename = BaseAllFeaturesDispatch &
   (
     | {
-        type: AllFeaturesDispatchType.RENAME;
+        type: QuizDispatchType.RENAME;
         feature: ChildFeature;
         name: string;
         featureId?: never;
       }
     | {
-        type: AllFeaturesDispatchType.RENAME;
+        type: QuizDispatchType.RENAME;
         featureId: string;
         name: string;
         feature?: never;
@@ -156,12 +156,12 @@ type Rename = BaseAllFeaturesDispatch &
 type Delete = BaseAllFeaturesDispatch &
   (
     | {
-        type: AllFeaturesDispatchType.DELETE;
+        type: QuizDispatchType.DELETE;
         feature: ChildFeature;
         featureId?: never;
       }
     | {
-        type: AllFeaturesDispatchType.DELETE;
+        type: QuizDispatchType.DELETE;
         featureId: string;
         feature?: never;
       }

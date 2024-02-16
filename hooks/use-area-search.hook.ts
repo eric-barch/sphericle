@@ -1,6 +1,6 @@
 import { flattenCoordinates, isMultiPolygon, isPolygon } from "@/helpers";
 import { isArea, isParent, isRoot } from "@/helpers";
-import { useAllFeatures } from "@/providers";
+import { useQuiz } from "@/providers";
 import {
   AreaSearch,
   AreaState,
@@ -13,10 +13,10 @@ import { MultiPolygon, Polygon } from "geojson";
 import { useState } from "react";
 
 const useAreaSearch = (parentFeatureId: string): AreaSearch => {
-  const { allFeatures } = useAllFeatures();
+  const { quiz } = useQuiz();
 
   const parentFeatureState = (() => {
-    const parentFeatureState = allFeatures.get(parentFeatureId);
+    const parentFeatureState = quiz.get(parentFeatureId);
 
     if (isParent(parentFeatureState)) {
       return parentFeatureState;

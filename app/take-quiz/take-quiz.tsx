@@ -7,7 +7,7 @@ import { CompleteDialog } from "@/components/take-quiz/complete-dialog";
 import { ScoreBox } from "@/components/take-quiz/score-box";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
-import { useAllFeatures, useQuizTaker } from "@/providers";
+import { useQuiz, useQuizTaker } from "@/providers";
 import { QuizTakerDispatchType } from "@/types";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -15,18 +15,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const PADDING = 100;
 
 const TakeQuiz = () => {
-  const { allFeatures } = useAllFeatures();
+  const { quiz } = useQuiz();
   const { quizTaker, quizTakerDispatch } = useQuizTaker();
   const map = useMap();
 
   const displayedFeature = (() => {
-    const displayedFeature = allFeatures.get(quizTaker.currentId);
+    const displayedFeature = quiz.get(quizTaker.currentId);
     if (isChild(displayedFeature)) return displayedFeature;
   })();
 
   const displayedFeatureParent = (() => {
     if (!isChild(displayedFeature)) return;
-    const displayedFeatureParent = allFeatures.get(displayedFeature.parentId);
+    const displayedFeatureParent = quiz.get(displayedFeature.parentId);
     if (isParent(displayedFeatureParent)) return displayedFeatureParent;
   })();
 
@@ -47,6 +47,9 @@ const TakeQuiz = () => {
     }, 0);
   }, [quizTakerDispatch]);
 
+  /**TODO: fitBounds cancels early sometimes. Seems to be only on the first
+   * call if the zoom is large enough to cause the map to "cut" rather
+   * than animate the zoom smoothly. */
   useEffect(() => {
     /**Must check if map is idle before fitting bounds. */
     if (!isIdle) return;
