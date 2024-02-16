@@ -16,12 +16,12 @@ const BuildQuiz = () => {
   const { quizBuilder } = useQuizBuilder();
   const map = useMap();
 
-  const root = (() => {
-    const root = quiz.get(earthId);
-    if (isEarth(root)) return root;
+  const earth = (() => {
+    const earth = quiz.get(earthId);
+    if (isEarth(earth)) return earth;
   })();
 
-  const isAdding = earthId === quizBuilder.addingId;
+  const earthIsAdding = earthId === quizBuilder.addingId;
 
   const displayed = (() => {
     if (quizBuilder.searchOption) return quizBuilder.searchOption;
@@ -71,8 +71,8 @@ const BuildQuiz = () => {
         <div className="relative h-full">
           <ChildFeatures
             className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
-            parent={root}
-            isAdding={isAdding}
+            parent={earth}
+            isAdding={earthIsAdding}
           />
           <Link
             className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
