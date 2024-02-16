@@ -5,18 +5,18 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { RefObject } from "react";
 
-type EditFeatureButtonProps =
+type MenuButtonProps =
   | {
-      nameInputRef: RefObject<HTMLInputElement>;
-      adderInputRef: RefObject<HTMLInputElement>;
+      nameRef: RefObject<HTMLInputElement>;
+      searchRef: RefObject<HTMLInputElement>;
       featureId: string;
       canAddSubfeature: true;
       isSelected: boolean;
       isOpen: boolean;
     }
   | {
-      nameInputRef: RefObject<HTMLInputElement>;
-      adderInputRef?: never;
+      nameRef: RefObject<HTMLInputElement>;
+      searchRef?: never;
       featureId: string;
       canAddSubfeature?: never;
       isSelected: boolean;
@@ -25,10 +25,10 @@ type EditFeatureButtonProps =
       isAdding?: never;
     };
 
-const EditFeatureButton = (props: EditFeatureButtonProps) => {
+const MenuButton = (props: MenuButtonProps) => {
   const {
-    nameInputRef,
-    adderInputRef,
+    nameRef,
+    searchRef,
     featureId,
     isSelected,
     isOpen,
@@ -38,6 +38,10 @@ const EditFeatureButton = (props: EditFeatureButtonProps) => {
   const { quiz, quizDispatch } = useQuiz();
   const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
 
+  /**TODO: This feels wrong to handle here. I would rather handle the
+   * logic at the level of the container that holds all of the
+   * Feature's subcomponents. This has proven difficult to accomplish
+   * because of how Radix components fully manage focus. */
   const handleOpenChange = () => {
     /**If DropdownMenu open state changes, the feature was clicked and
      * should be selected. If it was already open, it should be set to
@@ -87,8 +91,8 @@ const EditFeatureButton = (props: EditFeatureButtonProps) => {
     });
 
     setTimeout(() => {
-      adderInputRef?.current?.focus();
-      adderInputRef?.current?.select();
+      searchRef?.current?.focus();
+      searchRef?.current?.select();
     }, 0);
   };
 
@@ -99,8 +103,8 @@ const EditFeatureButton = (props: EditFeatureButtonProps) => {
     });
 
     setTimeout(() => {
-      nameInputRef.current?.focus();
-      nameInputRef.current?.select();
+      nameRef.current?.focus();
+      nameRef.current?.select();
     }, 0);
   };
 
@@ -145,4 +149,4 @@ const EditFeatureButton = (props: EditFeatureButtonProps) => {
   );
 };
 
-export { EditFeatureButton };
+export { MenuButton };

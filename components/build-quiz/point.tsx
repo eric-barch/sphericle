@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useQuizBuilder } from "@/providers";
 import { PointState, QuizBuilderDispatchType } from "@/types";
 import { MouseEvent, useRef } from "react";
-import { EditFeatureButton } from "./edit-feature-button";
+import { MenuButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
 
 type PointProps = {
@@ -33,8 +33,8 @@ const Point = (props: PointProps) => {
 
   return (
     <div className="relative">
-      <EditFeatureButton
-        nameInputRef={nameInputRef}
+      <MenuButton
+        nameRef={nameInputRef}
         featureId={point.id}
         isSelected={isSelected}
         isRenaming={isRenaming}
