@@ -2,9 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import {
+  Children,
   Fragment,
   MouseEvent,
-  ReactNode,
+  PropsWithChildren,
   useEffect,
   useRef,
   useState,
@@ -12,45 +13,43 @@ import {
 
 type SplitPaneProps = {
   className?: string;
-  children: ReactNode[];
 };
 
-const SplitPane = (props: SplitPaneProps) => {
-  const { className, children } = props;
+const SplitPane = (props: PropsWithChildren<SplitPaneProps>) => {
+  const { className } = props;
+  const children = Children.toArray(props.children);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [prevContainerWidth, setPrevContainerWidth] = useState<number>(0);
-  const [paneWidths, setPaneWidths] = useState<number[]>([]);
   const [isResizing, setIsResizing] = useState(false);
-  const [currentPaneIndex, setCurrentPaneIndex] = useState(0);
+  const [paneIndex, setPaneIndex] = useState(0);
+  const [paneWidths, setPaneWidths] = useState<number[]>([]);
 
   const handleMouseDown = (index: number) => {
     setIsResizing(true);
-    setCurrentPaneIndex(index);
+    setPaneIndex(index);
   };
 
   const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
     if (!isResizing) return;
 
     const leftPanesWidth = paneWidths
-      .slice(0, currentPaneIndex)
+      .slice(0, paneIndex)
       .reduce((a, b) => a + b, 0);
-    const middlePanesWidth =
-      paneWidths[currentPaneIndex] + paneWidths[currentPaneIndex + 1];
+    const middlePanesWidth = paneWidths[paneIndex] + paneWidths[paneIndex + 1];
 
     const newPaneWidths = [...paneWidths];
 
     if (event.clientX < leftPanesWidth) {
-      newPaneWidths[currentPaneIndex] = 0;
-      newPaneWidths[currentPaneIndex + 1] = middlePanesWidth;
+      newPaneWidths[paneIndex] = 0;
+      newPaneWidths[paneIndex + 1] = middlePanesWidth;
     } else if (event.clientX > leftPanesWidth + middlePanesWidth) {
-      newPaneWidths[currentPaneIndex] = middlePanesWidth;
-      newPaneWidths[currentPaneIndex + 1] = 0;
+      newPaneWidths[paneIndex] = middlePanesWidth;
+      newPaneWidths[paneIndex + 1] = 0;
     } else {
-      newPaneWidths[currentPaneIndex] = event.clientX - leftPanesWidth;
-      newPaneWidths[currentPaneIndex + 1] =
-        middlePanesWidth - newPaneWidths[currentPaneIndex];
+      newPaneWidths[paneIndex] = event.clientX - leftPanesWidth;
+      newPaneWidths[paneIndex + 1] =
+        middlePanesWidth - newPaneWidths[paneIndex];
     }
 
     setPaneWidths(newPaneWidths);
@@ -70,40 +69,22 @@ const SplitPane = (props: SplitPaneProps) => {
   };
 
   useEffect(() => {
-    if (!containerRef.current) {
-      return;
-    }
-
-    const newContainerWidth = containerRef.current.offsetWidth;
-
-    setPaneWidths(
-      Array.from(
-        { length: children.length },
-        () => newContainerWidth / children.length,
-      ),
-    );
-    setPrevContainerWidth(newContainerWidth);
-  }, [children.length]);
-
-  useEffect(() => {
     const handleResize = () => {
-      if (containerRef.current) {
-        return;
-      }
+      const container = containerRef.current;
 
-      const newContainerWidth = containerRef.current.offsetWidth;
-      const paneRatios = paneWidths.map((width) => width / prevContainerWidth);
+      if (!container) return;
 
-      setPaneWidths(paneRatios.map((ratio) => ratio * newContainerWidth));
-      setPrevContainerWidth(newContainerWidth);
+      const newContainerWidth = container.offsetWidth;
+      const totalPreviousWidth = paneWidths.reduce((a, b) => a + b, 0);
+      const scale = newContainerWidth / totalPreviousWidth;
+      const newPaneWidths = paneWidths.map((width) => width * scale);
+
+      setPaneWidths(newPaneWidths);
     };
 
     window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [children.length, prevContainerWidth, paneWidths]);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [paneWidths]);
 
   return (
     <div
