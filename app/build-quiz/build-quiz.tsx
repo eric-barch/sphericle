@@ -87,7 +87,7 @@ const BuildQuiz = () => {
           gestureHandling="greedy"
           disableDefaultUI
           restriction={RESTRICTION}
-          defaultBounds={displayed?.displayBounds || DEFAULT_BOUNDS}
+          defaultBounds={DEFAULT_BOUNDS}
           onTilesLoaded={() => setTilesLoaded(true)}
         >
           {!displayedIsOpen && isArea(displayedParent) && (
