@@ -148,14 +148,14 @@ type SetAdding = BaseQuizBuilderDispatch &
     | {
         type: QuizBuilderDispatchType.SET_ADDING;
         lastAdding: ParentFeature | null;
-        feature: ParentFeature;
-        featureId?: never;
+        nextAdding: ParentFeature;
+        nextAddingId?: never;
       }
     | {
         type: QuizBuilderDispatchType.SET_ADDING;
         lastAdding: ParentFeature | null;
-        featureId: string;
-        feature?: never;
+        nextAddingId: string;
+        nextAdding?: never;
       }
   );
 
@@ -190,7 +190,7 @@ type SetRenaming = BaseQuizBuilderDispatch &
   );
 
 export type QuizBuilderState = {
-  searchResult: ChildFeature | null;
+  searchOption: ChildFeature | null;
   selectedId: string | null;
   addingId: string | null;
   renamingId: string | null;

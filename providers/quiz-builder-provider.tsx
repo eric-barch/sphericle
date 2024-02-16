@@ -12,7 +12,7 @@ import {
   useContext,
   useReducer,
 } from "react";
-import { useQuiz } from "./all-features-provider";
+import { useQuiz } from "./quiz-provider";
 
 const QuizBuilderContext = createContext<QuizBuilderState>(null);
 const QuizBuilderDispatchContext =
@@ -27,12 +27,21 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
 
   const quizBuilderReducer = (
     quizBuilder: QuizBuilderState,
-    action: QuizBuilderDispatch,
+    dispatch: QuizBuilderDispatch,
   ) => {
-    switch (action.type) {
+    switch (dispatch.type) {
+      case QuizBuilderDispatchType.SET_SEARCH_OPTION: {
+        const newQuizBuilder = { ...quizBuilder };
+        const { feature: featureState } = dispatch;
+
+        newQuizBuilder.searchOption = featureState;
+
+        return newQuizBuilder;
+      }
       case QuizBuilderDispatchType.SET_SELECTED: {
         const newQuizBuilder = { ...quizBuilder };
-        const featureId = action.featureId || action.feature?.id;
+
+        const featureId = dispatch.featureId || dispatch.feature?.id;
 
         newQuizBuilder.selectedId = featureId;
 
@@ -40,37 +49,32 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
       }
       case QuizBuilderDispatchType.SET_ADDING: {
         const newQuizBuilder = { ...quizBuilder };
-        const { lastAdding: lastFeature } = action;
-        const featureId = action.featureId || action.feature.id;
 
-        if (lastFeature?.childIds.size <= 0 && lastFeature?.id !== featureId) {
-          newQuizBuilder.openIds.delete(lastFeature.id);
+        const nextAddingId = dispatch.nextAddingId || dispatch.nextAdding.id;
+        const { lastAdding } = dispatch;
+
+        if (lastAdding?.childIds.size <= 0 && lastAdding?.id !== nextAddingId) {
+          newQuizBuilder.openIds.delete(lastAdding.id);
         }
 
-        newQuizBuilder.addingId = featureId;
+        newQuizBuilder.addingId = nextAddingId;
 
         return newQuizBuilder;
       }
       case QuizBuilderDispatchType.SET_RENAMING: {
         const newQuizBuilder = { ...quizBuilder };
-        const featureId = action.featureId || action.feature?.id;
+
+        const featureId = dispatch.featureId || dispatch.feature.id;
 
         newQuizBuilder.renamingId = featureId;
 
         return newQuizBuilder;
       }
-      case QuizBuilderDispatchType.SET_SEARCH_OPTION: {
-        const newQuizBuilder = { ...quizBuilder };
-        const { feature: featureState } = action;
-
-        newQuizBuilder.searchResult = featureState;
-
-        return newQuizBuilder;
-      }
       case QuizBuilderDispatchType.SET_IS_OPEN: {
         const newQuizBuilder = { ...quizBuilder };
-        const { isOpen } = action;
-        const featureId = action.featureId || action.feature?.id;
+
+        const featureId = dispatch.featureId || dispatch.feature.id;
+        const { isOpen } = dispatch;
 
         if (isOpen) {
           newQuizBuilder.openIds.add(featureId);
@@ -83,11 +87,11 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
     }
   };
 
-  const initialQuizBuilder = {
+  const initialQuizBuilder: QuizBuilderState = {
+    searchOption: null,
     selectedId: earthId,
     addingId: earthId,
     renamingId: null,
-    searchResult: null,
     openIds: new Set<string>(),
   };
 

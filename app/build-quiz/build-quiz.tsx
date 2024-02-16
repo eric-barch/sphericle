@@ -24,7 +24,7 @@ const BuildQuiz = () => {
   const isAdding = earthId === quizBuilder.addingId;
 
   const displayed = (() => {
-    if (quizBuilder.searchResult) return quizBuilder.searchResult;
+    if (quizBuilder.searchOption) return quizBuilder.searchOption;
     const selected = quiz.get(quizBuilder.selectedId);
     if (isChild(selected)) return selected;
   })();
