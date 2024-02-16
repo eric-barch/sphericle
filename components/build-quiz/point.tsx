@@ -5,7 +5,7 @@ import { useQuizBuilder } from "@/providers";
 import { PointState, QuizBuilderDispatchType } from "@/types";
 import { MouseEvent, useRef } from "react";
 import { MenuButton } from "./edit-feature-button";
-import { FeatureName } from "./feature-name";
+import { Name } from "./feature-name";
 
 type PointProps = {
   point: PointState;
@@ -45,11 +45,11 @@ const Point = (props: PointProps) => {
         }`}
         onClick={handleClick}
       >
-        <FeatureName
+        <Name
           featureId={point.id}
           name={name}
           isRenaming={isRenaming}
-          nameInputRef={nameInputRef}
+          inputRef={nameInputRef}
         />
       </Button>
     </div>

@@ -8,7 +8,7 @@ import { ChevronRight } from "lucide-react";
 import { useRef } from "react";
 import { ChildFeatures } from "./child-features";
 import { MenuButton } from "./edit-feature-button";
-import { FeatureName } from "./feature-name";
+import { Name } from "./feature-name";
 import { cn } from "@/lib/utils";
 
 type AreaProps = {
@@ -87,8 +87,8 @@ const Area = (props: AreaProps) => {
           }`}
           onClick={handleClick}
         >
-          <FeatureName
-            nameInputRef={nameRef}
+          <Name
+            inputRef={nameRef}
             featureId={area.id}
             name={name}
             isRenaming={isRenaming}
