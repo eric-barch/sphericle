@@ -9,6 +9,7 @@ import { useRef } from "react";
 import { ChildFeatures } from "./child-features";
 import { EditFeatureButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
+import { cn } from "@/lib/utils";
 
 type AreaProps = {
   area: AreaState;
@@ -26,8 +27,8 @@ const Area = (props: AreaProps) => {
   const isAdding = area.id === quizBuilder.addingId;
   const isOpen = quizBuilder.openIds.has(area.id);
 
-  const nameInputRef = useRef<HTMLInputElement>();
-  const adderInputRef = useRef<HTMLInputElement>();
+  const nameRef = useRef<HTMLInputElement>();
+  const searchRef = useRef<HTMLInputElement>();
 
   const handleClick = () => {
     if (isSelected) {
@@ -73,8 +74,8 @@ const Area = (props: AreaProps) => {
     <Collapsible.Root className="relative" open={isOpen}>
       <div className="relative">
         <EditFeatureButton
-          nameInputRef={nameInputRef}
-          adderInputRef={adderInputRef}
+          nameInputRef={nameRef}
+          adderInputRef={searchRef}
           featureId={area.id}
           canAddSubfeature
           isSelected={isSelected}
@@ -87,7 +88,7 @@ const Area = (props: AreaProps) => {
           onClick={handleClick}
         >
           <FeatureName
-            nameInputRef={nameInputRef}
+            nameInputRef={nameRef}
             featureId={area.id}
             name={name}
             isRenaming={isRenaming}
@@ -100,7 +101,7 @@ const Area = (props: AreaProps) => {
           className="ml-10"
           parent={area}
           isAdding={isAdding}
-          searchRef={adderInputRef}
+          searchRef={searchRef}
         />
       </Collapsible.Content>
     </Collapsible.Root>
@@ -116,7 +117,7 @@ const OpenChevron = (props: OpenChevronProps) => {
 
   return (
     <div className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl right-1">
-      <ChevronRight className={`w-6 h-6${isOpen ? " rotate-90" : ""}`} />
+      <ChevronRight className={cn("w-6 h-6", { "rotate-90": isOpen })} />
     </div>
   );
 };
