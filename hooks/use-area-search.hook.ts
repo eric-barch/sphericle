@@ -1,5 +1,5 @@
 import { flattenCoordinates, isMultiPolygon, isPolygon } from "@/helpers";
-import { isArea, isParent, isRoot } from "@/helpers";
+import { isArea, isParent, isEarth } from "@/helpers";
 import { useQuiz } from "@/providers";
 import {
   AreaSearch,
@@ -36,7 +36,7 @@ const useAreaSearch = (parentFeatureId: string): AreaSearch => {
       return;
     }
 
-    if (isRoot(parentFeatureState)) {
+    if (isEarth(parentFeatureState)) {
       return geojson;
     }
 

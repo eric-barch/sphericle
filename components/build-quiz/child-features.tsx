@@ -3,7 +3,7 @@
 import { isArea, isChild, isPoint } from "@/helpers";
 import { cn } from "@/lib/utils";
 import { useQuiz } from "@/providers";
-import { QuizDispatchType, ParentFeature, EarthState } from "@/types";
+import { QuizDispatchType, BaseParentFeature, EarthState } from "@/types";
 import { Reorder } from "framer-motion";
 import { RefObject, useMemo } from "react";
 import { Area } from "./area";
@@ -13,7 +13,7 @@ import { Point } from "./point";
 type ChildFeaturesProps =
   | {
       className?: string;
-      parent: ParentFeature;
+      parent: BaseParentFeature;
       isAdding: boolean;
       featureSearchRef: RefObject<HTMLInputElement>;
     }

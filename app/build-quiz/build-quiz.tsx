@@ -5,7 +5,7 @@ import { Polygon } from "@/components/map";
 import { DEFAULT_BOUNDS, RESTRICTION } from "@/components/map/constants";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
+import { isArea, isChild, isParent, isPoint, isEarth } from "@/helpers";
 import { useQuiz, useQuizBuilder } from "@/providers";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import Link from "next/link";
@@ -18,7 +18,7 @@ const BuildQuiz = () => {
 
   const root = (() => {
     const root = quiz.get(earthId);
-    if (isRoot(root)) return root;
+    if (isEarth(root)) return root;
   })();
 
   const isAdding = earthId === quizBuilder.addingId;
@@ -52,7 +52,7 @@ const BuildQuiz = () => {
         bounds = displayedParent.displayBounds;
       }
 
-      if (isRoot(displayedParent)) {
+      if (isEarth(displayedParent)) {
         bounds = displayed?.displayBounds;
       }
     }

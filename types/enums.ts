@@ -1,5 +1,5 @@
 export enum FeatureType {
-  ROOT = "ROOT",
+  EARTH = "EARTH",
   AREA = "AREA",
   POINT = "POINT",
 }
@@ -12,7 +12,7 @@ export enum QuizDispatchType {
 }
 
 export enum QuizBuilderDispatchType {
-  SET_FEATURE_ADDER,
+  SET_SEARCH_OPTION,
   SET_SELECTED,
   SET_RENAMING,
   SET_ADDING,

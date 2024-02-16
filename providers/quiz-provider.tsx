@@ -113,7 +113,7 @@ const QuizProvider = ({ children }: QuizProviderProps) => {
   const initialEarth: EarthState = {
     id: earthId,
     childIds: new Set<string>(),
-    type: FeatureType.ROOT,
+    type: FeatureType.EARTH,
   };
 
   const initialQuiz: QuizState = new Map<string, Feature>([

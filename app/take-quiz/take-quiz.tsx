@@ -6,7 +6,7 @@ import { AnswerBox } from "@/components/take-quiz/answer-box";
 import { CompleteDialog } from "@/components/take-quiz/complete-dialog";
 import { ScoreBox } from "@/components/take-quiz/score-box";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isArea, isChild, isParent, isPoint, isRoot } from "@/helpers";
+import { isArea, isChild, isParent, isPoint, isEarth } from "@/helpers";
 import { useQuiz, useQuizTaker } from "@/providers";
 import { QuizTakerDispatchType } from "@/types";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
@@ -60,7 +60,7 @@ const TakeQuiz = () => {
       bounds = displayedFeatureParent.displayBounds;
     }
 
-    if (isRoot(displayedFeatureParent)) {
+    if (isEarth(displayedFeatureParent)) {
       bounds = displayedFeature?.displayBounds;
     }
 

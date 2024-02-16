@@ -1,11 +1,11 @@
 "use client";
 
-import { isArea, isRoot } from "@/helpers";
+import { isArea, isEarth } from "@/helpers";
 import { useQuizBuilder } from "@/providers";
 import {
   AreaSearch,
   FeatureType,
-  ParentFeature,
+  BaseParentFeature,
   PointSearch,
   QuizBuilderDispatchType,
   SearchStatus,
@@ -16,7 +16,7 @@ import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
 
 type SearchInputProps = {
   inputRef: RefObject<HTMLInputElement>;
-  feature: ParentFeature;
+  feature: BaseParentFeature;
   selectParentOnInput: boolean;
   input: string;
   featureType: FeatureType;
@@ -48,11 +48,11 @@ const SearchInput = (props: SearchInputProps) => {
 
   const isSelected = feature.id === quizBuilder.selectedId;
   const name = (() => {
-    if (isRoot(feature)) return "root";
+    if (isEarth(feature)) return "root";
     if (isArea(feature)) return feature.userDefinedName || feature.shortName;
   })();
   const placeholder = (() => {
-    if (isRoot(feature)) return `Add ${featureType.toLowerCase()} anywhere`;
+    if (isEarth(feature)) return `Add ${featureType.toLowerCase()} anywhere`;
     if (isArea(feature)) return `Add ${featureType.toLowerCase()} in ${name}`;
   })();
 
