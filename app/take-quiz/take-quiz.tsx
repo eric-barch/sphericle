@@ -19,15 +19,15 @@ const TakeQuiz = () => {
   const { quizTaker, quizTakerDispatch } = useQuizTaker();
   const map = useMap();
 
-  const displayedFeature = (() => {
-    const displayedFeature = quiz.get(quizTaker.currentId);
-    if (isChild(displayedFeature)) return displayedFeature;
+  const displayed = (() => {
+    const displayed = quiz.get(quizTaker.currentId);
+    if (isChild(displayed)) return displayed;
   })();
 
-  const displayedFeatureParent = (() => {
-    if (!isChild(displayedFeature)) return;
-    const displayedFeatureParent = quiz.get(displayedFeature.parentId);
-    if (isParent(displayedFeatureParent)) return displayedFeatureParent;
+  const displayedParent = (() => {
+    if (!isChild(displayed)) return;
+    const displayedParent = quiz.get(displayed.parentId);
+    if (isParent(displayedParent)) return displayedParent;
   })();
 
   const quizIsComplete = quizTaker.remainingIds.size === 0;
@@ -35,7 +35,6 @@ const TakeQuiz = () => {
   const answerBoxRef = useRef<HTMLInputElement>();
 
   const [tilesLoaded, setTilesLoaded] = useState<boolean>(false);
-  const [isIdle, setIsIdle] = useState<boolean>(false);
 
   const handleReset = useCallback(() => {
     quizTakerDispatch({
@@ -51,23 +50,20 @@ const TakeQuiz = () => {
    * call if the zoom is large enough to cause the map to "cut" rather
    * than animate the zoom smoothly. */
   useEffect(() => {
-    /**Must check if map is idle before fitting bounds. */
-    if (!isIdle) return;
-
     let bounds: google.maps.LatLngBoundsLiteral;
 
-    if (isArea(displayedFeatureParent)) {
-      bounds = displayedFeatureParent.displayBounds;
+    if (isArea(displayedParent)) {
+      bounds = displayedParent.displayBounds;
     }
 
-    if (isEarth(displayedFeatureParent)) {
-      bounds = displayedFeature?.displayBounds;
+    if (isEarth(displayedParent)) {
+      bounds = displayed?.displayBounds;
     }
 
     if (bounds) {
       map?.fitBounds(bounds, PADDING);
     }
-  }, [displayedFeature, displayedFeatureParent, isIdle, map, tilesLoaded]);
+  }, [displayed, displayedParent, map, tilesLoaded]);
 
   useEffect(() => {
     handleReset();
@@ -82,7 +78,7 @@ const TakeQuiz = () => {
           <ScoreBox />
           <AnswerBox
             ref={answerBoxRef}
-            displayedFeature={displayedFeature}
+            displayedFeature={displayed}
             disabled={quizIsComplete}
           />
         </>
@@ -93,25 +89,31 @@ const TakeQuiz = () => {
         gestureHandling="greedy"
         disableDefaultUI
         restriction={RESTRICTION}
-        defaultBounds={displayedFeature?.displayBounds || DEFAULT_BOUNDS}
+        defaultBounds={displayed?.displayBounds || DEFAULT_BOUNDS}
         onTilesLoaded={() => setTilesLoaded(true)}
-        onBoundsChanged={() => setIsIdle(false)}
-        onIdle={() => setIsIdle(true)}
       >
-        {isArea(displayedFeature) && (
+        {isArea(displayedParent) && (
           <Polygon
-            polygon={displayedFeature.polygon}
+            polygon={displayedParent.polygon}
+            strokeWeight={1.5}
+            strokeColor="#b91c1c"
+            fillOpacity={0}
+          />
+        )}
+        {isArea(displayed) && (
+          <Polygon
+            polygon={displayed.polygon}
             strokeWeight={1.5}
             strokeColor="#b91c1c"
             fillColor="#b91c1c"
             fillOpacity={0.2}
           />
         )}
-        {isPoint(displayedFeature) && (
+        {isPoint(displayed) && (
           <Marker
             position={{
-              lng: displayedFeature.point.coordinates[0],
-              lat: displayedFeature.point.coordinates[1],
+              lng: displayed.point.coordinates[0],
+              lat: displayed.point.coordinates[1],
             }}
           />
         )}
