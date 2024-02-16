@@ -7,7 +7,7 @@ import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
 import { useRef } from "react";
 import { ChildFeatures } from "./child-features";
-import { EditFeatureButton } from "./edit-feature-button";
+import { MenuButton } from "./edit-feature-button";
 import { FeatureName } from "./feature-name";
 import { cn } from "@/lib/utils";
 
@@ -73,9 +73,9 @@ const Area = (props: AreaProps) => {
   return (
     <Collapsible.Root className="relative" open={isOpen}>
       <div className="relative">
-        <EditFeatureButton
-          nameInputRef={nameRef}
-          adderInputRef={searchRef}
+        <MenuButton
+          nameRef={nameRef}
+          searchRef={searchRef}
           featureId={area.id}
           canAddSubfeature
           isSelected={isSelected}
