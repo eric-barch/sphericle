@@ -3,9 +3,9 @@
 import { isArea, isChild, isPoint } from "@/helpers";
 import { cn } from "@/lib/utils";
 import { useQuiz } from "@/providers";
-import { QuizDispatchType, BaseParentFeature, EarthState } from "@/types";
+import { QuizDispatchType, ParentFeature, EarthState } from "@/types";
 import { Reorder } from "framer-motion";
-import { RefObject, useMemo } from "react";
+import { RefObject } from "react";
 import { Area } from "./area";
 import { Search } from "./search";
 import { Point } from "./point";
@@ -13,21 +13,22 @@ import { Point } from "./point";
 type ChildFeaturesProps =
   | {
       className?: string;
-      parent: BaseParentFeature;
+      parent: ParentFeature;
       isAdding: boolean;
-      featureSearchRef: RefObject<HTMLInputElement>;
+      searchRef: RefObject<HTMLInputElement>;
     }
   | {
       className?: string;
       parent: EarthState;
       isAdding: boolean;
-      featureSearchRef?: never;
+      searchRef?: never;
     };
 
 const ChildFeatures = (props: ChildFeaturesProps) => {
-  const { className, parent, isAdding, featureSearchRef } = props;
+  const { className, parent, isAdding, searchRef } = props;
 
   const { quizDispatch } = useQuiz();
+
   const handleReorder = (childIds: string[]) => {
     quizDispatch({
       type: QuizDispatchType.SET_CHILDREN,
@@ -53,29 +54,28 @@ const ChildFeatures = (props: ChildFeaturesProps) => {
             /**TODO: Fix animation and delete this prop. */
             transition={{ duration: 0 }}
           >
-            <ChildFeature featureId={childId} />
+            <Feature featureId={childId} />
           </Reorder.Item>
         ))}
       </Reorder.Group>
-      {isAdding && <Search inputRef={featureSearchRef} parent={parent} />}
+      {isAdding && <Search inputRef={searchRef} parent={parent} />}
     </div>
   );
 };
-ChildFeatures.displayName = "ChildFeatures";
 
-type ChildFeatureProps = {
+type FeatureProps = {
   featureId: string;
 };
 
-const ChildFeature = (props: ChildFeatureProps) => {
+const Feature = (props: FeatureProps) => {
   const { featureId } = props;
 
-  const { quiz: allFeatures } = useQuiz();
+  const { quiz } = useQuiz();
 
-  const feature = useMemo(() => {
-    const feature = allFeatures.get(featureId);
+  const feature = (() => {
+    const feature = quiz.get(featureId);
     if (isChild(feature)) return feature;
-  }, [allFeatures, featureId]);
+  })();
 
   if (isArea(feature)) {
     return <Area area={feature} />;
