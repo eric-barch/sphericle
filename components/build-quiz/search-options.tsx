@@ -9,13 +9,13 @@ import {
   PointState,
   QuizBuilderDispatchType,
   SearchStatus,
-  BaseChildFeature,
+  ChildFeature,
 } from "@/types";
 import { Combobox } from "@headlessui/react";
 import { useEffect } from "react";
 
 type SearchOptionsProps = {
-  activeOption: BaseChildFeature;
+  activeOption: ChildFeature;
   input: string;
   featureType: FeatureType;
   areaSearch: AreaSearch;
@@ -40,7 +40,7 @@ const SearchOptions = (props: SearchOptionsProps) => {
     }
   })();
 
-  /**This is hacky, but the best way I've found to work around hardcoded
+  /**TODO: This is hacky, but the best way I've found to work around hardcoded
    * HeadlessUI Combobox behavior. Long term, probably need to switch to
    * a different accesssible component library. */
   useEffect(() => {
@@ -56,27 +56,25 @@ const SearchOptions = (props: SearchOptionsProps) => {
         <div className="pl-7 p-1">{placeholder}</div>
       ) : (
         (() => {
-          switch (featureType) {
-            case FeatureType.AREA:
-              return areaSearch.results.map((area: AreaState) => (
-                <Option key={area.id} feature={area} />
-              ));
-            case FeatureType.POINT:
-              return pointSearch.results.map((point: PointState) => (
-                <Option key={point.id} feature={point} />
-              ));
-          }
+          if (featureType === FeatureType.AREA)
+            return areaSearch.results.map((area: AreaState) => (
+              <SearchOption key={area.id} feature={area} />
+            ));
+          if (featureType === FeatureType.POINT)
+            return pointSearch.results.map((point: PointState) => (
+              <SearchOption key={point.id} feature={point} />
+            ));
         })()
       )}
     </Combobox.Options>
   );
 };
 
-type OptionProps = {
+type SearchOptionProps = {
   feature: AreaState | PointState;
 };
 
-const Option = (props: OptionProps) => {
+const SearchOption = (props: SearchOptionProps) => {
   const { feature } = props;
 
   return (
