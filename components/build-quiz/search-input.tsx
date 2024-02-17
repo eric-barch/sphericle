@@ -5,7 +5,7 @@ import { useQuizBuilder } from "@/providers";
 import {
   AreaSearch,
   FeatureType,
-  BaseParentFeature,
+  ParentFeature,
   PointSearch,
   QuizBuilderDispatchType,
   SearchStatus,
@@ -16,7 +16,7 @@ import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
 
 type SearchInputProps = {
   inputRef: RefObject<HTMLInputElement>;
-  feature: BaseParentFeature;
+  parent: ParentFeature;
   selectParentOnInput: boolean;
   input: string;
   featureType: FeatureType;
@@ -27,13 +27,11 @@ type SearchInputProps = {
   setInput: (input: string) => void;
 };
 
+/**TODO: Wrap in forwardRef. */
 const SearchInput = (props: SearchInputProps) => {
   const {
-    /**TODO: Would like to wrap entire component in forwardRef rather than
-     * passing this inputRef prop, but in previous attempt the upstream ref
-     * was always undefined. */
     inputRef,
-    feature,
+    parent,
     selectParentOnInput,
     input,
     featureType,
@@ -46,14 +44,17 @@ const SearchInput = (props: SearchInputProps) => {
 
   const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
 
-  const isSelected = feature.id === quizBuilder.selectedId;
+  const parentIsSelected = parent.id === quizBuilder.selectedId;
+
   const name = (() => {
-    if (isEarth(feature)) return "root";
-    if (isArea(feature)) return feature.userDefinedName || feature.shortName;
+    if (isEarth(parent)) return "Earth";
+    if (isArea(parent)) return parent.userDefinedName || parent.shortName;
   })();
+
   const placeholder = (() => {
-    if (isEarth(feature)) return `Add ${featureType.toLowerCase()} anywhere`;
-    if (isArea(feature)) return `Add ${featureType.toLowerCase()} in ${name}`;
+    if (isEarth(parent))
+      return `Add ${featureType.toLowerCase()} anywhere on Earth.`;
+    if (isArea(parent)) return `Add ${featureType.toLowerCase()} in ${name}`;
   })();
 
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
@@ -72,10 +73,10 @@ const SearchInput = (props: SearchInputProps) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
 
-    if (!isSelected && selectParentOnInput) {
+    if (!parentIsSelected && selectParentOnInput) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_SELECTED,
-        featureId: feature.id,
+        featureId: parent.id,
       });
     }
 
@@ -109,7 +110,7 @@ const SearchInput = (props: SearchInputProps) => {
   };
 
   const handleTab = (event: KeyboardEvent<HTMLInputElement>) => {
-    /**Override undesirable built-in HeadlessUI Combobox Tab advance behavior.
+    /**Override undesired built-in HeadlessUI Combobox Tab advance behavior.
      * Look into alternative accessible libraries, or wait for Radix to come
      * out with one. */
     event.preventDefault();
@@ -119,6 +120,7 @@ const SearchInput = (props: SearchInputProps) => {
         'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])',
       ),
     );
+
     const currentIndex = focusableElements.indexOf(event.currentTarget);
 
     if (event.shiftKey) {
@@ -160,7 +162,6 @@ const SearchInput = (props: SearchInputProps) => {
     </div>
   );
 };
-SearchInput.displayName = "FeatureAdderInput";
 
 type ChangeFeatureTypeButtonProps = {
   featureType: FeatureType;
@@ -172,7 +173,7 @@ const ChangeFeatureTypeButton = ({
   setFeatureType,
 }: ChangeFeatureTypeButtonProps) => {
   const handleClick = () => {
-    /**TODO: Make this some kind of circular linked list. */
+    /**TODO: Convert this to some kind of circular linked list. */
     if (featureType === FeatureType.AREA) setFeatureType(FeatureType.POINT);
     if (featureType === FeatureType.POINT) setFeatureType(FeatureType.AREA);
   };
@@ -183,12 +184,10 @@ const ChangeFeatureTypeButton = ({
       onClick={handleClick}
     >
       {(() => {
-        switch (featureType) {
-          case FeatureType.AREA:
-            return <Grid2X2 className="w-4 h-4" />;
-          case FeatureType.POINT:
-            return <MapPin className="w-4 h-4" />;
-        }
+        if (featureType === FeatureType.AREA)
+          return <Grid2X2 className="w-4 h-4" />;
+        if (featureType === FeatureType.POINT)
+          return <MapPin className="w-4 h-4" />;
       })()}
     </button>
   );

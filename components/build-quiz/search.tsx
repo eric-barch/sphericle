@@ -19,6 +19,7 @@ type SearchProps = {
   parent: ParentFeature;
 };
 
+/**TODO: Wrap in forwardRef. */
 const Search = (props: SearchProps) => {
   const { inputRef, parent } = props;
 
@@ -38,17 +39,13 @@ const Search = (props: SearchProps) => {
 
   const handleBlur = (event: FocusEvent<HTMLInputElement>) => {
     if (event.currentTarget.contains(event.relatedTarget)) return;
-
-    /**User is done adding features at this level. Select its parent on next
-     * input change. */
+    /**User is finished adding multiple features at this level. Select parent
+     * on next input change. */
     setSelectParentOnInput(true);
   };
 
   const handleSelectOption = (selectedOption: ChildFeature) => {
-    console.log("handleSelectOption", selectedOption);
-
     if (inputRef) {
-      console.log('inputRef = ""');
       inputRef.current.value = "";
     }
 
@@ -101,7 +98,7 @@ const Search = (props: SearchProps) => {
             <SearchInput
               inputRef={inputRef}
               featureAdderRef={searchRef}
-              feature={parent}
+              parent={parent}
               selectParentOnInput={selectParentOnInput}
               input={input}
               featureType={featureType}
