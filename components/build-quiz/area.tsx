@@ -7,8 +7,8 @@ import * as Collapsible from "@radix-ui/react-collapsible";
 import { ChevronRight } from "lucide-react";
 import { useRef } from "react";
 import { ChildFeatures } from "./child-features";
-import { MenuButton } from "./edit-feature-button";
-import { Name } from "./feature-name";
+import { MenuButton } from "./menu-button";
+import { Name } from "./name";
 import { cn } from "@/lib/utils";
 
 type AreaProps = {
