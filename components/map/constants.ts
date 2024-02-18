@@ -10,7 +10,7 @@ const DEFAULT_CENTER = {
   lng: 0,
 };
 
-const DEFAULT_ZOOM = 1;
+const DEFAULT_ZOOM = 0;
 
 const RESTRICTION = {
   latLngBounds: DEFAULT_BOUNDS,

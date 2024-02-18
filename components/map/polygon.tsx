@@ -1,3 +1,6 @@
+/**Copied from vis.gl example:
+ * https://github.com/visgl/react-google-maps/blob/b0fa2b189866369f4323c9cd805c9cf83478c772/examples/geometry/src/components/polygon.tsx#L4*/
+
 import {
   forwardRef,
   useContext,
@@ -5,13 +8,13 @@ import {
   useImperativeHandle,
   useMemo,
   useRef,
-  useState,
 } from "react";
-
 import { GoogleMapsContext, useMapsLibrary } from "@vis.gl/react-google-maps";
-
 import type { Ref } from "react";
-import { MultiPolygon, Polygon as GeoJsonPolygon } from "geojson";
+import {
+  MultiPolygon as GeoJsonMultiPolygon,
+  Polygon as GeoJsonPolygon,
+} from "geojson";
 import { isMultiPolygon, isPolygon } from "@/helpers";
 
 type PolygonEventProps = {
@@ -24,7 +27,7 @@ type PolygonEventProps = {
 };
 
 type PolygonCustomProps = {
-  polygon?: GeoJsonPolygon | MultiPolygon;
+  geoJson?: GeoJsonPolygon | GeoJsonMultiPolygon;
 };
 
 export type PolygonProps = google.maps.PolygonOptions &
@@ -41,9 +44,10 @@ function usePolygon(props: PolygonProps) {
     onDragEnd,
     onMouseOver,
     onMouseOut,
-    polygon: geoJsonPolygon,
+    geoJson,
     ...polygonOptions
   } = props;
+
   /**Avoid triggering the below useEffect when callbacks change if the user
    * didn't memoize them. */
   const callbacks = useRef<Record<string, (e: unknown) => void>>({});
@@ -67,30 +71,6 @@ function usePolygon(props: PolygonProps) {
 
   const map = useContext(GoogleMapsContext)?.map;
 
-  useEffect(() => {
-    if (!geoJsonPolygon || !geometryLibrary) {
-      return;
-    }
-
-    if (isPolygon(geoJsonPolygon)) {
-      const paths = geoJsonPolygon.coordinates[0].map(
-        (position) => new google.maps.LatLng(position[1], position[0]),
-      );
-
-      polygon.setPaths(paths);
-    }
-
-    if (isMultiPolygon(geoJsonPolygon)) {
-      const paths = geoJsonPolygon.coordinates.map((polygon) =>
-        polygon[0].map(
-          (position) => new google.maps.LatLng(position[1], position[0]),
-        ),
-      );
-
-      polygon.setPaths(paths);
-    }
-  }, [polygon, geoJsonPolygon, geometryLibrary]);
-
   /** Instantiate polygon and attach to map. */
   useEffect(() => {
     if (!map) {
@@ -104,7 +84,7 @@ function usePolygon(props: PolygonProps) {
     };
   }, [map, polygon]);
 
-  /** Attach and re-attach event handlers when properties change. */
+  /** Attach and re-attach event handlers when prop polygon changes. */
   useEffect(() => {
     if (!polygon) {
       return;
@@ -131,14 +111,37 @@ function usePolygon(props: PolygonProps) {
     };
   }, [polygon]);
 
+  /**Set polygon paths when prop polygon changes. */
+  useEffect(() => {
+    if (!geoJson || !geometryLibrary) {
+      return;
+    }
+
+    if (isPolygon(geoJson)) {
+      const paths = geoJson.coordinates[0].map(
+        (position) => new google.maps.LatLng(position[1], position[0]),
+      );
+
+      polygon.setPaths(paths);
+    }
+
+    if (isMultiPolygon(geoJson)) {
+      const paths = geoJson.coordinates.map((polygon) =>
+        polygon[0].map(
+          (position) => new google.maps.LatLng(position[1], position[0]),
+        ),
+      );
+
+      polygon.setPaths(paths);
+    }
+  }, [polygon, geoJson, geometryLibrary]);
+
   return polygon;
 }
 
 export const Polygon = forwardRef((props: PolygonProps, ref: PolygonRef) => {
   const polygon = usePolygon(props);
-
   useImperativeHandle(ref, () => polygon, [polygon]);
-
   return null;
 });
 
