@@ -94,7 +94,7 @@ const TakeQuiz = () => {
       >
         {isArea(displayedParent) && (
           <Polygon
-            polygon={displayedParent.polygon}
+            geoJson={displayedParent.polygon}
             strokeWeight={1.5}
             strokeColor="#b91c1c"
             fillOpacity={0}
@@ -102,7 +102,7 @@ const TakeQuiz = () => {
         )}
         {isArea(displayed) && (
           <Polygon
-            polygon={displayed.polygon}
+            geoJson={displayed.polygon}
             strokeWeight={1.5}
             strokeColor="#b91c1c"
             fillColor="#b91c1c"
