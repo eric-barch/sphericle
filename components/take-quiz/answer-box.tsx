@@ -22,30 +22,24 @@ const AnswerBox = forwardRef(
     const { quizTakerDispatch } = useQuizTaker();
 
     const featureId = displayedFeature?.id;
-    const featureName =
+    const answer =
       displayedFeature?.userDefinedName || displayedFeature?.shortName;
 
     const [input, setInput] = useState<string>("");
 
     const checkAnswer = () => {
-      const normalizedAnswer = featureName.trim().toLowerCase();
+      const normalizedAnswer = answer.trim().toLowerCase();
       const normalizedInput = input.trim().toLowerCase();
 
       if (normalizedAnswer === normalizedInput) {
-        toast.success(
-          displayedFeature.userDefinedName || displayedFeature.shortName,
-        );
+        toast.success(answer);
 
         quizTakerDispatch({
           type: QuizTakerDispatchType.MARK_CORRECT,
           featureId,
         });
       } else {
-        toast.error(
-          `You said: ${input}\nCorrect answer: ${
-            displayedFeature.userDefinedName || displayedFeature.shortName
-          }`,
-        );
+        toast.error(`You said: ${input}\nCorrect answer: ${answer}`);
 
         quizTakerDispatch({
           type: QuizTakerDispatchType.MARK_INCORRECT,
