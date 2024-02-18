@@ -29,14 +29,10 @@
 
 @layer components {
   body {
-    @apply min-h-screen
-    flex flex-col
-    text-white
-    bg-gray-700;
+    @apply min-h-screen flex flex-col text-white bg-gray-700;
   }
 
   main {
-    @apply flex-grow
-    flex flex-col;
+    @apply flex-grow flex flex-col;
   }
 }
