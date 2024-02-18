@@ -35,6 +35,7 @@ const TakeQuiz = () => {
   const answerBoxRef = useRef<HTMLInputElement>();
 
   const [tilesLoaded, setTilesLoaded] = useState<boolean>(false);
+  const [isIdle, setIsIdle] = useState<boolean>(true);
 
   const handleReset = useCallback(() => {
     quizTakerDispatch({
@@ -46,9 +47,6 @@ const TakeQuiz = () => {
     }, 0);
   }, [quizTakerDispatch]);
 
-  /**TODO: fitBounds cancels early sometimes. Seems to be only on the first
-   * call if the zoom is large enough to cause the map to "cut" rather
-   * than animate the zoom smoothly. */
   useEffect(() => {
     let bounds: google.maps.LatLngBoundsLiteral;
 
@@ -60,10 +58,10 @@ const TakeQuiz = () => {
       bounds = displayed?.displayBounds;
     }
 
-    if (bounds) {
+    if (bounds && isIdle && tilesLoaded) {
       map?.fitBounds(bounds, PADDING);
     }
-  }, [displayed, displayedParent, map, tilesLoaded]);
+  }, [displayed, displayedParent, isIdle, map, tilesLoaded]);
 
   useEffect(() => {
     handleReset();
@@ -91,6 +89,8 @@ const TakeQuiz = () => {
         restriction={RESTRICTION}
         defaultBounds={displayed?.displayBounds || DEFAULT_BOUNDS}
         onTilesLoaded={() => setTilesLoaded(true)}
+        onBoundsChanged={() => setIsIdle(false)}
+        onIdle={() => setIsIdle(true)}
       >
         {isArea(displayedParent) && (
           <Polygon
