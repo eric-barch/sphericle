@@ -1,5 +1,5 @@
 import { useQuizTaker } from "@/providers";
-import { QuizTakerDispatchType, BaseChildFeature } from "@/types";
+import { QuizTakerDispatchType, ChildFeature } from "@/types";
 import {
   ChangeEvent,
   KeyboardEvent,
@@ -12,7 +12,7 @@ import {
 import toast from "react-hot-toast";
 
 type AnswerBoxProps = {
-  displayedFeature: BaseChildFeature;
+  displayedFeature: ChildFeature;
   disabled: boolean;
 };
 

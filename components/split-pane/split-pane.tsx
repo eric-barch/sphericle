@@ -69,6 +69,21 @@ const SplitPane = (props: PropsWithChildren<SplitPaneProps>) => {
   };
 
   useEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
+
+    const newContainerWidth = containerRef.current.offsetWidth;
+
+    setPaneWidths(
+      Array.from(
+        { length: children.length },
+        () => newContainerWidth / children.length,
+      ),
+    );
+  }, [children.length]);
+
+  useEffect(() => {
     const handleResize = () => {
       const container = containerRef.current;
 

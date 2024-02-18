@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useQuizBuilder } from "@/providers";
 import { PointState, QuizBuilderDispatchType } from "@/types";
 import { useRef } from "react";
-import { MenuButton } from "./edit-feature-button";
-import { Name } from "./feature-name";
+import { MenuButton } from "./menu-button";
+import { Name } from "./name";
 
 type PointProps = {
   point: PointState;
