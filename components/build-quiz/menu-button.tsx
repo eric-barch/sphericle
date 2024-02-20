@@ -1,6 +1,11 @@
 import { isParent } from "@/helpers";
 import { useQuiz, useQuizBuilder } from "@/providers";
-import { QuizDispatchType, QuizBuilderDispatchType } from "@/types";
+import {
+  QuizDispatchType,
+  QuizBuilderDispatchType,
+  AreaState,
+  PointState,
+} from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { RefObject } from "react";
@@ -9,15 +14,16 @@ type MenuButtonProps =
   | {
       nameRef: RefObject<HTMLInputElement>;
       searchRef: RefObject<HTMLInputElement>;
-      featureId: string;
+      feature: AreaState;
       canAddSubfeature: true;
       isSelected: boolean;
       isOpen: boolean;
+      isAdding: boolean;
     }
   | {
       nameRef: RefObject<HTMLInputElement>;
       searchRef?: never;
-      featureId: string;
+      feature: PointState;
       canAddSubfeature?: never;
       isSelected: boolean;
       isRenaming: boolean;
@@ -29,9 +35,10 @@ const MenuButton = (props: MenuButtonProps) => {
   const {
     nameRef,
     searchRef,
-    featureId,
+    feature,
     isSelected,
     isOpen,
+    isAdding,
     canAddSubfeature,
   } = props;
 
@@ -49,7 +56,7 @@ const MenuButton = (props: MenuButtonProps) => {
     if (!isSelected) {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_SELECTED,
-        featureId,
+        featureId: feature.id,
       });
     }
 
@@ -62,7 +69,7 @@ const MenuButton = (props: MenuButtonProps) => {
       quizBuilderDispatch({
         type: QuizBuilderDispatchType.SET_ADDING,
         lastAdding,
-        nextAddingId: featureId,
+        nextAddingId: feature.id,
       });
     }
   };
@@ -75,7 +82,7 @@ const MenuButton = (props: MenuButtonProps) => {
   const handleAddSubfeature = () => {
     quizBuilderDispatch({
       type: QuizBuilderDispatchType.SET_IS_OPEN,
-      featureId,
+      featureId: feature.id,
       isOpen: true,
     });
 
@@ -87,7 +94,7 @@ const MenuButton = (props: MenuButtonProps) => {
     quizBuilderDispatch({
       type: QuizBuilderDispatchType.SET_ADDING,
       lastAdding,
-      nextAddingId: featureId,
+      nextAddingId: feature.id,
     });
 
     setTimeout(() => {
@@ -99,7 +106,7 @@ const MenuButton = (props: MenuButtonProps) => {
   const handleRename = () => {
     quizBuilderDispatch({
       type: QuizBuilderDispatchType.SET_RENAMING,
-      featureId,
+      featureId: feature.id,
     });
 
     setTimeout(() => {
@@ -109,9 +116,17 @@ const MenuButton = (props: MenuButtonProps) => {
   };
 
   const handleDelete = () => {
+    if (isAdding) {
+      quizBuilderDispatch({
+        type: QuizBuilderDispatchType.SET_ADDING,
+        lastAdding: feature,
+        nextAddingId: feature.parentId,
+      });
+    }
+
     quizDispatch({
       type: QuizDispatchType.DELETE,
-      featureId,
+      featureId: feature.id,
     });
   };
 
