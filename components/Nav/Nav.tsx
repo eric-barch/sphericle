@@ -4,7 +4,7 @@ import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Nav() {
+const Nav = () => {
   return (
     <NavigationMenu.Root
       className={`flex items-center sticky top-0 z-50 w-full px-6 py-3 bg-gray-900 h-16`}
@@ -12,8 +12,8 @@ export default function Nav() {
     >
       <div className="grow">
         <NavigationMenu.List className="flex flex-row items-center justify-between">
-          <NavigationMenu.Item>
-            <Link className="rounded-2xl" href="/">
+          <NavigationMenu.Item asChild>
+            <Link className="rounded-3xl p-1.5" href="/">
               <Image
                 priority
                 src="/sphericle-americas.svg"
@@ -32,4 +32,6 @@ export default function Nav() {
       </div>
     </NavigationMenu.Root>
   );
-}
+};
+
+export { Nav };

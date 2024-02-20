@@ -1,2 +1,1 @@
-export * from "./Nav";
-export { default } from "./Nav";
+export * from "./nav";

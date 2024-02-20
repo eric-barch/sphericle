@@ -1,6 +1,13 @@
-import AllFeaturesProvider from "@/components/AllFeaturesProvider";
-import Nav from "@/components/Nav";
+"use client";
+
+import { Nav } from "@/components/nav";
+import {
+  QuizProvider,
+  QuizBuilderProvider,
+  QuizTakerProvider,
+} from "@/providers";
 import "@/styles/globals.css";
+import { APIProvider } from "@vis.gl/react-google-maps";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import { ReactNode } from "react";
@@ -8,21 +15,31 @@ import { Toaster } from "react-hot-toast";
 
 const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Sphericle",
-  description: "Learn the world.",
-};
+// const metadata: Metadata = {
+//   title: "Sphericle",
+//   description: "Learn the world.",
+// };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
       <body className={font.className}>
-        <Nav />
-        <main className="h-[calc(100vh-4rem)] overflow-auto custom-scrollbar">
-          <AllFeaturesProvider>{children}</AllFeaturesProvider>
-          <Toaster containerStyle={{ marginTop: "4rem" }} />
-        </main>
+        <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+          <Nav />
+          <main className="h-[calc(100vh-4rem)] overflow-auto custom-scrollbar">
+            <QuizProvider>
+              <QuizTakerProvider>
+                <QuizBuilderProvider>{children}</QuizBuilderProvider>
+              </QuizTakerProvider>
+            </QuizProvider>
+
+            <Toaster containerStyle={{ marginTop: "4rem" }} />
+          </main>
+        </APIProvider>
       </body>
     </html>
   );
-}
+};
+
+// export { metadata };
+export default RootLayout;

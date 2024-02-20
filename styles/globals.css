@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 *:focus-visible {
-  outline: 2px solid #b91c1c;
+  outline: 2px solid #ffffff;
+}
+
+.gm-style div {
+  border: none !important;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -25,14 +29,10 @@
 
 @layer components {
   body {
-    @apply min-h-screen
-    flex flex-col
-    text-white
-    bg-gray-700;
+    @apply min-h-screen flex flex-col text-white bg-gray-700;
   }
 
   main {
-    @apply flex-grow
-    flex flex-col;
+    @apply flex-grow flex flex-col;
   }
 }

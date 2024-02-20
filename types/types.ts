@@ -2,60 +2,270 @@ import { AllGeoJSON } from "@turf/helpers";
 import { MultiPolygon, Point, Polygon } from "geojson";
 import {
   FeatureType,
-  QuizBuilderStateDispatchType,
-  AllFeaturesDispatchType,
-  QuizTakerStateDispatchType,
+  QuizBuilderDispatchType,
+  QuizDispatchType,
+  QuizTakerDispatchType,
+  SearchStatus,
 } from "./enums";
 
-export type AllFeatures = Map<string, RootState | AreaState | PointState>;
-
-export interface RootState {
+type BaseFeature = {
   id: string;
-  subfeatureIds: Set<string>;
-  featureType: FeatureType.ROOT;
-}
+  type: FeatureType;
+};
 
-export interface AreaState {
-  id: string;
-  parentFeatureId: string;
-  subfeatureIds: Set<string>;
-  featureType: FeatureType.AREA;
-  openStreetMapPlaceId: number;
-  longName: string;
-  shortName: string;
-  userDefinedName: string | null;
-  isOpen: boolean;
-  isAdding: boolean;
-  searchBounds: google.maps.LatLngBoundsLiteral;
-  displayBounds: google.maps.LatLngBoundsLiteral;
-  polygons: Polygon | MultiPolygon;
-}
+type BaseParentFeature = BaseFeature & {
+  childIds: Set<string>;
+};
 
-export interface PointState {
-  id: string;
-  parentFeatureId: string;
-  featureType: FeatureType.POINT;
-  googlePlacesId: string;
+type BaseChildFeature = BaseFeature & {
+  parentId: string;
   longName: string;
   shortName: string;
   userDefinedName: string | null;
   displayBounds: google.maps.LatLngBoundsLiteral;
-  point: Point;
-  answeredCorrectly: boolean | null;
-}
+};
 
-export interface QuizBuilderState {
-  activeSearchOption: AreaState | PointState | null;
-  selectedFeatureId: string | null;
-}
+export type EarthState = BaseFeature &
+  BaseParentFeature & {
+    type: FeatureType.EARTH;
+  };
 
-export interface QuizTakerState {
-  correctFeatureIds: Set<string>;
-  incorrectFeatureIds: Set<string>;
-  remainingFeatureIds: Set<string>;
-}
+export type AreaState = BaseFeature &
+  BaseParentFeature &
+  BaseChildFeature & {
+    type: FeatureType.AREA;
+    osmId: number;
+    searchBounds: google.maps.LatLngBoundsLiteral;
+    polygon: Polygon | MultiPolygon;
+  };
 
-export interface OsmItem {
+export type PointState = BaseFeature &
+  BaseChildFeature & {
+    type: FeatureType.POINT;
+    googleId: string;
+    point: Point;
+  };
+
+export type Feature = EarthState | AreaState | PointState;
+export type ParentFeature = EarthState | AreaState;
+export type ChildFeature = AreaState | PointState;
+
+type BaseQuizDispatch = {
+  type: QuizDispatchType;
+};
+
+type AddChild = BaseQuizDispatch &
+  (
+    | {
+        type: QuizDispatchType.ADD_CHILD;
+        parent: ParentFeature;
+        child: ChildFeature;
+        parentId?: never;
+      }
+    | {
+        type: QuizDispatchType.ADD_CHILD;
+        parentId: string;
+        child: ChildFeature;
+        parent?: never;
+      }
+  );
+
+type SetChildren = BaseQuizDispatch &
+  (
+    | {
+        type: QuizDispatchType.SET_CHILDREN;
+        parent: ParentFeature;
+        childIds: string[];
+        parentId?: never;
+      }
+    | {
+        type: QuizDispatchType.SET_CHILDREN;
+        parentId: string;
+        childIds: string[];
+        parent?: never;
+      }
+  );
+
+type Rename = BaseQuizDispatch &
+  (
+    | {
+        type: QuizDispatchType.RENAME;
+        feature: ChildFeature;
+        name: string;
+        featureId?: never;
+      }
+    | {
+        type: QuizDispatchType.RENAME;
+        featureId: string;
+        name: string;
+        feature?: never;
+      }
+  );
+
+type Delete = BaseQuizDispatch &
+  (
+    | {
+        type: QuizDispatchType.DELETE;
+        feature: ChildFeature;
+        featureId?: never;
+      }
+    | {
+        type: QuizDispatchType.DELETE;
+        featureId: string;
+        feature?: never;
+      }
+  );
+
+export type QuizState = Map<string, Feature>;
+
+export type QuizDispatch = AddChild | SetChildren | Rename | Delete;
+
+type BaseQuizBuilderDispatch = {
+  type: QuizBuilderDispatchType;
+};
+
+type SetSearchOption = BaseQuizBuilderDispatch & {
+  type: QuizBuilderDispatchType.SET_SEARCH_OPTION;
+  feature: ChildFeature | null;
+};
+
+type SetSelected = BaseQuizBuilderDispatch &
+  (
+    | {
+        type: QuizBuilderDispatchType.SET_SELECTED;
+        feature: ChildFeature | null;
+        featureId?: never;
+      }
+    | {
+        type: QuizBuilderDispatchType.SET_SELECTED;
+        featureId: string | null;
+        feature?: never;
+      }
+  );
+
+type SetAdding = BaseQuizBuilderDispatch &
+  (
+    | {
+        type: QuizBuilderDispatchType.SET_ADDING;
+        lastAdding: ParentFeature | null;
+        nextAdding: ParentFeature;
+        nextAddingId?: never;
+      }
+    | {
+        type: QuizBuilderDispatchType.SET_ADDING;
+        lastAdding: ParentFeature | null;
+        nextAddingId: string;
+        nextAdding?: never;
+      }
+  );
+
+type SetIsOpen = BaseQuizBuilderDispatch &
+  (
+    | {
+        type: QuizBuilderDispatchType.SET_IS_OPEN;
+        feature: ChildFeature;
+        isOpen: boolean;
+        featureId?: never;
+      }
+    | {
+        type: QuizBuilderDispatchType.SET_IS_OPEN;
+        featureId: string;
+        isOpen: boolean;
+        feature?: never;
+      }
+  );
+
+type SetRenaming = BaseQuizBuilderDispatch &
+  (
+    | {
+        type: QuizBuilderDispatchType.SET_RENAMING;
+        feature: ChildFeature;
+        featureId?: never;
+      }
+    | {
+        type: QuizBuilderDispatchType.SET_RENAMING;
+        featureId: string;
+        feature?: never;
+      }
+  );
+
+export type QuizBuilderState = {
+  searchOption: ChildFeature | null;
+  selectedId: string | null;
+  addingId: string | null;
+  renamingId: string | null;
+  openIds: Set<string>;
+};
+
+export type QuizBuilderDispatch =
+  | SetSearchOption
+  | SetSelected
+  | SetAdding
+  | SetRenaming
+  | SetIsOpen;
+
+type BaseQuizTakerDispatch = {
+  type: QuizTakerDispatchType;
+};
+
+type Reset = BaseQuizTakerDispatch & {
+  type: QuizTakerDispatchType.RESET;
+};
+
+type MarkCorrect = BaseQuizTakerDispatch &
+  (
+    | {
+        type: QuizTakerDispatchType.MARK_CORRECT;
+        feature: ChildFeature;
+        featureId?: never;
+      }
+    | {
+        type: QuizTakerDispatchType.MARK_CORRECT;
+        featureId: string;
+        feature?: never;
+      }
+  );
+
+type MarkIncorrect = BaseQuizTakerDispatch &
+  (
+    | {
+        type: QuizTakerDispatchType.MARK_INCORRECT;
+        feature: ChildFeature;
+        featureId?: never;
+      }
+    | {
+        type: QuizTakerDispatchType.MARK_INCORRECT;
+        featureId: string;
+        feature?: never;
+      }
+  );
+
+export type QuizTakerState = {
+  currentId: string;
+  correctIds: Set<string>;
+  incorrectIds: Set<string>;
+  remainingIds: Set<string>;
+};
+
+export type QuizTakerDispatch = Reset | MarkCorrect | MarkIncorrect;
+
+export type AreaSearch = {
+  term: string;
+  status: SearchStatus;
+  results: AreaState[];
+  setTerm: (searchTerm: string) => void;
+  reset: () => void;
+};
+
+export type PointSearch = {
+  term: string;
+  status: SearchStatus;
+  results: PointState[];
+  setTerm: (searchTerm: string) => void;
+  reset: () => void;
+};
+
+export type OsmResult = {
   place_id: number;
   licence: string;
   osm_type: string;
@@ -71,94 +281,4 @@ export interface OsmItem {
   display_name: string;
   boundingbox: number[];
   geojson: AllGeoJSON;
-}
-
-export type AllFeaturesDispatch =
-  | AddSubfeatureDispatch
-  | SetSubfeaturesDispatch
-  | RenameFeatureDispatch
-  | SetAreaIsOpenDispatch
-  | SetAreaIsAddingDispatch
-  | DeleteFeatureDispatch;
-
-interface BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType;
-}
-
-interface AddSubfeatureDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.ADD_SUBFEATURE;
-  parentFeatureId: string;
-  subfeature: AreaState | PointState;
-}
-
-interface SetSubfeaturesDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.SET_SUBFEATURES;
-  parentFeatureId: string;
-  subfeatureIds: string[];
-}
-
-interface RenameFeatureDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.RENAME_FEATURE;
-  featureId: string;
-  name: string;
-}
-
-interface SetAreaIsOpenDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.SET_AREA_IS_OPEN;
-  featureId: string;
-  isOpen: boolean;
-}
-
-interface SetAreaIsAddingDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.SET_AREA_IS_ADDING;
-  featureId: string;
-  isAdding: boolean;
-}
-
-interface DeleteFeatureDispatch extends BaseAllFeaturesDispatch {
-  type: AllFeaturesDispatchType.DELETE_FEATURE;
-  featureId: string;
-}
-
-export type QuizBuilderStateDispatch =
-  | SetActiveOptionDispatch
-  | SetSelectedFeatureDispatch;
-
-interface BaseQuizBuilderDispatch {
-  type: QuizBuilderStateDispatchType;
-}
-
-interface SetActiveOptionDispatch extends BaseQuizBuilderDispatch {
-  type: QuizBuilderStateDispatchType.SET_ACTIVE_SEARCH_OPTION;
-  activeSearchOption: AreaState | PointState | null;
-}
-
-interface SetSelectedFeatureDispatch extends BaseQuizBuilderDispatch {
-  type: QuizBuilderStateDispatchType.SET_SELECTED_FEATURE;
-  selectedFeatureId: string;
-}
-
-export type QuizTakerStateDispatch =
-  | ResetDispatch
-  | MarkCorrectDispatch
-  | MarkIncorrectDispatch;
-
-interface BaseQuizTakerDispatch {
-  type: QuizTakerStateDispatchType;
-}
-
-interface ResetDispatch extends BaseQuizTakerDispatch {
-  type: QuizTakerStateDispatchType.RESET;
-  rootId: string;
-  allFeatures: AllFeatures;
-}
-
-interface MarkCorrectDispatch extends BaseQuizTakerDispatch {
-  type: QuizTakerStateDispatchType.MARK_CORRECT;
-  featureId: string;
-}
-
-interface MarkIncorrectDispatch extends BaseQuizTakerDispatch {
-  type: QuizTakerStateDispatchType.MARK_INCORRECT;
-  featureId: string;
-}
+};
