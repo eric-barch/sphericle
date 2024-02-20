@@ -2,11 +2,9 @@ import { useQuiz, useQuizBuilder } from "@/providers";
 import { QuizDispatchType, QuizBuilderDispatchType } from "@/types";
 import { KeyboardEvent, useState } from "react";
 
-/**TODO: Would really like to refactor this to use forwardRef
- * so I don't have to use stupid prop names like 'inpurRef'.
- * It should just be the reserved 'ref'. First attempt to do
- * this was unsuccessful and reverted just to keep the app
- * working. */
+/**TODO: Would really like to refactor this to use forwardRef so I don't have to use stupid prop
+ * names like 'inputRef'. It should just be the reserved 'ref'. First attempt to do this was
+ * unsuccessful and reverted just to keep the app working. */
 type NameProps = {
   inputRef: React.RefObject<HTMLInputElement>;
   featureId: string;
