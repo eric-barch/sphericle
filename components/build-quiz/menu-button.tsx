@@ -1,25 +1,29 @@
-import { isParentFeatureState } from "@/helpers";
-import { useAllFeatures, useQuizBuilder } from "@/providers";
-import { AllFeaturesDispatchType, QuizBuilderDispatchType } from "@/types";
+import { isParent } from "@/helpers";
+import { useQuiz, useQuizBuilder } from "@/providers";
+import {
+  QuizDispatchType,
+  QuizBuilderDispatchType,
+  AreaState,
+  PointState,
+} from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { RefObject } from "react";
 
-type EditFeatureButtonProps =
+type MenuButtonProps =
   | {
-      featureNameInputRef: RefObject<HTMLInputElement>;
-      featureAdderInputRef: RefObject<HTMLInputElement>;
-      featureId: string;
+      nameRef: RefObject<HTMLInputElement>;
+      searchRef: RefObject<HTMLInputElement>;
+      feature: AreaState;
       canAddSubfeature: true;
       isSelected: boolean;
-      isRenaming: boolean;
       isOpen: boolean;
       isAdding: boolean;
     }
   | {
-      featureNameInputRef: RefObject<HTMLInputElement>;
-      featureAdderInputRef?: never;
-      featureId: string;
+      nameRef: RefObject<HTMLInputElement>;
+      searchRef?: never;
+      feature: PointState;
       canAddSubfeature?: never;
       isSelected: boolean;
       isRenaming: boolean;
@@ -27,46 +31,45 @@ type EditFeatureButtonProps =
       isAdding?: never;
     };
 
-const EditFeatureButton = ({
-  featureNameInputRef,
-  featureAdderInputRef,
-  featureId,
-  isSelected,
-  isRenaming,
-  isOpen,
-  isAdding,
-  canAddSubfeature,
-}: EditFeatureButtonProps) => {
-  const { allFeatures, allFeaturesDispatch } = useAllFeatures();
+const MenuButton = (props: MenuButtonProps) => {
   const {
-    quizBuilder: { addingFeatureId },
-    quizBuilderDispatch,
-  } = useQuizBuilder();
+    nameRef,
+    searchRef,
+    feature,
+    isSelected,
+    isOpen,
+    isAdding,
+    canAddSubfeature,
+  } = props;
 
+  const { quiz, quizDispatch } = useQuiz();
+  const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
+
+  /**TODO: This feels wrong to handle here. I would rather handle the
+   * logic at the level of the container that holds all of the
+   * Feature's subcomponents. This has proven difficult to accomplish
+   * because of how Radix components fully manage focus. */
   const handleOpenChange = () => {
-    /**If DropdownMenu open state changes, it means the feature was clicked and
+    /**If DropdownMenu open state changes, the feature was clicked and
      * should be selected. If it was already open, it should be set to
      * adding. */
     if (!isSelected) {
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
-        featureId,
+        type: QuizBuilderDispatchType.SET_SELECTED,
+        featureId: feature.id,
       });
     }
 
     if (isOpen) {
-      const lastFeatureState = (() => {
-        const lastFeatureState = allFeatures.get(addingFeatureId);
-
-        if (isParentFeatureState(lastFeatureState)) {
-          return lastFeatureState;
-        }
+      const lastAdding = (() => {
+        const lastAdding = quiz.get(quizBuilder.addingId);
+        if (isParent(lastAdding)) return lastAdding;
       })();
 
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_ADDING,
-        lastFeatureState,
-        featureId,
+        type: QuizBuilderDispatchType.SET_ADDING,
+        lastAdding,
+        nextAddingId: feature.id,
       });
     }
   };
@@ -78,43 +81,52 @@ const EditFeatureButton = ({
 
   const handleAddSubfeature = () => {
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_IS_OPEN,
-      featureId,
+      type: QuizBuilderDispatchType.SET_IS_OPEN,
+      featureId: feature.id,
       isOpen: true,
     });
 
-    const lastFeatureState = allFeatures.get(addingFeatureId);
+    const lastAdding = (() => {
+      const lastAdding = quiz.get(quizBuilder.addingId);
+      if (isParent(lastAdding)) return lastAdding;
+    })();
 
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_ADDING,
-      lastFeatureState: isParentFeatureState(lastFeatureState)
-        ? lastFeatureState
-        : null,
-      featureId,
+      type: QuizBuilderDispatchType.SET_ADDING,
+      lastAdding,
+      nextAddingId: feature.id,
     });
 
     setTimeout(() => {
-      featureAdderInputRef?.current?.focus();
-      featureAdderInputRef?.current?.select();
+      searchRef?.current?.focus();
+      searchRef?.current?.select();
     }, 0);
   };
 
   const handleRename = () => {
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_RENAMING,
-      featureId,
+      type: QuizBuilderDispatchType.SET_RENAMING,
+      featureId: feature.id,
     });
 
     setTimeout(() => {
-      featureNameInputRef.current?.focus();
-      featureNameInputRef.current?.select();
+      nameRef.current?.focus();
+      nameRef.current?.select();
     }, 0);
   };
 
   const handleDelete = () => {
-    allFeaturesDispatch({
-      dispatchType: AllFeaturesDispatchType.DELETE,
-      featureId,
+    if (isAdding) {
+      quizBuilderDispatch({
+        type: QuizBuilderDispatchType.SET_ADDING,
+        lastAdding: feature,
+        nextAddingId: feature.parentId,
+      });
+    }
+
+    quizDispatch({
+      type: QuizDispatchType.DELETE,
+      featureId: feature.id,
     });
   };
 
@@ -152,4 +164,4 @@ const EditFeatureButton = ({
   );
 };
 
-export { EditFeatureButton };
+export { MenuButton };

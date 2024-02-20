@@ -1,55 +1,35 @@
 import {
   AreaState,
-  BaseFeatureState,
   FeatureType,
-  ParentFeatureState,
   PointState,
-  RootState,
-  SubfeatureState,
+  EarthState,
+  Feature,
+  ParentFeature,
+  ChildFeature,
 } from "@/types";
 
-const isParentFeatureState = (
-  featureState: BaseFeatureState,
-): featureState is ParentFeatureState => {
+const isParent = (feature: Feature): feature is ParentFeature => {
   return (
-    featureState &&
-    (featureState.featureType === FeatureType.ROOT ||
-      featureState.featureType === FeatureType.AREA)
+    feature?.type === FeatureType.EARTH || feature?.type === FeatureType.AREA
   );
 };
 
-const isSubfeatureState = (
-  featureState: BaseFeatureState,
-): featureState is SubfeatureState => {
+const isChild = (feature: Feature): feature is ChildFeature => {
   return (
-    featureState &&
-    (featureState.featureType === FeatureType.AREA ||
-      featureState.featureType === FeatureType.POINT)
+    feature?.type === FeatureType.AREA || feature?.type === FeatureType.POINT
   );
 };
 
-const isRootState = (
-  featureState: BaseFeatureState,
-): featureState is RootState => {
-  return featureState && featureState.featureType === FeatureType.ROOT;
+const isEarth = (feature: Feature): feature is EarthState => {
+  return feature?.type === FeatureType.EARTH;
 };
 
-const isAreaState = (
-  featureState: BaseFeatureState,
-): featureState is AreaState => {
-  return featureState && featureState.featureType === FeatureType.AREA;
+const isArea = (feature: Feature): feature is AreaState => {
+  return feature?.type === FeatureType.AREA;
 };
 
-const isPointState = (
-  featureState: BaseFeatureState,
-): featureState is PointState => {
-  return featureState && featureState.featureType === FeatureType.POINT;
+const isPoint = (feature: Feature): feature is PointState => {
+  return feature?.type === FeatureType.POINT;
 };
 
-export {
-  isAreaState,
-  isParentFeatureState,
-  isPointState,
-  isRootState,
-  isSubfeatureState,
-};
+export { isArea, isChild, isParent, isPoint, isEarth };

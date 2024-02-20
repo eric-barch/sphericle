@@ -1,18 +1,18 @@
 export enum FeatureType {
-  ROOT = "ROOT",
+  EARTH = "EARTH",
   AREA = "AREA",
   POINT = "POINT",
 }
 
-export enum AllFeaturesDispatchType {
-  ADD_SUBFEATURE,
-  SET_SUBFEATURES,
+export enum QuizDispatchType {
+  ADD_CHILD,
+  SET_CHILDREN,
   RENAME,
   DELETE,
 }
 
 export enum QuizBuilderDispatchType {
-  SET_FEATURE_ADDER_SELECTED,
+  SET_SEARCH_OPTION,
   SET_SELECTED,
   SET_RENAMING,
   SET_ADDING,
@@ -26,11 +26,7 @@ export enum QuizTakerDispatchType {
 }
 
 export enum SearchStatus {
+  INITIALIZED,
   SEARCHING,
   SEARCHED,
-}
-
-export enum DisplayMode {
-  QUIZ_BUILDER,
-  QUIZ_TAKER,
 }

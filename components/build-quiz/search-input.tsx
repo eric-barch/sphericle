@@ -1,11 +1,11 @@
 "use client";
 
-import { isAreaState, isRootState } from "@/helpers";
+import { isArea, isEarth } from "@/helpers";
 import { useQuizBuilder } from "@/providers";
 import {
   AreaSearch,
   FeatureType,
-  ParentFeatureState,
+  ParentFeature,
   PointSearch,
   QuizBuilderDispatchType,
   SearchStatus,
@@ -14,52 +14,54 @@ import { Combobox } from "@headlessui/react";
 import { Grid2X2, MapPin } from "lucide-react";
 import { ChangeEvent, FocusEvent, KeyboardEvent, RefObject } from "react";
 
-type FeatureAdderInputProps = {
-  featureState: ParentFeatureState;
-  areaSearch: AreaSearch;
-  pointSearch: PointSearch;
+type SearchInputProps = {
+  inputRef: RefObject<HTMLInputElement>;
+  parent: ParentFeature;
   selectParentOnInput: boolean;
   input: string;
   featureType: FeatureType;
   featureAdderRef: RefObject<HTMLDivElement>;
-  inputRef: RefObject<HTMLInputElement>;
+  areaSearch: AreaSearch;
+  pointSearch: PointSearch;
   setFeatureType: (featureType: FeatureType) => void;
   setInput: (input: string) => void;
 };
 
-const FeatureAdderInput = ({
-  featureState,
-  areaSearch,
-  pointSearch,
-  selectParentOnInput,
-  input,
-  featureType,
-  featureAdderRef,
-  inputRef,
-  setFeatureType,
-  setInput,
-}: FeatureAdderInputProps) => {
-  const { featureId } = featureState;
-
+/**TODO: Wrap in forwardRef. */
+const SearchInput = (props: SearchInputProps) => {
   const {
-    quizBuilder: { selectedFeatureId },
-    quizBuilderDispatch,
-  } = useQuizBuilder();
+    inputRef,
+    parent,
+    selectParentOnInput,
+    input,
+    featureType,
+    featureAdderRef,
+    areaSearch,
+    pointSearch,
+    setFeatureType,
+    setInput,
+  } = props;
 
-  const isSelected = featureId === selectedFeatureId;
+  const { quizBuilder, quizBuilderDispatch } = useQuizBuilder();
+
+  const parentIsSelected = parent.id === quizBuilder.selectedId;
+
+  const name = (() => {
+    if (isEarth(parent)) return "Earth";
+    if (isArea(parent)) return parent.userDefinedName || parent.shortName;
+  })();
+
   const placeholder = (() => {
-    if (isRootState(featureState)) {
-      return `Add ${featureType.toLowerCase()} anywhere`;
-    } else if (isAreaState(featureState)) {
-      const featureName =
-        featureState.userDefinedName || featureState.shortName;
-
-      return `Add ${featureType.toLowerCase()} in ${featureName}`;
-    }
+    if (isEarth(parent))
+      return `Add ${featureType.toLowerCase()} anywhere on Earth`;
+    if (isArea(parent)) return `Add ${featureType.toLowerCase()} in ${name}`;
   })();
 
   const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
     if (featureAdderRef.current?.contains(event.relatedTarget)) {
+      /**Prevent losing input when focus moves between subcomponents of
+       * Adder. Necessary to work around built-in HeadlessUI Combobox
+       * behavior. */
       event.preventDefault();
       return;
     }
@@ -71,10 +73,10 @@ const FeatureAdderInput = ({
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
 
-    if (!isSelected && selectParentOnInput) {
+    if (!parentIsSelected && selectParentOnInput) {
       quizBuilderDispatch({
-        dispatchType: QuizBuilderDispatchType.SET_SELECTED,
-        featureId: featureState.featureId,
+        type: QuizBuilderDispatchType.SET_SELECTED,
+        featureId: parent.id,
       });
     }
 
@@ -108,7 +110,7 @@ const FeatureAdderInput = ({
   };
 
   const handleTab = (event: KeyboardEvent<HTMLInputElement>) => {
-    /**Override undesirable built-in HeadlessUI Combobox Tab advance behavior.
+    /**Override undesired built-in HeadlessUI Combobox Tab advance behavior.
      * Look into alternative accessible libraries, or wait for Radix to come
      * out with one. */
     event.preventDefault();
@@ -118,6 +120,7 @@ const FeatureAdderInput = ({
         'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])',
       ),
     );
+
     const currentIndex = focusableElements.indexOf(event.currentTarget);
 
     if (event.shiftKey) {
@@ -144,14 +147,14 @@ const FeatureAdderInput = ({
 
   return (
     <div className="relative">
-      <NextFeatureTypeButton
+      <ChangeFeatureTypeButton
         featureType={featureType}
         setFeatureType={setFeatureType}
       />
       <Combobox.Input
+        ref={inputRef}
         className="w-full p-1 rounded-3xl text-left bg-transparent border-2 border-gray-300 pl-8 pr-3 text-ellipsis focus:outline-none"
         placeholder={placeholder}
-        ref={inputRef}
         onBlur={handleBlur}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
@@ -160,26 +163,19 @@ const FeatureAdderInput = ({
   );
 };
 
-type NextFeatureTypeButtonProps = {
+type ChangeFeatureTypeButtonProps = {
   featureType: FeatureType;
   setFeatureType: (featureType: FeatureType) => void;
 };
 
-const NextFeatureTypeButton = ({
+const ChangeFeatureTypeButton = ({
   featureType,
   setFeatureType,
-}: NextFeatureTypeButtonProps) => {
+}: ChangeFeatureTypeButtonProps) => {
   const handleClick = () => {
-    const nextFeatureType = (() => {
-      switch (featureType) {
-        case FeatureType.AREA:
-          return FeatureType.POINT;
-        case FeatureType.POINT:
-          return FeatureType.AREA;
-      }
-    })();
-
-    setFeatureType(nextFeatureType);
+    /**TODO: Convert this to some kind of circular linked list. */
+    if (featureType === FeatureType.AREA) setFeatureType(FeatureType.POINT);
+    if (featureType === FeatureType.POINT) setFeatureType(FeatureType.AREA);
   };
 
   return (
@@ -188,15 +184,13 @@ const NextFeatureTypeButton = ({
       onClick={handleClick}
     >
       {(() => {
-        switch (featureType) {
-          case FeatureType.AREA:
-            return <Grid2X2 className="w-4 h-4" />;
-          case FeatureType.POINT:
-            return <MapPin className="w-4 h-4" />;
-        }
+        if (featureType === FeatureType.AREA)
+          return <Grid2X2 className="w-4 h-4" />;
+        if (featureType === FeatureType.POINT)
+          return <MapPin className="w-4 h-4" />;
       })()}
     </button>
   );
 };
 
-export { FeatureAdderInput };
+export { SearchInput };

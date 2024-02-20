@@ -1,38 +1,34 @@
-import { useAllFeatures, useQuizBuilder } from "@/providers";
-import { AllFeaturesDispatchType, QuizBuilderDispatchType } from "@/types";
+import { useQuiz, useQuizBuilder } from "@/providers";
+import { QuizDispatchType, QuizBuilderDispatchType } from "@/types";
 import { KeyboardEvent, useState } from "react";
 
-type FeatureNameProps = {
-  featureNameInputRef: React.RefObject<HTMLInputElement>;
+/**TODO: Would really like to refactor this to use forwardRef so I don't have to use stupid prop
+ * names like 'inputRef'. It should just be the reserved 'ref'. First attempt to do this was
+ * unsuccessful and reverted just to keep the app working. */
+type NameProps = {
+  inputRef: React.RefObject<HTMLInputElement>;
   featureId: string;
-  featureName: string;
+  name: string;
   isRenaming: boolean;
 };
 
-const FeatureName = ({
-  featureNameInputRef,
-  featureId,
-  featureName,
-  isRenaming,
-}: FeatureNameProps) => {
-  const { allFeaturesDispatch } = useAllFeatures();
+const Name = (props: NameProps) => {
+  const { inputRef, featureId, name, isRenaming } = props;
+
+  const { quizDispatch } = useQuiz();
   const { quizBuilderDispatch } = useQuizBuilder();
 
-  const [input, setInput] = useState<string>(featureName);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value);
-  };
+  const [input, setInput] = useState<string>(name);
 
   const handleEnter = () => {
-    allFeaturesDispatch({
-      dispatchType: AllFeaturesDispatchType.RENAME,
+    quizDispatch({
+      type: QuizDispatchType.RENAME,
       featureId,
       name: input,
     });
 
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_RENAMING,
+      type: QuizBuilderDispatchType.SET_RENAMING,
       featureId: null,
     });
   };
@@ -49,38 +45,38 @@ const FeatureName = ({
 
   const handleKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === " ") {
-      // Prevent Accordion toggle when feature name contains spaces.
+      /**Prevent Collapsible toggle when feature name contains spaces. */
       event.preventDefault();
     }
   };
 
   const handleBlur = () => {
     quizBuilderDispatch({
-      dispatchType: QuizBuilderDispatchType.SET_RENAMING,
+      type: QuizBuilderDispatchType.SET_RENAMING,
       featureId: null,
     });
 
-    setInput(featureName);
+    setInput(name);
   };
 
   return (
     <div className="flex-grow min-w-0 px-7 overflow-hidden text-ellipsis whitespace-nowrap">
       {isRenaming ? (
         <input
-          ref={featureNameInputRef}
+          ref={inputRef}
           className="bg-transparent w-full focus:outline-none"
           type="text"
           value={input}
-          onChange={handleChange}
+          onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           onKeyUp={handleKeyUp}
           onBlur={handleBlur}
         />
       ) : (
-        <>{featureName}</>
+        <>{name}</>
       )}
     </div>
   );
 };
 
-export { FeatureName };
+export { Name };

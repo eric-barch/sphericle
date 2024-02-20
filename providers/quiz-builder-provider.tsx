@@ -12,7 +12,7 @@ import {
   useContext,
   useReducer,
 } from "react";
-import { useAllFeatures } from "./all-features-provider";
+import { useQuiz } from "./quiz-provider";
 
 const QuizBuilderContext = createContext<QuizBuilderState>(null);
 const QuizBuilderDispatchContext =
@@ -23,62 +23,63 @@ type QuizBuilderProviderProps = {
 };
 
 const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
-  const { rootId } = useAllFeatures();
+  const { earthId } = useQuiz();
 
   const quizBuilderReducer = (
     quizBuilder: QuizBuilderState,
-    action: QuizBuilderDispatch,
+    dispatch: QuizBuilderDispatch,
   ) => {
-    switch (action.dispatchType) {
+    switch (dispatch.type) {
+      case QuizBuilderDispatchType.SET_SEARCH_OPTION: {
+        const newQuizBuilder = { ...quizBuilder };
+        const { feature: featureState } = dispatch;
+
+        newQuizBuilder.searchOption = featureState;
+
+        return newQuizBuilder;
+      }
       case QuizBuilderDispatchType.SET_SELECTED: {
         const newQuizBuilder = { ...quizBuilder };
-        const featureId = action.featureId || action.featureState?.featureId;
 
-        newQuizBuilder.selectedFeatureId = featureId;
+        const featureId = dispatch.featureId || dispatch.feature?.id;
+
+        newQuizBuilder.selectedId = featureId;
 
         return newQuizBuilder;
       }
       case QuizBuilderDispatchType.SET_ADDING: {
         const newQuizBuilder = { ...quizBuilder };
-        const { lastFeatureState } = action;
-        const featureId = action.featureId || action.featureState.featureId;
 
-        if (
-          lastFeatureState?.subfeatureIds.size <= 0 &&
-          lastFeatureState?.featureId !== featureId
-        ) {
-          newQuizBuilder.openFeatureIds.delete(lastFeatureState.featureId);
+        const nextAddingId = dispatch.nextAddingId || dispatch.nextAdding.id;
+        const { lastAdding } = dispatch;
+
+        if (lastAdding?.childIds.size <= 0 && lastAdding?.id !== nextAddingId) {
+          newQuizBuilder.openIds.delete(lastAdding.id);
         }
 
-        newQuizBuilder.addingFeatureId = featureId;
+        newQuizBuilder.addingId = nextAddingId;
 
         return newQuizBuilder;
       }
       case QuizBuilderDispatchType.SET_RENAMING: {
         const newQuizBuilder = { ...quizBuilder };
-        const featureId = action.featureId || action.featureState?.featureId;
 
-        newQuizBuilder.renamingFeatureId = featureId;
+        const featureId = dispatch.featureId || dispatch.feature?.id;
 
-        return newQuizBuilder;
-      }
-      case QuizBuilderDispatchType.SET_FEATURE_ADDER_SELECTED: {
-        const newQuizBuilder = { ...quizBuilder };
-        const { featureState } = action;
-
-        newQuizBuilder.featureAdderFeatureState = featureState;
+        newQuizBuilder.renamingId = featureId;
 
         return newQuizBuilder;
       }
       case QuizBuilderDispatchType.SET_IS_OPEN: {
         const newQuizBuilder = { ...quizBuilder };
-        const { isOpen } = action;
-        const featureId = action.featureId || action.featureState?.featureId;
+
+        const featureId = dispatch.featureId || dispatch.feature?.id;
+        const { isOpen } = dispatch;
 
         if (isOpen) {
-          newQuizBuilder.openFeatureIds.add(featureId);
+          newQuizBuilder.openIds.add(featureId);
         } else {
-          newQuizBuilder.openFeatureIds.delete(featureId);
+          newQuizBuilder.openIds.delete(featureId);
         }
 
         return newQuizBuilder;
@@ -86,12 +87,12 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
     }
   };
 
-  const initialQuizBuilder = {
-    selectedFeatureId: rootId,
-    addingFeatureId: rootId,
-    renamingFeatureId: null,
-    featureAdderFeatureState: null,
-    openFeatureIds: new Set<string>(),
+  const initialQuizBuilder: QuizBuilderState = {
+    searchOption: null,
+    selectedId: earthId,
+    addingId: earthId,
+    renamingId: null,
+    openIds: new Set<string>(),
   };
 
   const [quizBuilder, quizBuilderDispatch] = useReducer(

@@ -12,8 +12,8 @@ import {
   useContext,
   useReducer,
 } from "react";
-import { useAllFeatures } from ".";
-import { resetRemainingFeatureIds } from "../components/quiz-taker/quiz-taker.helpers";
+import { useQuiz } from "./quiz-provider";
+import { getNewQuizSequence } from "../components/take-quiz/quiz-taker.helpers";
 
 const QuizTakerContext = createContext<QuizTakerState>(null);
 const QuizTakerDispatchContext =
@@ -24,40 +24,48 @@ type QuizTakerProviderProps = {
 };
 
 const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
-  const { rootId, allFeatures } = useAllFeatures();
+  const { earthId, quiz } = useQuiz();
 
   const quizTakerReducer = (
     quizTaker: QuizTakerState,
-    action: QuizTakerDispatch,
+    dispatch: QuizTakerDispatch,
   ): QuizTakerState => {
-    switch (action.dispatchType) {
+    switch (dispatch.type) {
       case QuizTakerDispatchType.RESET: {
         const newQuizTaker = { ...quizTaker };
 
-        newQuizTaker.correctFeatureIds.clear();
-        newQuizTaker.incorrectFeatureIds.clear();
-        newQuizTaker.remainingFeatureIds = resetRemainingFeatureIds(
-          rootId,
-          allFeatures,
-        );
+        newQuizTaker.correctIds.clear();
+        newQuizTaker.incorrectIds.clear();
+        newQuizTaker.remainingIds = getNewQuizSequence(earthId, quiz);
+        newQuizTaker.currentId = newQuizTaker.remainingIds
+          .values()
+          .next().value;
 
         return newQuizTaker;
       }
       case QuizTakerDispatchType.MARK_CORRECT: {
         const newQuizTaker = { ...quizTaker };
-        const featureId = action.featureId || action.featureState.featureId;
 
-        newQuizTaker.remainingFeatureIds.delete(featureId);
-        newQuizTaker.correctFeatureIds.add(featureId);
+        const featureId = dispatch.featureId || dispatch.feature.id;
+
+        newQuizTaker.remainingIds.delete(featureId);
+        newQuizTaker.correctIds.add(featureId);
+        newQuizTaker.currentId = newQuizTaker.remainingIds
+          .values()
+          .next().value;
 
         return newQuizTaker;
       }
       case QuizTakerDispatchType.MARK_INCORRECT: {
         const newQuizTaker = { ...quizTaker };
-        const featureId = action.featureId || action.featureState.featureId;
 
-        newQuizTaker.remainingFeatureIds.delete(featureId);
-        newQuizTaker.incorrectFeatureIds.add(featureId);
+        const featureId = dispatch.featureId || dispatch.feature.id;
+
+        newQuizTaker.remainingIds.delete(featureId);
+        newQuizTaker.incorrectIds.add(featureId);
+        newQuizTaker.currentId = newQuizTaker.remainingIds
+          .values()
+          .next().value;
 
         return newQuizTaker;
       }
@@ -65,9 +73,10 @@ const QuizTakerProvider = ({ children }: QuizTakerProviderProps) => {
   };
 
   const initialQuizTaker: QuizTakerState = {
-    correctFeatureIds: new Set<string>(),
-    incorrectFeatureIds: new Set<string>(),
-    remainingFeatureIds: new Set<string>(),
+    currentId: null,
+    correctIds: new Set<string>(),
+    incorrectIds: new Set<string>(),
+    remainingIds: new Set<string>(),
   };
 
   const [quizTaker, quizTakerDispatch] = useReducer(
