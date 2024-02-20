@@ -35,7 +35,7 @@ const Point = (props: PointProps) => {
     <div className="relative">
       <MenuButton
         nameRef={nameRef}
-        featureId={point.id}
+        feature={point}
         isSelected={isSelected}
         isRenaming={isRenaming}
       />

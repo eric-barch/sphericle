@@ -76,10 +76,11 @@ const Area = (props: AreaProps) => {
         <MenuButton
           nameRef={nameRef}
           searchRef={searchRef}
-          featureId={area.id}
+          feature={area}
           canAddSubfeature
           isSelected={isSelected}
           isOpen={isOpen}
+          isAdding={isAdding}
         />
         <Collapsible.Trigger
           className={`w-full p-1 bg-gray-600 rounded-2xl text-left${
