@@ -30,7 +30,7 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
     "tailwind-merge": "^2.2.1",
-    "vercel": "^33.1.0"
+    "vercel": "^33.5.1"
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.13",
