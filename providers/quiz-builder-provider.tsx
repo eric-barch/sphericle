@@ -64,7 +64,7 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
       case QuizBuilderDispatchType.SET_RENAMING: {
         const newQuizBuilder = { ...quizBuilder };
 
-        const featureId = dispatch.featureId || dispatch.feature.id;
+        const featureId = dispatch.featureId || dispatch.feature?.id;
 
         newQuizBuilder.renamingId = featureId;
 
@@ -73,7 +73,7 @@ const QuizBuilderProvider = ({ children }: QuizBuilderProviderProps) => {
       case QuizBuilderDispatchType.SET_IS_OPEN: {
         const newQuizBuilder = { ...quizBuilder };
 
-        const featureId = dispatch.featureId || dispatch.feature.id;
+        const featureId = dispatch.featureId || dispatch.feature?.id;
         const { isOpen } = dispatch;
 
         if (isOpen) {

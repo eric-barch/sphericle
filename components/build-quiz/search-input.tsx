@@ -53,7 +53,7 @@ const SearchInput = (props: SearchInputProps) => {
 
   const placeholder = (() => {
     if (isEarth(parent))
-      return `Add ${featureType.toLowerCase()} anywhere on Earth.`;
+      return `Add ${featureType.toLowerCase()} anywhere on Earth`;
     if (isArea(parent)) return `Add ${featureType.toLowerCase()} in ${name}`;
   })();
 

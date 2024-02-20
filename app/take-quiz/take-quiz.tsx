@@ -6,7 +6,7 @@ import { AnswerBox } from "@/components/take-quiz/answer-box";
 import { CompleteDialog } from "@/components/take-quiz/complete-dialog";
 import { ScoreBox } from "@/components/take-quiz/score-box";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isArea, isChild, isParent, isPoint, isEarth } from "@/helpers";
+import { isArea, isChild, isEarth, isParent, isPoint } from "@/helpers";
 import { useQuiz, useQuizTaker } from "@/providers";
 import { QuizTakerDispatchType } from "@/types";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
@@ -34,8 +34,24 @@ const TakeQuiz = () => {
 
   const answerBoxRef = useRef<HTMLInputElement>();
 
-  const [tilesLoaded, setTilesLoaded] = useState<boolean>(false);
-  const [isIdle, setIsIdle] = useState<boolean>(true);
+  const [tilesAreLoaded, setTilesAreLoaded] = useState<boolean>(false);
+  const [mapIsIdle, setMapIsIdle] = useState<boolean>(true);
+  const [mapIsLoaded, setMapIsLoaded] = useState<boolean>(false);
+  const [targetBounds, setTargetBounds] =
+    useState<google.maps.LatLngBoundsLiteral>(DEFAULT_BOUNDS);
+
+  const handleTilesLoaded = () => {
+    setTilesAreLoaded(true);
+  };
+
+  const handleIdle = () => {
+    setMapIsIdle(true);
+  };
+
+  const handleBoundsChanged = () => {
+    setMapIsIdle(false);
+    setTilesAreLoaded(false);
+  };
 
   const handleReset = useCallback(() => {
     quizTakerDispatch({
@@ -47,30 +63,50 @@ const TakeQuiz = () => {
     }, 0);
   }, [quizTakerDispatch]);
 
+  /**Set mapIsLoaded on first load. */
   useEffect(() => {
-    let bounds: google.maps.LatLngBoundsLiteral;
+    if (mapIsIdle && tilesAreLoaded) {
+      setMapIsLoaded(true);
+    }
+  }, [mapIsIdle, tilesAreLoaded]);
+
+  /**Update targetBounds whenever displayed or displayedParent changes.*/
+  useEffect(() => {
+    let targetBounds: google.maps.LatLngBoundsLiteral;
 
     if (isArea(displayedParent)) {
-      bounds = displayedParent.displayBounds;
+      targetBounds = displayedParent.displayBounds;
     }
 
     if (isEarth(displayedParent)) {
-      bounds = displayed?.displayBounds;
+      targetBounds = displayed?.displayBounds;
     }
 
-    if (bounds && isIdle && tilesLoaded) {
-      map?.fitBounds(bounds, PADDING);
-    }
-  }, [displayed, displayedParent, isIdle, map, tilesLoaded]);
+    if (!targetBounds) return;
 
+    setTargetBounds(targetBounds);
+  }, [displayed, displayedParent]);
+
+  /**Call fitBounds on the map ref when targetBounds change. */
+  useEffect(() => {
+    if (!map || !mapIsLoaded || !targetBounds) return;
+
+    const lat = (targetBounds.north + targetBounds.south) / 2;
+    const lng = (targetBounds.east + targetBounds.west) / 2;
+
+    map.fitBounds(targetBounds, PADDING);
+    map.setCenter({ lat, lng });
+  }, [map, mapIsLoaded, targetBounds]);
+
+  /**Reset quiz when page mounts. */
   useEffect(() => {
     handleReset();
   }, [handleReset]);
 
   return (
     <div className="h-[calc(100vh-4rem)] relative flex justify-center align-middle content-center">
-      {!tilesLoaded && <LoadingSpinner className="absolute z-10 bg-gray-700" />}
-      {tilesLoaded && (
+      {!mapIsLoaded && <LoadingSpinner className="absolute z-10 bg-gray-700" />}
+      {mapIsLoaded && (
         <>
           <CompleteDialog handleReset={handleReset} />
           <ScoreBox />
@@ -88,9 +124,9 @@ const TakeQuiz = () => {
         disableDefaultUI
         restriction={RESTRICTION}
         defaultBounds={displayed?.displayBounds || DEFAULT_BOUNDS}
-        onTilesLoaded={() => setTilesLoaded(true)}
-        onBoundsChanged={() => setIsIdle(false)}
-        onIdle={() => setIsIdle(true)}
+        onTilesLoaded={() => setTilesAreLoaded(true)}
+        onBoundsChanged={() => setMapIsIdle(false)}
+        onIdle={() => setMapIsIdle(true)}
       >
         {isArea(displayedParent) && (
           <Polygon

@@ -5,7 +5,7 @@ import { Polygon } from "@/components/map";
 import { DEFAULT_BOUNDS, RESTRICTION } from "@/components/map/constants";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { isArea, isChild, isParent, isPoint, isEarth } from "@/helpers";
+import { isArea, isChild, isEarth, isParent, isPoint } from "@/helpers";
 import { useQuiz, useQuizBuilder } from "@/providers";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import Link from "next/link";
@@ -37,32 +37,67 @@ const BuildQuiz = () => {
     if (isParent(displayedParent)) return displayedParent;
   })();
 
-  const [tilesLoaded, setTilesLoaded] = useState(false);
-  const [isIdle, setIsIdle] = useState(true);
+  const [tilesAreLoaded, setTilesAreLoaded] = useState(false);
+  const [mapIsIdle, setMapIsIdle] = useState(false);
+  const [mapIsLoaded, setMapIsLoaded] = useState(false);
+  const [targetBounds, setTargetBounds] =
+    useState<google.maps.LatLngBoundsLiteral>(DEFAULT_BOUNDS);
 
+  const handleTilesLoaded = () => {
+    setTilesAreLoaded(true);
+  };
+
+  const handleIdle = () => {
+    setMapIsIdle(true);
+  };
+
+  const handleBoundsChanged = () => {
+    setMapIsIdle(false);
+    setTilesAreLoaded(false);
+  };
+
+  /**Set mapIsLoaded on first load. */
   useEffect(() => {
-    let bounds: google.maps.LatLngBoundsLiteral;
+    if (mapIsIdle && tilesAreLoaded) {
+      setMapIsLoaded(true);
+    }
+  }, [mapIsIdle, tilesAreLoaded]);
+
+  /**Update targetBounds whenever displayed, displayedIsOpen, or displayedParent changes.*/
+  useEffect(() => {
+    let targetBounds: google.maps.LatLngBoundsLiteral;
 
     if (displayedIsOpen) {
-      bounds = displayed?.displayBounds;
+      targetBounds = displayed?.displayBounds;
     } else {
       if (isArea(displayedParent)) {
-        bounds = displayedParent.displayBounds;
+        targetBounds = displayedParent.displayBounds;
       }
 
       if (isEarth(displayedParent)) {
-        bounds = displayed?.displayBounds;
+        targetBounds = displayed?.displayBounds;
       }
     }
 
-    if (bounds && isIdle && tilesLoaded) {
-      map?.fitBounds(bounds);
-    }
-  }, [displayed, displayedIsOpen, displayedParent, isIdle, map, tilesLoaded]);
+    if (!targetBounds) return;
+
+    setTargetBounds(targetBounds);
+  }, [displayed, displayedIsOpen, displayedParent]);
+
+  /**Call fitBounds on the map ref when targetBounds change. */
+  useEffect(() => {
+    if (!map || !mapIsLoaded || !targetBounds) return;
+
+    const lat = (targetBounds.north + targetBounds.south) / 2;
+    const lng = (targetBounds.east + targetBounds.west) / 2;
+
+    map.fitBounds(targetBounds);
+    map.setCenter({ lat, lng });
+  }, [map, mapIsLoaded, targetBounds]);
 
   return (
     <>
-      {!tilesLoaded && (
+      {!mapIsLoaded && (
         <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       )}
       <SplitPane>
@@ -85,10 +120,10 @@ const BuildQuiz = () => {
           gestureHandling="greedy"
           disableDefaultUI
           restriction={RESTRICTION}
-          defaultBounds={DEFAULT_BOUNDS}
-          onTilesLoaded={() => setTilesLoaded(true)}
-          onBoundsChanged={() => setIsIdle(false)}
-          onIdle={() => setIsIdle(true)}
+          defaultBounds={targetBounds}
+          onTilesLoaded={handleTilesLoaded}
+          onIdle={handleIdle}
+          onBoundsChanged={handleBoundsChanged}
         >
           {!displayedIsOpen && isArea(displayedParent) && (
             <Polygon
