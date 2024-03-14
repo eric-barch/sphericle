@@ -3,6 +3,7 @@
 import { ChildFeatures } from "@/components/build-quiz/child-features";
 import { Polygon } from "@/components/map";
 import { DEFAULT_BOUNDS, RESTRICTION } from "@/components/map/constants";
+import { Nav } from "@/components/nav";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isEarth, isParent, isPoint } from "@/helpers";
@@ -97,13 +98,14 @@ const BuildQuiz = () => {
 
   return (
     <>
+      <Nav />
       {!mapIsLoaded && (
         <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
       )}
       <SplitPane>
         <div className="relative h-full">
           <ChildFeatures
-            className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
+            className={`px-8 py-4 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
             parent={earth}
             isAdding={earthIsAdding}
           />

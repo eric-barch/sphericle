@@ -23,7 +23,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
       <body className={font.className}>
-        <main className="min-h-lvh overflow-auto custom-scrollbar">
+        <main className="min-h-lvh custom-scrollbar">
           <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
             <QuizProvider>
               <QuizTakerProvider>
