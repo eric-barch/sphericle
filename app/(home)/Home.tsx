@@ -14,12 +14,12 @@ const Home = () => {
           height={175}
         />
       </div>
-      <Nav stuck={false} />
+      <Nav />
       <div className="flex flex-col items-center px-[10%] py-[2%] space-y-7 text-left">
         <p className="w-full">
-          Welcome to <strong>Sphericle</strong>, a customizable way to learn the
-          geography of the world. Watch the demo video below, or click Build a
-          Quiz to jump into building your own quiz!
+          Weelcome to <strong>Sphericle</strong>, a customizable way to learn
+          the geography of the world. Watch the demo video below, or click Build
+          a Quiz to jump into building your own quiz!
         </p>
         <iframe
           className="w-1/2 aspect-[14.4/9]"
