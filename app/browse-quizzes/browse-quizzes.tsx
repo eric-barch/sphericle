@@ -1,27 +1,37 @@
-import { Button } from "@/components/ui/button";
-import { createClient } from "@supabase/supabase-js";
+"use client";
 
-const BrowseQuizzes = async () => {
+import { Quiz } from "@/components/browse-quizzes/quiz";
+import { createClient } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
+
+const BrowseQuizzes = () => {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   );
 
-  const { data: quizzes } = await supabase.from("quizzes").select();
+  console.log("render");
+
+  const [quizzes, setQuizzes] = useState(null);
+
+  useEffect(() => {
+    const fetchQuizzes = async () => {
+      const { data, error } = await supabase.from("quizzes").select("*");
+      if (error) console.error("error", error);
+      if (data) setQuizzes(data);
+    };
+
+    fetchQuizzes();
+  }, [supabase]);
 
   return (
-    <div className="space-y-1 h-full p-3">
-      {Array.from(
-        quizzes.map((quiz, index) => (
-          <Button
-            key={index}
-            className="text-left w-full mt-1 space-y-1 px-7 bg-gray-600 p-1 rounded-2xl"
-          >
-            {quiz.title}
-          </Button>
-        )),
-      )}
-    </div>
+    quizzes && (
+      <div className="space-y-1 h-full p-3">
+        {Array.from(
+          quizzes.map((quiz, index) => <Quiz key={index} quiz={quiz} />),
+        )}
+      </div>
+    )
   );
 };
 

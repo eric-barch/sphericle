@@ -1,8 +1,7 @@
-import { forwardRef } from "react";
-import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "class-variance-authority";
+"use client";
 
-import { cn } from "@/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
+import { forwardRef } from "react";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
