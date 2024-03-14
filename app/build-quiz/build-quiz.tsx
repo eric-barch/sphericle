@@ -61,7 +61,7 @@ const BuildQuiz = () => {
     if (mapIsIdle && tilesAreLoaded) {
       setMapIsLoaded(true);
     }
-  }, [mapIsIdle, tilesAreLoaded]);
+  }, [mapIsIdle, tilesAreLoaded, map]);
 
   /**Update targetBounds whenever displayed, displayedIsOpen, or displayedParent changes.*/
   useEffect(() => {
