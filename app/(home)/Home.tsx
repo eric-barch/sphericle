@@ -40,6 +40,51 @@ const Home = () => {
           so they include all the places and things that are of interest to{" "}
           <strong>YOU</strong>.
         </p>
+        <p className="w-full">
+          Sphericle lets you build and take your own custom geography quizzes,
+          so they include all the places and things that are of interest to{" "}
+          <strong>YOU</strong>.
+        </p>
+        <p className="w-full">
+          Sphericle lets you build and take your own custom geography quizzes,
+          so they include all the places and things that are of interest to{" "}
+          <strong>YOU</strong>.
+        </p>
+        <p className="w-full">
+          Sphericle lets you build and take your own custom geography quizzes,
+          so they include all the places and things that are of interest to{" "}
+          <strong>YOU</strong>.
+        </p>
+        <p className="w-full">
+          Sphericle lets you build and take your own custom geography quizzes,
+          so they include all the places and things that are of interest to{" "}
+          <strong>YOU</strong>.
+        </p>
+        <p className="w-full">
+          Sphericle lets you build and take your own custom geography quizzes,
+          so they include all the places and things that are of interest to{" "}
+          <strong>YOU</strong>.
+        </p>
+        <p className="w-full">
+          Sphericle lets you build and take your own custom geography quizzes,
+          so they include all the places and things that are of interest to{" "}
+          <strong>YOU</strong>.
+        </p>
+        <p className="w-full">
+          Sphericle lets you build and take your own custom geography quizzes,
+          so they include all the places and things that are of interest to{" "}
+          <strong>YOU</strong>.
+        </p>
+        <p className="w-full">
+          Sphericle lets you build and take your own custom geography quizzes,
+          so they include all the places and things that are of interest to{" "}
+          <strong>YOU</strong>.
+        </p>
+        <p className="w-full">
+          Sphericle lets you build and take your own custom geography quizzes,
+          so they include all the places and things that are of interest to{" "}
+          <strong>YOU</strong>.
+        </p>
         <Link className="rounded-3xl px-3 py-2 bg-green-700" href="/build-quiz">
           Build a Quiz
         </Link>

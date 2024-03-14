@@ -1,6 +1,7 @@
 "use client";
 
 import { Quiz } from "@/components/browse-quizzes/quiz";
+import { Nav } from "@/components/nav";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 
@@ -25,13 +26,16 @@ const BrowseQuizzes = () => {
   }, [supabase]);
 
   return (
-    quizzes && (
-      <div className="space-y-1 h-full p-3">
-        {Array.from(
-          quizzes.map((quiz, index) => <Quiz key={index} quiz={quiz} />),
-        )}
-      </div>
-    )
+    <>
+      <Nav />
+      {quizzes && (
+        <div className="space-y-1 h-full p-3">
+          {Array.from(
+            quizzes.map((quiz, index) => <Quiz key={index} quiz={quiz} />),
+          )}
+        </div>
+      )}
+    </>
   );
 };
 

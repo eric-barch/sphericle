@@ -2,6 +2,7 @@
 
 import { Polygon } from "@/components/map";
 import { DEFAULT_BOUNDS, RESTRICTION } from "@/components/map/constants";
+import { Nav } from "@/components/nav";
 import { AnswerBox } from "@/components/take-quiz/answer-box";
 import { CompleteDialog } from "@/components/take-quiz/complete-dialog";
 import { ScoreBox } from "@/components/take-quiz/score-box";
@@ -104,57 +105,62 @@ const TakeQuiz = () => {
   }, [handleReset]);
 
   return (
-    <div className="h-[calc(100vh-4rem)] relative flex justify-center align-middle content-center">
-      {!mapIsLoaded && <LoadingSpinner className="absolute z-10 bg-gray-700" />}
-      {mapIsLoaded && (
-        <>
-          <CompleteDialog handleReset={handleReset} />
-          <ScoreBox />
-          <AnswerBox
-            ref={answerBoxRef}
-            displayedFeature={displayed}
-            disabled={quizIsComplete}
-          />
-        </>
-      )}
-      <Map
-        className="h-full w-full outline-none border-none"
-        mapId="8777b9e5230900fc"
-        gestureHandling="greedy"
-        disableDefaultUI
-        restriction={RESTRICTION}
-        defaultBounds={displayed?.displayBounds || DEFAULT_BOUNDS}
-        onTilesLoaded={() => setTilesAreLoaded(true)}
-        onBoundsChanged={() => setMapIsIdle(false)}
-        onIdle={() => setMapIsIdle(true)}
-      >
-        {isArea(displayedParent) && (
-          <Polygon
-            geoJson={displayedParent.polygon}
-            strokeWeight={1.5}
-            strokeColor="#b91c1c"
-            fillOpacity={0}
-          />
+    <>
+      <Nav />
+      <div className="h-[calc(100vh-4rem)] relative flex justify-center align-middle content-center">
+        {!mapIsLoaded && (
+          <LoadingSpinner className="absolute z-10 bg-gray-700" />
         )}
-        {isArea(displayed) && (
-          <Polygon
-            geoJson={displayed.polygon}
-            strokeWeight={1.5}
-            strokeColor="#b91c1c"
-            fillColor="#b91c1c"
-            fillOpacity={0.2}
-          />
+        {mapIsLoaded && (
+          <>
+            <CompleteDialog handleReset={handleReset} />
+            <ScoreBox />
+            <AnswerBox
+              ref={answerBoxRef}
+              displayedFeature={displayed}
+              disabled={quizIsComplete}
+            />
+          </>
         )}
-        {isPoint(displayed) && (
-          <Marker
-            position={{
-              lng: displayed.point.coordinates[0],
-              lat: displayed.point.coordinates[1],
-            }}
-          />
-        )}
-      </Map>
-    </div>
+        <Map
+          className="h-full w-full outline-none border-none"
+          mapId="8777b9e5230900fc"
+          gestureHandling="greedy"
+          disableDefaultUI
+          restriction={RESTRICTION}
+          defaultBounds={displayed?.displayBounds || DEFAULT_BOUNDS}
+          onTilesLoaded={() => setTilesAreLoaded(true)}
+          onBoundsChanged={() => setMapIsIdle(false)}
+          onIdle={() => setMapIsIdle(true)}
+        >
+          {isArea(displayedParent) && (
+            <Polygon
+              geoJson={displayedParent.polygon}
+              strokeWeight={1.5}
+              strokeColor="#b91c1c"
+              fillOpacity={0}
+            />
+          )}
+          {isArea(displayed) && (
+            <Polygon
+              geoJson={displayed.polygon}
+              strokeWeight={1.5}
+              strokeColor="#b91c1c"
+              fillColor="#b91c1c"
+              fillOpacity={0.2}
+            />
+          )}
+          {isPoint(displayed) && (
+            <Marker
+              position={{
+                lng: displayed.point.coordinates[0],
+                lat: displayed.point.coordinates[1],
+              }}
+            />
+          )}
+        </Map>
+      </div>
+    </>
   );
 };
 
