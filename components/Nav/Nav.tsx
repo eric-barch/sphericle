@@ -5,23 +5,16 @@ import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import Image from "next/image";
 import Link from "next/link";
 
-type NavProps = {
-  stuck: boolean;
-};
-
-const Nav = (props: NavProps) => {
-  const { stuck } = props;
-
+const Nav = () => {
   return (
     <NavigationMenu.Root
       className={cn(
-        "flex items-center justify-between z-50 w-full px-12 py-3 bg-white border-b-2 border-black h-16",
-        stuck ? "sticky top-0" : "border-t-2",
+        "flex items-center justify-between z-50 w-full px-12 py-3 bg-white border-t-2 border-b-2 border-black h-16 sticky top-0",
       )}
       orientation="horizontal"
     >
       <div className="flex grow items-center">
-        {stuck && (
+        {
           <NavigationMenu.Item asChild>
             <Link className="rounded-3xl p-1.5 mr-4" href="/">
               <Image
@@ -33,11 +26,11 @@ const Nav = (props: NavProps) => {
               />
             </Link>
           </NavigationMenu.Item>
-        )}
+        }
         <NavigationMenu.List className="flex flex-row items-stretch">
           <NavigationMenu.Item>
             <Link className="rounded-3xl pr-4" href="/browse-quizzes">
-              Browse Quizzes
+              Browse Baz
             </Link>
           </NavigationMenu.Item>
           <NavigationMenu.Item>

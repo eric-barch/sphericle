@@ -23,8 +23,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
       <body className={font.className}>
-        <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
-          <main className="h-[calc(100vh-4rem)] overflow-auto custom-scrollbar">
+        <main className="min-h-lvh overflow-auto custom-scrollbar">
+          <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
             <QuizProvider>
               <QuizTakerProvider>
                 <QuizBuilderProvider>{children}</QuizBuilderProvider>
@@ -32,8 +32,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
             </QuizProvider>
 
             <Toaster containerStyle={{ marginTop: "4rem" }} />
-          </main>
-        </APIProvider>
+          </APIProvider>
+        </main>
       </body>
     </html>
   );
