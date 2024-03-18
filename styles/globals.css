@@ -2,9 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
 *:focus-visible {
-  outline: 2px solid #ffffff;
+    outline: 2px solid #ffffff;
 }
+*/
 
 .gm-style div {
   border: none !important;

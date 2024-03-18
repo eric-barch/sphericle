@@ -5,6 +5,8 @@ import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/button";
+import { Moon } from "lucide-react";
 
 const Nav = () => {
   const [isStuck, setIsStuck] = useState(false);
@@ -31,11 +33,14 @@ const Nav = () => {
   return (
     <NavigationMenu.Root
       ref={navRootRef}
-      className="flex sticky -top-0 z-50 h-16 items-center border-t-2 border-b-2 border-black bg-white"
+      className="flex sticky -top-0 z-50 h-16 w-screen items-center border-t-2 border-b-2 border-black bg-white"
       orientation="horizontal"
     >
       {isStuck && (
-        <NavigationMenu.Item className="flex h-full items-center px-8" asChild>
+        <NavigationMenu.Item
+          className="flex h-full items-center ml-4 px-4"
+          asChild
+        >
           <Link href="/">
             <Image
               priority
@@ -49,24 +54,21 @@ const Nav = () => {
       )}
       <NavigationMenu.Item
         className={cn(
-          "flex h-full items-center pl-8 pr-4",
+          "flex h-full items-center ml-4 px-4",
           isStuck && "ml-auto",
         )}
         asChild
       >
         <Link href="/browse-quizzes">Browse Quizzes</Link>
       </NavigationMenu.Item>
-      <NavigationMenu.Item
-        className="flex h-full items-center pl-4 pr-8"
-        asChild
-      >
+      <NavigationMenu.Item className="flex h-full items-center px-4" asChild>
         <Link href="/build-quiz">Build a Quiz</Link>
       </NavigationMenu.Item>
+      <Button className={cn("h-full px-4 mr-4", !isStuck && "ml-auto")}>
+        <Moon />
+      </Button>
       <NavigationMenu.Item
-        className={cn(
-          "flex h-full items-center px-8 bg-black text-white",
-          !isStuck && "ml-auto",
-        )}
+        className="flex h-full items-center px-8 bg-black text-white"
         asChild
       >
         <Link href="/login">Login</Link>
