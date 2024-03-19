@@ -1,3 +1,5 @@
+"use client";
+
 import { Nav } from "@/components/nav";
 import Image from "next/image";
 import Link from "next/link";
