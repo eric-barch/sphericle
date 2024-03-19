@@ -8,6 +8,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        "dark-blue": "#18A9F2",
+        "light-blue": "#91d2e4",
+        "dark-green": "#4FB848",
+        "light-green": "#bbe2c6",
+      },
       borderRadius: {
         1.25: "1.25rem",
       },

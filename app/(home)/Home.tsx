@@ -15,80 +15,62 @@ const Home = () => {
         />
       </div>
       <Nav />
-      <div className="flex flex-col items-center px-[10%] py-[2%] space-y-7 text-left">
-        <p className="w-full">
-          Welcome to <strong>Sphericle</strong>, a customizable way to learn the
-          geography of the world. Watch the demo video below, or click Build a
-          Quiz to jump into building your own quiz!
-        </p>
-        <iframe
-          className="w-1/2 aspect-[14.4/9]"
-          src="https://www.youtube.com/embed/PlWm2r0FBMI?showinfo=0&rel=0"
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
-        <p className="w-full">
-          Maybe you’re traveling to a new country and want to develop a mental
-          map before you get there. Or maybe you want to solidify your
-          geographic understanding of a city you’ve lived in for years. If we
-          don’t already have the quiz you’re looking for,{" "}
-          <strong>you can build it yourself.</strong>
-        </p>
-        <p className="w-full">
-          Sphericle lets you build and take your own custom geography quizzes,
-          so they include all the places and things that are of interest to{" "}
-          <strong>YOU</strong>.
-        </p>
-        <p className="w-full">
-          Sphericle lets you build and take your own custom geography quizzes,
-          so they include all the places and things that are of interest to{" "}
-          <strong>YOU</strong>.
-        </p>
-        <p className="w-full">
-          Sphericle lets you build and take your own custom geography quizzes,
-          so they include all the places and things that are of interest to{" "}
-          <strong>YOU</strong>.
-        </p>
-        <p className="w-full">
-          Sphericle lets you build and take your own custom geography quizzes,
-          so they include all the places and things that are of interest to{" "}
-          <strong>YOU</strong>.
-        </p>
-        <p className="w-full">
-          Sphericle lets you build and take your own custom geography quizzes,
-          so they include all the places and things that are of interest to{" "}
-          <strong>YOU</strong>.
-        </p>
-        <p className="w-full">
-          Sphericle lets you build and take your own custom geography quizzes,
-          so they include all the places and things that are of interest to{" "}
-          <strong>YOU</strong>.
-        </p>
-        <p className="w-full">
-          Sphericle lets you build and take your own custom geography quizzes,
-          so they include all the places and things that are of interest to{" "}
-          <strong>YOU</strong>.
-        </p>
-        <p className="w-full">
-          Sphericle lets you build and take your own custom geography quizzes,
-          so they include all the places and things that are of interest to{" "}
-          <strong>YOU</strong>.
-        </p>
-        <p className="w-full">
-          Sphericle lets you build and take your own custom geography quizzes,
-          so they include all the places and things that are of interest to{" "}
-          <strong>YOU</strong>.
-        </p>
-        <p className="w-full">
-          Sphericle lets you build and take your own custom geography quizzes,
-          so they include all the places and things that are of interest to{" "}
-          <strong>YOU</strong>.
-        </p>
-        <Link className="rounded-3xl px-3 py-2 bg-green-700" href="/build-quiz">
-          Build a Quiz
-        </Link>
+      <div className="flex flex-row h-[calc(100vh-20rem)] border-black border-b-2">
+        <div className="flex flex-col bg-light-blue p-8 h-full w-1/2 items-center justify-center border-black border-r-[calc(1px)]">
+          <p className="text-4xl font-extrabold w-full mb-16">
+            Learn your world.
+          </p>
+          <p className="mb-16">
+            Sphericle helps you study geography. The main offering is the Quiz
+            Builder, which lets you build and save your own quizzes. It also has
+            pre-built quizzes for popular feature sets. Get started by trying
+            one of those!
+          </p>
+          <Link
+            className="rounded-full p-4 py-3 bg-black text-white"
+            href="/browse-quizzes"
+          >
+            Browse Quizzes
+          </Link>
+        </div>
+        <div className="h-full w-1/2 border-black border-l-[calc(1px)]" />
       </div>
+      <div className="flex flex-row h-[calc(100vh-20rem)]">
+        <div className="h-full w-1/2 border-black border-r-[calc(1px)]" />
+        <div className="flex flex-col bg-light-green p-8 h-full w-1/2 items-center justify-center border-black border-l-[calc(1px)]">
+          <p className="text-4xl font-extrabold w-full mb-16">
+            As big as Google Maps.
+          </p>
+          <p className="mb-16">
+            <span>Sphericle is built on </span>
+            <Link
+              className="text-blue-800"
+              href="https://www.openstreetmap.org"
+            >
+              OpenStreetMap
+            </Link>
+            <span> and </span>
+            <Link
+              className="text-blue-800"
+              href="https://developers.google.com/maps/documentation/places/web-service"
+            >
+              Google Places
+            </Link>
+            <span>
+              . If it’s on Google Maps, it’s on Sphericle. You could build a
+              quiz of all the Dunkin's in New England. Good luck memorizing
+              them.
+            </span>
+          </p>
+          <Link
+            className="rounded-full p-4 py-3 bg-black text-white"
+            href="/build-quiz"
+          >
+            Build a Quiz
+          </Link>
+        </div>
+      </div>
+      <div className="bg-black h-64" />
     </>
   );
 };
