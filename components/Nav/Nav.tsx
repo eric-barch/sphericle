@@ -38,7 +38,7 @@ const Nav = () => {
     >
       {isStuck && (
         <NavigationMenu.Item
-          className="flex h-full items-center ml-4 px-4"
+          className="flex h-full items-center ml-4 px-4 rounded-full"
           asChild
         >
           <Link href="/">
@@ -54,17 +54,22 @@ const Nav = () => {
       )}
       <NavigationMenu.Item
         className={cn(
-          "flex h-full items-center ml-4 px-4",
+          "flex h-full items-center ml-4 px-4 rounded-full",
           isStuck && "ml-auto",
         )}
         asChild
       >
         <Link href="/browse-quizzes">Browse Quizzes</Link>
       </NavigationMenu.Item>
-      <NavigationMenu.Item className="flex h-full items-center px-4" asChild>
+      <NavigationMenu.Item
+        className="flex h-full items-center px-4 rounded-full"
+        asChild
+      >
         <Link href="/build-quiz">Build a Quiz</Link>
       </NavigationMenu.Item>
-      <Button className={cn("h-full px-4 mr-4", !isStuck && "ml-auto")}>
+      <Button
+        className={cn("h-full px-4 mr-4 rounded-full", !isStuck && "ml-auto")}
+      >
         <Moon />
       </Button>
       <NavigationMenu.Item
