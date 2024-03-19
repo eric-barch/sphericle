@@ -16,14 +16,14 @@ const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
 // const metadata: Metadata = {
 //   title: "Sphericle",
-//   description: "Learn the world.",
+//   description: "Learn your world.",
 // };
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
       <body className={font.className}>
-        <main className="min-h-lvh custom-scrollbar">
+        <main className="min-h-lvh custom-scrollbar dark:bg-gray-3">
           <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
             <QuizProvider>
               <QuizTakerProvider>

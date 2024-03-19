@@ -6,10 +6,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { Moon } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
+import { useDarkMode } from "@/hooks/use-dark-mode.hook";
 
 const Nav = () => {
+  const [isDark, setIsDark] = useDarkMode();
   const [isStuck, setIsStuck] = useState(false);
+
+  const handleClick = () => {
+    setIsDark(!isDark);
+  };
 
   const navRootRef = useRef(null);
 
@@ -33,7 +39,7 @@ const Nav = () => {
   return (
     <NavigationMenu.Root
       ref={navRootRef}
-      className="flex sticky -top-0 z-50 h-16 w-screen items-center border-t-2 border-b-2 border-black bg-white"
+      className="flex sticky -top-0 z-50 h-16 w-screen items-center border-t-2 border-b-2 border-black bg-white dark:bg-gray-2"
       orientation="horizontal"
     >
       {isStuck && (
@@ -69,11 +75,12 @@ const Nav = () => {
       </NavigationMenu.Item>
       <Button
         className={cn("h-full px-4 mr-4 rounded-full", !isStuck && "ml-auto")}
+        onClick={handleClick}
       >
-        <Moon />
+        {isDark ? <Sun /> : <Moon />}
       </Button>
       <NavigationMenu.Item
-        className="flex h-full items-center px-8 bg-black text-white"
+        className="flex bg-black text-white items-center h-full px-8"
         asChild
       >
         <Link href="/login">Login</Link>

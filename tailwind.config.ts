@@ -6,13 +6,19 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: "selector",
   theme: {
     extend: {
       colors: {
-        "dark-blue": "#18A9F2",
+        "dark-blue": "#18a9f2",
         "light-blue": "#91d2e4",
-        "dark-green": "#4FB848",
+        "dark-green": "#4fB848",
         "light-green": "#bbe2c6",
+        gray: {
+          1: "#c1c6cf",
+          2: "#4f6076",
+          3: "#1f293d",
+        },
       },
       borderRadius: {
         1.25: "1.25rem",
@@ -30,4 +36,5 @@ const config: Config = {
   },
   plugins: [],
 };
+
 export default config;
