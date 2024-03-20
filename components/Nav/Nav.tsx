@@ -2,19 +2,20 @@
 
 import { cn } from "@/lib/utils";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
-import { useDarkMode } from "@/hooks/use-dark-mode.hook";
+import { useDarkMode } from "@/providers/dark-mode-provider";
+import { Logo } from "@/components/logo";
 
 const Nav = () => {
-  const [isDark, setIsDark] = useDarkMode();
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [isStuck, setIsStuck] = useState(false);
 
   const handleClick = () => {
-    setIsDark(!isDark);
+    console.log("click");
+    toggleDarkMode();
   };
 
   const navRootRef = useRef(null);
@@ -36,25 +37,23 @@ const Nav = () => {
     };
   }, []);
 
+  useEffect(() => {
+    console.log("Nav isDark", isDarkMode);
+  }, [isDarkMode]);
+
   return (
     <NavigationMenu.Root
       ref={navRootRef}
-      className="flex sticky -top-0 z-50 h-16 w-screen items-center border-t-2 border-b-2 border-black bg-white dark:bg-gray-2"
+      className="flex sticky -top-0 z-50 h-16 w-screen items-center border-t-2 border-b-2 border-black bg-white dark:bg-gray-3"
       orientation="horizontal"
     >
       {isStuck && (
         <NavigationMenu.Item
-          className="flex h-full items-center ml-4 px-4 rounded-full"
+          className="flex h-full w-40 items-center ml-4 px-4 rounded-full"
           asChild
         >
           <Link href="/">
-            <Image
-              priority
-              src="/sphericle-americas.svg"
-              alt="Sphericle Americas Logo"
-              width={100}
-              height={25}
-            />
+            <Logo className="h-full w-full" />
           </Link>
         </NavigationMenu.Item>
       )}
@@ -77,7 +76,7 @@ const Nav = () => {
         className={cn("h-full px-4 mr-4 rounded-full", !isStuck && "ml-auto")}
         onClick={handleClick}
       >
-        {isDark ? <Sun /> : <Moon />}
+        {isDarkMode ? <Sun /> : <Moon />}
       </Button>
       <NavigationMenu.Item
         className="flex bg-black text-white items-center h-full px-8"

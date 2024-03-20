@@ -1,23 +1,15 @@
 "use client";
 
+import { Logo } from "@/components/logo";
 import { Nav } from "@/components/nav";
-import Image from "next/image";
 import Link from "next/link";
 
 const Home = () => {
   return (
     <>
-      <div className="h-64 flex justify-center items-center">
-        <Image
-          priority
-          src="/sphericle-americas.svg"
-          alt="Sphericle Americas Logo"
-          width={700}
-          height={175}
-        />
-      </div>
+      <Logo className="h-64 m-4" />
       <Nav />
-      <div className="flex flex-row h-[calc(100vh-20rem)] border-black border-b-2">
+      <div className="flex flex-row h-[calc(100vh-20rem)] border-black border-b-2 text-black">
         <div className="flex flex-col bg-light-blue p-8 h-full w-1/2 items-center justify-center border-black border-r-[calc(1px)]">
           <p className="text-4xl font-extrabold w-full mb-16">
             Learn your world.
@@ -37,7 +29,7 @@ const Home = () => {
         </div>
         <div className="h-full w-1/2 border-black border-l-[calc(1px)]" />
       </div>
-      <div className="flex flex-row h-[calc(100vh-20rem)]">
+      <div className="flex flex-row h-[calc(100vh-20rem)] text-black">
         <div className="h-full w-1/2 border-black border-r-[calc(1px)]" />
         <div className="flex flex-col bg-light-green p-8 h-full w-1/2 items-center justify-center border-black border-l-[calc(1px)]">
           <p className="text-4xl font-extrabold w-full mb-16">

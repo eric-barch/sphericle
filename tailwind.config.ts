@@ -15,9 +15,10 @@ const config: Config = {
         "dark-green": "#4fB848",
         "light-green": "#bbe2c6",
         gray: {
-          1: "#c1c6cf",
-          2: "#4f6076",
-          3: "#1f293d",
+          1: "#15202b",
+          2: "#192734",
+          3: "#22303c",
+          4: "#8899ac",
         },
       },
       borderRadius: {
