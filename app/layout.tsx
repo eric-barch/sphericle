@@ -5,6 +5,7 @@ import {
   QuizBuilderProvider,
   QuizTakerProvider,
 } from "@/providers";
+import { DarkModeProvider } from "@/providers/dark-mode-provider";
 import "@/styles/globals.css";
 import { APIProvider } from "@vis.gl/react-google-maps";
 // import type { Metadata } from "next";
@@ -23,16 +24,18 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en">
       <body className={font.className}>
-        <main className="min-h-lvh custom-scrollbar dark:bg-gray-3">
-          <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
-            <QuizProvider>
-              <QuizTakerProvider>
-                <QuizBuilderProvider>{children}</QuizBuilderProvider>
-              </QuizTakerProvider>
-            </QuizProvider>
+        <main className="min-h-lvh custom-scrollbar dark:bg-gray-1 dark:text-white">
+          <DarkModeProvider>
+            <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+              <QuizProvider>
+                <QuizTakerProvider>
+                  <QuizBuilderProvider>{children}</QuizBuilderProvider>
+                </QuizTakerProvider>
+              </QuizProvider>
 
-            <Toaster containerStyle={{ marginTop: "4rem" }} />
-          </APIProvider>
+              <Toaster containerStyle={{ marginTop: "4rem" }} />
+            </APIProvider>
+          </DarkModeProvider>
         </main>
       </body>
     </html>

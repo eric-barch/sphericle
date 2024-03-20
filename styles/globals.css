@@ -2,11 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-*:focus-visible {
-    outline: 2px solid #ffffff;
+:root {
+  --my-color: #000000;
 }
-*/
+
+.dark {
+  --my-color: #ffffff;
+}
+
+.text-custom-color {
+  color: var(--my-color);
+}
 
 .gm-style div {
   border: none !important;
