@@ -12,13 +12,18 @@ const config: Config = {
       colors: {
         "dark-blue": "#18a9f2",
         "light-blue": "#91d2e4",
-        "dark-green": "#4fB848",
+        "dark-green": "#50b848",
         "light-green": "#bbe2c6",
+        red: {
+          1: "#b91c1c",
+        },
         gray: {
           1: "#15202b",
           2: "#192734",
           3: "#22303c",
           4: "#8899ac",
+          5: "#c3cbd5",
+          6: "#e7ebef",
         },
       },
       borderRadius: {

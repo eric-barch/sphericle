@@ -9,6 +9,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isEarth, isParent, isPoint } from "@/helpers";
 import { useQuiz, useQuizBuilder } from "@/providers";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -16,6 +17,7 @@ const BuildQuiz = () => {
   const { earthId, quiz } = useQuiz();
   const { quizBuilder } = useQuizBuilder();
   const map = useMap();
+  const { resolvedTheme } = useTheme();
 
   const earth = (() => {
     const earth = quiz.get(earthId);
@@ -100,7 +102,7 @@ const BuildQuiz = () => {
     <>
       <Nav />
       {!mapIsLoaded && (
-        <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
+        <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-white" />
       )}
       <SplitPane>
         <div className="relative h-full">
@@ -110,7 +112,7 @@ const BuildQuiz = () => {
             isAdding={earthIsAdding}
           />
           <Link
-            className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
+            className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-dark-green m-3"
             href="/take-quiz"
           >
             Take Quiz
@@ -118,7 +120,9 @@ const BuildQuiz = () => {
         </div>
         <Map
           className="h-full w-full outline-none border-none"
-          mapId="696d0ea42431a75c"
+          mapId={
+            resolvedTheme === "dark" ? "696d0ea42431a75c" : "1f30296a9860539f"
+          }
           gestureHandling="greedy"
           disableDefaultUI
           restriction={RESTRICTION}

@@ -5,7 +5,6 @@ import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/logo";
-import { useTheme } from "next-themes";
 import { ThemeSwitch } from "./theme-switch";
 
 const Nav = () => {

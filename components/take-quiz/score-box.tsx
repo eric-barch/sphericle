@@ -6,7 +6,7 @@ const ScoreBox = () => {
   const { correctIds, incorrectIds, remainingIds } = quizTaker;
 
   return (
-    <div className="absolute top-5 right-5 rounded-3xl z-10 bg-gray-500 bg-opacity-80 p-3">
+    <div className="absolute top-5 right-5 rounded-3xl z-10 bg-gray-6 border-black border-[calc(1px)] p-3">
       <table>
         <tbody>
           <tr>
