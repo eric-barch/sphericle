@@ -102,7 +102,7 @@ const BuildQuiz = () => {
     <>
       <Nav />
       {!mapIsLoaded && (
-        <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-white" />
+        <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-white dark:bg-gray-1" />
       )}
       <SplitPane>
         <div className="relative h-full">
@@ -112,7 +112,7 @@ const BuildQuiz = () => {
             isAdding={earthIsAdding}
           />
           <Link
-            className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-dark-green m-3"
+            className="absolute border-black border-[calc(1px)] bottom-0 right-0 rounded-3xl px-3 py-2 text-black bg-green-2 m-3"
             href="/take-quiz"
           >
             Take Quiz

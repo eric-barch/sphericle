@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useQuizBuilder } from "@/providers";
 import {
   AreaSearch,
@@ -51,7 +52,7 @@ const SearchOptions = (props: SearchOptionsProps) => {
   }, [activeOption, quizBuilderDispatch]);
 
   return (
-    <Combobox.Options className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-5 p-1 space-y-1">
+    <Combobox.Options className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-5 dark:bg-gray-3 border-black border-[calc(1px)] p-1 space-y-1">
       {placeholder ? (
         <div className="pl-7 p-1">{placeholder}</div>
       ) : (
@@ -82,7 +83,12 @@ const SearchOption = (props: SearchOptionProps) => {
       value={feature}
       as="div"
       className={({ active }) =>
-        `p-1 pl-7 rounded-2xl cursor-pointer ${active && "bg-gray-6 border-black border-[calc(1px)]"}`
+        cn(
+          "p-1 pl-7 rounded-2xl cursor-pointer border-[calc(1px)]",
+          active
+            ? "bg-gray-6 dark:bg-gray-4 border-black"
+            : "border-gray-5 dark:border-gray-3",
+        )
       }
     >
       {feature.longName}

@@ -84,9 +84,8 @@ const Area = (props: AreaProps) => {
         />
         <Collapsible.Trigger
           className={cn(
-            "w-full p-1 bg-gray-6 border-[calc(1px)] border-black rounded-3xl text-left",
-            isSelected &&
-              "border-red-1 outline outline-[calc(1px)] outline-red-1",
+            "w-full p-1 border-[calc(1px)] border-black rounded-3xl text-left",
+            isSelected ? "bg-red-1" : "bg-gray-6 dark:bg-gray-4",
           )}
           onClick={handleClick}
         >

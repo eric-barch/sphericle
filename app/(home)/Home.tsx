@@ -10,7 +10,7 @@ const Home = () => {
       <Logo className="h-64 m-4" />
       <Nav />
       <div className="flex flex-row h-[calc(100vh-20rem)] border-black border-b-2 text-black">
-        <div className="flex flex-col bg-light-blue p-8 h-full w-1/2 items-center justify-center border-black border-r-[calc(1px)]">
+        <div className="flex flex-col bg-blue-2 p-8 h-full w-1/2 items-center justify-center border-black border-r-[calc(1px)]">
           <p className="text-4xl font-extrabold w-full mb-16">
             Learn your world.
           </p>
@@ -31,7 +31,7 @@ const Home = () => {
       </div>
       <div className="flex flex-row h-[calc(100vh-20rem)] text-black">
         <div className="h-full w-1/2 border-black border-r-[calc(1px)]" />
-        <div className="flex flex-col bg-light-green p-8 h-full w-1/2 items-center justify-center border-black border-l-[calc(1px)]">
+        <div className="flex flex-col bg-green-2 p-8 h-full w-1/2 items-center justify-center border-black border-l-[calc(1px)]">
           <p className="text-4xl font-extrabold w-full mb-16">
             As big as Google Maps.
           </p>

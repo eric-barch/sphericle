@@ -153,7 +153,7 @@ const SearchInput = (props: SearchInputProps) => {
       />
       <Combobox.Input
         ref={inputRef}
-        className="w-full p-1 rounded-3xl text-left bg-transparent border-[calc(1px)] border-black pl-8 pr-3 text-ellipsis focus:outline-none"
+        className="w-full p-1 rounded-3xl text-left bg-white dark:bg-gray-6 border-[calc(1px)] border-black pl-8 pr-3 text-ellipsis focus:outline-none"
         placeholder={placeholder}
         onBlur={handleBlur}
         onChange={handleChange}
@@ -180,7 +180,7 @@ const ChangeFeatureTypeButton = ({
 
   return (
     <button
-      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl left-1.5 bg-gray-6 border-black border-[calc(1px)] text-black"
+      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl left-1.5 bg-gray-5 dark:bg-gray-4 border-black border-[calc(1px)] text-black"
       onClick={handleClick}
     >
       {(() => {

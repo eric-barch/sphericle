@@ -38,7 +38,7 @@ const ChildFeatures = (props: ChildFeaturesProps) => {
   };
 
   return (
-    <div className={cn(className, "space-y-1 h-full")}>
+    <div className={cn(className, "text-black space-y-1 h-full")}>
       <Reorder.Group
         className="mt-1 space-y-1"
         axis="y"

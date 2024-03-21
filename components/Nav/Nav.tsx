@@ -32,7 +32,7 @@ const Nav = () => {
   return (
     <NavigationMenu.Root
       ref={navRootRef}
-      className="flex sticky -top-0 z-50 h-16 w-screen items-center border-t-2 border-b-2 border-black bg-white dark:bg-gray-3"
+      className="flex sticky -top-0 z-50 h-16 w-screen items-center border-t-2 border-b-2 border-black bg-white dark:bg-gray-2"
       orientation="horizontal"
     >
       {isStuck && (
