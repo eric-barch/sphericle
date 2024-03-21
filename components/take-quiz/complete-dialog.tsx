@@ -24,7 +24,7 @@ const CompleteDialog = ({ handleReset }: CompleteDialogProps) => {
 
   return (
     <Dialog.Root open={isOpen}>
-      <Dialog.Content className="fixed flex flex-col items-center p-4 bg-gray-6 border-black border-[calc(1px)] rounded-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40">
+      <Dialog.Content className="fixed flex flex-col items-center p-4 bg-gray-6 dark:bg-gray-4 text-black border-black border-2 rounded-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40">
         <Dialog.Title>Quiz Complete!</Dialog.Title>
         <Dialog.Description className="m-4">{`Your score: ${
           correctIds.size

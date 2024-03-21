@@ -180,7 +180,7 @@ const ChangeFeatureTypeButton = ({
 
   return (
     <button
-      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl left-1.5 bg-gray-5 dark:bg-gray-4 border-black border-[calc(1px)] text-black"
+      className="flex h-6 w-6 items-center justify-center absolute top-1/2 transform -translate-y-1/2 rounded-2xl left-1.5 bg-gray-6 dark:bg-gray-4 border-black border-[calc(1px)] text-black"
       onClick={handleClick}
     >
       {(() => {
