@@ -136,26 +136,26 @@ const MenuButton = (props: MenuButtonProps) => {
         <MoreVertical className="w-5 h-5" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
-        className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-500 rounded-1.25 p-1 space-y-1 focus:outline-none"
+        className="absolute z-10 top-1 ml-[-1.2rem] bg-gray-5 dark:bg-gray-3 border-black border-[calc(1px)] rounded-1.25 p-1 space-y-1 focus:outline-none"
         onCloseAutoFocus={handleCloseAutoFocus}
       >
         {canAddSubfeature && (
           <DropdownMenu.Item
             onClick={handleAddSubfeature}
-            className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
+            className="rounded-2xl cursor-pointer px-7 py-1 min-w-max border-[calc(1px)] border-gray-5 dark:border-gray-3 data-[highlighted]:border-black data-[highlighted]:bg-gray-5 dark:data-[highlighted]:bg-gray-4 focus:outline-none"
           >
             Add Subfeature
           </DropdownMenu.Item>
         )}
         <DropdownMenu.Item
           onClick={handleRename}
-          className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
+          className="rounded-2xl cursor-pointer px-7 py-1 min-w-max border-[calc(1px)] border-gray-5 dark:border-gray-3 data-[highlighted]:border-black data-[highlighted]:bg-gray-5 dark:data-[highlighted]:bg-gray-4 focus:outline-none"
         >
           Rename
         </DropdownMenu.Item>
         <DropdownMenu.Item
           onClick={handleDelete}
-          className="rounded-2xl cursor-pointer px-7 py-1 min-w-max data-[highlighted]:bg-gray-600 focus:outline-none"
+          className="rounded-2xl cursor-pointer px-7 py-1 min-w-max border-[calc(1px)] border-gray-5 dark:border-gray-3 data-[highlighted]:border-black data-[highlighted]:bg-gray-5 dark:data-[highlighted]:bg-gray-4 focus:outline-none"
         >
           Delete
         </DropdownMenu.Item>

@@ -10,20 +10,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "dark-blue": "#18a9f2",
-        "light-blue": "#91d2e4",
-        "dark-green": "#50b848",
-        "light-green": "#bbe2c6",
+        blue: {
+          1: "#18a9f2",
+          2: "#91d2e4",
+        },
+        green: {
+          1: "#50b848",
+          2: "#bbe2c6",
+        },
         red: {
-          1: "#b91c1c",
+          1: "#e1bbbb",
         },
         gray: {
-          1: "#15202b",
-          2: "#192734",
-          3: "#22303c",
-          4: "#8899ac",
-          5: "#c3cbd5",
-          6: "#e7ebef",
+          1: "#1b2436",
+          2: "#2f3c4e",
+          3: "#9da4af",
+          4: "#c1c6cf",
+          5: "#d6d8dd",
+          6: "#eaeaea",
         },
       },
       borderRadius: {
