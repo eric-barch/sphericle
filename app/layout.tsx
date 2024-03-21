@@ -26,7 +26,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       <head />
       <body className={font.className}>
         <ThemeProvider attribute="class">
-          <main className="min-h-lvh custom-scrollbar dark:bg-gray-1 dark:text-white">
+          <main className="min-h-lvh dark:bg-gray-1 dark:text-white">
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
               <QuizProvider>
                 <QuizTakerProvider>
