@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+[class='dark'] [data-hide-on-theme='dark'],
+[class='light'] [data-hide-on-theme='light'] {
+  display: none;
+}
+
 :root {
   --my-color: #000000;
 }

@@ -1,5 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 
 type LandProps = {
   className?: string;
@@ -8,21 +10,13 @@ type LandProps = {
 const Land = (props: LandProps) => {
   const { className } = props;
 
-  const continents = ["africa", "americas", "asia", "europe"];
-
-  const selectedContinent = useMemo(() => {
-    const randomIndex = Math.floor(Math.random() * continents.length);
-    return continents[randomIndex];
-  }, []);
-
-  const imagePath = `/${selectedContinent}.svg`;
-
   return (
     <Image
+      priority
+      fill
       className={className}
-      src={imagePath}
-      fill={true}
-      alt={selectedContinent}
+      src="/americas.svg"
+      alt="americas"
       loading="eager"
     />
   );

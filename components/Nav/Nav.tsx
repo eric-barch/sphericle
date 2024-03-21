@@ -4,19 +4,12 @@ import { cn } from "@/lib/utils";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Moon, Sun } from "lucide-react";
-import { useDarkMode } from "@/providers/dark-mode-provider";
 import { Logo } from "@/components/logo";
+import { useTheme } from "next-themes";
+import { ThemeSwitch } from "./theme-switch";
 
 const Nav = () => {
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [isStuck, setIsStuck] = useState(false);
-
-  const handleClick = () => {
-    console.log("click");
-    toggleDarkMode();
-  };
 
   const navRootRef = useRef(null);
 
@@ -36,10 +29,6 @@ const Nav = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  useEffect(() => {
-    console.log("Nav isDark", isDarkMode);
-  }, [isDarkMode]);
 
   return (
     <NavigationMenu.Root
@@ -72,12 +61,7 @@ const Nav = () => {
       >
         <Link href="/build-quiz">Build a Quiz</Link>
       </NavigationMenu.Item>
-      <Button
-        className={cn("h-full px-4 mr-4 rounded-full", !isStuck && "ml-auto")}
-        onClick={handleClick}
-      >
-        {isDarkMode ? <Sun /> : <Moon />}
-      </Button>
+      <ThemeSwitch isStuck={isStuck} />
       <NavigationMenu.Item
         className="flex bg-black text-white items-center h-full px-8"
         asChild

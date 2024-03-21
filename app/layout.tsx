@@ -5,9 +5,9 @@ import {
   QuizBuilderProvider,
   QuizTakerProvider,
 } from "@/providers";
-import { DarkModeProvider } from "@/providers/dark-mode-provider";
 import "@/styles/globals.css";
 import { APIProvider } from "@vis.gl/react-google-maps";
+import { ThemeProvider } from "next-themes";
 // import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import { ReactNode } from "react";
@@ -22,10 +22,11 @@ const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head />
       <body className={font.className}>
-        <main className="min-h-lvh custom-scrollbar dark:bg-gray-1 dark:text-white">
-          <DarkModeProvider>
+        <ThemeProvider attribute="class">
+          <main className="min-h-lvh custom-scrollbar dark:bg-gray-1 dark:text-white">
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
               <QuizProvider>
                 <QuizTakerProvider>
@@ -35,8 +36,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
 
               <Toaster containerStyle={{ marginTop: "4rem" }} />
             </APIProvider>
-          </DarkModeProvider>
-        </main>
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );
