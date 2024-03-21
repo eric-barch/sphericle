@@ -11,6 +11,7 @@ import { isArea, isChild, isEarth, isParent, isPoint } from "@/helpers";
 import { useQuiz, useQuizTaker } from "@/providers";
 import { QuizTakerDispatchType } from "@/types";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
+import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const PADDING = 100;
@@ -19,6 +20,7 @@ const TakeQuiz = () => {
   const { quiz } = useQuiz();
   const { quizTaker, quizTakerDispatch } = useQuizTaker();
   const map = useMap();
+  const { resolvedTheme } = useTheme();
 
   const displayed = (() => {
     const displayed = quiz.get(quizTaker.currentId);
@@ -108,9 +110,7 @@ const TakeQuiz = () => {
     <>
       <Nav />
       <div className="h-[calc(100vh-4rem)] relative flex justify-center align-middle content-center">
-        {!mapIsLoaded && (
-          <LoadingSpinner className="absolute z-10 bg-gray-700" />
-        )}
+        {!mapIsLoaded && <LoadingSpinner className="absolute z-10 bg-white" />}
         {mapIsLoaded && (
           <>
             <CompleteDialog handleReset={handleReset} />
@@ -124,7 +124,9 @@ const TakeQuiz = () => {
         )}
         <Map
           className="h-full w-full outline-none border-none"
-          mapId="8777b9e5230900fc"
+          mapId={
+            resolvedTheme === "dark" ? "8777b9e5230900fc" : "a963079063b1cef3"
+          }
           gestureHandling="greedy"
           disableDefaultUI
           restriction={RESTRICTION}

@@ -51,7 +51,7 @@ const SearchOptions = (props: SearchOptionsProps) => {
   }, [activeOption, quizBuilderDispatch]);
 
   return (
-    <Combobox.Options className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-500 p-1 space-y-1">
+    <Combobox.Options className="absolute w-full z-10 left-0 rounded-1.25 bg-gray-5 p-1 space-y-1">
       {placeholder ? (
         <div className="pl-7 p-1">{placeholder}</div>
       ) : (
@@ -82,7 +82,7 @@ const SearchOption = (props: SearchOptionProps) => {
       value={feature}
       as="div"
       className={({ active }) =>
-        `p-1 pl-7 rounded-2xl cursor-pointer ${active ? "bg-gray-600" : ""}`
+        `p-1 pl-7 rounded-2xl cursor-pointer ${active && "bg-gray-6 border-black border-[calc(1px)]"}`
       }
     >
       {feature.longName}

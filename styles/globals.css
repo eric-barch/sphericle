@@ -7,39 +7,6 @@
   display: none;
 }
 
-:root {
-  --my-color: #000000;
-}
-
-.dark {
-  --my-color: #ffffff;
-}
-
-.text-custom-color {
-  color: var(--my-color);
-}
-
-.gm-style div {
-  border: none !important;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
 @layer components {
   body {
     @apply min-h-screen flex flex-col text-black bg-white;
