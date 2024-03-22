@@ -3,11 +3,17 @@
 import { cn } from "@/lib/utils";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/logo";
 import { ThemeSwitch } from "./theme-switch";
 
-const Nav = () => {
+type NavProps = {
+  children: ReactNode;
+};
+
+const Nav = (props: NavProps) => {
+  const { children } = props;
+
   const [isStuck, setIsStuck] = useState(false);
 
   const navRootRef = useRef(null);
@@ -61,11 +67,8 @@ const Nav = () => {
         <Link href="/build-quiz">Build a Quiz</Link>
       </NavigationMenu.Item>
       <ThemeSwitch isStuck={isStuck} />
-      <NavigationMenu.Item
-        className="flex bg-black text-white items-center h-full px-8"
-        asChild
-      >
-        <Link href="/login">Login</Link>
+      <NavigationMenu.Item className="flex bg-black text-white items-center h-full px-8">
+        {children}
       </NavigationMenu.Item>
     </NavigationMenu.Root>
   );
