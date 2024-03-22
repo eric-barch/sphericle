@@ -1,7 +1,7 @@
 "use client";
 
 import { Quiz } from "@/components/browse-quizzes/quiz";
-import { Nav } from "@/components/nav-lowercase";
+import { Nav } from "@/components/nav";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 
