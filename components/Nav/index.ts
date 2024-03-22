@@ -1,1 +1,1 @@
-export * from "./nav-lowercase";
+export * from "./nav";

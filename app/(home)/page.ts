@@ -1,2 +1,2 @@
-export * from "./home-lowercase";
-export { default } from "./home-lowercase";
+export * from "./home";
+export { default } from "./home";
