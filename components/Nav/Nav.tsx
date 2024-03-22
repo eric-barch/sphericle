@@ -2,55 +2,70 @@
 
 import { cn } from "@/lib/utils";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
-import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { Logo } from "@/components/logo";
+import { ThemeSwitch } from "./theme-switch";
 
-type NavProps = {
-  stuck: boolean;
-};
+const Nav = () => {
+  const [isStuck, setIsStuck] = useState(false);
 
-const Nav = (props: NavProps) => {
-  const { stuck } = props;
+  const navRootRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (navRootRef.current) {
+        const navTop = navRootRef.current.getBoundingClientRect().top;
+        setIsStuck(navTop <= 0);
+      }
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <NavigationMenu.Root
-      className={cn(
-        "flex items-center justify-between z-50 w-full px-12 py-3 bg-white border-b-2 border-black h-16",
-        stuck ? "sticky top-0" : "border-t-2",
-      )}
+      ref={navRootRef}
+      className="flex sticky -top-0 z-50 h-16 w-screen items-center border-t-2 border-b-2 border-black bg-white dark:bg-gray-2"
       orientation="horizontal"
     >
-      <div className="flex grow items-center">
-        {stuck && (
-          <NavigationMenu.Item asChild>
-            <Link className="rounded-3xl p-1.5 mr-4" href="/">
-              <Image
-                priority
-                src="/sphericle-americas.svg"
-                alt="Sphericle Americas Logo"
-                width={100}
-                height={25}
-              />
-            </Link>
-          </NavigationMenu.Item>
+      {isStuck && (
+        <NavigationMenu.Item
+          className="flex h-full w-40 items-center ml-4 px-4 rounded-full"
+          asChild
+        >
+          <Link href="/">
+            <Logo className="h-full w-full" />
+          </Link>
+        </NavigationMenu.Item>
+      )}
+      <NavigationMenu.Item
+        className={cn(
+          "flex h-full items-center ml-4 px-4 rounded-full",
+          isStuck && "ml-auto",
         )}
-        <NavigationMenu.List className="flex flex-row items-stretch">
-          <NavigationMenu.Item>
-            <Link className="rounded-3xl pr-4" href="/browse-quizzes">
-              Browse Quizzes
-            </Link>
-          </NavigationMenu.Item>
-          <NavigationMenu.Item>
-            <Link className="rounded-3xl px-4" href="/build-quiz">
-              Build a Quiz
-            </Link>
-          </NavigationMenu.Item>
-        </NavigationMenu.List>
-      </div>
-      <NavigationMenu.Item asChild>
-        <Link className="rounded-3xl pl-4" href="/login">
-          Login
-        </Link>
+        asChild
+      >
+        <Link href="/browse-quizzes">Browse Quizzes</Link>
+      </NavigationMenu.Item>
+      <NavigationMenu.Item
+        className="flex h-full items-center px-4 rounded-full"
+        asChild
+      >
+        <Link href="/build-quiz">Build a Quiz</Link>
+      </NavigationMenu.Item>
+      <ThemeSwitch isStuck={isStuck} />
+      <NavigationMenu.Item
+        className="flex bg-black text-white items-center h-full px-8"
+        asChild
+      >
+        <Link href="/login">Login</Link>
       </NavigationMenu.Item>
     </NavigationMenu.Root>
   );

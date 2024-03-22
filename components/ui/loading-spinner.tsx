@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 type LoadingSpinnerProps = {
@@ -7,7 +8,10 @@ type LoadingSpinnerProps = {
 const LoadingSpinner = ({ className }: LoadingSpinnerProps) => {
   return (
     <div
-      className={`${className} flex h-full w-full justify-center items-center`}
+      className={cn(
+        "flex h-full w-full justify-center items-center",
+        className,
+      )}
     >
       <Image
         priority

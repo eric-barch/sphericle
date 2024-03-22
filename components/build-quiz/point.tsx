@@ -6,6 +6,7 @@ import { PointState, QuizBuilderDispatchType } from "@/types";
 import { useRef } from "react";
 import { MenuButton } from "./menu-button";
 import { Name } from "./name";
+import { cn } from "@/lib/utils";
 
 type PointProps = {
   point: PointState;
@@ -40,9 +41,10 @@ const Point = (props: PointProps) => {
         isRenaming={isRenaming}
       />
       <Button
-        className={`w-full p-1 cursor-pointer rounded-2xl text-left bg-gray-600${
-          isSelected ? " outline outline-2 outline-red-700" : ""
-        }`}
+        className={cn(
+          "w-full p-1 border-[calc(1px)] border-black rounded-3xl text-left",
+          isSelected ? "bg-red-1" : "bg-gray-6 dark:bg-gray-4",
+        )}
         onClick={handleClick}
       >
         <Name

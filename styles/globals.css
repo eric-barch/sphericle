@@ -2,29 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-*:focus-visible {
-  outline: 2px solid #ffffff;
-}
-
-.gm-style div {
-  border: none !important;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #555;
+[class='dark'] [data-hide-on-theme='dark'],
+[class='light'] [data-hide-on-theme='light'] {
+  display: none;
 }
 
 @layer components {

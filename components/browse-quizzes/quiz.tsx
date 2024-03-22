@@ -1,6 +1,6 @@
 "use-client";
 
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type QuizProps = {
   quiz: any;
@@ -10,16 +10,16 @@ const Quiz = (props: QuizProps) => {
   const { quiz } = props;
 
   const handleClick = () => {
-    // console.log("quiz", quiz);
+    console.log("quiz", quiz);
   };
 
   return (
-    <Button
-      className={`text-left w-full mt-1 space-y-1 px-7 bg-gray-600 p-1 rounded-2xl`}
-      onClick={handleClick}
+    <Link
+      className={`text-left w-1/2 px-7 bg-gray-6 dark:bg-gray-4 text-black border-black border-[calc(1px)] p-1 rounded-2xl`}
+      href="/"
     >
       {quiz.title}
-    </Button>
+    </Link>
   );
 };
 

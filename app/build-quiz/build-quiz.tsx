@@ -3,15 +3,18 @@
 import { ChildFeatures } from "@/components/build-quiz/child-features";
 import { Polygon } from "@/components/map";
 import { DEFAULT_BOUNDS, RESTRICTION } from "@/components/map/constants";
+import { Nav } from "@/components/nav";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isEarth, isParent, isPoint } from "@/helpers";
 import { useQuiz, useQuizBuilder } from "@/providers";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
-import Link from "next/link";
+import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const BuildQuiz = () => {
+  const { resolvedTheme } = useTheme();
   const { earthId, quiz } = useQuiz();
   const { quizBuilder } = useQuizBuilder();
   const map = useMap();
@@ -21,7 +24,7 @@ const BuildQuiz = () => {
     if (isEarth(earth)) return earth;
   })();
 
-  const earthIsAdding = earthId === quizBuilder.addingId;
+  const isAdding = earthId === quizBuilder.addingId;
 
   const displayed = (() => {
     if (quizBuilder.searchOption) return quizBuilder.searchOption;
@@ -97,18 +100,19 @@ const BuildQuiz = () => {
 
   return (
     <>
+      <Nav />
       {!mapIsLoaded && (
-        <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-gray-700" />
+        <LoadingSpinner className="absolute left-0 right-0 top-0 z-40 bg-white dark:bg-gray-1" />
       )}
       <SplitPane>
         <div className="relative h-full">
           <ChildFeatures
-            className={`p-3 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
+            className={`px-8 py-4 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
             parent={earth}
-            isAdding={earthIsAdding}
+            isAdding={isAdding}
           />
           <Link
-            className="absolute bottom-0 right-0 rounded-3xl px-3 py-2 bg-green-700 m-3"
+            className="absolute border-black border-[calc(1px)] bottom-0 right-0 rounded-3xl px-3 py-2 text-black bg-green-2 m-3"
             href="/take-quiz"
           >
             Take Quiz
@@ -116,7 +120,9 @@ const BuildQuiz = () => {
         </div>
         <Map
           className="h-full w-full outline-none border-none"
-          mapId="696d0ea42431a75c"
+          mapId={
+            resolvedTheme === "dark" ? "696d0ea42431a75c" : "1f30296a9860539f"
+          }
           gestureHandling="greedy"
           disableDefaultUI
           restriction={RESTRICTION}
