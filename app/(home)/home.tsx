@@ -1,7 +1,7 @@
 "use client";
 
 import { Logo } from "@/components/logo";
-import { Nav } from "@/components/nav";
+import { Nav } from "@/components/nav-lowercase";
 import Link from "next/link";
 
 const Home = () => {
