@@ -7,8 +7,8 @@ async function GET(request: Request) {
 
   const url =
     `http://nominatim.openstreetmap.org/search?q=${query}&polygon_geojson=1&format=json&email=ericmb365@gmail.com&accept-language=en` +
-    (viewbox ? `&viewbox=${viewbox}` : "") +
-    (bounded ? `&bounded=${bounded}` : "");
+    (viewbox && `&viewbox=${viewbox}`) +
+    (bounded && `&bounded=${bounded}`);
 
   const response = await fetch(url);
 

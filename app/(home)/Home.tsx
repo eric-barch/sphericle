@@ -52,7 +52,7 @@ const Home = () => {
             </Link>
             <span>
               . If it’s on Google Maps, it’s on Sphericle. You could build a
-              quiz of all the Dunkin's in New England. Good luck memorizing
+              quiz of all the Dunkin’s in New England. Good luck memorizing
               them.
             </span>
           </p>
