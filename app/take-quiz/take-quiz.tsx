@@ -2,7 +2,7 @@
 
 import { Polygon } from "@/components/map";
 import { DEFAULT_BOUNDS, RESTRICTION } from "@/components/map/constants";
-import { Nav } from "@/components/nav-lowercase";
+import { Nav } from "@/components/nav";
 import { AnswerBox } from "@/components/take-quiz/answer-box";
 import { CompleteDialog } from "@/components/take-quiz/complete-dialog";
 import { ScoreBox } from "@/components/take-quiz/score-box";

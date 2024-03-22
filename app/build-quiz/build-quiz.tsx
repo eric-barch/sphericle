@@ -3,7 +3,7 @@
 import { ChildFeatures } from "@/components/build-quiz/child-features";
 import { Polygon } from "@/components/map";
 import { DEFAULT_BOUNDS, RESTRICTION } from "@/components/map/constants";
-import { Nav } from "@/components/nav-lowercase";
+import { Nav } from "@/components/nav";
 import { SplitPane } from "@/components/split-pane";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { isArea, isChild, isEarth, isParent, isPoint } from "@/helpers";
