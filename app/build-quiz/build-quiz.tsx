@@ -10,21 +10,21 @@ import { isArea, isChild, isEarth, isParent, isPoint } from "@/helpers";
 import { useQuiz, useQuizBuilder } from "@/providers";
 import { Map, Marker, useMap } from "@vis.gl/react-google-maps";
 import { useTheme } from "next-themes";
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const BuildQuiz = () => {
+  const { resolvedTheme } = useTheme();
   const { earthId, quiz } = useQuiz();
   const { quizBuilder } = useQuizBuilder();
   const map = useMap();
-  const { resolvedTheme } = useTheme();
 
   const earth = (() => {
     const earth = quiz.get(earthId);
     if (isEarth(earth)) return earth;
   })();
 
-  const earthIsAdding = earthId === quizBuilder.addingId;
+  const isAdding = earthId === quizBuilder.addingId;
 
   const displayed = (() => {
     if (quizBuilder.searchOption) return quizBuilder.searchOption;
@@ -109,7 +109,7 @@ const BuildQuiz = () => {
           <ChildFeatures
             className={`px-8 py-4 overflow-auto custom-scrollbar max-h-[calc(100vh-4rem)]`}
             parent={earth}
-            isAdding={earthIsAdding}
+            isAdding={isAdding}
           />
           <Link
             className="absolute border-black border-[calc(1px)] bottom-0 right-0 rounded-3xl px-3 py-2 text-black bg-green-2 m-3"

@@ -11,8 +11,6 @@ const BrowseQuizzes = () => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   );
 
-  console.log("render");
-
   const [quizzes, setQuizzes] = useState(null);
 
   useEffect(() => {
@@ -29,7 +27,7 @@ const BrowseQuizzes = () => {
     <>
       <Nav />
       {quizzes && (
-        <div className="space-y-1 h-full p-3">
+        <div className="flex flex-col h-full p-3 items-center space-y-1">
           {Array.from(
             quizzes.map((quiz, index) => <Quiz key={index} quiz={quiz} />),
           )}

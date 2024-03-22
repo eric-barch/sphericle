@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 
-type LandProps = {
+type LogoForegroundProps = {
   className?: string;
 };
 
-const Land = (props: LandProps) => {
+const LogoForeground = (props: LogoForegroundProps) => {
   const { className } = props;
 
   return (
@@ -14,11 +14,11 @@ const Land = (props: LandProps) => {
       priority
       fill
       className={className}
-      src="/americas.svg"
+      src="/sphericle-americas.svg"
       alt="americas"
       loading="eager"
     />
   );
 };
 
-export { Land };
+export { LogoForeground };

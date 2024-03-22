@@ -110,7 +110,9 @@ const TakeQuiz = () => {
     <>
       <Nav />
       <div className="h-[calc(100vh-4rem)] relative flex justify-center align-middle content-center">
-        {!mapIsLoaded && <LoadingSpinner className="absolute z-10 bg-white" />}
+        {!mapIsLoaded && (
+          <LoadingSpinner className="absolute z-10 bg-white dark:bg-gray-1" />
+        )}
         {mapIsLoaded && (
           <>
             <CompleteDialog handleReset={handleReset} />

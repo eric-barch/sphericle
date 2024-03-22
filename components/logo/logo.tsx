@@ -1,6 +1,6 @@
 "use client";
 
-import { Land } from "./land";
+import { LogoForeground } from "./logo-foreground";
 import { LogoBackground } from "./logo-background";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +13,7 @@ const Logo = (props: LogoProps) => {
 
   return (
     <div className={cn("relative", className)}>
-      <Land className="z-10" />
+      <LogoForeground className="z-10" />
       <LogoBackground />
     </div>
   );
