@@ -1,7 +1,7 @@
 import { Nav } from "@/components/nav";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { SubmitButton } from "./submit-button";
+import { SignInButton } from "./submit-button";
 import Link from "next/link";
 
 const SignIn = () => {
@@ -51,12 +51,10 @@ const SignIn = () => {
               />
             </div>
             <div className="flex flex-col space-y-2">
-              <SubmitButton formAction={signIn} pendingText="Signing In...">
-                Sign In
-              </SubmitButton>
+              <SignInButton formAction={signIn}>Sign In</SignInButton>
               <p>
                 or{" "}
-                <Link className="text-blue-800" href="sign-up">
+                <Link className="text-blue-800" href="/sign-up">
                   Sign Up
                 </Link>
               </p>

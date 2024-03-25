@@ -3,14 +3,10 @@
 import { useFormStatus } from "react-dom";
 import { type ComponentProps } from "react";
 
-type Props = ComponentProps<"button"> & {
-  pendingText?: string;
-};
+type SignInButtonProps = ComponentProps<"button">;
 
-export function SubmitButton({ children, pendingText, ...props }: Props) {
+const SignInButton = ({ children, ...props }: SignInButtonProps) => {
   const { pending, action } = useFormStatus();
-
-  const isPending = pending && action === props.formAction;
 
   return (
     <button
@@ -19,7 +15,9 @@ export function SubmitButton({ children, pendingText, ...props }: Props) {
       type="submit"
       aria-disabled={pending}
     >
-      {isPending ? pendingText : children}
+      {children}
     </button>
   );
-}
+};
+
+export { SignInButton };
