@@ -1,20 +1,19 @@
+/**Radix components require client rendering */
 "use client";
 
+import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import Link from "next/link";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { Logo } from "@/components/logo";
+import { ComponentProps, useEffect, useRef, useState } from "react";
 import { ThemeSwitch } from "./theme-switch";
 
-type ClientSideNavProps = {
-  children: ReactNode;
-};
+type FloatingNavProps = ComponentProps<"nav">;
 
-const ClientSideNav = (props: ClientSideNavProps) => {
+const FloatingNav = (props: FloatingNavProps) => {
   const { children } = props;
 
-  const [isStuck, setIsStuck] = useState(false);
+  const [isSticky, setIsSticky] = useState(false);
 
   const navRootRef = useRef(null);
 
@@ -22,7 +21,7 @@ const ClientSideNav = (props: ClientSideNavProps) => {
     const handleScroll = () => {
       if (navRootRef.current) {
         const navTop = navRootRef.current.getBoundingClientRect().top;
-        setIsStuck(navTop <= 0);
+        setIsSticky(navTop <= 0);
       }
     };
 
@@ -41,7 +40,7 @@ const ClientSideNav = (props: ClientSideNavProps) => {
       className="flex sticky -top-0 z-50 h-16 w-screen items-center border-t-2 border-b-2 border-black bg-white dark:bg-gray-2"
       orientation="horizontal"
     >
-      {isStuck && (
+      {isSticky && (
         <NavigationMenu.Item
           className="flex h-full w-40 items-center ml-4 px-4 rounded-full"
           asChild
@@ -54,7 +53,7 @@ const ClientSideNav = (props: ClientSideNavProps) => {
       <NavigationMenu.Item
         className={cn(
           "flex h-full items-center ml-4 px-4 rounded-full",
-          isStuck && "ml-auto",
+          isSticky && "ml-auto",
         )}
         asChild
       >
@@ -66,7 +65,7 @@ const ClientSideNav = (props: ClientSideNavProps) => {
       >
         <Link href="/build-quiz">Build a Quiz</Link>
       </NavigationMenu.Item>
-      <ThemeSwitch isStuck={isStuck} />
+      <ThemeSwitch className={isSticky ? "ml-4" : "ml-auto"} />
       <NavigationMenu.Item className="flex bg-black text-white items-center h-full px-8">
         {children}
       </NavigationMenu.Item>
@@ -74,4 +73,4 @@ const ClientSideNav = (props: ClientSideNavProps) => {
   );
 };
 
-export { ClientSideNav };
+export { FloatingNav };

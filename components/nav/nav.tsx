@@ -1,11 +1,26 @@
-import { ClientSideNav } from "./client-side-nav";
+import { StickyNav } from "./sticky-nav";
 import { SignInButton } from "./sign-in-button";
+import { FloatingNav } from "./floating-nav";
 
-const Nav = () => {
+type NavProps = {
+  floating?: boolean;
+};
+
+const Nav = (props: NavProps) => {
+  const { floating = false } = props;
+
   return (
-    <ClientSideNav>
-      <SignInButton />
-    </ClientSideNav>
+    <>
+      {floating ? (
+        <FloatingNav>
+          <SignInButton />
+        </FloatingNav>
+      ) : (
+        <StickyNav>
+          <SignInButton />
+        </StickyNav>
+      )}
+    </>
   );
 };
 

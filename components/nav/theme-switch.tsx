@@ -1,8 +1,14 @@
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { HTMLAttributes } from "react";
 
-const ThemeSwitch = ({ isStuck }) => {
+type ThemeSwitchProps = HTMLAttributes<HTMLButtonElement>;
+
+const ThemeSwitch = (props: ThemeSwitchProps) => {
+  const { className } = props;
+
   const { resolvedTheme, setTheme } = useTheme();
 
   const handleClick = () => {
@@ -20,7 +26,7 @@ const ThemeSwitch = ({ isStuck }) => {
 
   return (
     <Button
-      className={`h-full px-4 mr-4 rounded-full ${!isStuck ? "ml-auto" : ""}`}
+      className={cn("h-full px-4 mr-4 rounded-full", className)}
       onClick={handleClick}
     >
       <Sun data-hide-on-theme="light" />
