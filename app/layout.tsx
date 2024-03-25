@@ -1,26 +1,22 @@
 "use client";
 
 import {
-  QuizProvider,
   QuizBuilderProvider,
+  QuizProvider,
   QuizTakerProvider,
 } from "@/providers";
 import "@/styles/globals.css";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { ThemeProvider } from "next-themes";
-// import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
-import { ReactNode } from "react";
+import { ComponentProps } from "react";
 import { Toaster } from "react-hot-toast";
 
 const font = Nunito({ weight: ["400"], subsets: ["latin"] });
 
-// const metadata: Metadata = {
-//   title: "Sphericle",
-//   description: "Learn your world.",
-// };
+const RootLayout = (props: ComponentProps<"html">) => {
+  const { children } = props;
 
-const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -33,7 +29,6 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
                   <QuizBuilderProvider>{children}</QuizBuilderProvider>
                 </QuizTakerProvider>
               </QuizProvider>
-
               <Toaster containerStyle={{ marginTop: "4rem" }} />
             </APIProvider>
           </main>

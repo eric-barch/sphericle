@@ -1,26 +1,6 @@
-import { StickyNav } from "./sticky-nav";
-import { SignInButton } from "./sign-in-button";
-import { FloatingNav } from "./floating-nav";
-
-type NavProps = {
-  floating?: boolean;
-};
-
-const Nav = (props: NavProps) => {
-  const { floating = false } = props;
-
+const Nav = () => {
   return (
-    <>
-      {floating ? (
-        <FloatingNav>
-          <SignInButton />
-        </FloatingNav>
-      ) : (
-        <StickyNav>
-          <SignInButton />
-        </StickyNav>
-      )}
-    </>
+    <div className="items-center justify-end h-16 border-black border-y-2 bg-red-500"></div>
   );
 };
 
