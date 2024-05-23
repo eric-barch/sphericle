@@ -1,3 +1,0 @@
-## Globle
-
-Learn the world.
